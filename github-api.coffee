@@ -1,6 +1,3 @@
-MAX_REPOS_PER_PAGE = 30
-MAX_CONCURRENT_THREADS = 8
-
 class GithubApi
 
   constructor: (accessToken) ->
