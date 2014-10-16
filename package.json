@@ -1,0 +1,30 @@
+{
+  "name": "github-reports",
+  "version": "0.0.1",
+  "description": "Get reports from a Github organisation",
+  "author": "Xavi Rigau <xavi@novoda.com>",
+  "contributors": [
+    {
+      "name": "Hal9000",
+      "email": "***REMOVED***@novoda.com"
+    }
+  ],
+  "main": "github-reports.coffee",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/novoda/github-reports"
+  },
+  "bugs": {
+    "url": "https://github.com/novoda/github-reports/issues"
+  },
+  "keywords": [
+    "reports",
+    "github"
+  ],
+  "dependencies": {
+    "octonode": "0.6.9",
+    "async": "0.9.0",
+    "nconf": "0.6.9"
+  },
+  "license": "Apache-2.0"
+}
