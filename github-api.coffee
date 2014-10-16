@@ -21,6 +21,6 @@ class GithubApi
   pullsFromUser: (organisation, user, callback) ->
     @reposWithPulls organisation, (repos) =>
       for repo in repos
-        @ghpulls.filterByUser repo.pulls, user, callback
+        @ghpulls.filterByUser repo, user, callback
 
 module.exports = GithubApi
