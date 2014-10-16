@@ -1,6 +1,15 @@
-ghapi = require './github-api'
+ACCESS_TOKEN = '748cd4d55bceb80d16d8f722d3012de96cea54e5' # Hal's token
+ORGANISATION = 'novoda'
 
-ghapi.fetchAllRepos (reposNoPulls) ->
-  ghapi.fetchAllPulls reposNoPulls, (reposWithPulls) ->
-    ghapi.onlyReposWithPulls reposWithPulls, (repos) ->
-      console.log "TOTAL REPOS WITH PULLS: #{repos.length}"
+GithubApi = require './github-api'
+ghapi = new GithubApi(ACCESS_TOKEN, ORGANISATION)
+
+Datastore = require 'nedb'
+db = {}
+db.repos = new Datastore()
+
+ghapi.reposWithPulls ORGANISATION, (repos) ->
+  console.log "TOTAL REPOS WITH PULLS: #{repos.length}"
+  db.repos.insert repos, (err) ->
+    db.repos.find {}, (err, result) ->
+      console.log "GOT FROM DB: #{result.length}"
