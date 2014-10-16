@@ -2,8 +2,8 @@ MAX_REPOS_PER_PAGE = 30
 
 class GithubRepos
 
-  constructor: (@client, @async) ->
-    @helper = require './helper'
+  constructor: (@client, @async, @helper) ->
+    return
 
   getReposAtPage: (ghorg, page, callback) ->
     ghorg.repos {type: 'all', page: page, per_page: MAX_REPOS_PER_PAGE}, (err, repos, headers) ->
