@@ -1,29 +1,19 @@
 class GithubApi
 
   constructor: (accessToken) ->
-    github = require 'octonode'
-    client = github.client accessToken
-    async = require 'async'
-    helper = require './helper'
-
-    GithubRepos = require './github-api-repos'
-    @ghrepos = new GithubRepos(client, async, helper)
-
-    GithubPulls = require './github-api-pulls'
-    @ghpulls = new GithubPulls(client, async, helper)
-
-    GithubFilters = require './github-api-filters'
-    @ghfilters = new GithubFilters(async)
+    GithubHttpApi = require './github-http-api-requests'
+    @ghrequest = new GithubHttpApi(accessToken)
+    Datastore = require 'nedb'
+    db = {}
+    db.repos = new Datastore(filename: 'github_db/repos.db', autoload: true)
 
   reposWithPulls: (organisation, callback) ->
-    @ghrepos.fetchAllRepos organisation, (reposNoPulls) =>
-      @ghpulls.fetchAllPullsForRepos reposNoPulls, (reposWithPulls) =>
-        @ghfilters.filterOnlyReposWithPulls reposWithPulls, (repos) ->
-          callback repos
+    @ghrequest.fetchReposWithPulls organisation, (repos) ->
 
-  pullsFromUser: (organisation, user, callback) ->
-    @reposWithPulls organisation, (repos) =>
-      for repo in repos
-        @ghfilters.filterOnlyPullsByUser repo, user, callback
+
+  # pullsFromUser: (organisation, user, callback) ->
+  #   @reposWithPulls organisation, (repos) =>
+  #     for repo in repos
+  #       @ghfilters.filterOnlyPullsByUser repo, user, callback
 
 module.exports = GithubApi

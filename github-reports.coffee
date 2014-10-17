@@ -5,10 +5,6 @@ TEST_USERNAME = 'xrigau'
 GithubApi = require './github-api'
 ghapi = new GithubApi(ACCESS_TOKEN)
 
-Datastore = require 'nedb'
-db = {}
-db.repos = new Datastore(filename: 'github_db/repos.db', autoload: true)
-
 ghapi.reposWithPulls TEST_ORGANISATION, (repos) ->
   console.log "TOTAL REPOS WITH PULLS: #{repos.length}"
 
