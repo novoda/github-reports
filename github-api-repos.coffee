@@ -18,11 +18,4 @@ class GithubRepos
     ), (err, repos) =>
       callback @helper.flatten(repos)
 
-  onlyReposWithPulls: (repos, callback) ->
-    @async.filter repos, ((repo, cb) ->
-      hasPulls = repo.pulls?.length > 0
-      cb hasPulls
-    ), (reposWithPullsOnly) ->
-      callback reposWithPullsOnly
-
 module.exports = GithubRepos

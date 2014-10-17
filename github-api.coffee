@@ -12,15 +12,18 @@ class GithubApi
     GithubPulls = require './github-api-pulls'
     @ghpulls = new GithubPulls(client, async, helper)
 
+    GithubFilters = require './github-api-filters'
+    @ghfilters = new GithubFilters(async)
+
   reposWithPulls: (organisation, callback) ->
     @ghrepos.fetchAllRepos organisation, (reposNoPulls) =>
       @ghpulls.fetchAllPullsForRepos reposNoPulls, (reposWithPulls) =>
-        @ghrepos.onlyReposWithPulls reposWithPulls, (repos) ->
+        @ghfilters.filterOnlyReposWithPulls reposWithPulls, (repos) ->
           callback repos
 
   pullsFromUser: (organisation, user, callback) ->
     @reposWithPulls organisation, (repos) =>
       for repo in repos
-        @ghpulls.filterByUser repo, user, callback
+        @ghfilters.filterOnlyPullsByUser repo, user, callback
 
 module.exports = GithubApi
