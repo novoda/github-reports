@@ -3,6 +3,12 @@ class GithubFilters
   constructor: (@async) ->
     return
 
+  filterOnlyReposWithIssuesNoForks: (repos, callback) ->
+    @async.filter repos, ((repo, cb) ->
+      cb(repo.has_issues and not repo.fork)
+    ), (reposWithIssues) ->
+      callback reposWithIssues
+
   filterOnlyReposWithPulls: (repos, callback) ->
     @async.filter repos, ((repo, cb) ->
       hasPulls = repo.pulls?.length > 0
