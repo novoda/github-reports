@@ -27,11 +27,4 @@ class GithubPulls
     ), (err) ->
       callback repos
 
-  filterByUser: (repo, user, callback) ->
-    @async.filter repo.pulls, ((pull, cb) ->
-      isFromUser = pull.user.login is user
-      cb isFromUser
-    ), (pullsFromUserOnly) ->
-      callback repo, pullsFromUserOnly
-
 module.exports = GithubPulls
