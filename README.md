@@ -4,11 +4,11 @@ Gets info from Github!
 
 ## Requirements
 
- * nodejs
- * npm
- * coffeescript
+ * node.js: Install with brew - `brew install node`
+ * npm: Comes with node
+ * coffeescript: To install - `npm install -g coffee-script`
 
 ## Usage
 
- * `npm install`
- * `coffee github-reports.coffee`
+ * Install the dependencies: `npm install`
+ * Run the script: `coffee github-reports.coffee`
