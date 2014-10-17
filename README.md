@@ -9,7 +9,9 @@ Gets info from Github!
  * coffeescript
  
 On a Mac g0t brew?
+
  `brew install node`
+
  `npm install -g coffee-script`
 
 ## Usage
