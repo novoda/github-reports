@@ -4,17 +4,12 @@ Gets info from Github!
 
 ## Requirements
 
- * node.js
- * npm
- * coffeescript
+ * TODO
 
 ### On a Mac g0t brew?
 
- * To install node.js: `brew install node`
- * npm comes with `node`. WIN.
- * Install coffeescript via `npm`: `npm install -g coffee-script`
+ * TODO
 
 ## Usage
 
- * Install the project dependencies: `npm install`
- * Run the script: `coffee github-reports.coffee`
+ * TODO
