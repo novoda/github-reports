@@ -18,31 +18,8 @@ end
 
 module ReposFilters
 
-  def pulls_in(repo)
-    repo['pulls']
-  end
-
-  def filter(array)
-    array.size > 0
-  end
-
-  def remove_repos_with_no_pulls(repos)
-    Repos.new repos.select { |repo| filter pulls_in(repo) }
-  end
-
-  def with_pulls_by(user)
-    filtered = Repos.new self.each { |repo| repo['pulls'] = pulls_in(repo).by(user) }
-    remove_repos_with_no_pulls filtered
-  end
-
-  def from(date)
-    filtered = Repos.new self.each { |repo| repo['pulls'] = pulls_in(repo).from(date) }
-    remove_repos_with_no_pulls filtered
-  end
-
-  def until(date)
-    filtered = Repos.new self.each { |repo| repo['pulls'] = pulls_in(repo).until(date) }
-    remove_repos_with_no_pulls filtered
+  def get_pulls()
+    Pulls.new self.map { |repo| repo['pulls'] }.flatten
   end
 
 end
