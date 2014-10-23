@@ -21,6 +21,7 @@ class Github
       pulls = @client.pulls repo
       save_all_pulls repo, pulls
     end
+    puts "Data downloaded!"
   end
 
   def save_repo(organisation, repo)
