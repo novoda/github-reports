@@ -13,8 +13,8 @@ def filter()
 end
 
 user = 'xrigau'
-start_date = '2014-10-13'
-end_date = '2014-10-14'
+start_date = '2014-10-15'
+end_date = '2014-10-23'
 
-result = filter.repos.with_pulls_by(user).from(start_date).until(end_date)
-puts "There are #{result.size} repos by #{user} between dates #{start_date} and #{end_date}"
+result = filter.repos.get_pulls.by(user).from(start_date).until(end_date)
+puts "There are #{result.size} pulls by #{user} between dates #{start_date} and #{end_date}"
