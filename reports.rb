@@ -12,5 +12,9 @@ def filter()
   Filters.new api
 end
 
-result = filter.repos.with_pulls_by('xrigau')
-puts result.size
+user = 'xrigau'
+start_date = '2014-10-13'
+end_date = '2014-10-14'
+
+result = filter.repos.with_pulls_by(user).from(start_date).until(end_date)
+puts "There are #{result.size} repos by #{user} between dates #{start_date} and #{end_date}"
