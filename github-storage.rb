@@ -16,26 +16,24 @@ class Storage
   end
 
   def save_repo(organisation_name, repo)
-    repo_json = JSON.generate repo
-    @repos.insert({:organisation => organisation_name, :repo => repo_json})
+    @repos.insert({:organisation => organisation_name, :repo => repo})
   end
 
   def save_pull(repo, pull)
-    pull_json = JSON.generate pull
-    @pulls.insert({:repo => repo[:full_name], :pull => pull_json})
+    @pulls.insert({:repo => repo[:full_name], :pull => pull})
   end
 
   def repos(organisation)
     repos = @repos.find({:organisation => organisation})
     repos.to_a.map! do |repo|
-      JSON.parse repo['repo']
+      repo['repo']
     end
   end
 
   def pulls(repo)
-    pulls = @pulls.find({:repo => repo[:full_name]})
+    pulls = @pulls.find({:repo => repo['full_name']})
     pulls.to_a.map! do |pull|
-      JSON.parse pull['pull']
+      pull['pull']
     end
   end
 
