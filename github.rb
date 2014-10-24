@@ -9,11 +9,9 @@ class Github
   end
 
   def fetch(organisation)
-    if @storage.has_organisation organisation
-      puts "I've got the data already"
+    if @storage.has_repos organisation
       return
     end
-    puts "Downloading data..."
 
     repos = @client.repos organisation
     Parallel.each repos do |repo|
@@ -21,7 +19,6 @@ class Github
       pulls = @client.pulls repo
       save_all_pulls repo, pulls
     end
-    puts "Data downloaded!"
   end
 
   def repos(organisation)

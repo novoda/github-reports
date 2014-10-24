@@ -12,8 +12,8 @@ class Storage
     @comments = db['comments']
   end
 
-  def has_organisation(organisation)
-    return @repos.count > 0
+  def has_repos(organisation)
+    @repos.find({:organisation => organisation}, {:fields => ['_id']}).to_a.size > 0
   end
 
   def repos(organisation)
