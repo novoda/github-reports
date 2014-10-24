@@ -1,5 +1,4 @@
 require 'octokit'
-require 'parallel'
 require 'json'
 
 class Client
@@ -22,7 +21,7 @@ class Client
   end
 
   def comments(pull)
-    @ghclient.pull_comments(pull['head']['repo']['full_name'], pull['number']).map! do |comment|
+    @ghclient.pull_comments(pull['base']['repo']['full_name'], pull['number']).map! do |comment|
       to_hash comment
     end
   end
