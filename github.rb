@@ -14,10 +14,10 @@ class Github
     end
 
     repos = @client.repos organisation
+    save_repos organisation, repos
     Parallel.each repos do |repo|
-      save_repo organisation, repo
       pulls = @client.pulls repo
-      save_all_pulls repo, pulls
+      save_pulls repo, pulls
     end
   end
 
@@ -25,22 +25,16 @@ class Github
     @storage.repos organisation
   end
 
-  def save_repo(organisation, repo)
-    @storage.save_repo organisation, repo
+  def save_repos(organisation, repos)
+    @storage.save_repos organisation, repos
   end
 
   def pulls(repo)
     @storage.pulls repo
   end
 
-  def save_all_pulls(repo, pulls)
-    Parallel.each pulls do |pull|
-      save_pull repo, pull
-    end
-  end
-
-  def save_pull(repo, pull)
-    @storage.save_pull repo, pull
+  def save_pulls(repo, pulls)
+    @storage.save_pulls repo, pulls
   end
 
   def comments(pull)
