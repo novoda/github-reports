@@ -21,6 +21,12 @@ class Client
     end
   end
 
+  def comments(pull)
+    @ghclient.pull_comments(pull['head']['repo']['full_name'], pull['number']).map! do |comment|
+      to_hash comment
+    end
+  end
+
   def to_hash(object)
     hash = object.to_hash
     keys_to_convert = hash.keys.select do |key|
