@@ -17,25 +17,27 @@ class Storage
   end
 
   def repos(organisation)
-    repos = @repos.find({:organisation => organisation})
-    repos.to_a.map! do |repo|
-      repo['repo']
+    r = @repos.find({:organisation => organisation}).to_a
+    repos = r.map! do |repo|
+      repo['repos']
     end
+    repos.flatten
   end
 
-  def save_repo(organisation_name, repo)
-    @repos.insert({:organisation => organisation_name, :repo => repo})
+  def save_repos(organisation_name, repos)
+    @repos.insert({:organisation => organisation_name, :repos => repos})
   end
 
   def pulls(repo)
-    pulls = @pulls.find({:repo => repo['full_name']})
-    pulls.to_a.map! do |pull|
-      pull['pull']
+    p = @pulls.find({:repo => repo['full_name']}).to_a
+    pulls = p.map! do |pull|
+      pull['pulls']
     end
+    pulls.flatten
   end
 
-  def save_pull(repo, pull)
-    @pulls.insert({:repo => repo[:full_name], :pull => pull})
+  def save_pulls(repo, pulls)
+    @pulls.insert({:repo => repo[:full_name], :pulls => pulls})
   end
 
   def comments(pull)
