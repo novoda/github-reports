@@ -9,7 +9,7 @@ class Github
   end
 
   def fetch(organisation)
-    if @storage.contains organisation
+    if @storage.has_organisation organisation
       puts "I've got the data already"
       return
     end
@@ -24,8 +24,16 @@ class Github
     puts "Data downloaded!"
   end
 
+  def repos(organisation)
+    @storage.repos organisation
+  end
+
   def save_repo(organisation, repo)
     @storage.save_repo organisation, repo
+  end
+
+  def pulls(repo)
+    @storage.pulls repo
   end
 
   def save_all_pulls(repo, pulls)
@@ -38,12 +46,15 @@ class Github
     @storage.save_pull repo, pull
   end
 
-  def repos(organisation)
-    @storage.repos organisation
+  def comments(pull)
+    if not @storage.has_comments pull
+      save_comments pull, @client.comments(pull)
+    end
+    return @storage.comments pull
   end
 
-  def pulls(repo)
-    @storage.pulls repo
+  def save_comments(pull, comments)
+    @storage.save_comments pull, comments
   end
 
 end
