@@ -18,9 +18,7 @@ class Storage
 
   def repos(organisation)
     r = @repos.find({:organisation => organisation}).to_a
-    repos = r.map! do |repo|
-      repo['repos']
-    end
+    repos = r.map! { |repo| repo['repos'] }
     repos.flatten
   end
 
@@ -30,9 +28,7 @@ class Storage
 
   def pulls(repo)
     p = @pulls.find({:repo => repo['full_name']}).to_a
-    pulls = p.map! do |pull|
-      pull['pulls']
-    end
+    pulls = p.map! { |pull| pull['pulls'] }
     pulls.flatten
   end
 
@@ -41,10 +37,8 @@ class Storage
   end
 
   def comments(pull)
-    c = @comments.find({:pull => pull['url']})
-    comments = c.to_a.map do |comment|
-      comment['comments']
-    end
+    c = @comments.find({:pull => pull['url']}).to_a
+    comments = c.map { |comment| comment['comments'] }
     comments.flatten
   end
 
