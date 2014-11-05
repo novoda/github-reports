@@ -19,3 +19,11 @@ Gets info from Github!
 
   - Via command line `ruby reports.rb`.
   - You can use Atom's Script package via the app menu: Packages > Script > Run Script. Make sure the language is set as `Ruby` and not `Ruby on Rails`.
+
+ * Profit!
+
+## Customisation
+
+At the moment because the API might change command line arguments aren't supported. In order to get different reports, just modify the `reports.rb` script to get the data you're interested in.
+
+The API returns collections of maps with all the fields that the Github API supports.
