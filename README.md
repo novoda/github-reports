@@ -44,6 +44,10 @@ Here's how the data flow works:
 
  * Some API calls are paginated, but luckily enough octokit.rb can hide that by setting the `auto_paginate` property to true, so we take advantage of that.
 
+ * The way we store data in mongoDB is we store a key with its value which is a list of items, so for example we store a list of repos for an organisation name. We also store a repo name with a list of Pull Requests and a list of comments with the Pull Request URL.
+
+ * To speed things up there's a lot of work done in parallel. To achieve this we use a library called Parallel which makes it super easy to perform heavy operations in parallel given a collection.
+
 ---
 
 Here are the APIs we use (so you can find the fields each object has if you need a specific field):
