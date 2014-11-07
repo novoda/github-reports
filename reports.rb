@@ -16,19 +16,24 @@ comments = CommentsFilters.new api
 
 organisation = 'novoda'
 user = 'xrigau'
-start_date = '2014-04-01'
-end_date = '2014-05-01'
+start_date = '2014-08-01'
+end_date = '2014-10-31'
 
+
+prs_merged = pulls.in(organisation).from(start_date).until(end_date).merged_by(user)
+puts "User #{user} merged #{prs_merged.size} PRs between #{start_date} and #{end_date} in the #{organisation} organisation"
 
 prs = pulls.in(organisation).by(user).from(start_date).until(end_date)
 puts "User #{user} created #{prs.size} PRs between #{start_date} and #{end_date} in the #{organisation} organisation"
-
 
 prs = pulls.in(organisation).by(user)
 prs_comments = comments.in_all(prs).exclude_by(user).from(start_date).until(end_date)
 puts "People wrote #{prs_comments.size} comments in #{user}'s PRs between #{start_date} and #{end_date} in the #{organisation} organisation"
 
-
 prs = pulls.in(organisation).exclude_by(user)
 prs_comments = comments.in_all(prs).by(user).from(start_date).until(end_date)
 puts "User #{user} wrote #{prs_comments.size} comments in other people PRs between #{start_date} and #{end_date} in the #{organisation} organisation"
+
+prs = pulls.in(organisation).from(start_date).until(end_date)
+prs_comments = comments.in_all(prs).by(user).from(start_date).until(end_date)
+puts "User #{user} commented on all PR's #{prs_comments.size} times between #{start_date} and #{end_date} in the #{organisation} organisation"

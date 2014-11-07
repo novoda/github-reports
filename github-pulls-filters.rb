@@ -19,6 +19,10 @@ class Pulls < Array
     until_time = Time.parse(date)
     Pulls.new self.select { |pull| pull['created_at'] <= until_time }
   end
+  
+  def merged_by(user)
+    Pulls.new self.select { |pull| pull['merged'] && pull['merged_by']['login'].downcase == user.downcase }
+  end
 
 end
 
