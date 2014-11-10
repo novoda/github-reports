@@ -9,6 +9,7 @@ class Storage
     db = client['github-reports']
     @repos = db['repos']
     @pulls = db['pulls']
+    @single_pulls = db['single_pulls']
     @comments = db['comments']
   end
 
@@ -34,6 +35,19 @@ class Storage
 
   def save_pulls(repo, pulls)
     @pulls.insert({:repo => repo[:full_name], :pulls => pulls})
+  end
+
+  def pull(pull)
+    p = @single_pulls.find({:url => pull['url']}).to_a
+    p[0]['pull']
+  end
+
+  def has_pull(pull)
+    @single_pulls.find({:url => pull['url']}, {:fields => ['_id']}).to_a.size > 0
+  end
+
+  def save_pull(pull)
+    @single_pulls.insert({:url => pull[:url], :pull => pull})
   end
 
   def comments(pull)
