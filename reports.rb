@@ -20,8 +20,9 @@ start_date = '2014-08-01'
 end_date = '2014-10-31'
 
 
-prs_merged = pulls.in(organisation).from(start_date).until(end_date).merged_by(user)
-puts "User #{user} merged #{prs_merged.size} PRs between #{start_date} and #{end_date} in the #{organisation} organisation"
+prs = pulls.in(organisation).from(start_date).until(end_date)
+merged_prs = pulls.full_data_for(prs).merged_by(user)
+puts "User #{user} merged #{merged_prs.size} PRs between #{start_date} and #{end_date} in the #{organisation} organisation"
 
 prs = pulls.in(organisation).by(user).from(start_date).until(end_date)
 puts "User #{user} created #{prs.size} PRs between #{start_date} and #{end_date} in the #{organisation} organisation"

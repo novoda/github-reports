@@ -37,6 +37,17 @@ class Github
     @storage.save_pulls repo, pulls
   end
 
+  def pull(pull)
+    if not @storage.has_pull pull
+      save_pull @client.pull(pull)
+    end
+    return @storage.pull pull
+  end
+
+  def save_pull(pull)
+    @storage.save_pull pull
+  end
+
   def comments(pull)
     if not @storage.has_comments pull
       save_comments pull, @client.comments(pull)
