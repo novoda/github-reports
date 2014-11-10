@@ -20,6 +20,11 @@ class Client
     end
   end
 
+  def pull(pull)
+    pr = @ghclient.pull_request(pull['base']['repo']['full_name'], pull['number'])
+    to_hash pr
+  end
+
   def comments(pull)
     @ghclient.pull_comments(pull['base']['repo']['full_name'], pull['number']).map! do |comment|
       to_hash comment

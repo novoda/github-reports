@@ -43,6 +43,9 @@ class CommentsFilters
     @api = api
   end
 
+  #
+  # Returns all the comments in all the given PRs
+  #
   def in_all(pulls)
     comments = Parallel.map pulls do |pull|
       comments_in(pull)
@@ -50,8 +53,11 @@ class CommentsFilters
     Comments.new comments.flatten
   end
 
+  #
+  # Returns all the comments in the given PR
+  #
   def comments_in(pull)
     @api.comments pull
   end
-  
+
 end
