@@ -1,4 +1,5 @@
 require 'parallel'
+require './github-storage'
 require './github-client'
 
 class Github
@@ -46,6 +47,13 @@ class Github
 
   def save_comments(pull, comments)
     @storage.save_comments pull, comments
+  end
+
+  def drop_all
+    @storage.drop_repos
+    @storage.drop_pulls
+    @storage.drop_single_pulls
+    @storage.drop_comments
   end
 
 end
