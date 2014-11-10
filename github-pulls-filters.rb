@@ -32,11 +32,15 @@ class Pulls < Array
     Pulls.new self.select { |pull| pull['created_at'] <= until_time }
   end
 
+end
+
+class FullDataPulls < Pulls
+
   #
   # Returns all PRs merged by the given user
   #
   def merged_by(user)
-    Pulls.new self.select { |pull| pull['merged'] && pull['merged_by']['login'].downcase == user.downcase }
+    FullDataPulls.new self.select { |pull| pull['merged'] and pull['merged_by']['login'].downcase == user.downcase }
   end
 
 end
@@ -70,6 +74,16 @@ class PullsFilters
   #
   def pulls_in(repo)
     @api.pulls repo
+  end
+
+  #
+  # Returns the full data for the given list of PRs
+  #
+  def full_data_for(pulls)
+    full_data_pulls = Parallel.map pulls do |pull|
+      @api.pull pull
+    end
+    FullDataPulls.new full_data_pulls
   end
 
 end
