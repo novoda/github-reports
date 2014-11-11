@@ -64,4 +64,20 @@ class Storage
     @comments.insert({:pull => pull['url'], :comments => comments})
   end
 
+  def drop_repos
+    @repos.drop
+  end
+
+  def drop_pulls
+    @pulls.drop
+  end
+
+  def drop_single_pulls
+    @single_pulls.drop
+  end
+
+  def drop_comments
+    @comments.drop
+  end
+
 end
