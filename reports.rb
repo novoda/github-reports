@@ -1,6 +1,5 @@
 require 'date'
 require './github'
-require './github-storage'
 require './github-pulls-filters'
 require './github-comments-filters'
 
@@ -9,6 +8,8 @@ require './github-comments-filters'
 
 
 ACCESS_TOKEN = '***REMOVED***' # Hal's token
+DROP_BEFORE_RUNNING = false # If set to true, drops all the tables before executing
+
 
 api = Github.new ACCESS_TOKEN
 pulls = PullsFilters.new api
@@ -18,6 +19,11 @@ organisation = 'novoda'
 user = 'xrigau'
 start_date = '2014-08-01'
 end_date = '2014-10-31'
+
+
+if (DROP_BEFORE_RUNNING)
+  api.drop_all
+end
 
 
 puts "For the organistation #{organisation}:"
