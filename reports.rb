@@ -17,17 +17,27 @@ comments = CommentsFilters.new api
 
 organisation = 'novoda'
 users = [
-  'malmstein',
-  'shivghadia',
-  'dorvaryn',
-  'orangeman',
-  'devisnik',
-  'grujo',
-  'electryc',
-  'stefanhoth',
+  'amlcurran',
+  'ataulm',
+  'biafra23',
+  'blundell',
   'danybony',
-  'zegnus',
-  'rock3r'
+  'devisnik',
+  'dorvaryn',
+  'electryc',
+  'florianmski',
+  'friedger',
+  'grujo',
+  'hutch4',
+  'malmstein',
+  'mecharyry',
+  'mr-archano',
+  'ouchadam',
+  'rock3r',
+  'ronocod',
+  'takecare',
+  'xrigau',
+  'zegnus'
 ]
 start_date = '2014-08-01'
 end_date = '2014-10-31'
