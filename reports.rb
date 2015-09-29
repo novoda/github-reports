@@ -41,8 +41,8 @@ users = [
   'xrigau',
   'zegnus'
 ]
-start_date = '2014-08-01'
-end_date = '2014-10-31'
+start_date = '2015-07-01'
+end_date = '2015-07-31'
 
 
 if (DROP_BEFORE_RUNNING)
