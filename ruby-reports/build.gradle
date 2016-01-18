@@ -1,0 +1,28 @@
+apply plugin: 'maven'
+apply plugin: 'war'
+apply plugin: 'com.lookout.jruby'
+
+// TODO this file is just a hack drop from:
+// https://github.com/rtyler/ruby-gradle-example/blob/master/build.gradle
+
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath group: 'com.lookout', name: 'jruby-gradle-plugin', version: '2.0.+'
+    }
+}
+
+repositories {
+    // Pull in Maven Central for all our non-ruby dependencies
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    gems group: 'rubygems', name: 'sinatra', version: '1.4.5'
+    gems group: 'rubygems', name: 'rake', version: '10.3.+'
+
+    jrubyWar group: 'org.apache.kafka', name: 'kafka_2.9.2', version: '0.8.+'
+    // Needed otherwise we get `"Artifact 'com.sun.jdmk:jmxtools:1.2.1:jmxtools.jar' not found."`
+    jrubyWar group: 'log4j', name: 'log4j', version: '1.2.+', transitive: true
+}
