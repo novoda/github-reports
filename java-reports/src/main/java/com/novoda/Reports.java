@@ -1,9 +1,9 @@
 package com.novoda;
 
-public class MyClass {
+public class Reports {
 
     public static void main(String[] args) {
-        //TODO
+        // Re-write the ruby reports ino java
     }
 
 }
