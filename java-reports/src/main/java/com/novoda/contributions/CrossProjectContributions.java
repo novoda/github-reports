@@ -33,9 +33,6 @@ public class CrossProjectContributions {
         int inputNumberOfWeeks = 2;
 
         FloatWebService floatWebService = retrofit.create(FloatWebService.class);
-        // Pull down the list of all projects
-        Call<ApiProjects> projects = floatWebService.getProjects(floatAccessToken);
-//        System.out.println(projects.execute().body());
 
         // Pull down all people from float
         Call<ApiPeople> people = floatWebService.getPeople(floatAccessToken);
