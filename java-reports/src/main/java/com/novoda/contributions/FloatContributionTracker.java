@@ -6,6 +6,7 @@ import retrofit2.Retrofit;
 
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,11 +20,10 @@ public class FloatContributionTracker {
     }
 
     /**
-     *
      * Find out what developer is on what project
      *
      * @param startDate the first date you want to track from YYYY-MM-DD
-     * @param endDate the date you want to stop tracking at YYYY-MM-DD
+     * @param endDate   the date you want to stop tracking at YYYY-MM-DD
      * @return TODO
      * @throws IOException
      */
@@ -65,7 +65,8 @@ public class FloatContributionTracker {
                 .collect(Collectors.toList());
 
         // Change person id's into peoples names
-        List<CraftsmanWithTasks> list = craftsmenTasks
+
+        return craftsmenTasks
                 .parallelStream()
                 .map(apiPeopleWithTasks -> {
                     final String[] craftsmanName = new String[1];
@@ -74,21 +75,21 @@ public class FloatContributionTracker {
                             craftsmanName[0] = apiPerson.name;
                         }
                     });
-                    CraftsmanWithTasks craftsmanWithTasks = new CraftsmanWithTasks(craftsmanName[0]);
-                    craftsmanWithTasks.tasks = apiPeopleWithTasks.tasks;
-                    return craftsmanWithTasks;
+                    List<CraftsmanWithTasks.Task> tasks = new ArrayList<>();
+                    apiPeopleWithTasks.tasks.forEach(apiTask -> {
+                        tasks.add(new CraftsmanWithTasks.Task(apiTask.projectName, apiTask.startDate, apiTask.endDate));
+                    });
+                    return new CraftsmanWithTasks(craftsmanName[0], tasks);
                 })
                 .collect(Collectors.toList());
-
-        return list;
     }
 
     private void validateDateFormat(String startDate, String endDate) {
         String dateFormat = "\\d\\d\\d\\d-\\d\\d-\\d\\d";
-        if(!startDate.matches(dateFormat)) {
+        if (!startDate.matches(dateFormat)) {
             throw new DateTimeParseException("StartDate Format should be YYYY-MM-DD", startDate, 0);
         }
-        if(!endDate.matches(dateFormat)) {
+        if (!endDate.matches(dateFormat)) {
             throw new DateTimeParseException("EndDate Format should be YYYY-MM-DD", endDate, 0);
         }
     }
