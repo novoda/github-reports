@@ -7,6 +7,8 @@ import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CrossProjectContributions {
 
@@ -34,6 +36,17 @@ public class CrossProjectContributions {
         Call<ApiProjects> projects = floatWebService.getProjects(floatAccessToken);
         System.out.println(projects.execute().body());
         // Pull down all people from float
+
+        Call<ApiPeople> people = floatWebService.getPeople(floatAccessToken);
+        ApiPeople apiPeople = people.execute().body();
+
+        Stream<ApiPeople.ApiPerson> craftsmen = apiPeople.people
+                .parallelStream()
+                .filter(p -> p.jobTitle.toLowerCase().contains("craftsman"));
+
+        System.out.println(craftsmen.collect(Collectors.toList()));
+
+
         // Filter 'all people' to get just the developers
         // Pull down all tasks for daterange
         // From the tasks get all tasks for person X
