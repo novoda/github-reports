@@ -18,12 +18,20 @@ public class ContributionTracker {
         this.floatAccessToken = floatAccessToken;
     }
 
+    /**
+     *
+     * Find out what developer is on what project
+     * Find out if X developer has commented on / merged / closed another projects PR
+     *
+     * @param startDate the first date you want to track from YYYY-MM-DD
+     * @param endDate the date you want to stop tracking at YYYY-MM-DD
+     * @return TODO
+     * @throws IOException
+     */
     public String track(String startDate, String endDate) throws IOException {
         validateDateFormat(startDate, endDate);
         // TODO calculate this
         int inputNumberOfWeeks = 2;
-        // Find out what developer is on what project
-        // Find out if X developer has commented on / merged / closed another projects PR
 
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
