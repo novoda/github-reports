@@ -1,5 +1,7 @@
 package com.novoda.contributions;
 
+import com.novoda.contributions.floatcom.FloatContributionTracker;
+
 import java.io.IOException;
 import java.util.List;
 
