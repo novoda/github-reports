@@ -17,6 +17,8 @@ public class ApiPeople {
         String name;
         @SerializedName("job_title")
         String jobTitle;
+        @SerializedName("contractor")
+        int contractor;
 
         public String getPersonId() {
             return personId;
@@ -28,6 +30,7 @@ public class ApiPeople {
                     "personId='" + personId + '\'' +
                     ", name='" + name + '\'' +
                     ", jobTitle='" + jobTitle + '\'' +
+                    ", contractor=" + contractor +
                     "}\n";
         }
     }
