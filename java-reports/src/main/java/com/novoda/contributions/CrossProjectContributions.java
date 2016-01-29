@@ -50,12 +50,13 @@ public class CrossProjectContributions {
         ApiPeople apiPeople = people.execute().body();
 
         // Filter 'all people' to get just the developers
-        Stream<ApiPeople.ApiPerson> craftsmen = apiPeople.people
+        // Filter contractors
+        List<ApiPeople.ApiPerson>  craftsmen = apiPeople.people
                 .parallelStream()
-                .filter(p -> p.jobTitle.toLowerCase().contains("craftsman"));
-
-        List<ApiPeople.ApiPerson> crafstmen = craftsmen.collect(Collectors.toList());
-        System.out.println(crafstmen);
+                .filter(p -> p.jobTitle.toLowerCase().contains("craftsman"))
+                .filter(p -> p.contractor != 1)
+                .collect(Collectors.toList());
+        System.out.println(craftsmen);
 
 
         // Pull down all tasks for daterange
