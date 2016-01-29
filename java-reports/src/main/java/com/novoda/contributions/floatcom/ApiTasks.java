@@ -1,10 +1,10 @@
-package com.novoda.contributions;
+package com.novoda.contributions.floatcom;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class ApiTasks {
+class ApiTasks {
 
     @SerializedName("start_doy")
     int startDayOfYear;

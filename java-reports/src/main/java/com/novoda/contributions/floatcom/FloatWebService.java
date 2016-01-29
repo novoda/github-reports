@@ -1,4 +1,4 @@
-package com.novoda.contributions;
+package com.novoda.contributions.floatcom;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -6,7 +6,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
-public interface FloatWebService {
+interface FloatWebService {
 
     @Headers({"Content-Type: application/x-www-form-urlencoded", "Accept: application/json"})
     @GET("people?active=1")

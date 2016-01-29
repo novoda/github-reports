@@ -1,5 +1,6 @@
-package com.novoda.contributions;
+package com.novoda.contributions.floatcom;
 
+import com.novoda.contributions.CraftsmanWithTasks;
 import retrofit2.Call;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;

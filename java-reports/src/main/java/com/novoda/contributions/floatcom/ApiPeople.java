@@ -1,10 +1,10 @@
-package com.novoda.contributions;
+package com.novoda.contributions.floatcom;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class ApiPeople {
+class ApiPeople {
 
     @SerializedName("people")
     List<ApiPerson> people;
