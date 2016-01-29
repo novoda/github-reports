@@ -68,12 +68,13 @@ public class FloatContributionTracker {
         List<CraftsmanWithTasks> list = craftsmenTasks
                 .parallelStream()
                 .map(apiPeopleWithTasks -> {
-                    CraftsmanWithTasks craftsmanWithTasks = new CraftsmanWithTasks();
+                    final String[] craftsmanName = new String[1];
                     craftsmen.forEach(apiPerson -> {
                         if (apiPerson.personId.equals(apiPeopleWithTasks.personId)) {
-                            craftsmanWithTasks.name = apiPerson.name;
+                            craftsmanName[0] = apiPerson.name;
                         }
                     });
+                    CraftsmanWithTasks craftsmanWithTasks = new CraftsmanWithTasks(craftsmanName[0]);
                     craftsmanWithTasks.tasks = apiPeopleWithTasks.tasks;
                     return craftsmanWithTasks;
                 })

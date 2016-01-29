@@ -3,8 +3,12 @@ package com.novoda.contributions;
 import java.util.List;
 
 public class CraftsmanWithTasks {
-    public String name;
+    private final  String name;
     public List<ApiTasks.ApiTask> tasks;
+
+    public CraftsmanWithTasks(String name) {
+        this.name = name;
+    }
 
     @Override
     public String toString() {
