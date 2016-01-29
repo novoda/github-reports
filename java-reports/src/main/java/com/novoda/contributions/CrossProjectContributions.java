@@ -1,13 +1,10 @@
 package com.novoda.contributions;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import retrofit2.Call;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,13 +16,11 @@ public class CrossProjectContributions {
 
     public static void main(String[] args) throws IOException {
         String floatAccessToken = args[0];
-        //TODO
         // Find out what developer is on what project
         // Find out if X developer has commented on / merged / closed another projects PR
 
-        Gson gson = new GsonBuilder().create();
         Retrofit retrofit = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl("https://api.floatschedule.com/api/v1/")
                 .build();
 
@@ -34,8 +29,8 @@ public class CrossProjectContributions {
 
         String inputStartDate = "2016-01-11";
         String inputEndDate = "2016-01-18";
-        LocalDateTime startDateTime = LocalDateTime.parse(inputStartDate + "T00:00:00");
-        LocalDateTime endDateTime = LocalDateTime.parse(inputEndDate + "T00:00:00");
+        // TODO calculate this
+        int inputNumberOfWeeks = 2;
 
         FloatWebService floatWebService = retrofit.create(FloatWebService.class);
         // Pull down the list of all projects
@@ -55,15 +50,11 @@ public class CrossProjectContributions {
                 .collect(Collectors.toList());
         System.out.println(craftsmen);
 
-
         // Pull down all tasks for daterange
-
-        Call<ApiTasks> allTasks = floatWebService.getTasks(floatAccessToken, inputStartDate, 2);
+        Call<ApiTasks> allTasks = floatWebService.getTasks(floatAccessToken, inputStartDate, inputNumberOfWeeks);
         ApiTasks apiTasks = allTasks.execute().body();
 
-
         // Find all the tasks for just the developers
-
         Set<String> craftsmenIds = craftsmen
                 .parallelStream()
                 .map(ApiPeople.ApiPerson::getPersonId)
@@ -73,11 +64,9 @@ public class CrossProjectContributions {
                 .parallelStream()
                 .filter(p -> craftsmenIds.contains(p.personId))
                 .collect(Collectors.toList());
-
 //        System.out.println(craftsmenTasks);
 
         // Change person id's into peoples names
-
         List<CraftsmanWithTasks> list = craftsmenTasks
                 .parallelStream()
                 .map(apiPeopleWithTasks -> {
