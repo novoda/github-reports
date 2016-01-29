@@ -61,7 +61,6 @@ public class ContributionTracker {
                 .parallelStream()
                 .map(ApiPeople.ApiPerson::getPersonId)
                 .collect(Collectors.toSet());
-
         List<ApiTasks.ApiPeopleWithTasks> craftsmenTasks = apiTasks.people
                 .parallelStream()
                 .filter(p -> craftsmenIds.contains(p.personId))

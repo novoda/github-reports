@@ -51,16 +51,12 @@ public class ApiTasks {
         @SerializedName("project_name")
         String projectName;
 
-        @SerializedName("client_name")
-        String clientName;
-
         @Override
         public String toString() {
             return "ApiTask{" +
                     "startDate='" + startDate + '\'' +
                     ", endDate='" + endDate + '\'' +
                     ", projectName='" + projectName + '\'' +
-                    ", clientName='" + clientName + '\'' +
                     "}\n";
         }
     }
