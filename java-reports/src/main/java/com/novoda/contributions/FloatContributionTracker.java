@@ -10,25 +10,24 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ContributionTracker {
+public class FloatContributionTracker {
 
     private final String floatAccessToken;
 
-    public ContributionTracker(String floatAccessToken) {
+    public FloatContributionTracker(String floatAccessToken) {
         this.floatAccessToken = floatAccessToken;
     }
 
     /**
      *
      * Find out what developer is on what project
-     * Find out if X developer has commented on / merged / closed another projects PR
      *
      * @param startDate the first date you want to track from YYYY-MM-DD
      * @param endDate the date you want to stop tracking at YYYY-MM-DD
      * @return TODO
      * @throws IOException
      */
-    public String track(String startDate, String endDate) throws IOException {
+    public List<CraftsmanWithTasks> track(String startDate, String endDate) throws IOException {
         validateDateFormat(startDate, endDate);
         // TODO calculate this
         int inputNumberOfWeeks = 2;
@@ -42,7 +41,7 @@ public class ContributionTracker {
         // Pull down all people from float
         Call<ApiPeople> people = floatWebService.getPeople(floatAccessToken);
         ApiPeople apiPeople = people.execute().body();
-//        System.out.println(apiPeople);
+
         // Filter 'all people' to get just the developers
         // Filter contractors
         List<ApiPeople.ApiPerson> craftsmen = apiPeople.people
@@ -65,7 +64,6 @@ public class ContributionTracker {
                 .parallelStream()
                 .filter(p -> craftsmenIds.contains(p.personId))
                 .collect(Collectors.toList());
-//        System.out.println(craftsmenTasks);
 
         // Change person id's into peoples names
         List<CraftsmanWithTasks> list = craftsmenTasks
@@ -83,14 +81,7 @@ public class ContributionTracker {
                 .collect(Collectors.toList());
         System.out.println(list);
 
-
-        // From person X's tasks find all project names
-
-
-        // Query each github repo
-
-
-        return "todo work out output format";
+        return list;
     }
 
     private void validateDateFormat(String startDate, String endDate) {
@@ -100,19 +91,6 @@ public class ContributionTracker {
         }
         if(!endDate.matches(dateFormat)) {
             throw new DateTimeParseException("EndDate Format should be YYYY-MM-DD", endDate, 0);
-        }
-    }
-
-    public static class CraftsmanWithTasks {
-        public String name;
-        public List<ApiTasks.ApiTask> tasks;
-
-        @Override
-        public String toString() {
-            return "CraftsmanWithTasks{" +
-                    "name='" + name + '\'' +
-                    ", tasks=" + tasks +
-                    '}';
         }
     }
 

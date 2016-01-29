@@ -1,6 +1,7 @@
 package com.novoda.contributions;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * https://github.com/floatschedule/api
@@ -9,9 +10,9 @@ public class CrossProjectContributions {
 
     public static void main(String[] args) throws IOException {
         String floatAccessToken = args[0];
-        ContributionTracker contributionTracker = new ContributionTracker(floatAccessToken);
+        FloatContributionTracker floatContributionTracker = new FloatContributionTracker(floatAccessToken);
         // Input needed - Date Range
-        String result = contributionTracker.track("2016-01-11", "2016-01-18");
+        List<CraftsmanWithTasks> result = floatContributionTracker.track("2016-01-11", "2016-01-18");
         System.out.println("Complete " + result);
     }
 
