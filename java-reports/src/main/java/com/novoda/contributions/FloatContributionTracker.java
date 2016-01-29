@@ -49,7 +49,6 @@ public class FloatContributionTracker {
                 .filter(p -> p.jobTitle.toLowerCase().contains("craftsman"))
                 .filter(p -> p.contractor != 1)
                 .collect(Collectors.toList());
-        System.out.println(craftsmen);
 
         // Pull down all tasks for daterange
         Call<ApiTasks> allTasks = floatWebService.getTasks(floatAccessToken, startDate, inputNumberOfWeeks);
@@ -79,7 +78,6 @@ public class FloatContributionTracker {
                     return craftsmanWithTasks;
                 })
                 .collect(Collectors.toList());
-        System.out.println(list);
 
         return list;
     }
