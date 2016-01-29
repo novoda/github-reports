@@ -7,6 +7,7 @@ import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,8 +32,14 @@ public class CrossProjectContributions {
 
 
         // Input needed - Date Range
-        // Pull down the list of all projects
+
+        String inputStartDate = "2016-01-11";
+        String inputEndDate = "2016-01-18";
+        LocalDateTime startDateTime = LocalDateTime.parse(inputStartDate + "T00:00:00");
+        LocalDateTime endDateTime = LocalDateTime.parse(inputEndDate + "T00:00:00");
+
         FloatWebService floatWebService = retrofit.create(FloatWebService.class);
+        // Pull down the list of all projects
         Call<ApiProjects> projects = floatWebService.getProjects(floatAccessToken);
         System.out.println(projects.execute().body());
         // Pull down all people from float
@@ -40,6 +47,7 @@ public class CrossProjectContributions {
         Call<ApiPeople> people = floatWebService.getPeople(floatAccessToken);
         ApiPeople apiPeople = people.execute().body();
 
+        // Filter 'all people' to get just the developers
         Stream<ApiPeople.ApiPerson> craftsmen = apiPeople.people
                 .parallelStream()
                 .filter(p -> p.jobTitle.toLowerCase().contains("craftsman"));
@@ -47,8 +55,12 @@ public class CrossProjectContributions {
         System.out.println(craftsmen.collect(Collectors.toList()));
 
 
-        // Filter 'all people' to get just the developers
         // Pull down all tasks for daterange
+
+        Call<ApiTasks> tasks = floatWebService.getTasks(floatAccessToken, inputStartDate, 2);
+        System.out.println(tasks.execute().body());
+
+
         // From the tasks get all tasks for person X
         // From person X's tasks find all project names
 
