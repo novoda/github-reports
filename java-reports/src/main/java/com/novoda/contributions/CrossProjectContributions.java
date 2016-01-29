@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,12 +45,12 @@ public class CrossProjectContributions {
         FloatWebService floatWebService = retrofit.create(FloatWebService.class);
         // Pull down the list of all projects
         Call<ApiProjects> projects = floatWebService.getProjects(floatAccessToken);
-        System.out.println(projects.execute().body());
-        // Pull down all people from float
+//        System.out.println(projects.execute().body());
 
+        // Pull down all people from float
         Call<ApiPeople> people = floatWebService.getPeople(floatAccessToken);
         ApiPeople apiPeople = people.execute().body();
-
+//        System.out.println(apiPeople);
         // Filter 'all people' to get just the developers
         // Filter contractors
         List<ApiPeople.ApiPerson>  craftsmen = apiPeople.people
@@ -61,29 +63,65 @@ public class CrossProjectContributions {
 
         // Pull down all tasks for daterange
 
-        Call<ApiTasks> tasks = floatWebService.getTasks(floatAccessToken, inputStartDate, 2);
-        ApiTasks apiTasks = tasks.execute().body();
+        Call<ApiTasks> allTasks = floatWebService.getTasks(floatAccessToken, inputStartDate, 2);
+        ApiTasks apiTasks = allTasks.execute().body();
 
-        Set<String> craftsmenIds = crafstmen
+
+
+        // Find all the tasks for just the developers
+
+        Set<String> craftsmenIds = craftsmen
                 .parallelStream()
                 .map(ApiPeople.ApiPerson::getPersonId)
                 .collect(Collectors.toSet());
 
-        List<ApiTasks.ApiPeopleWithTasks> craftsmanTasks = apiTasks.people
+        List<ApiTasks.ApiPeopleWithTasks> craftsmenTasks = apiTasks.people
                 .parallelStream()
                 .filter(p -> craftsmenIds.contains(p.personId))
                 .collect(Collectors.toList());
 
-        System.out.println(craftsmanTasks);
+//        System.out.println(craftsmenTasks);
 
-        // From the tasks get all tasks for person X
+        // Change person id's into peoples names
+
+        List<CraftsmanWithTasks> list = craftsmenTasks
+                .parallelStream()
+                .map(apiPeopleWithTasks -> {
+                    CraftsmanWithTasks craftsmanWithTasks = new CraftsmanWithTasks();
+                    craftsmen.forEach(apiPerson -> {
+                        if (apiPerson.personId.equals(apiPeopleWithTasks.personId)) {
+                            craftsmanWithTasks.name = apiPerson.name;
+                        }
+                    });
+                    craftsmanWithTasks.tasks = apiPeopleWithTasks.tasks;
+                    return craftsmanWithTasks;
+                })
+                .collect(Collectors.toList());
+        System.out.println(list);
+
+
         // From person X's tasks find all project names
+
+
+
         // Query each github repo
 
 
 
     }
 
+    public static class CraftsmanWithTasks {
+        public String name;
+        public List<ApiTasks.ApiTask> tasks;
+
+        @Override
+        public String toString() {
+            return "CraftsmanWithTasks{" +
+                    "name='" + name + '\'' +
+                    ", tasks=" + tasks +
+                    '}';
+        }
+    }
 
 
 }
