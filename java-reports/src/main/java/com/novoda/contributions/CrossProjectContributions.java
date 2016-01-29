@@ -15,7 +15,12 @@ import java.util.stream.Collectors;
 public class CrossProjectContributions {
 
     public static void main(String[] args) throws IOException {
+        // Input needed - Date Range
         String floatAccessToken = args[0];
+        String inputStartDate = "2016-01-11";
+        String inputEndDate = "2016-01-18";
+        // TODO calculate this
+        int inputNumberOfWeeks = 2;
         // Find out what developer is on what project
         // Find out if X developer has commented on / merged / closed another projects PR
 
@@ -23,15 +28,6 @@ public class CrossProjectContributions {
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl("https://api.floatschedule.com/api/v1/")
                 .build();
-
-
-        // Input needed - Date Range
-
-        String inputStartDate = "2016-01-11";
-        String inputEndDate = "2016-01-18";
-        // TODO calculate this
-        int inputNumberOfWeeks = 2;
-
         FloatWebService floatWebService = retrofit.create(FloatWebService.class);
 
         // Pull down all people from float
