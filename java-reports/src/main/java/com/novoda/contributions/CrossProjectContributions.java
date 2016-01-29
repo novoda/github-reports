@@ -8,6 +8,8 @@ import retrofit2.Retrofit;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,19 +54,31 @@ public class CrossProjectContributions {
                 .parallelStream()
                 .filter(p -> p.jobTitle.toLowerCase().contains("craftsman"));
 
-        System.out.println(craftsmen.collect(Collectors.toList()));
+        List<ApiPeople.ApiPerson> crafstmen = craftsmen.collect(Collectors.toList());
+        System.out.println(crafstmen);
 
 
         // Pull down all tasks for daterange
 
         Call<ApiTasks> tasks = floatWebService.getTasks(floatAccessToken, inputStartDate, 2);
-        System.out.println(tasks.execute().body());
+        ApiTasks apiTasks = tasks.execute().body();
 
+        Set<String> craftsmenIds = crafstmen
+                .parallelStream()
+                .map(ApiPeople.ApiPerson::getPersonId)
+                .collect(Collectors.toSet());
+
+        List<ApiTasks.ApiPeopleWithTasks> craftsmanTasks = apiTasks.people
+                .parallelStream()
+                .filter(p -> craftsmenIds.contains(p.personId))
+                .collect(Collectors.toList());
+
+        System.out.println(craftsmanTasks);
 
         // From the tasks get all tasks for person X
         // From person X's tasks find all project names
-
         // Query each github repo
+
 
 
     }
