@@ -10,6 +10,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.5'
 
     testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:3.3.0'
 }
 
 compileJava.sourceCompatibility = JavaVersion.VERSION_1_8
