@@ -10,16 +10,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+/**
+ * https://github.com/floatschedule/api
+ */
 public class CrossProjectContributions {
-
-    // https://github.com/floatschedule/api
-
-    // ttps://api.floatschedule.com/api/v1/people?active=1
 
     public static void main(String[] args) throws IOException {
         String floatAccessToken = args[0];
@@ -32,7 +28,6 @@ public class CrossProjectContributions {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .baseUrl("https://api.floatschedule.com/api/v1/")
                 .build();
-
 
 
         // Input needed - Date Range
@@ -53,7 +48,7 @@ public class CrossProjectContributions {
 //        System.out.println(apiPeople);
         // Filter 'all people' to get just the developers
         // Filter contractors
-        List<ApiPeople.ApiPerson>  craftsmen = apiPeople.people
+        List<ApiPeople.ApiPerson> craftsmen = apiPeople.people
                 .parallelStream()
                 .filter(p -> p.jobTitle.toLowerCase().contains("craftsman"))
                 .filter(p -> p.contractor != 1)
@@ -65,7 +60,6 @@ public class CrossProjectContributions {
 
         Call<ApiTasks> allTasks = floatWebService.getTasks(floatAccessToken, inputStartDate, 2);
         ApiTasks apiTasks = allTasks.execute().body();
-
 
 
         // Find all the tasks for just the developers
@@ -103,9 +97,7 @@ public class CrossProjectContributions {
         // From person X's tasks find all project names
 
 
-
         // Query each github repo
-
 
 
     }
