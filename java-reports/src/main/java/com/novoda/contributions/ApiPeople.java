@@ -18,6 +18,10 @@ public class ApiPeople {
         @SerializedName("job_title")
         String jobTitle;
 
+        public String getPersonId() {
+            return personId;
+        }
+
         @Override
         public String toString() {
             return "ApiPerson{" +
