@@ -14,7 +14,11 @@ public class CrossProjectContributions {
         String floatAccessToken = args[0];
         FloatContributionTracker floatContributionTracker = new FloatContributionTracker(floatAccessToken);
         // Input needed - Date Range
-        List<CraftsmanWithTasks> result = floatContributionTracker.track("2016-01-11", "2016-01-18");
+        List<FloatDevs> result = floatContributionTracker.track("2016-01-11", "2016-01-18");
+        // convert the float usernames to github usernames
+        // convert the float projects to githubprojects
+        // query github with this info
+
         System.out.println("Complete " + result);
     }
 

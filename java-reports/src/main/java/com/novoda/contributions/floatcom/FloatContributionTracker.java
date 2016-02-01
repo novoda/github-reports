@@ -1,6 +1,6 @@
 package com.novoda.contributions.floatcom;
 
-import com.novoda.contributions.CraftsmanWithTasks;
+import com.novoda.contributions.FloatDevs;
 import retrofit2.Call;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
@@ -28,7 +28,7 @@ public class FloatContributionTracker {
      * @return TODO
      * @throws IOException
      */
-    public List<CraftsmanWithTasks> track(String startDate, String endDate) throws IOException {
+    public List<FloatDevs> track(String startDate, String endDate) throws IOException {
         validateDateFormat(startDate, endDate);
         // TODO calculate this
         int inputNumberOfWeeks = 2;
@@ -76,11 +76,11 @@ public class FloatContributionTracker {
                             craftsmanName[0] = apiPerson.name;
                         }
                     });
-                    List<CraftsmanWithTasks.Task> tasks = new ArrayList<>();
+                    List<FloatDevs.Task> tasks = new ArrayList<>();
                     apiPeopleWithTasks.tasks.forEach(apiTask -> {
-                        tasks.add(new CraftsmanWithTasks.Task(apiTask.projectName, apiTask.startDate, apiTask.endDate));
+                        tasks.add(new FloatDevs.Task(apiTask.projectName, apiTask.startDate, apiTask.endDate));
                     });
-                    return new CraftsmanWithTasks(craftsmanName[0], tasks);
+                    return new FloatDevs(craftsmanName[0], tasks);
                 })
                 .collect(Collectors.toList());
     }

@@ -12,10 +12,11 @@ public class GitHubContributionTracker {
 
     /**
      * Find out if X developer has commented on / merged / closed another projects PR
+     *
      * @return
      * @throws IOException
      */
-    public String track() throws IOException {
+    public String track(FloatDevs floatDevs) throws IOException {
         // From person X's tasks find all project names
 
 
