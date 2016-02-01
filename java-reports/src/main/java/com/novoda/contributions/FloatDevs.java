@@ -2,18 +2,18 @@ package com.novoda.contributions;
 
 import java.util.List;
 
-public class CraftsmanWithTasks {
+public class FloatDevs {
     private final String name;
     private final List<Task> tasks;
 
-    public CraftsmanWithTasks(String name, List<Task> tasks) {
+    public FloatDevs(String name, List<Task> tasks) {
         this.name = name;
         this.tasks = tasks;
     }
 
     @Override
     public String toString() {
-        return "\nCraftsmanWithTasks{" +
+        return "\nFloatDevs{" +
                 "name='" + name + '\'' +
                 ", tasks=" + tasks +
                 '}';
