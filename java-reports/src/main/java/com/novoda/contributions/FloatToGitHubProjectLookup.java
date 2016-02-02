@@ -18,11 +18,21 @@ public class FloatToGitHubProjectLookup {
         }
     };
 
+    private final Map<String, List<String>> projectsLookupTable;
+
+    public static FloatToGitHubProjectLookup newInstance() {
+        return new FloatToGitHubProjectLookup(TABLE);
+    }
+
+    FloatToGitHubProjectLookup(Map<String, List<String>> projectsLookupTable) {
+        this.projectsLookupTable = projectsLookupTable;
+    }
+
     public Stream<String> getGitHubProjectsFor(String floatProjectName) {
         String cleanName = cleanName(floatProjectName);
 
-        if (TABLE.containsKey(cleanName)) {
-            return TABLE.get(cleanName).stream();
+        if (projectsLookupTable.containsKey(cleanName)) {
+            return projectsLookupTable.get(cleanName).stream();
         } else {
             return Stream.empty();
         }
