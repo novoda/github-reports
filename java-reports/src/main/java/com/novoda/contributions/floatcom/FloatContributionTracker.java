@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * https://github.com/floatschedule/api
@@ -30,7 +31,7 @@ public class FloatContributionTracker {
      * @return TODO
      * @throws IOException
      */
-    public List<FloatDev> track(String startDate, String endDate) throws IOException {
+    public Stream<FloatDev> track(String startDate, String endDate) throws IOException {
         validateDateFormat(startDate, endDate);
         // TODO calculate this
         int inputNumberOfWeeks = 2;
@@ -86,8 +87,7 @@ public class FloatContributionTracker {
                                 tasks.add(new FloatDev.Task(apiTask.projectName, apiTask.startDate, apiTask.endDate));
                             });
                     return new FloatDev(craftsmanName[0], tasks);
-                })
-                .collect(Collectors.toList());
+                });
     }
 
     private void validateDateFormat(String startDate, String endDate) {
