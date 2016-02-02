@@ -31,19 +31,19 @@ public class FloatToGitHubUsernameLookup {
         }
     };
 
-    private final Map<String, String> lookupTable;
+    private final Map<String, String> usernamesLookupTable;
 
-    private static FloatToGitHubUsernameLookup newInstance() {
+    public static FloatToGitHubUsernameLookup newInstance() {
         return new FloatToGitHubUsernameLookup(NOVODA_DEVS_LOOKUP_TABLE);
     }
 
-    FloatToGitHubUsernameLookup(Map<String, String> lookupTable) {
-        this.lookupTable = lookupTable;
+    FloatToGitHubUsernameLookup(Map<String, String> usernamesLookupTable) {
+        this.usernamesLookupTable = usernamesLookupTable;
     }
 
     public String getGitHubUsernameFor(String floatProjectName) throws IllegalArgumentException {
-        if (lookupTable.containsKey(floatProjectName)) {
-            return lookupTable.get(floatProjectName);
+        if (usernamesLookupTable.containsKey(floatProjectName)) {
+            return usernamesLookupTable.get(floatProjectName);
         } else {
             throw new IllegalArgumentException("No developer found for " + floatProjectName);
         }
