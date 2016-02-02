@@ -1,5 +1,6 @@
 package com.novoda.contributions;
 
+import com.novoda.contributions.convert.FloatToGitHub;
 import com.novoda.contributions.floatcom.FloatContributionTracker;
 import com.novoda.contributions.floatcom.FloatDev;
 import com.novoda.contributions.githubcom.GitHubDev;

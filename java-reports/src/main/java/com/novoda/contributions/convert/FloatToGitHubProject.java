@@ -1,8 +1,8 @@
-package com.novoda.contributions;
+package com.novoda.contributions.convert;
 
 import java.util.*;
 
-public class FloatToGitHubProject {
+class FloatToGitHubProject {
 
     private static final Map<String, List<String>> TABLE = new HashMap<String, List<String>>() {
         {
