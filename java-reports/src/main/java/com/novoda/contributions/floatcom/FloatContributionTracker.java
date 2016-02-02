@@ -59,7 +59,7 @@ public class FloatContributionTracker {
                 .parallelStream()
                 .map(ApiPeople.ApiPerson::getPersonId)
                 .collect(Collectors.toSet());
-        List<ApiTasks.ApiPeopleWithTasks> craftsmenTasks = apiTasks.people
+        List<ApiTasks.ApiPeopleWithTasks> craftsmenTasks = apiTasks.peopleWithTasks
                 .parallelStream()
                 .filter(p -> craftsmenIds.contains(p.personId))
                 .collect(Collectors.toList());
@@ -76,9 +76,12 @@ public class FloatContributionTracker {
                         }
                     });
                     List<FloatDev.Task> tasks = new ArrayList<>();
-                    apiPeopleWithTasks.tasks.forEach(apiTask -> {
-                        tasks.add(new FloatDev.Task(apiTask.projectName, apiTask.startDate, apiTask.endDate));
-                    });
+                    apiPeopleWithTasks.tasks
+                            .stream()
+                            .filter(task -> !task.projectName.toLowerCase().endsWith("scheduled"))
+                            .forEach(apiTask -> {
+                                tasks.add(new FloatDev.Task(apiTask.projectName, apiTask.startDate, apiTask.endDate));
+                            });
                     return new FloatDev(craftsmanName[0], tasks);
                 })
                 .collect(Collectors.toList());
