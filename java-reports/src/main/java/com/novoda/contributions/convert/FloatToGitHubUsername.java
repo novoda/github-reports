@@ -1,9 +1,9 @@
-package com.novoda.contributions;
+package com.novoda.contributions.convert;
 
 import java.util.Map;
 import java.util.TreeMap;
 
-public class FloatToGitHubUsername {
+class FloatToGitHubUsername {
 
     private static final Map<String, String> NOVODA_DEVS_LOOKUP_TABLE = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
         {

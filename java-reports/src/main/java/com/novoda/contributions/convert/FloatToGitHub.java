@@ -1,4 +1,4 @@
-package com.novoda.contributions;
+package com.novoda.contributions.convert;
 
 import com.novoda.contributions.floatcom.FloatDev;
 import com.novoda.contributions.githubcom.GitHubDev;
