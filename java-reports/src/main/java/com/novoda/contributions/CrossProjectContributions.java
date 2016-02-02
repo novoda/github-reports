@@ -7,9 +7,6 @@ import com.novoda.contributions.githubcom.GitHubDev;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * https://github.com/floatschedule/api
- */
 public class CrossProjectContributions {
 
     public static void main(String[] args) throws IOException {
