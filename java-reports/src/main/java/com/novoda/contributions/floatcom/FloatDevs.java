@@ -1,4 +1,4 @@
-package com.novoda.contributions;
+package com.novoda.contributions.floatcom;
 
 import java.util.List;
 
