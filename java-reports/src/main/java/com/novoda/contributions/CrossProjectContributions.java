@@ -6,7 +6,7 @@ import com.novoda.contributions.floatcom.FloatDev;
 import com.novoda.contributions.githubcom.GitHubDev;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.stream.Stream;
 
 public class CrossProjectContributions {
 
@@ -14,13 +14,13 @@ public class CrossProjectContributions {
         String floatAccessToken = args[0];
         // Input needed - Date Range
         FloatContributionTracker floatContributionTracker = new FloatContributionTracker(floatAccessToken);
-        List<FloatDev> floatDevs = floatContributionTracker.track("2016-01-11", "2016-01-18");
         FloatToGitHub floatToGitHub = FloatToGitHub.newInstance();
-        List<GitHubDev> gitHubDevs = floatToGitHub.lookup(floatDevs);
+        Stream<FloatDev> floatDevs = floatContributionTracker.track("2016-01-11", "2016-01-18");
+        Stream<GitHubDev> gitHubDevs = floatToGitHub.lookup(floatDevs);
 
         // query github with this info
 
-        System.out.println("Complete " + gitHubDevs);
+        gitHubDevs.forEach(System.out::println);
     }
 
 
