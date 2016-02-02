@@ -11,9 +11,13 @@ public class FloatToGitHub {
     private final FloatToGitHubUsername floatToGitHubUsername;
     private final FloatToGitHubProject floatToGitHubProject;
 
-    public FloatToGitHub() {
-        floatToGitHubUsername = FloatToGitHubUsername.newInstance();
-        floatToGitHubProject = FloatToGitHubProject.newInstance();
+    public static FloatToGitHub newInstance() {
+        return new FloatToGitHub(FloatToGitHubUsername.newInstance(), FloatToGitHubProject.newInstance());
+    }
+
+    FloatToGitHub(FloatToGitHubUsername floatToGitHubUsername, FloatToGitHubProject floatToGitHubProject) {
+        this.floatToGitHubUsername = floatToGitHubUsername;
+        this.floatToGitHubProject = floatToGitHubProject;
     }
 
     /**

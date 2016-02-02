@@ -15,7 +15,7 @@ public class CrossProjectContributions {
         // Input needed - Date Range
         FloatContributionTracker floatContributionTracker = new FloatContributionTracker(floatAccessToken);
         List<FloatDev> floatDevs = floatContributionTracker.track("2016-01-11", "2016-01-18");
-        FloatToGitHub floatToGitHub = new FloatToGitHub();
+        FloatToGitHub floatToGitHub = FloatToGitHub.newInstance();
         List<GitHubDev> gitHubDevs = floatToGitHub.lookup(floatDevs);
 
         // query github with this info
