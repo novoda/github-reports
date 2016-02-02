@@ -12,14 +12,15 @@ class ApiTasks {
     @SerializedName("start_yr")
     int startYear;
 
-    List<ApiPeopleWithTasks> people;
+    @SerializedName("people")
+    List<ApiPeopleWithTasks> peopleWithTasks;
 
     @Override
     public String toString() {
         return "ApiTasks{" +
                 "startDayOfYear=" + startDayOfYear +
                 ", startYear=" + startYear +
-                ", people=" + people +
+                ", people=" + peopleWithTasks +
                 '}';
     }
 

@@ -11,6 +11,14 @@ public class FloatDev {
         this.tasks = tasks;
     }
 
+    public String getUsername() {
+        return name;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
     @Override
     public String toString() {
         return "\nFloatDev{" +
@@ -28,6 +36,18 @@ public class FloatDev {
             this.projectName = projectName;
             this.startDate = startDate;
             this.endDate = endDate;
+        }
+
+        public String getProjectName() {
+            return projectName;
+        }
+
+        public String getStartDate() {
+            return startDate;
+        }
+
+        public String getEndDate() {
+            return endDate;
         }
 
         @Override

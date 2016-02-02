@@ -1,8 +1,9 @@
 package com.novoda.contributions;
 
-import java.util.*;
+import java.util.Map;
+import java.util.TreeMap;
 
-public class FloatToGitHubUsernameLookup {
+public class FloatToGitHubUsername {
 
     private static final Map<String, String> NOVODA_DEVS_LOOKUP_TABLE = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
         {
@@ -33,19 +34,19 @@ public class FloatToGitHubUsernameLookup {
 
     private final Map<String, String> usernamesLookupTable;
 
-    public static FloatToGitHubUsernameLookup newInstance() {
-        return new FloatToGitHubUsernameLookup(NOVODA_DEVS_LOOKUP_TABLE);
+    public static FloatToGitHubUsername newInstance() {
+        return new FloatToGitHubUsername(NOVODA_DEVS_LOOKUP_TABLE);
     }
 
-    FloatToGitHubUsernameLookup(Map<String, String> usernamesLookupTable) {
+    FloatToGitHubUsername(Map<String, String> usernamesLookupTable) {
         this.usernamesLookupTable = usernamesLookupTable;
     }
 
-    public String getGitHubUsernameFor(String floatProjectName) throws IllegalArgumentException {
-        if (usernamesLookupTable.containsKey(floatProjectName)) {
-            return usernamesLookupTable.get(floatProjectName);
+    public String lookup(String floatUsername) throws IllegalArgumentException {
+        if (usernamesLookupTable.containsKey(floatUsername)) {
+            return usernamesLookupTable.get(floatUsername);
         } else {
-            throw new IllegalArgumentException("No developer found for " + floatProjectName);
+            throw new IllegalArgumentException("No developer found for " + floatUsername);
         }
     }
 

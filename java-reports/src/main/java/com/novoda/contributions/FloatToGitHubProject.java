@@ -1,9 +1,8 @@
 package com.novoda.contributions;
 
 import java.util.*;
-import java.util.stream.Stream;
 
-public class FloatToGitHubProjectLookup {
+public class FloatToGitHubProject {
 
     private static final Map<String, List<String>> TABLE = new HashMap<String, List<String>>() {
         {
@@ -20,30 +19,30 @@ public class FloatToGitHubProjectLookup {
 
     private final Map<String, List<String>> projectsLookupTable;
 
-    public static FloatToGitHubProjectLookup newInstance() {
-        return new FloatToGitHubProjectLookup(TABLE);
+    public static FloatToGitHubProject newInstance() {
+        return new FloatToGitHubProject(TABLE);
     }
 
-    FloatToGitHubProjectLookup(Map<String, List<String>> projectsLookupTable) {
+    FloatToGitHubProject(Map<String, List<String>> projectsLookupTable) {
         this.projectsLookupTable = projectsLookupTable;
     }
 
-    public Stream<String> getGitHubProjectsFor(String floatProjectName) {
+    public List<String> lookup(String floatProjectName) {
         String cleanName = cleanName(floatProjectName);
 
         if (projectsLookupTable.containsKey(cleanName)) {
-            return projectsLookupTable.get(cleanName).stream();
+            return projectsLookupTable.get(cleanName);
         } else {
-            return Stream.empty();
+            return Collections.emptyList();
         }
     }
 
     private String cleanName(String input) {
         String cleanUp = input;
         if (input.contains(":")) {
-            cleanUp = cleanUp.substring(0, cleanUp.indexOf(":") - 1);
+            cleanUp = cleanUp.substring(0, cleanUp.indexOf(":"));
         }
-        return cleanUp.toLowerCase();
+        return cleanUp.trim().toLowerCase();
     }
 
 }

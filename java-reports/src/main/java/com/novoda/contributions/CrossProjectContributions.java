@@ -2,8 +2,10 @@ package com.novoda.contributions;
 
 import com.novoda.contributions.floatcom.FloatContributionTracker;
 import com.novoda.contributions.floatcom.FloatDev;
+import com.novoda.contributions.githubcom.GitHubDev;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,12 +17,29 @@ public class CrossProjectContributions {
         String floatAccessToken = args[0];
         // Input needed - Date Range
         FloatContributionTracker floatContributionTracker = new FloatContributionTracker(floatAccessToken);
-        List<FloatDev> result = floatContributionTracker.track("2016-01-11", "2016-01-18");
+        List<FloatDev> floatDevs = floatContributionTracker.track("2016-01-11", "2016-01-18");
+
+
         // convert the float usernames to github usernames
         // convert the float projects to githubprojects
+        FloatToGitHubUsername floatToGitHubUsername = FloatToGitHubUsername.newInstance();
+        FloatToGitHubProject floatToGitHubProject = FloatToGitHubProject.newInstance();
+        List<GitHubDev> gitHubDevs = new ArrayList<>();
+        for (FloatDev floatDev : floatDevs) {
+            String gitHubUsername = floatToGitHubUsername.lookup(floatDev.getUsername());
+            List<GitHubDev.Project> projects = new ArrayList<>();
+            for (FloatDev.Task task : floatDev.getTasks()) {
+                List<String> githubProjectNames = floatToGitHubProject.lookup(task.getProjectName());
+                String startDate = task.getStartDate();
+                String endDate = task.getEndDate();
+                GitHubDev.Project project = new GitHubDev.Project(githubProjectNames, startDate, endDate);
+                projects.add(project);
+            }
+            gitHubDevs.add(new GitHubDev(gitHubUsername, projects));
+        }
         // query github with this info
 
-        System.out.println("Complete " + result);
+        System.out.println("Complete " + gitHubDevs);
     }
 
 
