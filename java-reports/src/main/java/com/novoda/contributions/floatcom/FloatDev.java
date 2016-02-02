@@ -2,18 +2,18 @@ package com.novoda.contributions.floatcom;
 
 import java.util.List;
 
-public class FloatDevs {
+public class FloatDev {
     private final String name;
     private final List<Task> tasks;
 
-    public FloatDevs(String name, List<Task> tasks) {
+    public FloatDev(String name, List<Task> tasks) {
         this.name = name;
         this.tasks = tasks;
     }
 
     @Override
     public String toString() {
-        return "\nFloatDevs{" +
+        return "\nFloatDev{" +
                 "name='" + name + '\'' +
                 ", tasks=" + tasks +
                 '}';

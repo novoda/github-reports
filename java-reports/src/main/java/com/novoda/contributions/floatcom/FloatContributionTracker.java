@@ -27,7 +27,7 @@ public class FloatContributionTracker {
      * @return TODO
      * @throws IOException
      */
-    public List<FloatDevs> track(String startDate, String endDate) throws IOException {
+    public List<FloatDev> track(String startDate, String endDate) throws IOException {
         validateDateFormat(startDate, endDate);
         // TODO calculate this
         int inputNumberOfWeeks = 2;
@@ -75,11 +75,11 @@ public class FloatContributionTracker {
                             craftsmanName[0] = apiPerson.name;
                         }
                     });
-                    List<FloatDevs.Task> tasks = new ArrayList<>();
+                    List<FloatDev.Task> tasks = new ArrayList<>();
                     apiPeopleWithTasks.tasks.forEach(apiTask -> {
-                        tasks.add(new FloatDevs.Task(apiTask.projectName, apiTask.startDate, apiTask.endDate));
+                        tasks.add(new FloatDev.Task(apiTask.projectName, apiTask.startDate, apiTask.endDate));
                     });
-                    return new FloatDevs(craftsmanName[0], tasks);
+                    return new FloatDev(craftsmanName[0], tasks);
                 })
                 .collect(Collectors.toList());
     }

@@ -1,7 +1,7 @@
 package com.novoda.contributions;
 
 import com.novoda.contributions.floatcom.FloatContributionTracker;
-import com.novoda.contributions.floatcom.FloatDevs;
+import com.novoda.contributions.floatcom.FloatDev;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +15,7 @@ public class CrossProjectContributions {
         String floatAccessToken = args[0];
         // Input needed - Date Range
         FloatContributionTracker floatContributionTracker = new FloatContributionTracker(floatAccessToken);
-        List<FloatDevs> result = floatContributionTracker.track("2016-01-11", "2016-01-18");
+        List<FloatDev> result = floatContributionTracker.track("2016-01-11", "2016-01-18");
         // convert the float usernames to github usernames
         // convert the float projects to githubprojects
         // query github with this info
