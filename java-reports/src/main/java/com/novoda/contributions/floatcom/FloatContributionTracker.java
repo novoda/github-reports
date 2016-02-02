@@ -1,6 +1,5 @@
 package com.novoda.contributions.floatcom;
 
-import com.novoda.contributions.FloatDevs;
 import retrofit2.Call;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;

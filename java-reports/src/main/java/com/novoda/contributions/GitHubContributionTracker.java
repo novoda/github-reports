@@ -1,5 +1,7 @@
 package com.novoda.contributions;
 
+import com.novoda.contributions.floatcom.FloatDevs;
+
 import java.io.IOException;
 
 public class GitHubContributionTracker {
