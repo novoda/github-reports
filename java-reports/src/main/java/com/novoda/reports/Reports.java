@@ -31,7 +31,7 @@ public class Reports {
         PullRequestTracker pullRequestTracker = new PullRequestTracker(organisation, repositoryService, pullRequestService);
 
         for (String user : users) {
-            PullRequestTracker.Report report = pullRequestTracker.track(user, startDate, endDate);
+            Report report = pullRequestTracker.track(user, startDate, endDate);
             System.out.println(report);
         }
     }
