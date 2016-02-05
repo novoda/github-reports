@@ -1,6 +1,5 @@
 package com.novoda.reports;
 
-import org.eclipse.egit.github.core.Comment;
 import org.eclipse.egit.github.core.CommitComment;
 import org.eclipse.egit.github.core.PullRequest;
 import org.eclipse.egit.github.core.Repository;
@@ -40,6 +39,8 @@ public class PullRequestTracker {
         reportBuilder.withCreatedPullRequests(createdPrsCount);
         long otherPeopleCommentsCount = getOtherPeopleCommentsCount(user, startDate, endDate, repositories);
         reportBuilder.withOtherPeopleCommentsCount(otherPeopleCommentsCount);
+        long usersCommentCount = getUsersCommentsCount(user, startDate, endDate, repositories);
+        reportBuilder.withUsersCommentCount(usersCommentCount);
         return reportBuilder.build();
     }
 
@@ -102,20 +103,24 @@ public class PullRequestTracker {
 
     private long getCreatedPrsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
         return getAllPullRequestsIn(repositories)
-                .filter(includeBy(user))
+                .filter(pullRequestIncludeBy(user))
                 .filter(pullRequestCreatedBetween(startDate, endDate))
                 .count();
     }
 
-    private Predicate<PullRequest> includeBy(String user) {
+    private Predicate<PullRequest> pullRequestIncludeBy(String user) {
         return pullRequest -> pullRequest.getUser().getLogin().equalsIgnoreCase(user);
+    }
+
+    private Predicate<CommitComment> commentIncludeBy(String user) {
+        return comment -> comment.getUser().getLogin().equalsIgnoreCase(user);
     }
 
     private long getOtherPeopleCommentsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
         return getAllPullRequestsIn(repositories)
-                .filter(includeBy(user))
+                .filter(pullRequestIncludeBy(user))
                 .flatMap(getAllComments())
-                .filter(excludeBy(user))
+                .filter(commentExcludeBy(user))
                 .filter(commentedBetween(startDate, endDate))
                 .count();
     }
@@ -133,7 +138,7 @@ public class PullRequestTracker {
         };
     }
 
-    private Predicate<Comment> excludeBy(String user) {
+    private Predicate<CommitComment> commentExcludeBy(String user) {
         return comment -> !comment.getUser().getLogin().equalsIgnoreCase(user);
     }
 
@@ -160,24 +165,40 @@ public class PullRequestTracker {
         };
     }
 
+    private long getUsersCommentsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
+        return getAllPullRequestsIn(repositories)
+                .filter(pullRequeastExcludeBy(user))
+                .flatMap(getAllComments())
+                .filter(commentIncludeBy(user))
+                .filter(commentedBetween(startDate, endDate))
+                .count();
+    }
+
+    private Predicate<PullRequest> pullRequeastExcludeBy(String user) {
+        return pullRequest -> !pullRequest.getUser().getLogin().equalsIgnoreCase(user);
+    }
+
     public static class Report {
         private final String user;
         private final long mergedPrs;
         private final long createdPrs;
         private final long otherPeopleComments;
+        private final long usersComments;
 
-        public Report(String user, long mergedPrs, long createdPrs, long otherPeopleComments) {
+        public Report(String user, long mergedPrs, long createdPrs, long otherPeopleComments, long usersComments) {
             this.user = user;
             this.mergedPrs = mergedPrs;
             this.createdPrs = createdPrs;
             this.otherPeopleComments = otherPeopleComments;
+            this.usersComments = usersComments;
         }
 
         @Override
         public String toString() {
             return "User " + user + " merged " + mergedPrs + " PRs.\n" +
                     "User " + user + " created " + createdPrs + " PRs.\n" +
-                    "People wrote " + otherPeopleComments + " comments in " + user + "'s PRs.\n";
+                    "People wrote " + otherPeopleComments + " comments in " + user + "'s PRs.\n" +
+                    "User " + user + " wrote " + usersComments + " comments in other peoples PRs.\n";
         }
 
         public static class Builder {
@@ -185,6 +206,7 @@ public class PullRequestTracker {
             private long mergedPrs;
             private long createdPrs;
             private long otherPeopleComments;
+            private long usersComments;
 
             public Builder(String user) {
                 this.user = user;
@@ -200,13 +222,18 @@ public class PullRequestTracker {
                 return this;
             }
 
-            public Report build() {
-                return new Report(user, mergedPrs, createdPrs, otherPeopleComments);
-            }
-
             public Builder withOtherPeopleCommentsCount(long count) {
                 otherPeopleComments = count;
                 return this;
+            }
+
+            public Builder withUsersCommentCount(long count) {
+                usersComments = count;
+                return this;
+            }
+
+            public Report build() {
+                return new Report(user, mergedPrs, createdPrs, otherPeopleComments, usersComments);
             }
         }
     }
