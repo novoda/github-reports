@@ -20,8 +20,8 @@ public class Reports {
 //        users.add("ataulm");
 
         String organisation = "Novoda";
-        LocalDate startDate = LocalDate.parse("2016-01-02");
-        LocalDate endDate = LocalDate.parse("2016-01-03");
+        LocalDate startDate = LocalDate.parse("2016-02-02");
+        LocalDate endDate = LocalDate.parse("2016-02-03");
 
         // Re-write the ruby reports in java
         GitHubClient client = new GitHubClient();
