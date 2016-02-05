@@ -1,5 +1,6 @@
 package com.novoda.reports;
 
+import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.service.PullRequestService;
 import org.eclipse.egit.github.core.service.RepositoryService;
@@ -27,8 +28,10 @@ public class Reports {
         GitHubClient client = new GitHubClient();
         client.setOAuth2Token(githubAccessToken);
         RepositoryService repositoryService = new RepositoryService(client);
+        OrganisationRepositoryFinder organisationRepositoryFinder = new OrganisationRepositoryFinder(organisation, repositoryService);
+        List<Repository> repositories = organisationRepositoryFinder.getOrganisationRepositories();
         PullRequestService pullRequestService = new PullRequestService(client);
-        PullRequestTracker pullRequestTracker = new PullRequestTracker(organisation, repositoryService, pullRequestService);
+        PullRequestTracker pullRequestTracker = new PullRequestTracker(repositories, pullRequestService);
 
         for (String user : users) {
             Report report = pullRequestTracker.track(user, startDate, endDate);
