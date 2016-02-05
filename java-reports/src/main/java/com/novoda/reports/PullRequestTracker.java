@@ -159,14 +159,14 @@ class PullRequestTracker {
 
     private long getUsersCommentsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
         return getAllPullRequestsIn(repositories)
-                .filter(pullRequeastExcludeBy(user))
+                .filter(pullRequestExcludeBy(user))
                 .flatMap(getAllComments())
                 .filter(commentIncludeBy(user))
                 .filter(commentedBetween(startDate, endDate))
                 .count();
     }
 
-    private Predicate<PullRequest> pullRequeastExcludeBy(String user) {
+    private Predicate<PullRequest> pullRequestExcludeBy(String user) {
         return pullRequest -> !pullRequest.getUser().getLogin().equalsIgnoreCase(user);
     }
 
