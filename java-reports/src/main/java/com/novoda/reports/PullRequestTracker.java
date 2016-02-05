@@ -51,7 +51,7 @@ public class PullRequestTracker {
     }
 
     private long getMergedPrsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
-        List<PullRequest> prs = getAllPullRequests(repositories)
+        List<PullRequest> prs = getAllPullRequestsIn(repositories)
                 .filter(pullRequestCreatedBetween(startDate, endDate))
                 .collect(Collectors.toList());
         for (PullRequest pr : prs) {
@@ -75,7 +75,7 @@ public class PullRequestTracker {
                 .count();
     }
 
-    private Stream<PullRequest> getAllPullRequests(List<Repository> repositories) {
+    private Stream<PullRequest> getAllPullRequestsIn(List<Repository> repositories) {
         if (allPullRequests == null) {
             allPullRequests = repositories
                     .parallelStream()
@@ -96,7 +96,7 @@ public class PullRequestTracker {
     }
 
     private long getCreatedPrsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
-        return getAllPullRequests(repositories)
+        return getAllPullRequestsIn(repositories)
                 .filter(includeBy(user))
                 .filter(pullRequestCreatedBetween(startDate, endDate))
                 .count();
@@ -107,7 +107,7 @@ public class PullRequestTracker {
     }
 
     private long getOtherPeopleCommentsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
-        return getAllPullRequests(repositories)
+        return getAllPullRequestsIn(repositories)
                 .filter(includeBy(user))
                 .flatMap(pullRequest -> {
                     Repository repo = pullRequest.getBase().getRepo();
