@@ -4,7 +4,6 @@ import org.eclipse.egit.github.core.CommitComment;
 import org.eclipse.egit.github.core.PullRequest;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.service.PullRequestService;
-import org.eclipse.egit.github.core.service.RepositoryService;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -18,21 +17,18 @@ import java.util.stream.Stream;
 
 class PullRequestTracker {
 
-    private final String organisation;
-    private final RepositoryService repositoryService;
+    private final List<Repository> repositories;
     private final PullRequestService pullRequestService;
 
     private List<PullRequest> allPullRequests;
 
-    public PullRequestTracker(String organisation, RepositoryService repositoryService, PullRequestService pullRequestService) {
-        this.repositoryService = repositoryService;
+    public PullRequestTracker(List<Repository> repositories, PullRequestService pullRequestService) {
         this.pullRequestService = pullRequestService;
-        this.organisation = organisation;
+        this.repositories = repositories;
     }
 
     public Report track(String user, LocalDate startDate, LocalDate endDate) {
         Report.Builder reportBuilder = new Report.Builder(user);
-        List<Repository> repositories = getOrganisationRepositories();
 
         long mergedPrsCount = getAllPullRequestsIn(repositories)
                 .filter(pullRequestCreatedBetween(startDate, endDate))
@@ -64,14 +60,6 @@ class PullRequestTracker {
         reportBuilder.withUsersCommentCount(usersCommentCount);
 
         return reportBuilder.build();
-    }
-
-    private List<Repository> getOrganisationRepositories() {
-        try {
-            return repositoryService.getOrgRepositories(organisation);
-        } catch (IOException e) {
-            throw new IllegalStateException("Foo get repositories for " + organisation, e);
-        }
     }
 
     private Stream<PullRequest> getAllPullRequestsIn(List<Repository> repositories) {
