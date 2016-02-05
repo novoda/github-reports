@@ -37,11 +37,8 @@ public class PullRequestTracker {
         reportBuilder.withMergedPullRequests(mergedPrsCount);
         long createdPrsCount = getCreatedPrsCount(user, startDate, endDate, repositories);
         reportBuilder.withCreatedPullRequests(createdPrsCount);
-
         long otherPeopleCommentsCount = getOtherPeopleCommentsCount(user, startDate, endDate, repositories);
         reportBuilder.withOtherPeopleCommentsCount(otherPeopleCommentsCount);
-
-
         return reportBuilder.build();
     }
 
