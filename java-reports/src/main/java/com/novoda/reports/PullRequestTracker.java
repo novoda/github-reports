@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,16 +62,7 @@ public class PullRequestTracker {
         }
         return prs
                 .parallelStream()
-                .map(pullRequest -> {
-                    Repository repo = pullRequest.getHead().getRepo();
-                    try {
-                        return pullRequestService.getPullRequest(repo, pullRequest.getNumber());
-                    } catch (IOException e) {
-                        String repoName = repo.getName();
-                        String title = pullRequest.getTitle();
-                        throw new IllegalStateException("FooBar for repo " + repoName + " pr " + title, e);
-                    }
-                })
+                .map(getFullDataPullRequest())
                 .filter(pullRequest -> pullRequest.isMerged() && pullRequest.getMergedBy().getLogin().equalsIgnoreCase(user))
                 .count();
     }
@@ -95,6 +87,19 @@ public class PullRequestTracker {
                 .stream();
     }
 
+    private Function<PullRequest, PullRequest> getFullDataPullRequest() {
+        return pullRequest -> {
+            Repository repo = pullRequest.getHead().getRepo();
+            try {
+                return pullRequestService.getPullRequest(repo, pullRequest.getNumber());
+            } catch (IOException e) {
+                String repoName = repo.getName();
+                String title = pullRequest.getTitle();
+                throw new IllegalStateException("FooBar for repo " + repoName + " pr " + title, e);
+            }
+        };
+    }
+
     private long getCreatedPrsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
         return getAllPullRequestsIn(repositories)
                 .filter(includeBy(user))
@@ -109,19 +114,23 @@ public class PullRequestTracker {
     private long getOtherPeopleCommentsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
         return getAllPullRequestsIn(repositories)
                 .filter(includeBy(user))
-                .flatMap(pullRequest -> {
-                    Repository repo = pullRequest.getBase().getRepo();
-                    try {
-                        return pullRequestService.getComments(repo, pullRequest.getNumber()).stream();
-                    } catch (IOException e) {
-                        String repoName = repo.getName();
-                        String title = pullRequest.getTitle();
-                        throw new IllegalStateException("FooBar for repo " + repoName + ", pr " + title, e);
-                    }
-                })
+                .flatMap(getAllComments())
                 .filter(excludeBy(user))
                 .filter(commentedBetween(startDate, endDate))
                 .count();
+    }
+
+    private Function<PullRequest, Stream<CommitComment>> getAllComments() {
+        return pullRequest -> {
+            Repository repo = pullRequest.getBase().getRepo();
+            try {
+                return pullRequestService.getComments(repo, pullRequest.getNumber()).stream();
+            } catch (IOException e) {
+                String repoName = repo.getName();
+                String title = pullRequest.getTitle();
+                throw new IllegalStateException("FooBar for repo " + repoName + ", pr " + title, e);
+            }
+        };
     }
 
     private Predicate<Comment> excludeBy(String user) {
