@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class PullRequestTracker {
+class PullRequestTracker {
 
     private final String organisation;
     private final RepositoryService repositoryService;
