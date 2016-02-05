@@ -1,5 +1,7 @@
 package com.novoda.reports;
 
+import org.eclipse.egit.github.core.Comment;
+import org.eclipse.egit.github.core.CommitComment;
 import org.eclipse.egit.github.core.PullRequest;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.service.PullRequestService;
@@ -8,6 +10,7 @@ import org.eclipse.egit.github.core.service.RepositoryService;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -35,6 +38,10 @@ public class PullRequestTracker {
         long createdPrsCount = getCreatedPrsCount(user, startDate, endDate, repositories);
         reportBuilder.withCreatedPullRequests(createdPrsCount);
 
+        long otherPeopleCommentsCount = getOtherPeopleCommentsCount(user, startDate, endDate, repositories);
+        reportBuilder.withOtherPeopleCommentsCount(otherPeopleCommentsCount);
+
+
         return reportBuilder.build();
     }
 
@@ -48,31 +55,26 @@ public class PullRequestTracker {
 
     private long getMergedPrsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
         List<PullRequest> prs = getAllPullRequests(repositories)
-                .filter(isWithin(startDate, endDate))
+                .filter(pullRequestCreatedBetween(startDate, endDate))
                 .collect(Collectors.toList());
-        System.out.println(prs);
+        for (PullRequest pr : prs) {
+            System.out.println("PR " + pr.getTitle());
+            System.out.println("created at " + pr.getCreatedAt());
+            System.out.println("by " + pr.getUser().getLogin());
+        }
         return prs
                 .parallelStream()
                 .map(pullRequest -> {
                     Repository repo = pullRequest.getHead().getRepo();
                     try {
-                        PullRequest pullRequestMaybeMore = pullRequestService.getPullRequest(repo, pullRequest.getNumber());
-                        System.out.println(pullRequestMaybeMore.getMergedBy().getName());
-                        return pullRequestMaybeMore;
+                        return pullRequestService.getPullRequest(repo, pullRequest.getNumber());
                     } catch (IOException e) {
                         String repoName = repo.getName();
                         String title = pullRequest.getTitle();
                         throw new IllegalStateException("FooBar for repo " + repoName + " pr " + title, e);
                     }
                 })
-                .filter(pullRequest -> pullRequest.getMergedBy().getLogin().equalsIgnoreCase(user))
-                .count();
-    }
-
-    private long getCreatedPrsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
-        return getAllPullRequests(repositories)
-                .filter(pullRequest -> pullRequest.getUser().getLogin().equalsIgnoreCase(user))
-                .filter(isWithin(startDate, endDate))
+                .filter(pullRequest -> pullRequest.isMerged() && pullRequest.getMergedBy().getLogin().equalsIgnoreCase(user))
                 .count();
     }
 
@@ -96,13 +98,57 @@ public class PullRequestTracker {
                 .stream();
     }
 
-    private Predicate<PullRequest> isWithin(LocalDate startDate, LocalDate endDate) {
+    private long getCreatedPrsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
+        return getAllPullRequests(repositories)
+                .filter(includeBy(user))
+                .filter(pullRequestCreatedBetween(startDate, endDate))
+                .count();
+    }
+
+    private Predicate<PullRequest> includeBy(String user) {
+        return pullRequest -> pullRequest.getUser().getLogin().equalsIgnoreCase(user);
+    }
+
+    private long getOtherPeopleCommentsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
+        return getAllPullRequests(repositories)
+                .filter(includeBy(user))
+                .flatMap(pullRequest -> {
+                    Repository repo = pullRequest.getBase().getRepo();
+                    try {
+                        return pullRequestService.getComments(repo, pullRequest.getNumber()).stream();
+                    } catch (IOException e) {
+                        String repoName = repo.getName();
+                        String title = pullRequest.getTitle();
+                        throw new IllegalStateException("FooBar for repo " + repoName + ", pr " + title, e);
+                    }
+                })
+                .filter(excludeBy(user))
+                .filter(commentedBetween(startDate, endDate))
+                .count();
+    }
+
+    private Predicate<Comment> excludeBy(String user) {
+        return comment -> !comment.getUser().getLogin().equalsIgnoreCase(user);
+    }
+
+    private Predicate<CommitComment> commentedBetween(LocalDate startDate, LocalDate endDate) {
+        return commitComment -> {
+            LocalDate createdAt = convertToLocalDate(commitComment.getCreatedAt());
+            return createdAt.isAfter(startDate.minusDays(1))
+                    && createdAt.isBefore(endDate.plusDays(1));
+        };
+    }
+
+    private LocalDate convertToLocalDate(Date java7Date) {
+        return java7Date
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
+
+    private Predicate<PullRequest> pullRequestCreatedBetween(LocalDate startDate, LocalDate endDate) {
         return pullRequest -> {
-            LocalDate createdAt = pullRequest
-                    .getCreatedAt()
-                    .toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
+            LocalDate createdAt = convertToLocalDate(pullRequest.getCreatedAt());
             return createdAt.isAfter(startDate.minusDays(1))
                     && createdAt.isBefore(endDate.plusDays(1));
         };
@@ -112,23 +158,27 @@ public class PullRequestTracker {
         private final String user;
         private final long mergedPrs;
         private final long createdPrs;
+        private final long otherPeopleComments;
 
-        public Report(String user, long mergedPrs, long createdPrs) {
+        public Report(String user, long mergedPrs, long createdPrs, long otherPeopleComments) {
             this.user = user;
             this.mergedPrs = mergedPrs;
             this.createdPrs = createdPrs;
+            this.otherPeopleComments = otherPeopleComments;
         }
 
         @Override
         public String toString() {
             return "User " + user + " merged " + mergedPrs + " PRs.\n" +
-                    "User " + user + " created " + createdPrs + " PRs.\n";
+                    "User " + user + " created " + createdPrs + " PRs.\n" +
+                    "People wrote " + otherPeopleComments + " comments in " + user + "'s PRs.\n";
         }
 
         public static class Builder {
             private final String user;
             private long mergedPrs;
             private long createdPrs;
+            private long otherPeopleComments;
 
             public Builder(String user) {
                 this.user = user;
@@ -145,7 +195,12 @@ public class PullRequestTracker {
             }
 
             public Report build() {
-                return new Report(user, mergedPrs, createdPrs);
+                return new Report(user, mergedPrs, createdPrs, otherPeopleComments);
+            }
+
+            public Builder withOtherPeopleCommentsCount(long count) {
+                otherPeopleComments = count;
+                return this;
             }
         }
     }
