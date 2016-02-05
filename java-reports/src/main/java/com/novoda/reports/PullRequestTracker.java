@@ -53,16 +53,8 @@ class PullRequestTracker {
     }
 
     private long getMergedPrsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
-        List<PullRequest> prs = getAllPullRequestsIn(repositories)
+        return getAllPullRequestsIn(repositories)
                 .filter(pullRequestCreatedBetween(startDate, endDate))
-                .collect(Collectors.toList());
-        for (PullRequest pr : prs) {
-            System.out.println("PR " + pr.getTitle());
-            System.out.println("created at " + pr.getCreatedAt());
-            System.out.println("by " + pr.getUser().getLogin());
-        }
-        return prs
-                .parallelStream()
                 .map(getFullDataPullRequest())
                 .filter(pullRequest -> pullRequest.isMerged() && pullRequest.getMergedBy().getLogin().equalsIgnoreCase(user))
                 .count();
