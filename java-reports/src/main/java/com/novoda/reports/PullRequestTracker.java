@@ -33,14 +33,36 @@ class PullRequestTracker {
     public Report track(String user, LocalDate startDate, LocalDate endDate) {
         Report.Builder reportBuilder = new Report.Builder(user);
         List<Repository> repositories = getOrganisationRepositories();
-        long mergedPrsCount = getMergedPrsCount(user, startDate, endDate, repositories);
+
+        long mergedPrsCount = getAllPullRequestsIn(repositories)
+                .filter(pullRequestCreatedBetween(startDate, endDate))
+                .map(getFullDataPullRequest())
+                .filter(pullRequest -> pullRequest.isMerged() && pullRequest.getMergedBy().getLogin().equalsIgnoreCase(user))
+                .count();
         reportBuilder.withMergedPullRequests(mergedPrsCount);
-        long createdPrsCount = getCreatedPrsCount(user, startDate, endDate, repositories);
+
+        long createdPrsCount = getAllPullRequestsIn(repositories)
+                .filter(includePullRequestsBy(user))
+                .filter(pullRequestCreatedBetween(startDate, endDate))
+                .count();
         reportBuilder.withCreatedPullRequests(createdPrsCount);
-        long otherPeopleCommentsCount = getOtherPeopleCommentsCount(user, startDate, endDate, repositories);
+
+        long otherPeopleCommentsCount = getAllPullRequestsIn(repositories)
+                .filter(includePullRequestsBy(user))
+                .flatMap(getAllComments())
+                .filter(excludeCommentsBy(user))
+                .filter(commentedBetween(startDate, endDate))
+                .count();
         reportBuilder.withOtherPeopleCommentsCount(otherPeopleCommentsCount);
-        long usersCommentCount = getUsersCommentsCount(user, startDate, endDate, repositories);
+
+        long usersCommentCount = getAllPullRequestsIn(repositories)
+                .filter(excludePullRequestsBy(user))
+                .flatMap(getAllComments())
+                .filter(includeCommentsBy(user))
+                .filter(commentedBetween(startDate, endDate))
+                .count();
         reportBuilder.withUsersCommentCount(usersCommentCount);
+
         return reportBuilder.build();
     }
 
@@ -50,14 +72,6 @@ class PullRequestTracker {
         } catch (IOException e) {
             throw new IllegalStateException("Foo get repositories for " + organisation, e);
         }
-    }
-
-    private long getMergedPrsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
-        return getAllPullRequestsIn(repositories)
-                .filter(pullRequestCreatedBetween(startDate, endDate))
-                .map(getFullDataPullRequest())
-                .filter(pullRequest -> pullRequest.isMerged() && pullRequest.getMergedBy().getLogin().equalsIgnoreCase(user))
-                .count();
     }
 
     private Stream<PullRequest> getAllPullRequestsIn(List<Repository> repositories) {
@@ -93,24 +107,8 @@ class PullRequestTracker {
         };
     }
 
-    private long getCreatedPrsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
-        return getAllPullRequestsIn(repositories)
-                .filter(includePullRequestsBy(user))
-                .filter(pullRequestCreatedBetween(startDate, endDate))
-                .count();
-    }
-
     private Predicate<PullRequest> includePullRequestsBy(String user) {
         return pullRequest -> pullRequest.getUser().getLogin().equalsIgnoreCase(user);
-    }
-
-    private long getOtherPeopleCommentsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
-        return getAllPullRequestsIn(repositories)
-                .filter(includePullRequestsBy(user))
-                .flatMap(getAllComments())
-                .filter(excludeCommentsBy(user))
-                .filter(commentedBetween(startDate, endDate))
-                .count();
     }
 
     private Function<PullRequest, Stream<CommitComment>> getAllComments() {
@@ -151,15 +149,6 @@ class PullRequestTracker {
             return createdAt.isAfter(startDate.minusDays(1))
                     && createdAt.isBefore(endDate.plusDays(1));
         };
-    }
-
-    private long getUsersCommentsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
-        return getAllPullRequestsIn(repositories)
-                .filter(excludePullRequestsBy(user))
-                .flatMap(getAllComments())
-                .filter(includeCommentsBy(user))
-                .filter(commentedBetween(startDate, endDate))
-                .count();
     }
 
     private Predicate<PullRequest> excludePullRequestsBy(String user) {
