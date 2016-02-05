@@ -37,7 +37,7 @@ class PullRequestTracker {
         long mergedPrsCount = getAllPullRequestsIn(repositories)
                 .filter(pullRequestCreatedBetween(startDate, endDate))
                 .map(getFullDataPullRequest())
-                .filter(pullRequest -> pullRequest.isMerged() && pullRequest.getMergedBy().getLogin().equalsIgnoreCase(user))
+                .filter(includeMergedBy(user))
                 .count();
         reportBuilder.withMergedPullRequests(mergedPrsCount);
 
@@ -105,6 +105,10 @@ class PullRequestTracker {
                 throw new IllegalStateException("FooBar for repo " + repoName + " pr " + title, e);
             }
         };
+    }
+
+    private Predicate<PullRequest> includeMergedBy(String user) {
+        return pullRequest -> pullRequest.isMerged() && pullRequest.getMergedBy().getLogin().equalsIgnoreCase(user);
     }
 
     private Predicate<PullRequest> includePullRequestsBy(String user) {
