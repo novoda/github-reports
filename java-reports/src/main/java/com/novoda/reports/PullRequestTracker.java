@@ -95,24 +95,20 @@ class PullRequestTracker {
 
     private long getCreatedPrsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
         return getAllPullRequestsIn(repositories)
-                .filter(pullRequestIncludeBy(user))
+                .filter(includePullRequestsBy(user))
                 .filter(pullRequestCreatedBetween(startDate, endDate))
                 .count();
     }
 
-    private Predicate<PullRequest> pullRequestIncludeBy(String user) {
+    private Predicate<PullRequest> includePullRequestsBy(String user) {
         return pullRequest -> pullRequest.getUser().getLogin().equalsIgnoreCase(user);
-    }
-
-    private Predicate<CommitComment> commentIncludeBy(String user) {
-        return comment -> comment.getUser().getLogin().equalsIgnoreCase(user);
     }
 
     private long getOtherPeopleCommentsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
         return getAllPullRequestsIn(repositories)
-                .filter(pullRequestIncludeBy(user))
+                .filter(includePullRequestsBy(user))
                 .flatMap(getAllComments())
-                .filter(commentExcludeBy(user))
+                .filter(excludeCommentsBy(user))
                 .filter(commentedBetween(startDate, endDate))
                 .count();
     }
@@ -130,7 +126,7 @@ class PullRequestTracker {
         };
     }
 
-    private Predicate<CommitComment> commentExcludeBy(String user) {
+    private Predicate<CommitComment> excludeCommentsBy(String user) {
         return comment -> !comment.getUser().getLogin().equalsIgnoreCase(user);
     }
 
@@ -159,15 +155,19 @@ class PullRequestTracker {
 
     private long getUsersCommentsCount(String user, LocalDate startDate, LocalDate endDate, List<Repository> repositories) {
         return getAllPullRequestsIn(repositories)
-                .filter(pullRequestExcludeBy(user))
+                .filter(excludePullRequestsBy(user))
                 .flatMap(getAllComments())
-                .filter(commentIncludeBy(user))
+                .filter(includeCommentsBy(user))
                 .filter(commentedBetween(startDate, endDate))
                 .count();
     }
 
-    private Predicate<PullRequest> pullRequestExcludeBy(String user) {
+    private Predicate<PullRequest> excludePullRequestsBy(String user) {
         return pullRequest -> !pullRequest.getUser().getLogin().equalsIgnoreCase(user);
+    }
+
+    private Predicate<CommitComment> includeCommentsBy(String user) {
+        return comment -> comment.getUser().getLogin().equalsIgnoreCase(user);
     }
 
 }
