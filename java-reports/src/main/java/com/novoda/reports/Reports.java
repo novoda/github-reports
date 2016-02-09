@@ -28,7 +28,7 @@ public class Reports {
         GitHubClient client = new GitHubClient();
         client.setOAuth2Token(githubAccessToken);
         RepositoryService repositoryService = new RepositoryService(client);
-        OrganisationRepoFinder organisationRepoFinder = new OrganisationRepoFinder(organisation, repositoryService);
+        OrganisationRepoFinder organisationRepoFinder = OrganisationRepoFinder.newInstance(organisation, repositoryService);
         List<OrganisationRepo> organisationRepos = organisationRepoFinder.getOrganisationRepositories();
         PullRequestService pullRequestService = new PullRequestService(client);
         PullRequestTracker pullRequestTracker = new PullRequestTracker(organisationRepos, pullRequestService);
