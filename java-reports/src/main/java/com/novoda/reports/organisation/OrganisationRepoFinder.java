@@ -11,11 +11,23 @@ public class OrganisationRepoFinder {
     private final RepoPersistenceDataSource persistenceDataSource;
     private final RepoWebServiceDataSource webServiceDataSource;
 
-    public OrganisationRepoFinder(String organisation, RepositoryService repositoryService) {
+    public static OrganisationRepoFinder newInstance(String organisation, RepositoryService repositoryService) {
+        RepoInMemoryDataSource repoInMemoryDataSource = new RepoInMemoryDataSource();
+        RepoSqlite3Persistence persistence = new RepoSqlite3Persistence();
+        RepoPersistenceDataSource repoPersistenceDataSource = new RepoPersistenceDataSource(persistence);
+        RepoWebServiceDataSource.Converter converter = new RepoWebServiceDataSource.Converter();
+        RepoWebServiceDataSource repoWebServiceDataSource = new RepoWebServiceDataSource(repositoryService, converter);
+        return new OrganisationRepoFinder(organisation, repoInMemoryDataSource, repoPersistenceDataSource, repoWebServiceDataSource);
+    }
+
+    public OrganisationRepoFinder(String organisation,
+                                  RepoInMemoryDataSource repoInMemoryDataSource,
+                                  RepoPersistenceDataSource repoPersistenceDataSource,
+                                  RepoWebServiceDataSource repoWebServiceDataSource) {
         this.organisation = organisation;
-        this.inMemoryDataSource = new RepoInMemoryDataSource();
-        this.persistenceDataSource = new RepoPersistenceDataSource(new RepoSqlite3Persistence());
-        this.webServiceDataSource = new RepoWebServiceDataSource(repositoryService, new RepoWebServiceDataSource.Converter());
+        this.inMemoryDataSource = repoInMemoryDataSource;
+        this.persistenceDataSource = repoPersistenceDataSource;
+        this.webServiceDataSource = repoWebServiceDataSource;
     }
 
     public List<OrganisationRepo> getOrganisationRepositories() {
