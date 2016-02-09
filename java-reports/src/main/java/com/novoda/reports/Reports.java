@@ -1,18 +1,18 @@
 package com.novoda.reports;
 
-import org.eclipse.egit.github.core.Repository;
+import com.novoda.reports.organisation.OrganisationRepo;
+import com.novoda.reports.organisation.OrganisationRepoFinder;
 import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.service.PullRequestService;
 import org.eclipse.egit.github.core.service.RepositoryService;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Reports {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         String githubAccessToken = args[0];
         // TODO input args
         List<String> users = new ArrayList<>();
@@ -28,15 +28,16 @@ public class Reports {
         GitHubClient client = new GitHubClient();
         client.setOAuth2Token(githubAccessToken);
         RepositoryService repositoryService = new RepositoryService(client);
-        OrganisationRepositoryFinder organisationRepositoryFinder = new OrganisationRepositoryFinder(organisation, repositoryService);
-        List<Repository> repositories = organisationRepositoryFinder.getOrganisationRepositories();
+        OrganisationRepoFinder organisationRepoFinder = new OrganisationRepoFinder(organisation, repositoryService);
+        List<OrganisationRepo> organisationRepos = organisationRepoFinder.getOrganisationRepositories();
         PullRequestService pullRequestService = new PullRequestService(client);
-        PullRequestTracker pullRequestTracker = new PullRequestTracker(repositories, pullRequestService);
+        PullRequestTracker pullRequestTracker = new PullRequestTracker(organisationRepos, pullRequestService);
 
         for (String user : users) {
             Report report = pullRequestTracker.track(user, startDate, endDate);
             System.out.println(report);
         }
+//        System.out.println(repositories);
     }
 
 
