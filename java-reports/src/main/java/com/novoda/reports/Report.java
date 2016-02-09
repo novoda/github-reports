@@ -29,6 +29,7 @@ class Report {
         private long createdPrs;
         private long otherPeopleComments;
         private long usersComments;
+        private long usersTotalCommentCount;
 
         public Builder(String user) {
             this.user = user;
@@ -51,6 +52,11 @@ class Report {
 
         public Builder withUsersCommentCount(long count) {
             usersComments = count;
+            return this;
+        }
+
+        public Builder withUsersTotalCommentCount(long count) {
+            this.usersTotalCommentCount = count;
             return this;
         }
 

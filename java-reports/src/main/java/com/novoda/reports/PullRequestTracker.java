@@ -60,6 +60,14 @@ class PullRequestTracker {
                 .count();
         reportBuilder.withUsersCommentCount(usersCommentCount);
 
+        long usersTotalCommentCount = getAllPullRequestsIn(repos)
+                .filter(pullRequestCreatedBetween(startDate, endDate))
+                .flatMap(getAllComments())
+                .filter(includeCommentsBy(user))
+                .filter(commentedBetween(startDate, endDate))
+                .count();
+        reportBuilder.withUsersTotalCommentCount(usersTotalCommentCount);
+
         return reportBuilder.build();
     }
 
