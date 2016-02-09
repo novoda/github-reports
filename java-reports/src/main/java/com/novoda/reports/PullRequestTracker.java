@@ -1,5 +1,6 @@
 package com.novoda.reports;
 
+import com.novoda.reports.organisation.OrganisationRepo;
 import org.eclipse.egit.github.core.CommitComment;
 import org.eclipse.egit.github.core.PullRequest;
 import org.eclipse.egit.github.core.Repository;
@@ -17,33 +18,33 @@ import java.util.stream.Stream;
 
 class PullRequestTracker {
 
-    private final List<Repository> repositories;
+    private final List<OrganisationRepo> repos;
     private final PullRequestService pullRequestService;
 
     private List<PullRequest> allPullRequests;
 
-    public PullRequestTracker(List<Repository> repositories, PullRequestService pullRequestService) {
+    public PullRequestTracker(List<OrganisationRepo> organisationRepos, PullRequestService pullRequestService) {
+        this.repos = organisationRepos;
         this.pullRequestService = pullRequestService;
-        this.repositories = repositories;
     }
 
     public Report track(String user, LocalDate startDate, LocalDate endDate) {
         Report.Builder reportBuilder = new Report.Builder(user);
 
-        long mergedPrsCount = getAllPullRequestsIn(repositories)
+        long mergedPrsCount = getAllPullRequestsIn(repos)
                 .filter(pullRequestCreatedBetween(startDate, endDate))
                 .map(getFullDataPullRequest())
                 .filter(includeMergedBy(user))
                 .count();
         reportBuilder.withMergedPullRequests(mergedPrsCount);
 
-        long createdPrsCount = getAllPullRequestsIn(repositories)
+        long createdPrsCount = getAllPullRequestsIn(repos)
                 .filter(includePullRequestsBy(user))
                 .filter(pullRequestCreatedBetween(startDate, endDate))
                 .count();
         reportBuilder.withCreatedPullRequests(createdPrsCount);
 
-        long otherPeopleCommentsCount = getAllPullRequestsIn(repositories)
+        long otherPeopleCommentsCount = getAllPullRequestsIn(repos)
                 .filter(includePullRequestsBy(user))
                 .flatMap(getAllComments())
                 .filter(excludeCommentsBy(user))
@@ -51,7 +52,7 @@ class PullRequestTracker {
                 .count();
         reportBuilder.withOtherPeopleCommentsCount(otherPeopleCommentsCount);
 
-        long usersCommentCount = getAllPullRequestsIn(repositories)
+        long usersCommentCount = getAllPullRequestsIn(repos)
                 .filter(excludePullRequestsBy(user))
                 .flatMap(getAllComments())
                 .filter(includeCommentsBy(user))
@@ -62,14 +63,14 @@ class PullRequestTracker {
         return reportBuilder.build();
     }
 
-    private Stream<PullRequest> getAllPullRequestsIn(List<Repository> repositories) {
+    private Stream<PullRequest> getAllPullRequestsIn(List<OrganisationRepo> repositories) {
         if (allPullRequests == null) {
             allPullRequests = repositories
                     .parallelStream()
                     .flatMap(repository -> {
                         try {
                             return pullRequestService
-                                    .getPullRequests(repository, "all")
+                                    .getPullRequests(repository::getId, "all")
                                     .stream();
                         } catch (IOException e) {
                             String repoName = repository.getName();

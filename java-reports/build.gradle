@@ -9,9 +9,23 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta3'
     compile 'com.google.code.gson:gson:2.5'
     compile 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
+    compile 'com.almworks.sqlite4java:sqlite4java:1.0.392'
+    compile 'com.almworks.sqlite4java:libsqlite4java-osx:1.0.392'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.3.0'
+}
+
+/* Copy the native files */
+task copyNativeDeps(type: Copy) {
+    from(configurations.compile + configurations.testCompile) {
+        include "*.dylib"
+    }
+    into 'build/libs'
+}
+
+tasks.build {
+    dependsOn copyNativeDeps
 }
 
 compileJava.sourceCompatibility = JavaVersion.VERSION_1_8
