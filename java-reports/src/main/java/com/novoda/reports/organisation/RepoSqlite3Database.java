@@ -9,7 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-class RepoSqlite3Persistence {
+class RepoSqlite3Database {
 
     static {
         SQLite.setLibraryPath("java-reports/build/libs");
