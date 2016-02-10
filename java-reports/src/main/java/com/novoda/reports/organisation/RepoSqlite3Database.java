@@ -42,28 +42,31 @@ class RepoSqlite3Database {
 
     public List<OrganisationRepo> read(String organisation) throws SQLiteException {
         SQLiteConnection connection = new SQLiteConnection(DB_FILE);
-        connection.open(false);
-        SQLiteStatement existsStatement = connection.prepare(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TBL_REPOS + "';");
-        if (!existsStatement.step()) {
-            return new ArrayList<>();
-        }
-
-        SQLiteStatement readStatement = connection.prepare(
-                "SELECT " + COL_LOGIN + ", " + COL_NAME + " FROM " + TBL_REPOS + " WHERE " + COL_ORGANISATION + " = ?");
-        List<OrganisationRepo> repos = new ArrayList<>();
         try {
+            connection.open(true);
+
+            SQLiteStatement existsStatement = connection.prepare(
+                    "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TBL_REPOS + "';");
+            if (!existsStatement.step()) {
+                existsStatement.dispose();
+                return new ArrayList<>();
+            }
+            existsStatement.dispose();
+
+            SQLiteStatement readStatement = connection.prepare(
+                    "SELECT " + COL_LOGIN + ", " + COL_NAME + " FROM " + TBL_REPOS + " WHERE " + COL_ORGANISATION + " = ?");
             readStatement.bind(1, organisation);
+            List<OrganisationRepo> repos = new ArrayList<>();
             while (readStatement.step()) {
                 String login = readStatement.columnString(0);
                 String name = readStatement.columnString(1);
                 repos.add(new OrganisationRepo(login, name));
             }
-        } finally {
             readStatement.dispose();
+            return repos;
+        } finally {
             connection.dispose();
         }
-        return repos;
     }
 
     public void update(String organisation, List<OrganisationRepo> organisationRepos) throws SQLiteException {
