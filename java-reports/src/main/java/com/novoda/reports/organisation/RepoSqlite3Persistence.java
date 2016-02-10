@@ -30,7 +30,8 @@ class RepoSqlite3Persistence {
                             "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                             COL_ORGANISATION + " STRING NOT NULL," +
                             COL_LOGIN + " STRING NOT NULL," +
-                            COL_NAME + " STRING NOT NULL" +
+                            COL_NAME + " STRING NOT NULL," +
+                            "UNIQUE (" + COL_ORGANISATION + ", " + COL_NAME + ") ON CONFLICT REPLACE" +
                             ");");
             createStatement.step();
             createStatement.dispose();
