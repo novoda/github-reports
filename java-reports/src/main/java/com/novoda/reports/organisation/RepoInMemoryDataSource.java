@@ -19,4 +19,8 @@ class RepoInMemoryDataSource {
             return Collections.emptyList();
         }
     }
+
+    public void delete(String organisation) {
+        CACHE.remove(organisation);
+    }
 }

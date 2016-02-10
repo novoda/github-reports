@@ -46,4 +46,8 @@ public class OrganisationRepoFinder {
         return webRepositories;
     }
 
+    public void clearCache() {
+        inMemoryDataSource.delete(organisation);
+        persistenceDataSource.delete(organisation);
+    }
 }
