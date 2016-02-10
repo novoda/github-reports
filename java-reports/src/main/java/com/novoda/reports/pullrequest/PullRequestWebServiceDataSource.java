@@ -5,9 +5,6 @@ import org.eclipse.egit.github.core.PullRequest;
 import org.eclipse.egit.github.core.service.PullRequestService;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,43 +49,4 @@ class PullRequestWebServiceDataSource {
         }
     }
 
-    static class LiteConverter {
-
-        public LitePullRequest convert(org.eclipse.egit.github.core.PullRequest pullRequest) {
-            String repoName = pullRequest.getBase().getRepo().getName();
-            String repoOwnerLogin = pullRequest.getBase().getRepo().getOwner().getLogin();
-            int number = pullRequest.getNumber();
-            String title = pullRequest.getTitle();
-            String userLogin = pullRequest.getUser().getLogin();
-            LocalDate createdAt = convertToLocalDate(pullRequest.getCreatedAt());
-            return new LitePullRequest(repoName, repoOwnerLogin,
-                    number, title,
-                    userLogin,
-                    createdAt);
-        }
-
-        private LocalDate convertToLocalDate(Date java7Date) {
-            return java7Date
-                    .toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
-        }
-    }
-
-    static class FullConverter {
-
-        private final LiteConverter liteConverter;
-
-        FullConverter(LiteConverter liteConverter) {
-            this.liteConverter = liteConverter;
-        }
-
-        public FullPullRequest convert(org.eclipse.egit.github.core.PullRequest pullRequest) {
-            LitePullRequest litePullRequest = liteConverter.convert(pullRequest);
-            boolean isMerged = pullRequest.isMerged();
-            String mergedByUserLogin = pullRequest.getMergedBy().getLogin();
-            return new FullPullRequest(litePullRequest, isMerged, mergedByUserLogin);
-        }
-
-    }
 }
