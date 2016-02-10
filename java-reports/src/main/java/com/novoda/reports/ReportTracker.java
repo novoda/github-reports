@@ -28,38 +28,48 @@ class ReportTracker {
     public Report track(String user, LocalDate startDate, LocalDate endDate) {
         Report.Builder reportBuilder = new Report.Builder(user);
 
-        long mergedPrsCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
+        long mergedPrsCount = repos
+                .stream()
+                .flatMap(pullRequestFinder::streamLitePullRequests)
                 .filter(pullRequestCreatedBetween(startDate, endDate))
                 .map(pullRequestFinder::getFullPullRequest)
                 .filter(includeMergedBy(user))
                 .count();
         reportBuilder.withMergedPullRequests(mergedPrsCount);
 
-        long createdPrsCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
+        long createdPrsCount = repos
+                .stream()
+                .flatMap(pullRequestFinder::streamLitePullRequests)
                 .filter(includePullRequestsBy(user))
                 .filter(pullRequestCreatedBetween(startDate, endDate))
                 .count();
         reportBuilder.withCreatedPullRequests(createdPrsCount);
 
-        long otherPeopleCommentsCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
+        long otherPeopleCommentsCount = repos
+                .stream()
+                .flatMap(pullRequestFinder::streamLitePullRequests)
                 .filter(includePullRequestsBy(user))
-                .flatMap(commentFinder::getComments)
+                .flatMap(commentFinder::streamComments)
                 .filter(excludeCommentsBy(user))
                 .filter(commentedBetween(startDate, endDate))
                 .count();
         reportBuilder.withOtherPeopleCommentsCount(otherPeopleCommentsCount);
 
-        long usersCommentCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
+        long usersCommentCount = repos
+                .stream()
+                .flatMap(pullRequestFinder::streamLitePullRequests)
                 .filter(excludePullRequestsBy(user))
-                .flatMap(commentFinder::getComments)
+                .flatMap(commentFinder::streamComments)
                 .filter(includeCommentsBy(user))
                 .filter(commentedBetween(startDate, endDate))
                 .count();
         reportBuilder.withUsersCommentCount(usersCommentCount);
 
-        long usersTotalCommentCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
+        long usersTotalCommentCount = repos
+                .stream()
+                .flatMap(pullRequestFinder::streamLitePullRequests)
                 .filter(pullRequestCreatedBetween(startDate, endDate))
-                .flatMap(commentFinder::getComments)
+                .flatMap(commentFinder::streamComments)
                 .filter(includeCommentsBy(user))
                 .filter(commentedBetween(startDate, endDate))
                 .count();

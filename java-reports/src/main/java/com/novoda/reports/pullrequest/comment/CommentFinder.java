@@ -29,20 +29,24 @@ public class CommentFinder {
         this.webServiceDataSource = webServiceDataSource;
     }
 
-    public Stream<Comment> getComments(LitePullRequest pullRequest) {
+    public Stream<Comment> streamComments(LitePullRequest pullRequest) {
+        return getComments(pullRequest).stream();
+    }
+
+    public List<Comment> getComments(LitePullRequest pullRequest) {
         List<Comment> inMemoryComments = inMemoryDataSource.readComments(pullRequest);
         if (!inMemoryComments.isEmpty()) {
-            return inMemoryComments.stream();
+            return inMemoryComments;
         }
         List<Comment> diskComments = persistenceDataSource.readComments(pullRequest);
         if (!diskComments.isEmpty()) {
             inMemoryDataSource.createComments(pullRequest, diskComments);
-            return diskComments.stream();
+            return diskComments;
         }
         List<Comment> comments = webServiceDataSource.readComments(pullRequest);
         persistenceDataSource.createComments(pullRequest, comments);
         inMemoryDataSource.createComments(pullRequest, comments);
-        return comments.stream();
+        return comments;
     }
 
 }
