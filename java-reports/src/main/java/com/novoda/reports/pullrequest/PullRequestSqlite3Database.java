@@ -127,18 +127,23 @@ public class PullRequestSqlite3Database {
             existsStatement.dispose();
 
             SQLiteStatement readStatement = connection.prepare(
-                    "SELECT " + COL_REPO_NAME +
-                            ", " + COL_NUMBER +
-                            ", " + COL_IS_MERGED +
-                            ", " + COL_MERGED_BY_USER_LOGIN +
+                    "SELECT " + COL_IS_MERGED + ", "
+                            + COL_MERGED_BY_USER_LOGIN +
                             " FROM " + TBL_PULL_REQUESTS_EXT +
-                            " WHERE (" + COL_REPO_NAME + ", " + COL_NUMBER + ") = (?, ?)");
+                            " WHERE " + COL_REPO_NAME + " = ? " +
+                            " AND " + COL_NUMBER + " = ?");
             readStatement.bind(1, litePullRequest.getRepoName());
             readStatement.bind(2, litePullRequest.getNumber());
-            boolean isMerged = readStatement.columnInt(0) == 1;
-            String mergedByUserName = readStatement.columnString(1);
-            readStatement.dispose();
-            return new FullPullRequest(litePullRequest, isMerged, mergedByUserName);
+
+            if (readStatement.step()) {
+                readStatement.dispose();
+                boolean isMerged = readStatement.columnInt(0) == 1;
+                String mergedByUserName = readStatement.columnString(1);
+                return new FullPullRequest(litePullRequest, isMerged, mergedByUserName);
+            } else {
+                readStatement.dispose();
+                return null;
+            }
         } finally {
             connection.dispose();
         }
@@ -185,7 +190,7 @@ public class PullRequestSqlite3Database {
             updateStatement.bind(3, fullPullRequest.isMerged() ? 1 : 0);
             updateStatement.bind(4, fullPullRequest.getMergedByUserLogin());
             updateStatement.step();
-            updateStatement.reset(false);
+            updateStatement.reset();
             updateStatement.dispose();
         } finally {
             connection.dispose();
