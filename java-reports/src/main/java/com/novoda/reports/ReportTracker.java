@@ -33,20 +33,20 @@ class ReportTracker {
     public Report track(String user, LocalDate startDate, LocalDate endDate) {
         Report.Builder reportBuilder = new Report.Builder(user);
 
-        long mergedPrsCount = pullRequestFinder.getAllPullRequestsIn(repos)
+        long mergedPrsCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
                 .filter(pullRequestCreatedBetween(startDate, endDate))
                 .map(getFullDataPullRequest())
                 .filter(includeMergedBy(user))
                 .count();
         reportBuilder.withMergedPullRequests(mergedPrsCount);
 
-        long createdPrsCount = pullRequestFinder.getAllPullRequestsIn(repos)
+        long createdPrsCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
                 .filter(includePullRequestsBy(user))
                 .filter(pullRequestCreatedBetween(startDate, endDate))
                 .count();
         reportBuilder.withCreatedPullRequests(createdPrsCount);
 
-        long otherPeopleCommentsCount = pullRequestFinder.getAllPullRequestsIn(repos)
+        long otherPeopleCommentsCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
                 .filter(includePullRequestsBy(user))
                 .flatMap(getAllComments())
                 .filter(excludeCommentsBy(user))
@@ -54,7 +54,7 @@ class ReportTracker {
                 .count();
         reportBuilder.withOtherPeopleCommentsCount(otherPeopleCommentsCount);
 
-        long usersCommentCount = pullRequestFinder.getAllPullRequestsIn(repos)
+        long usersCommentCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
                 .filter(excludePullRequestsBy(user))
                 .flatMap(getAllComments())
                 .filter(includeCommentsBy(user))
@@ -62,7 +62,7 @@ class ReportTracker {
                 .count();
         reportBuilder.withUsersCommentCount(usersCommentCount);
 
-        long usersTotalCommentCount = pullRequestFinder.getAllPullRequestsIn(repos)
+        long usersTotalCommentCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
                 .filter(pullRequestCreatedBetween(startDate, endDate))
                 .flatMap(getAllComments())
                 .filter(includeCommentsBy(user))

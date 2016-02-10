@@ -11,11 +11,11 @@ class PullRequestInMemoryDataSource {
 
     private static final Map<OrganisationRepo, List<LitePullRequest>> CACHE = new HashMap<>();
 
-    public void createPullRequests(OrganisationRepo repo, List<LitePullRequest> litePullRequests) {
+    public void createLitePullRequests(OrganisationRepo repo, List<LitePullRequest> litePullRequests) {
         CACHE.put(repo, litePullRequests);
     }
 
-    public List<LitePullRequest> readPullRequests(OrganisationRepo repo) {
+    public List<LitePullRequest> readLitePullRequests(OrganisationRepo repo) {
         if (CACHE.containsKey(repo)) {
             return CACHE.get(repo);
         } else {
