@@ -29,4 +29,26 @@ public class OrganisationRepo {
                 ", name='" + name + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        OrganisationRepo that = (OrganisationRepo) o;
+
+        return login.equals(that.login) && name.equals(that.name);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = login.hashCode();
+        result = 31 * result + name.hashCode();
+        return result;
+    }
 }
