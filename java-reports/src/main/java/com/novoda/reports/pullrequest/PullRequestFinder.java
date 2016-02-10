@@ -15,8 +15,8 @@ public class PullRequestFinder {
     public static PullRequestFinder newInstance(PullRequestService pullRequestService) {
         PullRequestInMemoryDataSource inMemoryDataSource = new PullRequestInMemoryDataSource();
         PullRequestPersistenceDataSource persistenceDataSource = new PullRequestPersistenceDataSource();
-        PullRequestWebServiceDataSource.LiteConverter liteConverter = new PullRequestWebServiceDataSource.LiteConverter();
-        PullRequestWebServiceDataSource.FullConverter fullConverter = new PullRequestWebServiceDataSource.FullConverter(liteConverter);
+        LiteConverter liteConverter = new LiteConverter();
+        FullConverter fullConverter = new FullConverter(liteConverter);
         PullRequestWebServiceDataSource webServiceDataSource = new PullRequestWebServiceDataSource(pullRequestService, liteConverter, fullConverter);
         return new PullRequestFinder(inMemoryDataSource, persistenceDataSource, webServiceDataSource);
     }
