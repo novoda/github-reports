@@ -28,4 +28,12 @@ class RepoPersistenceDataSource {
             throw new IllegalStateException("Could not read repos from repository.", e);
         }
     }
+
+    public void delete(String organisation) {
+        try {
+            persistence.delete(organisation);
+        } catch (SQLiteException e) {
+            throw new IllegalStateException("Could not delete " + organisation + " from repository.", e);
+        }
+    }
 }

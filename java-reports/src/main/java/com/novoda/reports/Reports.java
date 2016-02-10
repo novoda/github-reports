@@ -14,6 +14,7 @@ public class Reports {
 
     public static void main(String[] args) throws Exception {
         String githubAccessToken = args[0];
+        boolean clearCaches = args.length == 1 || args[1] == null ? false : Boolean.valueOf(args[1]);
         // TODO input args
         List<String> users = new ArrayList<>();
         users.add("blundell");
@@ -29,6 +30,9 @@ public class Reports {
         client.setOAuth2Token(githubAccessToken);
         RepositoryService repositoryService = new RepositoryService(client);
         OrganisationRepoFinder organisationRepoFinder = OrganisationRepoFinder.newInstance(organisation, repositoryService);
+        if (clearCaches) {
+            organisationRepoFinder.clearCache();
+        }
         List<OrganisationRepo> organisationRepos = organisationRepoFinder.getOrganisationRepositories();
         PullRequestService pullRequestService = new PullRequestService(client);
         PullRequestTracker pullRequestTracker = new PullRequestTracker(organisationRepos, pullRequestService);
