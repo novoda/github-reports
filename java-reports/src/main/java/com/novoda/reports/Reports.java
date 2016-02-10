@@ -25,7 +25,6 @@ public class Reports {
         LocalDate startDate = LocalDate.parse("2016-02-02");
         LocalDate endDate = LocalDate.parse("2016-02-03");
 
-        // Re-write the ruby reports in java
         GitHubClient client = new GitHubClient();
         client.setOAuth2Token(githubAccessToken);
         RepositoryService repositoryService = new RepositoryService(client);
