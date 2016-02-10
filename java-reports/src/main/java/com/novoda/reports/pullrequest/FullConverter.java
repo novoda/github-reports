@@ -11,7 +11,7 @@ class FullConverter {
     public FullPullRequest convert(org.eclipse.egit.github.core.PullRequest pullRequest) {
         LitePullRequest litePullRequest = liteConverter.convert(pullRequest);
         boolean isMerged = pullRequest.isMerged();
-        String mergedByUserLogin = pullRequest.getMergedBy().getLogin();
+        String mergedByUserLogin = isMerged ? pullRequest.getMergedBy().getLogin() : "";
         return new FullPullRequest(litePullRequest, isMerged, mergedByUserLogin);
     }
 
