@@ -47,4 +47,41 @@ public class LitePullRequest {
         return repoOwnerLogin + "/" + repoName;
     }
 
+    @Override
+    public String toString() {
+        return "LitePullRequest{" +
+                "repoName='" + repoName + '\'' +
+                ", repoOwnerLogin='" + repoOwnerLogin + '\'' +
+                ", number=" + number +
+                ", title='" + title + '\'' +
+                ", userLogin='" + userLogin + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LitePullRequest that = (LitePullRequest) o;
+
+        return number == that.number &&
+                repoName.equals(that.repoName) &&
+                repoOwnerLogin.equals(that.repoOwnerLogin) &&
+                title.equals(that.title) &&
+                userLogin.equals(that.userLogin) &&
+                createdAt.equals(that.createdAt);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = repoName.hashCode();
+        result = 31 * result + repoOwnerLogin.hashCode();
+        result = 31 * result + number;
+        result = 31 * result + title.hashCode();
+        result = 31 * result + userLogin.hashCode();
+        result = 31 * result + createdAt.hashCode();
+        return result;
+    }
 }
