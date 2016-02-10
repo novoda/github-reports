@@ -30,13 +30,11 @@ public class PullRequestFinder {
         this.webServiceDataSource = webServiceDataSource;
     }
 
-    public Stream<LitePullRequest> getAllLitePullRequestsIn(List<OrganisationRepo> repos) {
-        return repos
-                .stream()
-                .flatMap(repo -> getLitePullRequests(repo).stream());
+    public Stream<LitePullRequest> streamLitePullRequests(OrganisationRepo repo) {
+        return getLitePullRequests(repo).stream();
     }
 
-    private List<LitePullRequest> getLitePullRequests(OrganisationRepo repo) {
+    public List<LitePullRequest> getLitePullRequests(OrganisationRepo repo) {
         List<LitePullRequest> inMemoryRepositories = inMemoryDataSource.readLitePullRequests(repo);
         if (!inMemoryRepositories.isEmpty()) {
             return inMemoryRepositories;
