@@ -5,9 +5,12 @@ import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,8 +36,7 @@ public class FloatContributionTracker {
      */
     public Stream<FloatDev> track(String startDate, String endDate) throws IOException {
         validateDateFormat(startDate, endDate);
-        // TODO calculate this
-        int inputNumberOfWeeks = 2;
+        int inputNumberOfWeeks = getInputNumberOfWeeks(startDate, endDate);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
@@ -98,6 +100,16 @@ public class FloatContributionTracker {
         if (!endDate.matches(dateFormat)) {
             throw new DateTimeParseException("EndDate Format should be YYYY-MM-DD", endDate, 0);
         }
+    }
+
+    private int getInputNumberOfWeeks(String startDate, String endDate) {
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+        if (start.isAfter(end)) {
+            throw new IllegalStateException("I expect start date [" + startDate + "] to be before the end date [" + endDate + "]");
+        }
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        return end.get(weekFields.weekOfWeekBasedYear()) - start.get(weekFields.weekOfWeekBasedYear());
     }
 
 }
