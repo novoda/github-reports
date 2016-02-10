@@ -8,7 +8,7 @@ apply plugin: 'com.lookout.jruby'
 buildscript {
     repositories { jcenter() }
     dependencies {
-        classpath group: 'com.lookout', name: 'jruby-gradle-plugin', version: '2.0.+'
+        classpath group: 'com.lookout', name: 'jruby-gradle-plugin', version: '2.0.1'
     }
 }
 
@@ -20,9 +20,9 @@ repositories {
 
 dependencies {
     gems group: 'rubygems', name: 'sinatra', version: '1.4.5'
-    gems group: 'rubygems', name: 'rake', version: '10.3.+'
+    gems group: 'rubygems', name: 'rake', version: '10.3.2'
 
-    jrubyWar group: 'org.apache.kafka', name: 'kafka_2.9.2', version: '0.8.+'
+    jrubyWar group: 'org.apache.kafka', name: 'kafka_2.9.2', version: '0.8.2.2'
     // Needed otherwise we get `"Artifact 'com.sun.jdmk:jmxtools:1.2.1:jmxtools.jar' not found."`
-    jrubyWar group: 'log4j', name: 'log4j', version: '1.2.+', transitive: true
+    jrubyWar group: 'log4j', name: 'log4j', version: '1.2.17', transitive: true
 }
