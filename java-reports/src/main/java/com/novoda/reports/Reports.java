@@ -3,6 +3,7 @@ package com.novoda.reports;
 import com.novoda.reports.organisation.OrganisationRepo;
 import com.novoda.reports.organisation.OrganisationRepoFinder;
 import com.novoda.reports.pullrequest.PullRequestFinder;
+import com.novoda.reports.pullrequest.comment.CommentFinder;
 import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.service.PullRequestService;
 import org.eclipse.egit.github.core.service.RepositoryService;
@@ -36,7 +37,8 @@ public class Reports {
         List<OrganisationRepo> organisationRepos = organisationRepoFinder.getOrganisationRepositories();
         PullRequestService pullRequestService = new PullRequestService(client);
         PullRequestFinder pullRequestFinder = PullRequestFinder.newInstance(pullRequestService);
-        ReportTracker reportTracker = new ReportTracker(organisationRepos, pullRequestService, pullRequestFinder);
+        CommentFinder commentFinder = CommentFinder.newInstance(pullRequestService);
+        ReportTracker reportTracker = new ReportTracker(organisationRepos, pullRequestFinder, commentFinder);
 
         for (String user : users) {
             Report report = reportTracker.track(user, startDate, endDate);
