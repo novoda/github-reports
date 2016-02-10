@@ -1,27 +1,49 @@
 package com.novoda.reports.pullrequest;
 
+import com.almworks.sqlite4java.SQLiteException;
 import com.novoda.reports.organisation.OrganisationRepo;
 
-import java.util.Collections;
 import java.util.List;
 
 class PullRequestPersistenceDataSource {
 
+    private final PullRequestSqlite3Database pullRequestDatabase;
+
+    PullRequestPersistenceDataSource(PullRequestSqlite3Database pullRequestDatabase) {
+        this.pullRequestDatabase = pullRequestDatabase;
+    }
+
     public void createLitePullRequests(OrganisationRepo repo, List<LitePullRequest> litePullRequests) {
-        // TODO
+        try {
+            pullRequestDatabase.create();
+            pullRequestDatabase.update(repo, litePullRequests);
+        } catch (SQLiteException e) {
+            throw new IllegalStateException("Could not save lite pull requests to repository.", e);
+        }
     }
 
     public List<LitePullRequest> readLitePullRequests(OrganisationRepo repo) {
-        // TODO
-        return Collections.emptyList();
+        try {
+            return pullRequestDatabase.read(repo);
+        } catch (SQLiteException e) {
+            throw new IllegalStateException("Could not read lite pull requests from repository.", e);
+        }
     }
 
     public FullPullRequest readFullPullRequests(LitePullRequest litePullRequest) {
-        // TODO
-        return null;
+        try {
+            return pullRequestDatabase.read(litePullRequest);
+        } catch (SQLiteException e) {
+            throw new IllegalStateException("Could not read lite pull requests from repository.", e);
+        }
     }
 
     public void createFullPullRequests(LitePullRequest litePullRequest, FullPullRequest fullPullRequest) {
-        // TODO
+        try {
+            pullRequestDatabase.create();
+            pullRequestDatabase.update(litePullRequest, fullPullRequest);
+        } catch (SQLiteException e) {
+            throw new IllegalStateException("Could not save lite pull requests to repository.", e);
+        }
     }
 }

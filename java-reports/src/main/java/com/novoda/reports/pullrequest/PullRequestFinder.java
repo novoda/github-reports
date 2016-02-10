@@ -14,7 +14,8 @@ public class PullRequestFinder {
 
     public static PullRequestFinder newInstance(PullRequestService pullRequestService) {
         PullRequestInMemoryDataSource inMemoryDataSource = new PullRequestInMemoryDataSource();
-        PullRequestPersistenceDataSource persistenceDataSource = new PullRequestPersistenceDataSource();
+        PullRequestSqlite3Database pullRequestDatabase = new PullRequestSqlite3Database();
+        PullRequestPersistenceDataSource persistenceDataSource = new PullRequestPersistenceDataSource(pullRequestDatabase);
         LiteConverter liteConverter = new LiteConverter();
         FullConverter fullConverter = new FullConverter(liteConverter);
         PullRequestWebServiceDataSource webServiceDataSource = new PullRequestWebServiceDataSource(pullRequestService, liteConverter, fullConverter);
