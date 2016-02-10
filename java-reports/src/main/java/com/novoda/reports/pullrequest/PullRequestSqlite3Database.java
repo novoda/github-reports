@@ -136,9 +136,9 @@ public class PullRequestSqlite3Database {
             readStatement.bind(2, litePullRequest.getNumber());
 
             if (readStatement.step()) {
-                readStatement.dispose();
                 boolean isMerged = readStatement.columnInt(0) == 1;
                 String mergedByUserName = readStatement.columnString(1);
+                readStatement.dispose();
                 return new FullPullRequest(litePullRequest, isMerged, mergedByUserName);
             } else {
                 readStatement.dispose();
