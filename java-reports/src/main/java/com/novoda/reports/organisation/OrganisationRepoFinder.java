@@ -13,8 +13,8 @@ public class OrganisationRepoFinder {
 
     public static OrganisationRepoFinder newInstance(String organisation, RepositoryService repositoryService) {
         RepoInMemoryDataSource repoInMemoryDataSource = new RepoInMemoryDataSource();
-        RepoSqlite3Persistence persistence = new RepoSqlite3Persistence();
-        RepoPersistenceDataSource repoPersistenceDataSource = new RepoPersistenceDataSource(persistence);
+        RepoSqlite3Database repoDatabase = new RepoSqlite3Database();
+        RepoPersistenceDataSource repoPersistenceDataSource = new RepoPersistenceDataSource(repoDatabase);
         RepoWebServiceDataSource.Converter converter = new RepoWebServiceDataSource.Converter();
         RepoWebServiceDataSource repoWebServiceDataSource = new RepoWebServiceDataSource(repositoryService, converter);
         return new OrganisationRepoFinder(organisation, repoInMemoryDataSource, repoPersistenceDataSource, repoWebServiceDataSource);

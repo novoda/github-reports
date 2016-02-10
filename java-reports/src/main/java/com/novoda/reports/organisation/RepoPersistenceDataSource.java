@@ -6,16 +6,16 @@ import java.util.List;
 
 class RepoPersistenceDataSource {
 
-    private final RepoSqlite3Persistence persistence;
+    private final RepoSqlite3Database repoDatabase;
 
-    RepoPersistenceDataSource(RepoSqlite3Persistence persistence) {
-        this.persistence = persistence;
+    RepoPersistenceDataSource(RepoSqlite3Database repoDatabase) {
+        this.repoDatabase = repoDatabase;
     }
 
     public void createRepositories(String organisation, List<OrganisationRepo> organisationRepos) {
         try {
-            persistence.create();
-            persistence.update(organisation, organisationRepos);
+            repoDatabase.create();
+            repoDatabase.update(organisation, organisationRepos);
         } catch (SQLiteException e) {
             throw new IllegalStateException("Could not save repos to repository.", e);
         }
@@ -23,7 +23,7 @@ class RepoPersistenceDataSource {
 
     public List<OrganisationRepo> readRepositories(String organisation) {
         try {
-            return persistence.read(organisation);
+            return repoDatabase.read(organisation);
         } catch (SQLiteException e) {
             throw new IllegalStateException("Could not read repos from repository.", e);
         }
@@ -31,7 +31,7 @@ class RepoPersistenceDataSource {
 
     public void delete(String organisation) {
         try {
-            persistence.delete(organisation);
+            repoDatabase.delete(organisation);
         } catch (SQLiteException e) {
             throw new IllegalStateException("Could not delete " + organisation + " from repository.", e);
         }
