@@ -15,8 +15,9 @@ public class PullRequestFinder {
     public static PullRequestFinder newInstance(PullRequestService pullRequestService) {
         PullRequestInMemoryDataSource inMemoryDataSource = new PullRequestInMemoryDataSource();
         PullRequestPersistenceDataSource persistenceDataSource = new PullRequestPersistenceDataSource();
-        PullRequestWebServiceDataSource.Converter converter = new PullRequestWebServiceDataSource.Converter();
-        PullRequestWebServiceDataSource webServiceDataSource = new PullRequestWebServiceDataSource(pullRequestService, converter);
+        PullRequestWebServiceDataSource.LiteConverter liteConverter = new PullRequestWebServiceDataSource.LiteConverter();
+        PullRequestWebServiceDataSource.FullConverter fullConverter = new PullRequestWebServiceDataSource.FullConverter(liteConverter);
+        PullRequestWebServiceDataSource webServiceDataSource = new PullRequestWebServiceDataSource(pullRequestService, liteConverter, fullConverter);
         return new PullRequestFinder(inMemoryDataSource, persistenceDataSource, webServiceDataSource);
     }
 
@@ -44,10 +45,26 @@ public class PullRequestFinder {
             inMemoryDataSource.createLitePullRequests(repo, diskRepositories);
             return diskRepositories;
         }
-        List<LitePullRequest> webRepositories = webServiceDataSource.readLitePullRequests(repo);
-        persistenceDataSource.createLitePullRequests(repo, webRepositories);
-        inMemoryDataSource.createLitePullRequests(repo, webRepositories);
-        return webRepositories;
+        List<LitePullRequest> litePullRequests = webServiceDataSource.readLitePullRequests(repo);
+        persistenceDataSource.createLitePullRequests(repo, litePullRequests);
+        inMemoryDataSource.createLitePullRequests(repo, litePullRequests);
+        return litePullRequests;
+    }
+
+    public FullPullRequest getFullPullRequest(LitePullRequest litePullRequest) {
+        FullPullRequest inMemoryRepositories = inMemoryDataSource.readFullPullRequests(litePullRequest);
+        if (inMemoryRepositories != null) {
+            return inMemoryRepositories;
+        }
+        FullPullRequest diskRepositories = persistenceDataSource.readFullPullRequests(litePullRequest);
+        if (diskRepositories != null) {
+            inMemoryDataSource.createFullPullRequests(litePullRequest, diskRepositories);
+            return diskRepositories;
+        }
+        FullPullRequest fullPullRequest = webServiceDataSource.readFullPullRequests(litePullRequest);
+        persistenceDataSource.createFullPullRequests(litePullRequest, fullPullRequest);
+        inMemoryDataSource.createFullPullRequests(litePullRequest, fullPullRequest);
+        return fullPullRequest;
     }
 
 }

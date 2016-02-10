@@ -16,4 +16,12 @@ class PullRequestPersistenceDataSource {
         return Collections.emptyList();
     }
 
+    public FullPullRequest readFullPullRequests(LitePullRequest litePullRequest) {
+        // TODO
+        return null;
+    }
+
+    public void createFullPullRequests(LitePullRequest litePullRequest, FullPullRequest fullPullRequest) {
+        // TODO
+    }
 }
