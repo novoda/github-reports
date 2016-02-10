@@ -14,7 +14,8 @@ public class CommentFinder {
 
     public static CommentFinder newInstance(PullRequestService pullRequestService) {
         CommentInMemoryDataSource inMemoryDataSource = new CommentInMemoryDataSource();
-        CommentPersistenceDataSource persistenceDataSource = new CommentPersistenceDataSource();
+        CommentSqlite3Database commentDatabase = new CommentSqlite3Database();
+        CommentPersistenceDataSource persistenceDataSource = new CommentPersistenceDataSource(commentDatabase);
         CommentConverter converter = new CommentConverter();
         CommentWebServiceDataSource webServiceDataSource = new CommentWebServiceDataSource(pullRequestService, converter);
         return new CommentFinder(inMemoryDataSource, persistenceDataSource, webServiceDataSource);
