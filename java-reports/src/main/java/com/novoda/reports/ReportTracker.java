@@ -4,30 +4,25 @@ import com.novoda.reports.organisation.OrganisationRepo;
 import com.novoda.reports.pullrequest.FullPullRequest;
 import com.novoda.reports.pullrequest.LitePullRequest;
 import com.novoda.reports.pullrequest.PullRequestFinder;
-import org.eclipse.egit.github.core.CommitComment;
-import org.eclipse.egit.github.core.service.PullRequestService;
+import com.novoda.reports.pullrequest.comment.Comment;
+import com.novoda.reports.pullrequest.comment.CommentFinder;
 
-import java.io.IOException;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 class ReportTracker {
 
     private final List<OrganisationRepo> repos;
-    private final PullRequestService pullRequestService;
     private final PullRequestFinder pullRequestFinder;
+    private final CommentFinder commentFinder;
 
     public ReportTracker(List<OrganisationRepo> organisationRepos,
-                         PullRequestService pullRequestService,
-                         PullRequestFinder pullRequestFinder) {
+                         PullRequestFinder pullRequestFinder,
+                         CommentFinder commentFinder) {
         this.repos = organisationRepos;
-        this.pullRequestService = pullRequestService;
         this.pullRequestFinder = pullRequestFinder;
+        this.commentFinder = commentFinder;
     }
 
     public Report track(String user, LocalDate startDate, LocalDate endDate) {
@@ -48,7 +43,7 @@ class ReportTracker {
 
         long otherPeopleCommentsCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
                 .filter(includePullRequestsBy(user))
-                .flatMap(getAllComments())
+                .flatMap(commentFinder::getComments)
                 .filter(excludeCommentsBy(user))
                 .filter(commentedBetween(startDate, endDate))
                 .count();
@@ -56,7 +51,7 @@ class ReportTracker {
 
         long usersCommentCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
                 .filter(excludePullRequestsBy(user))
-                .flatMap(getAllComments())
+                .flatMap(commentFinder::getComments)
                 .filter(includeCommentsBy(user))
                 .filter(commentedBetween(startDate, endDate))
                 .count();
@@ -64,7 +59,7 @@ class ReportTracker {
 
         long usersTotalCommentCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
                 .filter(pullRequestCreatedBetween(startDate, endDate))
-                .flatMap(getAllComments())
+                .flatMap(commentFinder::getComments)
                 .filter(includeCommentsBy(user))
                 .filter(commentedBetween(startDate, endDate))
                 .count();
@@ -81,35 +76,16 @@ class ReportTracker {
         return pullRequest -> pullRequest.getUserLogin().equalsIgnoreCase(user);
     }
 
-    private Function<LitePullRequest, Stream<CommitComment>> getAllComments() {
-        return pullRequest -> {
-            try {
-                return pullRequestService.getComments(pullRequest::generateId, pullRequest.getNumber()).stream();
-            } catch (IOException e) {
-                String repoName = pullRequest.getRepoName();
-                String title = pullRequest.getTitle();
-                throw new IllegalStateException("FooBar for repo " + repoName + ", pr " + title, e);
-            }
-        };
+    private Predicate<Comment> excludeCommentsBy(String user) {
+        return comment -> !comment.getUserLogin().equalsIgnoreCase(user);
     }
 
-    private Predicate<CommitComment> excludeCommentsBy(String user) {
-        return comment -> !comment.getUser().getLogin().equalsIgnoreCase(user);
-    }
-
-    private Predicate<CommitComment> commentedBetween(LocalDate startDate, LocalDate endDate) {
+    private Predicate<Comment> commentedBetween(LocalDate startDate, LocalDate endDate) {
         return commitComment -> {
-            LocalDate createdAt = convertToLocalDate(commitComment.getCreatedAt());
+            LocalDate createdAt = commitComment.getCreatedAt();
             return createdAt.isAfter(startDate.minusDays(1))
                     && createdAt.isBefore(endDate.plusDays(1));
         };
-    }
-
-    private LocalDate convertToLocalDate(Date java7Date) {
-        return java7Date
-                .toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
     }
 
     private Predicate<LitePullRequest> pullRequestCreatedBetween(LocalDate startDate, LocalDate endDate) {
@@ -124,8 +100,8 @@ class ReportTracker {
         return pullRequest -> !pullRequest.getUserLogin().equalsIgnoreCase(user);
     }
 
-    private Predicate<CommitComment> includeCommentsBy(String user) {
-        return comment -> comment.getUser().getLogin().equalsIgnoreCase(user);
+    private Predicate<Comment> includeCommentsBy(String user) {
+        return comment -> comment.getUserLogin().equalsIgnoreCase(user);
     }
 
 }
