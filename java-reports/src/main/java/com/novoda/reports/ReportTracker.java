@@ -1,10 +1,10 @@
 package com.novoda.reports;
 
 import com.novoda.reports.organisation.OrganisationRepo;
+import com.novoda.reports.pullrequest.FullPullRequest;
 import com.novoda.reports.pullrequest.LitePullRequest;
 import com.novoda.reports.pullrequest.PullRequestFinder;
 import org.eclipse.egit.github.core.CommitComment;
-import org.eclipse.egit.github.core.PullRequest;
 import org.eclipse.egit.github.core.service.PullRequestService;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ class ReportTracker {
 
         long mergedPrsCount = pullRequestFinder.getAllLitePullRequestsIn(repos)
                 .filter(pullRequestCreatedBetween(startDate, endDate))
-                .map(getFullDataPullRequest())
+                .map(pullRequestFinder::getFullPullRequest)
                 .filter(includeMergedBy(user))
                 .count();
         reportBuilder.withMergedPullRequests(mergedPrsCount);
@@ -73,20 +73,8 @@ class ReportTracker {
         return reportBuilder.build();
     }
 
-    private Function<LitePullRequest, PullRequest> getFullDataPullRequest() {
-        return pullRequest -> {
-            try {
-                return pullRequestService.getPullRequest(pullRequest::generateId, pullRequest.getNumber());
-            } catch (IOException e) {
-                String repoName = pullRequest.getRepoName();
-                String title = pullRequest.getTitle();
-                throw new IllegalStateException("FooBar for repo " + repoName + " pr " + title, e);
-            }
-        };
-    }
-
-    private Predicate<PullRequest> includeMergedBy(String user) {
-        return pullRequest -> pullRequest.isMerged() && pullRequest.getMergedBy().getLogin().equalsIgnoreCase(user);
+    private Predicate<FullPullRequest> includeMergedBy(String user) {
+        return pullRequest -> pullRequest.isMerged() && pullRequest.getMergedByUserLogin().equalsIgnoreCase(user);
     }
 
     private Predicate<LitePullRequest> includePullRequestsBy(String user) {
