@@ -3,7 +3,8 @@ package com.novoda.contributions;
 import com.novoda.contributions.convert.FloatToGitHub;
 import com.novoda.contributions.floatcom.FloatContributionTracker;
 import com.novoda.contributions.floatcom.FloatDev;
-import com.novoda.contributions.githubcom.GitHubDev;
+import com.novoda.contributions.githubcom.GitHubContributionTracker;
+import org.eclipse.egit.github.core.client.GitHubClient;
 
 import java.io.IOException;
 import java.util.stream.Stream;
@@ -12,15 +13,18 @@ public class CrossProjectContributions {
 
     public static void main(String[] args) throws IOException {
         String floatAccessToken = args[0];
+        String githubAccessToken = args[1];
         // Input needed - Date Range
         FloatContributionTracker floatContributionTracker = new FloatContributionTracker(floatAccessToken);
         FloatToGitHub floatToGitHub = FloatToGitHub.newInstance();
         Stream<FloatDev> floatDevs = floatContributionTracker.track("2016-01-11", "2016-01-18");
-        Stream<GitHubDev> gitHubDevs = floatToGitHub.lookup(floatDevs);
 
-        // query github with this info
+        GitHubClient client = new GitHubClient();
+        client.setOAuth2Token(githubAccessToken);
+        GitHubContributionTracker contributionTracker = GitHubContributionTracker.newInstance(client, "Novoda");
 
-        gitHubDevs.forEach(System.out::println);
+        floatToGitHub.lookup(floatDevs)
+                .forEach(contributionTracker::track);
     }
 
 
