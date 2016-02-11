@@ -1,7 +1,9 @@
 package com.novoda.contributions.githubcom;
 
+import com.novoda.reports.organisation.OrganisationRepo;
+import com.novoda.reports.pullrequest.comment.Comment;
+
 import java.util.List;
-import java.util.stream.Stream;
 
 public class GitHubDev {
 
@@ -11,6 +13,29 @@ public class GitHubDev {
     public GitHubDev(String username, List<Project> projects) {
         this.username = username;
         this.projects = projects;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public boolean wrote(Comment comment) {
+        return username.equalsIgnoreCase(comment.getUserLogin());
+    }
+
+    public boolean hasNotWorkedOn(OrganisationRepo repo) {
+        return !hasWorkedOn(repo);
+    }
+
+    public boolean hasWorkedOn(OrganisationRepo repo) {
+        for (Project project : projects) {
+            for (String repoName : project.repoNames) {
+                if (repoName.equalsIgnoreCase(repo.getName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
