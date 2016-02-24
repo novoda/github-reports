@@ -1,6 +1,7 @@
 package com.novoda.contributions.githubcom;
 
 import com.novoda.contributions.Contribution;
+import com.novoda.reports.RateLimitRetryer;
 import com.novoda.reports.organisation.OrganisationRepoFinder;
 import com.novoda.reports.pullrequest.PullRequestFinder;
 import com.novoda.reports.pullrequest.comment.CommentFinder;
@@ -16,10 +17,11 @@ public class GitHubContributionTracker {
 
     public static GitHubContributionTracker newInstance(GitHubClient client, String organisation) {
         RepositoryService repositoryService = new RepositoryService(client);
-        OrganisationRepoFinder repoFinder = OrganisationRepoFinder.newInstance(organisation, repositoryService);
+        RateLimitRetryer rateLimitRetryer = new RateLimitRetryer(client);
+        OrganisationRepoFinder repoFinder = OrganisationRepoFinder.newInstance(organisation, repositoryService, rateLimitRetryer);
         PullRequestService pullRequestService = new PullRequestService(client);
-        PullRequestFinder pullRequestFinder = PullRequestFinder.newInstance(pullRequestService);
-        CommentFinder commentFinder = CommentFinder.newInstance(pullRequestService);
+        PullRequestFinder pullRequestFinder = PullRequestFinder.newInstance(pullRequestService, rateLimitRetryer);
+        CommentFinder commentFinder = CommentFinder.newInstance(pullRequestService, rateLimitRetryer);
         return new GitHubContributionTracker(repoFinder, pullRequestFinder, commentFinder);
     }
 

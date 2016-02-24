@@ -30,14 +30,15 @@ public class Reports {
         GitHubClient client = new GitHubClient();
         client.setOAuth2Token(githubAccessToken);
         RepositoryService repositoryService = new RepositoryService(client);
-        OrganisationRepoFinder organisationRepoFinder = OrganisationRepoFinder.newInstance(organisation, repositoryService);
+        RateLimitRetryer rateLimitRetryer = new RateLimitRetryer(client);
+        OrganisationRepoFinder organisationRepoFinder = OrganisationRepoFinder.newInstance(organisation, repositoryService, rateLimitRetryer);
         if (clearCaches) {
             organisationRepoFinder.clearCache();
         }
         List<OrganisationRepo> organisationRepos = organisationRepoFinder.getOrganisationRepositories();
         PullRequestService pullRequestService = new PullRequestService(client);
-        PullRequestFinder pullRequestFinder = PullRequestFinder.newInstance(pullRequestService);
-        CommentFinder commentFinder = CommentFinder.newInstance(pullRequestService);
+        PullRequestFinder pullRequestFinder = PullRequestFinder.newInstance(pullRequestService, rateLimitRetryer);
+        CommentFinder commentFinder = CommentFinder.newInstance(pullRequestService, rateLimitRetryer);
         ReportTracker reportTracker = new ReportTracker(organisationRepos, pullRequestFinder, commentFinder);
 
         for (String user : users) {

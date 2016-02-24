@@ -1,5 +1,6 @@
 package com.novoda.reports.organisation;
 
+import com.novoda.reports.RateLimitRetryer;
 import org.eclipse.egit.github.core.service.RepositoryService;
 
 import java.util.List;
@@ -11,12 +12,12 @@ public class OrganisationRepoFinder {
     private final RepoPersistenceDataSource persistenceDataSource;
     private final RepoWebServiceDataSource webServiceDataSource;
 
-    public static OrganisationRepoFinder newInstance(String organisation, RepositoryService repositoryService) {
+    public static OrganisationRepoFinder newInstance(String organisation, RepositoryService repositoryService, RateLimitRetryer rateLimitRetryer) {
         RepoInMemoryDataSource repoInMemoryDataSource = new RepoInMemoryDataSource();
         RepoSqlite3Database repoDatabase = new RepoSqlite3Database();
         RepoPersistenceDataSource repoPersistenceDataSource = new RepoPersistenceDataSource(repoDatabase);
         RepoWebServiceDataSource.Converter converter = new RepoWebServiceDataSource.Converter();
-        RepoWebServiceDataSource repoWebServiceDataSource = new RepoWebServiceDataSource(repositoryService, converter);
+        RepoWebServiceDataSource repoWebServiceDataSource = new RepoWebServiceDataSource(repositoryService, converter, rateLimitRetryer);
         return new OrganisationRepoFinder(organisation, repoInMemoryDataSource, repoPersistenceDataSource, repoWebServiceDataSource);
     }
 

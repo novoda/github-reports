@@ -30,7 +30,7 @@ class PullRequestPersistenceDataSource {
         }
     }
 
-    public FullPullRequest readFullPullRequests(LitePullRequest litePullRequest) {
+    public FullPullRequest readFullPullRequest(LitePullRequest litePullRequest) {
         try {
             return pullRequestDatabase.read(litePullRequest);
         } catch (SQLiteException e) {
@@ -38,7 +38,7 @@ class PullRequestPersistenceDataSource {
         }
     }
 
-    public void createFullPullRequests(LitePullRequest litePullRequest, FullPullRequest fullPullRequest) {
+    public void createFullPullRequest(LitePullRequest litePullRequest, FullPullRequest fullPullRequest) {
         try {
             pullRequestDatabase.create();
             pullRequestDatabase.update(litePullRequest, fullPullRequest);

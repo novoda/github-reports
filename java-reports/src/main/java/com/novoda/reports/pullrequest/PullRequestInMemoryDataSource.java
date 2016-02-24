@@ -24,12 +24,12 @@ class PullRequestInMemoryDataSource {
         }
     }
 
-    public void createFullPullRequests(LitePullRequest litePullRequest, FullPullRequest fullPullRequest) {
+    public void createFullPullRequest(LitePullRequest litePullRequest, FullPullRequest fullPullRequest) {
         FULL_CACHE.put(litePullRequest, fullPullRequest);
     }
 
     // Nullable TODO introduce annotation
-    public FullPullRequest readFullPullRequests(LitePullRequest litePullRequest) {
+    public FullPullRequest readFullPullRequest(LitePullRequest litePullRequest) {
         if (FULL_CACHE.containsKey(litePullRequest)) {
             return FULL_CACHE.get(litePullRequest);
         } else {

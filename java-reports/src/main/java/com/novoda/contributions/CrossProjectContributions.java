@@ -15,14 +15,14 @@ public class CrossProjectContributions {
         String floatAccessToken = args[0];
         String githubAccessToken = args[1];
         // Input needed - Date Range
+        String startDate = "2016-01-11";
+        String endDate = "2016-01-18";
         FloatContributionTracker floatContributionTracker = new FloatContributionTracker(floatAccessToken);
         FloatToGitHub floatToGitHub = FloatToGitHub.newInstance();
-        Stream<FloatDev> floatDevs = floatContributionTracker.track("2016-01-11", "2016-01-18");
-
+        Stream<FloatDev> floatDevs = floatContributionTracker.track(startDate, endDate);
         GitHubClient client = new GitHubClient();
         client.setOAuth2Token(githubAccessToken);
         GitHubContributionTracker contributionTracker = GitHubContributionTracker.newInstance(client, "Novoda");
-
         floatToGitHub.lookup(floatDevs)
                 .forEach(contributionTracker::track);
     }

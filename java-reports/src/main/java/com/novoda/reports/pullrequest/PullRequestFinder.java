@@ -1,5 +1,6 @@
 package com.novoda.reports.pullrequest;
 
+import com.novoda.reports.RateLimitRetryer;
 import com.novoda.reports.organisation.OrganisationRepo;
 import org.eclipse.egit.github.core.service.PullRequestService;
 
@@ -12,13 +13,13 @@ public class PullRequestFinder {
     private final PullRequestPersistenceDataSource persistenceDataSource;
     private final PullRequestWebServiceDataSource webServiceDataSource;
 
-    public static PullRequestFinder newInstance(PullRequestService pullRequestService) {
+    public static PullRequestFinder newInstance(PullRequestService pullRequestService, RateLimitRetryer rateLimitRetryer) {
         PullRequestInMemoryDataSource inMemoryDataSource = new PullRequestInMemoryDataSource();
         PullRequestSqlite3Database pullRequestDatabase = new PullRequestSqlite3Database();
         PullRequestPersistenceDataSource persistenceDataSource = new PullRequestPersistenceDataSource(pullRequestDatabase);
         LiteConverter liteConverter = new LiteConverter();
         FullConverter fullConverter = new FullConverter(liteConverter);
-        PullRequestWebServiceDataSource webServiceDataSource = new PullRequestWebServiceDataSource(pullRequestService, liteConverter, fullConverter);
+        PullRequestWebServiceDataSource webServiceDataSource = new PullRequestWebServiceDataSource(pullRequestService, liteConverter, fullConverter, rateLimitRetryer);
         return new PullRequestFinder(inMemoryDataSource, persistenceDataSource, webServiceDataSource);
     }
 
@@ -51,18 +52,18 @@ public class PullRequestFinder {
     }
 
     public FullPullRequest getFullPullRequest(LitePullRequest litePullRequest) {
-        FullPullRequest inMemoryRepositories = inMemoryDataSource.readFullPullRequests(litePullRequest);
+        FullPullRequest inMemoryRepositories = inMemoryDataSource.readFullPullRequest(litePullRequest);
         if (inMemoryRepositories != null) {
             return inMemoryRepositories;
         }
-        FullPullRequest diskRepositories = persistenceDataSource.readFullPullRequests(litePullRequest);
+        FullPullRequest diskRepositories = persistenceDataSource.readFullPullRequest(litePullRequest);
         if (diskRepositories != null) {
-            inMemoryDataSource.createFullPullRequests(litePullRequest, diskRepositories);
+            inMemoryDataSource.createFullPullRequest(litePullRequest, diskRepositories);
             return diskRepositories;
         }
-        FullPullRequest fullPullRequest = webServiceDataSource.readFullPullRequests(litePullRequest);
-        persistenceDataSource.createFullPullRequests(litePullRequest, fullPullRequest);
-        inMemoryDataSource.createFullPullRequests(litePullRequest, fullPullRequest);
+        FullPullRequest fullPullRequest = webServiceDataSource.readFullPullRequest(litePullRequest);
+        persistenceDataSource.createFullPullRequest(litePullRequest, fullPullRequest);
+        inMemoryDataSource.createFullPullRequest(litePullRequest, fullPullRequest);
         return fullPullRequest;
     }
 
