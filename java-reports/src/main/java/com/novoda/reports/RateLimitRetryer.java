@@ -2,6 +2,7 @@ package com.novoda.reports;
 
 import org.eclipse.egit.github.core.client.GitHubClient;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 public class RateLimitRetryer {
@@ -62,7 +63,7 @@ public class RateLimitRetryer {
 
         void sleep() {
             try {
-                System.err.println("Sleeping.");
+                System.err.println("Sleeping. " + LocalDateTime.now());
                 Thread.sleep(ONE_HOUR);
             } catch (InterruptedException e) {
                 throw new IllegalStateException(e);
