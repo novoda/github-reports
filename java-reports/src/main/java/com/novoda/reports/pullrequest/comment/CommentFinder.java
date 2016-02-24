@@ -1,5 +1,6 @@
 package com.novoda.reports.pullrequest.comment;
 
+import com.novoda.reports.RateLimitRetryer;
 import com.novoda.reports.pullrequest.LitePullRequest;
 import org.eclipse.egit.github.core.service.PullRequestService;
 
@@ -12,12 +13,12 @@ public class CommentFinder {
     private final CommentPersistenceDataSource persistenceDataSource;
     private final CommentWebServiceDataSource webServiceDataSource;
 
-    public static CommentFinder newInstance(PullRequestService pullRequestService) {
+    public static CommentFinder newInstance(PullRequestService pullRequestService, RateLimitRetryer rateLimitRetryer) {
         CommentInMemoryDataSource inMemoryDataSource = new CommentInMemoryDataSource();
         CommentSqlite3Database commentDatabase = new CommentSqlite3Database();
         CommentPersistenceDataSource persistenceDataSource = new CommentPersistenceDataSource(commentDatabase);
         CommentConverter converter = new CommentConverter();
-        CommentWebServiceDataSource webServiceDataSource = new CommentWebServiceDataSource(pullRequestService, converter);
+        CommentWebServiceDataSource webServiceDataSource = new CommentWebServiceDataSource(pullRequestService, converter, rateLimitRetryer);
         return new CommentFinder(inMemoryDataSource, persistenceDataSource, webServiceDataSource);
     }
 
