@@ -30,20 +30,21 @@ class PullRequestSqlite3Database {
 
     private static final File DB_FILE = new File("/tmp/database.sqlite3");
 
+    private SQLiteConnection connection;
+
     public void create() throws SQLiteException {
-        SQLiteConnection connection = new SQLiteConnection(DB_FILE);
-        try {
-            connection.open(true);
-            createLite(connection);
-            createFull(connection);
-        } finally {
-            connection.dispose();
-        }
+        connection.open(true);
+        createLite();
+        createFull();
     }
 
-    private void createLite(SQLiteConnection connection) throws SQLiteException {
-        SQLiteStatement createLiteStatement = connection.open()
-                .prepare("CREATE TABLE IF NOT EXISTS '" + TBL_PULL_REQUESTS + "' (" +
+    public void open() throws SQLiteException {
+        connection = new SQLiteConnection(DB_FILE).open(true);
+    }
+
+    private void createLite() throws SQLiteException {
+        SQLiteStatement createLiteStatement = connection.prepare(
+                "CREATE TABLE IF NOT EXISTS '" + TBL_PULL_REQUESTS + "' (" +
                         "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                         COL_REPO_NAME + " STRING NOT NULL," +
                         COL_REPO_OWNER_LOGIN + " STRING NOT NULL," +
@@ -57,9 +58,9 @@ class PullRequestSqlite3Database {
         createLiteStatement.dispose();
     }
 
-    private void createFull(SQLiteConnection connection) throws SQLiteException {
-        SQLiteStatement createFullStatement = connection.open()
-                .prepare("CREATE TABLE IF NOT EXISTS '" + TBL_PULL_REQUESTS_EXT + "' (" +
+    private void createFull() throws SQLiteException {
+        SQLiteStatement createFullStatement = connection.prepare(
+                "CREATE TABLE IF NOT EXISTS '" + TBL_PULL_REQUESTS_EXT + "' (" +
                         "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                         COL_REPO_NAME + " INTEGER NOT NULL," +
                         COL_NUMBER + " INTEGER NOT NULL," +
@@ -72,128 +73,107 @@ class PullRequestSqlite3Database {
     }
 
     public List<LitePullRequest> read(OrganisationRepo repo) throws SQLiteException {
-        SQLiteConnection connection = new SQLiteConnection(DB_FILE);
-        try {
-            connection.open(true);
-
-            SQLiteStatement existsStatement = connection.prepare(
-                    "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TBL_PULL_REQUESTS + "';");
-            if (!existsStatement.step()) {
-                existsStatement.dispose();
-                return new ArrayList<>();
-            }
+        SQLiteStatement existsStatement = connection.prepare(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TBL_PULL_REQUESTS + "';");
+        if (!existsStatement.step()) {
             existsStatement.dispose();
-
-            SQLiteStatement readStatement = connection.prepare(
-                    "SELECT " + COL_REPO_NAME +
-                            ", " + COL_REPO_OWNER_LOGIN +
-                            ", " + COL_NUMBER +
-                            ", " + COL_TITLE +
-                            ", " + COL_USER_LOGIN +
-                            ", " + COL_CREATED_AT +
-                            " FROM " + TBL_PULL_REQUESTS +
-                            " WHERE " + COL_REPO_NAME + " = ?");
-            readStatement.bind(1, repo.getName());
-            List<LitePullRequest> litePullRequests = new ArrayList<>();
-            while (readStatement.step()) {
-                String repoName = readStatement.columnString(0);
-                String repoOwnerLogin = readStatement.columnString(1);
-                int number = readStatement.columnInt(2);
-                String title = readStatement.columnString(3);
-                String userLogin = readStatement.columnString(4);
-                long rawCreatedAt = readStatement.columnLong(5);
-                LocalDate createdAt = LocalDate.ofEpochDay(rawCreatedAt);
-                litePullRequests.add(new LitePullRequest(repoName, repoOwnerLogin, number, title, userLogin, createdAt));
-            }
-            readStatement.dispose();
-            return litePullRequests;
-        } finally {
-            connection.dispose();
+            return new ArrayList<>();
         }
+        existsStatement.dispose();
+
+        SQLiteStatement readStatement = connection.prepare(
+                "SELECT " + COL_REPO_NAME +
+                        ", " + COL_REPO_OWNER_LOGIN +
+                        ", " + COL_NUMBER +
+                        ", " + COL_TITLE +
+                        ", " + COL_USER_LOGIN +
+                        ", " + COL_CREATED_AT +
+                        " FROM " + TBL_PULL_REQUESTS +
+                        " WHERE " + COL_REPO_NAME + " = ?");
+        readStatement.bind(1, repo.getName());
+        List<LitePullRequest> litePullRequests = new ArrayList<>();
+        while (readStatement.step()) {
+            String repoName = readStatement.columnString(0);
+            String repoOwnerLogin = readStatement.columnString(1);
+            int number = readStatement.columnInt(2);
+            String title = readStatement.columnString(3);
+            String userLogin = readStatement.columnString(4);
+            long rawCreatedAt = readStatement.columnLong(5);
+            LocalDate createdAt = LocalDate.ofEpochDay(rawCreatedAt);
+            litePullRequests.add(new LitePullRequest(repoName, repoOwnerLogin, number, title, userLogin, createdAt));
+        }
+        readStatement.dispose();
+        return litePullRequests;
     }
 
     // nullable TODO add annotations
     public FullPullRequest read(LitePullRequest litePullRequest) throws SQLiteException {
-        SQLiteConnection connection = new SQLiteConnection(DB_FILE);
-        try {
-            connection.open(true);
-
-            SQLiteStatement existsStatement = connection.prepare(
-                    "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TBL_PULL_REQUESTS_EXT + "';");
-            if (!existsStatement.step()) {
-                existsStatement.dispose();
-                return null;
-            }
+        SQLiteStatement existsStatement = connection.prepare(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TBL_PULL_REQUESTS_EXT + "';");
+        if (!existsStatement.step()) {
             existsStatement.dispose();
+            return null;
+        }
+        existsStatement.dispose();
 
-            SQLiteStatement readStatement = connection.prepare(
-                    "SELECT " + COL_IS_MERGED + ", "
-                            + COL_MERGED_BY_USER_LOGIN +
-                            " FROM " + TBL_PULL_REQUESTS_EXT +
-                            " WHERE " + COL_REPO_NAME + " = ? " +
-                            " AND " + COL_NUMBER + " = ?");
-            readStatement.bind(1, litePullRequest.getRepoName());
-            readStatement.bind(2, litePullRequest.getNumber());
+        SQLiteStatement readStatement = connection.prepare(
+                "SELECT " + COL_IS_MERGED + ", "
+                        + COL_MERGED_BY_USER_LOGIN +
+                        " FROM " + TBL_PULL_REQUESTS_EXT +
+                        " WHERE " + COL_REPO_NAME + " = ? " +
+                        " AND " + COL_NUMBER + " = ?");
+        readStatement.bind(1, litePullRequest.getRepoName());
+        readStatement.bind(2, litePullRequest.getNumber());
 
-            if (readStatement.step()) {
-                boolean isMerged = readStatement.columnInt(0) == 1;
-                String mergedByUserName = readStatement.columnString(1);
-                readStatement.dispose();
-                return new FullPullRequest(litePullRequest, isMerged, mergedByUserName);
-            } else {
-                readStatement.dispose();
-                return null;
-            }
-        } finally {
-            connection.dispose();
+        if (readStatement.step()) {
+            boolean isMerged = readStatement.columnInt(0) == 1;
+            String mergedByUserName = readStatement.columnString(1);
+            readStatement.dispose();
+            return new FullPullRequest(litePullRequest, isMerged, mergedByUserName);
+        } else {
+            readStatement.dispose();
+            return null;
         }
     }
 
     public void update(OrganisationRepo repo, List<LitePullRequest> litePullRequests) throws SQLiteException {
-        SQLiteConnection connection = new SQLiteConnection(DB_FILE);
-        try {
-            connection.open(false);
-            SQLiteStatement updateStatement = connection.prepare(
-                    "INSERT INTO '" + TBL_PULL_REQUESTS + "' (" +
-                            COL_REPO_NAME + ", " + COL_REPO_OWNER_LOGIN + ", " +
-                            COL_NUMBER + ", " + COL_TITLE + ", " + COL_USER_LOGIN + ", " + COL_CREATED_AT +
-                            ") " +
-                            "VALUES (?, ?, ? ,? ,?, ?)");
-            updateStatement.bind(1, repo.getName());
-            updateStatement.bind(2, repo.getLogin());
-            for (LitePullRequest litePullRequest : litePullRequests) {
-                updateStatement.bind(3, litePullRequest.getNumber());
-                updateStatement.bind(4, litePullRequest.getTitle());
-                updateStatement.bind(5, litePullRequest.getUserLogin());
-                updateStatement.bind(6, litePullRequest.getCreatedAt().toEpochDay());
-                updateStatement.step();
-                updateStatement.reset(false);
-            }
-            updateStatement.dispose();
-        } finally {
-            connection.dispose();
+        SQLiteStatement updateStatement = connection.prepare(
+                "INSERT INTO '" + TBL_PULL_REQUESTS + "' (" +
+                        COL_REPO_NAME + ", " + COL_REPO_OWNER_LOGIN + ", " +
+                        COL_NUMBER + ", " + COL_TITLE + ", " + COL_USER_LOGIN + ", " + COL_CREATED_AT +
+                        ") " +
+                        "VALUES (?, ?, ? ,? ,?, ?)");
+        updateStatement.bind(1, repo.getName());
+        updateStatement.bind(2, repo.getLogin());
+        for (LitePullRequest litePullRequest : litePullRequests) {
+            updateStatement.bind(3, litePullRequest.getNumber());
+            updateStatement.bind(4, litePullRequest.getTitle());
+            updateStatement.bind(5, litePullRequest.getUserLogin());
+            updateStatement.bind(6, litePullRequest.getCreatedAt().toEpochDay());
+            updateStatement.step();
+            updateStatement.reset(false);
         }
+        updateStatement.dispose();
     }
 
     public void update(LitePullRequest litePullRequest, FullPullRequest fullPullRequest) throws SQLiteException {
-        SQLiteConnection connection = new SQLiteConnection(DB_FILE);
-        try {
-            connection.open(false);
-            SQLiteStatement updateStatement = connection.prepare(
-                    "INSERT INTO '" + TBL_PULL_REQUESTS_EXT + "' (" +
-                            COL_REPO_NAME + ", " + COL_NUMBER + ", " +
-                            COL_IS_MERGED + ", " + COL_MERGED_BY_USER_LOGIN +
-                            ") " +
-                            "VALUES (?, ?, ? ,? )");
-            updateStatement.bind(1, litePullRequest.getRepoName());
-            updateStatement.bind(2, litePullRequest.getNumber());
-            updateStatement.bind(3, fullPullRequest.isMerged() ? 1 : 0);
-            updateStatement.bind(4, fullPullRequest.getMergedByUserLogin());
-            updateStatement.step();
-            updateStatement.reset();
-            updateStatement.dispose();
-        } finally {
-            connection.dispose();
-        }
+        SQLiteStatement updateStatement = connection.prepare(
+                "INSERT INTO '" + TBL_PULL_REQUESTS_EXT + "' (" +
+                        COL_REPO_NAME + ", " + COL_NUMBER + ", " +
+                        COL_IS_MERGED + ", " + COL_MERGED_BY_USER_LOGIN +
+                        ") " +
+                        "VALUES (?, ?, ? ,? )");
+        updateStatement.bind(1, litePullRequest.getRepoName());
+        updateStatement.bind(2, litePullRequest.getNumber());
+        updateStatement.bind(3, fullPullRequest.isMerged() ? 1 : 0);
+        updateStatement.bind(4, fullPullRequest.getMergedByUserLogin());
+        updateStatement.step();
+        updateStatement.reset();
+        updateStatement.dispose();
     }
+
+    public void close() {
+        connection.dispose();
+    }
+
 }

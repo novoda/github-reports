@@ -15,18 +15,24 @@ class CommentPersistenceDataSource {
 
     public void createComments(LitePullRequest pullRequest, List<Comment> comments) {
         try {
+            commentDatabase.open();
             commentDatabase.create();
             commentDatabase.update(pullRequest, comments);
         } catch (SQLiteException e) {
             throw new IllegalStateException("Could not save comments for " + pullRequest.getTitle() + " to repository.", e);
+        } finally {
+            commentDatabase.close();
         }
     }
 
     public List<Comment> readComments(LitePullRequest pullRequest) {
         try {
+            commentDatabase.open();
             return commentDatabase.read(pullRequest);
         } catch (SQLiteException e) {
             throw new IllegalStateException("Could not read comments for " + pullRequest.getTitle() + " from repository.", e);
+        } finally {
+            commentDatabase.close();
         }
     }
 }
