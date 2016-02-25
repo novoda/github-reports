@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CommentWebServiceDataSourceTest {
 
     private CommentWebServiceDataSource dataSource;
-    private int remainingRequests;
     private MockPullRequestService service;
     private MockSleeper sleeper;
 
@@ -93,7 +92,7 @@ public class CommentWebServiceDataSourceTest {
 
         @Override
         public int getRemainingRequests() {
-            return remainingRequests;
+            return 0;
         }
     }
 }
