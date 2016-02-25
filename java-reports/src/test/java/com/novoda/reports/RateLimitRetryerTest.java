@@ -70,7 +70,7 @@ public class RateLimitRetryerTest {
 
     private class MockPaginationRetryable implements
             RateLimitRetryer.PaginationRetryable<Object, Object>,
-            RateLimitRetryer.SingleRetryable<Object> {
+            RateLimitRetryer.SingleRetryable<Object, Object> {
 
         boolean retryHasBeenCalled = false;
 
@@ -80,15 +80,16 @@ public class RateLimitRetryerTest {
         }
 
         @Override
-        public void retry(Object target) {
+        public Object retry(Object target) {
             retryHasBeenCalled = true;
+            return null;
         }
     }
 
     private static class InsomniacSleeper extends RateLimitRetryer.Sleeper {
 
         @Override
-        void sleep() {
+        public void sleep() {
             // do nothing
         }
     }

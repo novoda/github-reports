@@ -12,19 +12,19 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Reports {
+public class ReportsRunner {
 
     public static void main(String[] args) throws Exception {
         String githubAccessToken = args[0];
         boolean clearCaches = args.length == 1 || args[1] == null ? false : Boolean.valueOf(args[1]);
         // TODO input args
         List<String> users = new ArrayList<>();
-        users.add("blundell");
-//        users.add("mr_archano");
+//        users.add("blundell");
+        users.add("mr_archano");
 //        users.add("ataulm");
 
         String organisation = "Novoda";
-        LocalDate startDate = LocalDate.parse("2016-02-02");
+        LocalDate startDate = LocalDate.parse("2016-01-02");
         LocalDate endDate = LocalDate.parse("2016-02-03");
 
         GitHubClient client = new GitHubClient();

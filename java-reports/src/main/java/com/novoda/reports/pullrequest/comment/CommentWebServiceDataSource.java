@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 class CommentWebServiceDataSource {
 
+    private static final int MAX_SIZE = 100;
+
     private final PullRequestService pullRequestService;
     private final CommentConverter converter;
     private final RateLimitRetryer rateLimitRetryer;
@@ -31,28 +33,26 @@ class CommentWebServiceDataSource {
 
     private List<Comment> readComments(LitePullRequest pullRequest, List<CommitComment> elements, int page) {
         try {
-            try {
-                PageIterator<CommitComment> iterator = pullRequestService.pageComments(pullRequest::generateId, pullRequest.getNumber());
-                while (iterator.hasNext()) {
-                    Collection<CommitComment> next = iterator.next();
-                    elements.addAll(next);
-                    page++;
-                }
-            } catch (NoSuchPageException pageException) {
-                IOException cause = pageException.getCause();
-                rateLimitRetryer.checkRateLimitAndRetry(pullRequest, elements, page, this::readComments);
-                throw cause;
+            PageIterator<CommitComment> iterator = pullRequestService.pageComments(pullRequest::generateId, pullRequest.getNumber(), page, MAX_SIZE);
+            while (iterator.hasNext()) {
+                Collection<CommitComment> next = iterator.next();
+                elements.addAll(next);
+                page++;
             }
-
-            return elements
-                    .stream()
-                    .map(converter::convert)
-                    .collect(Collectors.toList());
-
-        } catch (IOException e) {
-            String repoName = pullRequest.getRepoName();
-            int number = pullRequest.getNumber();
-            throw new IllegalStateException("Failed getting comments for repo " + repoName + ", pr " + number, e);
+        } catch (NoSuchPageException pageException) {
+            IOException cause = pageException.getCause();
+            if (rateLimitRetryer.hasHitRateLimit()) {
+                rateLimitRetryer.retry(pullRequest, elements, page, this::readComments);
+            } else {
+                String repoName = pullRequest.getRepoName();
+                int number = pullRequest.getNumber();
+                throw new IllegalStateException("Failed getting comments for repo " + repoName + ", pr " + number, cause);
+            }
         }
+
+        return elements
+                .stream()
+                .map(converter::convert)
+                .collect(Collectors.toList());
     }
 }
