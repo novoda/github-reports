@@ -47,6 +47,7 @@ public class PullRequestWebServiceDataSourceTest {
 
     @Test
     public void givenAnException_whenReadFullRequest_thenCheckRateLimit() {
+        mockRateLimitRetryer.rateLimitHit = true;
         pullRequestService.throwException = true;
 
         try {
@@ -55,7 +56,7 @@ public class PullRequestWebServiceDataSourceTest {
             // ignore
         }
 
-        assertThat(mockRateLimitRetryer.checkRateLimitAndRetryHasBeenCalled).isTrue();
+        assertThat(mockRateLimitRetryer.retryHasBeenCalled).isTrue();
     }
 
     private class StubPullRequestService extends PullRequestService {
@@ -88,15 +89,23 @@ public class PullRequestWebServiceDataSourceTest {
 
     private class MockRateLimitRetryer extends RateLimitRetryer {
 
-        boolean checkRateLimitAndRetryHasBeenCalled = false;
+        boolean rateLimitHit = false;
+
+        boolean retryHasBeenCalled = false;
 
         public MockRateLimitRetryer() {
             super(null);
         }
 
         @Override
-        public <T> void checkRateLimitAndRetry(T target, SingleRetryable<T> retryable) {
-            checkRateLimitAndRetryHasBeenCalled = true;
+        public <T, R> R retry(T target, SingleRetryable<T, R> singleRetryable) {
+            retryHasBeenCalled = true;
+            return null;
+        }
+
+        @Override
+        public boolean hasHitRateLimit() {
+            return rateLimitHit;
         }
     }
 }

@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 class PullRequestWebServiceDataSource {
 
+    private static final int MAX_SIZE = 100;
+
     private final PullRequestService pullRequestService;
     private final LiteConverter liteConverter;
     private final FullConverter fullConverter;
@@ -38,27 +40,26 @@ class PullRequestWebServiceDataSource {
 
     private List<LitePullRequest> readLitePullRequests(OrganisationRepo repo, List<PullRequest> elements, int page) {
         try {
-            try {
-                PageIterator<PullRequest> iterator = pullRequestService.pagePullRequests(repo::getId, "all");
-                while (iterator.hasNext()) {
-                    Collection<PullRequest> next = iterator.next();
-                    elements.addAll(next);
-                    page++;
-                }
-            } catch (NoSuchPageException pageException) {
-                IOException cause = pageException.getCause();
-                rateLimitRetryer.checkRateLimitAndRetry(repo, elements, page, this::readLitePullRequests);
-                throw cause;
+            PageIterator<PullRequest> iterator = pullRequestService.pagePullRequests(repo::getId, "all", page, MAX_SIZE);
+            while (iterator.hasNext()) {
+                Collection<PullRequest> next = iterator.next();
+                elements.addAll(next);
+                page++;
             }
-
-            return elements
-                    .stream()
-                    .map(liteConverter::convert)
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            String repoName = repo.getName();
-            throw new IllegalStateException("Failed to get PRs for repo " + repoName, e);
+        } catch (NoSuchPageException pageException) {
+            IOException cause = pageException.getCause();
+            if (rateLimitRetryer.hasHitRateLimit()) {
+                rateLimitRetryer.retry(repo, elements, page, this::readLitePullRequests);
+            } else {
+                String repoName = repo.getName();
+                throw new IllegalStateException("Failed to get PRs for repo " + repoName, cause);
+            }
         }
+
+        return elements
+                .stream()
+                .map(liteConverter::convert)
+                .collect(Collectors.toList());
     }
 
     public FullPullRequest readFullPullRequest(LitePullRequest litePullRequest) {
@@ -66,10 +67,13 @@ class PullRequestWebServiceDataSource {
             PullRequest pullRequest = pullRequestService.getPullRequest(litePullRequest::generateId, litePullRequest.getNumber());
             return fullConverter.convert(pullRequest);
         } catch (IOException e) {
-            rateLimitRetryer.checkRateLimitAndRetry(litePullRequest, this::readFullPullRequest);
-            String repoName = litePullRequest.getRepoName();
-            String title = litePullRequest.getTitle();
-            throw new IllegalStateException("Failed to get full PR for repo " + repoName + " pr " + title, e);
+            if (rateLimitRetryer.hasHitRateLimit()) {
+                return rateLimitRetryer.retry(litePullRequest, this::readFullPullRequest);
+            } else {
+                String repoName = litePullRequest.getRepoName();
+                String title = litePullRequest.getTitle();
+                throw new IllegalStateException("Failed to get full PR for repo " + repoName + " pr " + title, e);
+            }
         }
     }
 
