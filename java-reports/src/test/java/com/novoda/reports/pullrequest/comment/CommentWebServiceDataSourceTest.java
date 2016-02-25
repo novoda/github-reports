@@ -36,7 +36,7 @@ public class CommentWebServiceDataSourceTest {
     }
 
     @Test
-    public void testName() throws Exception {
+    public void givenWeHitTheRateLimit_whenWeReadComments_thenSleepIsCalled() throws Exception {
         LitePullRequest lpr = new LitePullRequest("testRepo", "testLogin", 99, "title", "userLogin", LocalDate.now());
         service.addPages(3);
 
