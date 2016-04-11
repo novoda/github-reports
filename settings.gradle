@@ -1,2 +1,4 @@
 include ':java-reports'
 include ':ruby-reports'
+include 'hosted-aws-reports'
+

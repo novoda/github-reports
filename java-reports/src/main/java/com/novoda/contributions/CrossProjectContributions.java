@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 public class CrossProjectContributions {
 
+    //***REMOVED***
     public static void main(String[] args) throws IOException {
         String floatAccessToken = args[0];
         String githubAccessToken = args[1];

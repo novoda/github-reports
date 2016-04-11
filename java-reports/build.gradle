@@ -30,3 +30,10 @@ tasks.build {
 
 compileJava.sourceCompatibility = JavaVersion.VERSION_1_8
 compileJava.targetCompatibility = JavaVersion.VERSION_1_8
+
+jar {
+    manifest {
+        attributes "Main-Class": "com.novoda.reports.ReportsRunner"
+    }
+
+}
