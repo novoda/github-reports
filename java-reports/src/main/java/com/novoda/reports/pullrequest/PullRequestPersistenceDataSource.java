@@ -7,9 +7,9 @@ import java.util.List;
 
 class PullRequestPersistenceDataSource {
 
-    private final PullRequestSqlite3Database pullRequestDatabase;
+    private final Sqlite3PullRequestDatabase pullRequestDatabase;
 
-    PullRequestPersistenceDataSource(PullRequestSqlite3Database pullRequestDatabase) {
+    PullRequestPersistenceDataSource(Sqlite3PullRequestDatabase pullRequestDatabase) {
         this.pullRequestDatabase = pullRequestDatabase;
     }
 

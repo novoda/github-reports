@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-class PullRequestSqlite3Database {
+class Sqlite3PullRequestDatabase {
 
     private static final String TBL_PULL_REQUESTS = "github_pull_requests";
     private static final String COL_REPO_NAME = "repo_name";
