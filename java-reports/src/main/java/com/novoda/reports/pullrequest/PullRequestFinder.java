@@ -15,7 +15,7 @@ public class PullRequestFinder {
 
     public static PullRequestFinder newInstance(PullRequestService pullRequestService, RateLimitRetryer rateLimitRetryer) {
         PullRequestInMemoryDataSource inMemoryDataSource = new PullRequestInMemoryDataSource();
-        Sqlite3PullRequestDatabase pullRequestDatabase = new Sqlite3PullRequestDatabase();
+        PullRequestDatabase pullRequestDatabase = new Sqlite3PullRequestDatabase();
         PullRequestPersistenceDataSource persistenceDataSource = new PullRequestPersistenceDataSource(pullRequestDatabase);
         LiteConverter liteConverter = new LiteConverter();
         FullConverter fullConverter = new FullConverter(liteConverter);
