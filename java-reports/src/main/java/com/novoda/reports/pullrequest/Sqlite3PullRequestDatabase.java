@@ -203,7 +203,7 @@ class Sqlite3PullRequestDatabase implements PullRequestDatabase {
     }
 
     @Override
-    public void close() {
+    public void close() throws DatabaseException {
         connection.dispose();
     }
 
