@@ -18,7 +18,7 @@ public interface PullRequestDatabase {
 
     void update(LitePullRequest litePullRequest, FullPullRequest fullPullRequest) throws DatabaseException;
 
-    void close();
+    void close() throws DatabaseException;
 
     class DatabaseException extends RuntimeException {
 
