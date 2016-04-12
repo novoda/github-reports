@@ -5,9 +5,9 @@ import com.novoda.reports.organisation.OrganisationRepo;
 import java.util.List;
 
 public interface PullRequestDatabase {
-    void create() throws DatabaseException;
-
     void open() throws DatabaseException;
+
+    void create() throws DatabaseException;
 
     List<LitePullRequest> read(OrganisationRepo repo) throws DatabaseException;
 
