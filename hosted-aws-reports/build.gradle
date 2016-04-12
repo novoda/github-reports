@@ -9,6 +9,7 @@ repositories {
 }
 
 dependencies {
+    compile project(':java-reports')
     compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
     compile 'com.amazonaws:aws-lambda-java-events:1.1.0'
     compile 'mysql:mysql-connector-java:5.1.38'
