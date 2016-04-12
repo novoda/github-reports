@@ -33,20 +33,20 @@ class Sqlite3PullRequestDatabase implements PullRequestDatabase {
     private SQLiteConnection connection;
 
     @Override
-    public void create() throws DatabaseException {
+    public void open() throws DatabaseException {
         try {
-            connection.open(true);
-            createLite();
-            createFull();
+            connection = new SQLiteConnection(DB_FILE).open(true);
         } catch (SQLiteException e) {
             throw new DatabaseException(e);
         }
     }
 
     @Override
-    public void open() throws DatabaseException {
+    public void create() throws DatabaseException {
         try {
-            connection = new SQLiteConnection(DB_FILE).open(true);
+            connection.open(true);
+            createLite();
+            createFull();
         } catch (SQLiteException e) {
             throw new DatabaseException(e);
         }
