@@ -11,6 +11,7 @@ import com.novoda.github.reports.core.stats.Stats;
 import com.novoda.github.reports.handler.ProjectCommandHandler;
 import com.novoda.github.reports.handler.RepoCommandHandler;
 import com.novoda.github.reports.handler.UserCommandHandler;
+import com.novoda.github.reports.properties.CredentialsReader;
 
 public class Main {
 
@@ -50,6 +51,6 @@ public class Main {
     }
 
     public static void main(String[] args) throws UnhandledCommandException {
-	   new Main().execute(args);
+        new Main().execute(args);
     }
 }
