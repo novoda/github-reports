@@ -1,6 +1,5 @@
 package com.novoda.github.reports.command;
 
-
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 

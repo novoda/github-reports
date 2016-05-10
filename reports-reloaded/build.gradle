@@ -14,13 +14,12 @@ run {
 
 repositories {
     mavenCentral()
-}
-
-repositories {
     jcenter()
 }
 
 dependencies {
+    compile project(":core")
+
     compile 'joda-time:joda-time:2.9.3'
     compile 'com.beust:jcommander:1.48'
 

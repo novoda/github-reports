@@ -3,3 +3,4 @@
 .gradle
 *.iml
 *.class
+core/build

@@ -1,8 +1,8 @@
 package com.novoda.github.reports.handler;
 
 import com.novoda.github.reports.command.UserOptions;
-import com.novoda.github.reports.core.data.UserDataLayer;
-import com.novoda.github.reports.core.stats.UserStats;
+import com.novoda.github.reports.data.UserDataLayer;
+import com.novoda.github.reports.data.model.UserStats;
 
 public class UserCommandHandler implements CommandHandler<UserStats, UserOptions> {
     private final UserDataLayer dataLayer;
