@@ -1,4 +1,4 @@
-package com.novoda.github.reports.core.stats;
+package com.novoda.github.reports.data.model;
 
 public interface Stats {
 
