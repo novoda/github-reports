@@ -1,0 +1,28 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+mainClassName = "com.novoda.github.reports.Main"
+
+run {
+    if (project.hasProperty('args')) {
+        args project.args.split('\\s+')
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'joda-time:joda-time:2.9.3'
+    compile 'com.beust:jcommander:1.48'
+
+    testCompile 'junit:junit:4.12'
+}
