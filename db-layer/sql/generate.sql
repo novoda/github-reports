@@ -4,32 +4,6 @@ CREATE DATABASE `reports`
 USE `reports`;
 
 --
--- Table structure for table `event`
---
-DROP TABLE IF EXISTS `event`;
-CREATE TABLE `event` (
-  `_id`            INT(11)   NOT NULL AUTO_INCREMENT,
-  `author_user_id` INT(11)   NOT NULL,
-  `owner_user_id`  INT(11)   NOT NULL,
-  `event_type_id`  INT(11)   NOT NULL,
-  `date`           TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`_id`),
-  KEY `author_INDEX` (`author_user_id`),
-  KEY `owner_INDEX` (`owner_user_id`),
-  KEY `event_type_INDEX` (`event_type_id`),
-  KEY `date_INDEX` (`date`),
-  CONSTRAINT `author` FOREIGN KEY (`author_user_id`) REFERENCES `user` (`_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `event_type` FOREIGN KEY (`event_type_id`) REFERENCES `event_type` (`_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `owner` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-);
-
---
 -- Table structure for table `event_type`
 --
 DROP TABLE IF EXISTS `event_type`;
@@ -73,6 +47,17 @@ CREATE TABLE `project` (
 );
 
 --
+-- Table structure for table `repository`
+--
+DROP TABLE IF EXISTS `repository`;
+CREATE TABLE `repository` (
+  `_id`  INT(11)      NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`_id`),
+  UNIQUE KEY `name_UNIQUE` (`name`)
+);
+
+--
 -- Table structure for table `project_repository`
 --
 DROP TABLE IF EXISTS `project_repository`;
@@ -92,17 +77,6 @@ CREATE TABLE `project_repository` (
 );
 
 --
--- Table structure for table `repository`
---
-DROP TABLE IF EXISTS `repository`;
-CREATE TABLE `repository` (
-  `_id`  INT(11)      NOT NULL,
-  `name` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`_id`),
-  UNIQUE KEY `name_UNIQUE` (`name`)
-);
-
---
 -- Table structure for table `user`
 --
 DROP TABLE IF EXISTS `user`;
@@ -111,6 +85,32 @@ CREATE TABLE `user` (
   `username` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`_id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
+);
+
+--
+-- Table structure for table `event`
+--
+DROP TABLE IF EXISTS `event`;
+CREATE TABLE `event` (
+  `_id`            INT(11)   NOT NULL AUTO_INCREMENT,
+  `author_user_id` INT(11)   NOT NULL,
+  `owner_user_id`  INT(11)   NOT NULL,
+  `event_type_id`  INT(11)   NOT NULL,
+  `date`           TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`_id`),
+  KEY `author_INDEX` (`author_user_id`),
+  KEY `owner_INDEX` (`owner_user_id`),
+  KEY `event_type_INDEX` (`event_type_id`),
+  KEY `date_INDEX` (`date`),
+  CONSTRAINT `author` FOREIGN KEY (`author_user_id`) REFERENCES `user` (`_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `event_type` FOREIGN KEY (`event_type_id`) REFERENCES `event_type` (`_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `owner` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
 
 -- Dump completed
