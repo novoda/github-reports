@@ -2,8 +2,10 @@ package com.novoda.github.reports.github;
 
 import org.eclipse.egit.github.core.CommitComment;
 import org.eclipse.egit.github.core.IRepositoryIdProvider;
+import org.eclipse.egit.github.core.PullRequest;
 import org.eclipse.egit.github.core.service.PullRequestService;
 
+import java.io.IOException;
 import java.util.List;
 
 public class GithubPullRequestService {
@@ -23,6 +25,21 @@ public class GithubPullRequestService {
     }
 
     public List<CommitComment> getComments(int pullRequestId) {
-        return pullRequestService.getComments(repositoryName, pullRequestId);
+        try {
+            return pullRequestService.getComments(repositoryName, pullRequestId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+
+    public List<PullRequest> getPullRequests(State state) {
+        try {
+            return pullRequestService.getPullRequests(repositoryName, state.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

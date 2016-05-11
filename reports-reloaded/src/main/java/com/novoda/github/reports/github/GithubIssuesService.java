@@ -47,8 +47,7 @@ public class GithubIssuesService {
         return getIssues(new Fields().createdBy(user));
     }
 
-    public List<Issue> getIssuesSince(String date) {
-        // TODO Date class
+    public List<Issue> getIssuesSince(String date) { // TODO Date class
         return getIssues(new Fields().since(date));
     }
 
