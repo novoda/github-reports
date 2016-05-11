@@ -23,6 +23,7 @@ repositories {
 dependencies {
     compile 'joda-time:joda-time:2.9.3'
     compile 'com.beust:jcommander:1.48'
+    compile 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
 
     testCompile 'junit:junit:4.12'
 }
