@@ -24,6 +24,10 @@ public class GithubPullRequestService {
         this.repositoryName = repositoryName;
     }
 
+    public List<CommitComment> getComments(PullRequest pullRequest) {
+        return getComments((int) pullRequest.getId()); // FIXME strange api...
+    }
+
     public List<CommitComment> getComments(int pullRequestId) {
         try {
             return pullRequestService.getComments(repositoryName, pullRequestId);
