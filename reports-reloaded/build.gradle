@@ -25,6 +25,7 @@ dependencies {
     compile 'com.beust:jcommander:1.48'
     compile 'com.squareup.okhttp:okhttp:2.7.5'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta3'
 
     testCompile 'junit:junit:4.12'
 }
