@@ -1,4 +1,4 @@
-package com.novoda.github.reports.core.stats;
+package com.novoda.github.reports.data.model;
 
 public class UserStats implements Stats {
     private final String userName;
@@ -25,7 +25,6 @@ public class UserStats implements Stats {
         this.numberOfProjectsWorkedOn = numberOfProjectsWorkedOn;
     }
 
-    @Override
     public String describeStats() {
         return String.format(
                 "Username: %s\n" +

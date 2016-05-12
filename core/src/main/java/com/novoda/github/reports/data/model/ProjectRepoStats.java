@@ -1,4 +1,4 @@
-package com.novoda.github.reports.core.stats;
+package com.novoda.github.reports.data.model;
 
 public class ProjectRepoStats implements Stats {
 
@@ -26,16 +26,15 @@ public class ProjectRepoStats implements Stats {
         this.numberOfParticipatingUsers = numberOfParticipatingUsers;
     }
 
-    @Override
     public String describeStats() {
         return String.format(
                 "Name: %s\n" +
-                "Number of opened issues: %d\n" +
-                "Number of opened PRs: %d\n" +
-                "Number of commented issues: %d\n" +
-                "Number of merged PRs: %d\n" +
-                "Number of other events: %d\n" +
-                "Number of participating users: %d",
+                        "Number of opened issues: %d\n" +
+                        "Number of opened PRs: %d\n" +
+                        "Number of commented issues: %d\n" +
+                        "Number of merged PRs: %d\n" +
+                        "Number of other events: %d\n" +
+                        "Number of participating users: %d",
                 projectRepoName,
                 numberOfOpenedIssues,
                 numberOfOpenedPullRequests,

@@ -1,9 +1,10 @@
 package com.novoda.github.reports.command;
 
 import com.beust.jcommander.IStringConverter;
-import org.joda.time.DateTime;
 
 import java.util.Date;
+
+import org.joda.time.DateTime;
 
 public class ISO8601DateConverter implements IStringConverter<Date> {
     @Override
