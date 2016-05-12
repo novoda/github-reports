@@ -1,21 +1,27 @@
 package com.novoda.github.reports.github.repository;
 
 import com.novoda.github.reports.github.GithubService;
+import com.novoda.github.reports.github.GithubServiceContainer;
 
-import retrofit2.GsonConverterFactory;
-import retrofit2.Retrofit;
+import java.util.List;
+
+import retrofit2.Callback;
 
 public class RepositoryService implements RepoService {
 
-    public void f() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+    private GithubService githubService;
 
-        GithubService service = retrofit.create(GithubService.class);
+    public static RepositoryService newInstance() {
+        GithubService githubService = GithubServiceContainer.INSTANCE.githubService();
+        return new RepositoryService(githubService);
+    }
 
-        service.getRepositories("novoda");
+    RepositoryService(GithubService githubService) {
+        this.githubService = githubService;
+    }
+
+    public void getRepositoriesOf(String organisation, Callback<List<Repository>> callback) {
+        githubService.getRepositories(organisation).enqueue(callback);
     }
 
 }
