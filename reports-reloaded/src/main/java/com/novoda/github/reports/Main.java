@@ -4,10 +4,10 @@ import com.beust.jcommander.JCommander;
 import com.novoda.github.reports.command.ProjectOptions;
 import com.novoda.github.reports.command.RepoOptions;
 import com.novoda.github.reports.command.UserOptions;
-import com.novoda.github.reports.core.mock.MockProjectDataLayer;
-import com.novoda.github.reports.core.mock.MockRepoDataLayer;
-import com.novoda.github.reports.core.mock.MockUserDataLayer;
-import com.novoda.github.reports.core.stats.Stats;
+import com.novoda.github.reports.data.mock.MockProjectDataLayer;
+import com.novoda.github.reports.data.mock.MockRepoDataLayer;
+import com.novoda.github.reports.data.mock.MockUserDataLayer;
+import com.novoda.github.reports.data.model.Stats;
 import com.novoda.github.reports.handler.ProjectCommandHandler;
 import com.novoda.github.reports.handler.RepoCommandHandler;
 import com.novoda.github.reports.handler.UserCommandHandler;
@@ -50,6 +50,6 @@ public class Main {
     }
 
     public static void main(String[] args) throws UnhandledCommandException {
-	   new Main().execute(args);
+        new Main().execute(args);
     }
 }
