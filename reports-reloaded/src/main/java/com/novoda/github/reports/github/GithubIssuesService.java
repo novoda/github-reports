@@ -2,6 +2,7 @@ package com.novoda.github.reports.github;
 
 import org.eclipse.egit.github.core.IRepositoryIdProvider;
 import org.eclipse.egit.github.core.Issue;
+import org.eclipse.egit.github.core.SearchIssue;
 import org.eclipse.egit.github.core.service.IssueService;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.util.Map;
 public class GithubIssuesService {
 
     private IssueService issueService;
-    private IRepositoryIdProvider repositoryIdProvider;
+    private IRepositoryIdProvider repositoryName;
 
     public static GithubIssuesService newInstance(String repo) {
         RepositoryName repositoryName = new RepositoryName(repo);
@@ -20,14 +21,14 @@ public class GithubIssuesService {
         return new GithubIssuesService(issueService, repositoryName);
     }
 
-    GithubIssuesService(IssueService issueService, IRepositoryIdProvider repositoryIdProvider) {
+    GithubIssuesService(IssueService issueService, IRepositoryIdProvider repositoryName) {
         this.issueService = issueService;
-        this.repositoryIdProvider = repositoryIdProvider;
+        this.repositoryName = repositoryName;
     }
 
     public List<Issue> getIssues(Fields fields) {
         try {
-            return issueService.getIssues(repositoryIdProvider, fields.toMap());
+            return issueService.getIssues(repositoryName, fields.toMap());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -36,7 +37,7 @@ public class GithubIssuesService {
 
     public List<Issue> getAllIssues() {
         try {
-            return issueService.getIssues(repositoryIdProvider, null);
+            return issueService.getIssues(repositoryName, null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,6 +50,15 @@ public class GithubIssuesService {
 
     public List<Issue> getIssuesSince(String date) { // TODO Date class
         return getIssues(new Fields().since(date));
+    }
+
+    private List<SearchIssue> search(State state, String query) {
+        try {
+            return issueService.searchIssues(repositoryName, state.toString(), query);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static class Fields {
