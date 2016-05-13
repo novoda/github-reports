@@ -92,15 +92,16 @@ public class DbRepoDataLayer implements RepoDataLayer {
     }
 
     private static ProjectRepoStats recordsToStats(Result<Record2<Integer, Integer>> events, Result<Record1<Integer>> people, String repo) {
-        BigDecimal numberOfOpenedIssues = BigDecimal.valueOf(0);
-        BigDecimal numberOfOpenedPullRequests = BigDecimal.valueOf(0);
-        BigDecimal numberOfCommentedIssues = BigDecimal.valueOf(0);
-        BigDecimal numberOfMergedPullRequests = BigDecimal.valueOf(0);
-        BigDecimal numberOfOtherEvents = BigDecimal.valueOf(0);
+        BigDecimal numberOfOpenedIssues = BigDecimal.ZERO;
+        BigDecimal numberOfOpenedPullRequests = BigDecimal.ZERO;
+        BigDecimal numberOfCommentedIssues = BigDecimal.ZERO;
+        BigDecimal numberOfMergedPullRequests = BigDecimal.ZERO;
+        BigDecimal numberOfOtherEvents = BigDecimal.ZERO;
 
         for (Record2<Integer, Integer> record : events) {
             Integer key = record.get(EVENT.EVENT_TYPE_ID);
-            BigDecimal value = BigDecimal.valueOf(record.get(EVENTS_COUNT, Integer.class));
+            Integer intValue = record.get(EVENTS_COUNT, Integer.class);
+            BigDecimal value = BigDecimal.valueOf(intValue);
             if (key.equals(NUMBER_OPENED_ISSUES_ID)) {
                 numberOfOpenedIssues = value;
             } else if (key.equals(NUMBER_OPENED_PRS_ID)) {
@@ -114,7 +115,7 @@ public class DbRepoDataLayer implements RepoDataLayer {
             }
         }
 
-        BigDecimal numberOfParticipatingUsers = BigDecimal.valueOf(0);
+        BigDecimal numberOfParticipatingUsers = BigDecimal.ZERO;
 
         if (people != null && people.isNotEmpty()) {
             numberOfParticipatingUsers = people.get(0).get(PEOPLE_COUNT, BigDecimal.class);
