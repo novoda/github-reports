@@ -1,8 +1,8 @@
 package com.novoda.github.reports.handler;
 
 import com.novoda.github.reports.command.RepoOptions;
-import com.novoda.github.reports.core.data.RepoDataLayer;
-import com.novoda.github.reports.core.stats.ProjectRepoStats;
+import com.novoda.github.reports.data.RepoDataLayer;
+import com.novoda.github.reports.data.model.ProjectRepoStats;
 
 public class RepoCommandHandler implements CommandHandler<ProjectRepoStats, RepoOptions> {
     private final RepoDataLayer dataLayer;
