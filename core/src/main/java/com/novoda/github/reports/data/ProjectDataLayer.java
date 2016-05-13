@@ -1,6 +1,6 @@
-package com.novoda.github.reports.core.data;
+package com.novoda.github.reports.data;
 
-import com.novoda.github.reports.core.stats.ProjectRepoStats;
+import com.novoda.github.reports.data.model.ProjectRepoStats;
 
 import java.util.Date;
 

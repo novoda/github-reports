@@ -1,7 +1,7 @@
-package com.novoda.github.reports.core.mock;
+package com.novoda.github.reports.data.mock;
 
-import com.novoda.github.reports.core.data.UserDataLayer;
-import com.novoda.github.reports.core.stats.UserStats;
+import com.novoda.github.reports.data.UserDataLayer;
+import com.novoda.github.reports.data.model.UserStats;
 
 import java.util.Date;
 

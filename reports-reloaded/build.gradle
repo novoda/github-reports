@@ -14,13 +14,13 @@ run {
 
 repositories {
     mavenCentral()
-}
-
-repositories {
     jcenter()
 }
 
 dependencies {
+    compile project(":core")
+    compile project(":db-layer")
+
     compile 'joda-time:joda-time:2.9.3'
     compile 'com.beust:jcommander:1.48'
     compile 'com.squareup.okhttp:okhttp:2.7.5'
