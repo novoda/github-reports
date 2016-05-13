@@ -34,6 +34,7 @@ repositories {
 dependencies {
     compile project(':core')
     compile 'org.jooq:jooq:3.8.0'
+    compile 'mysql:mysql-connector-java:6.0.2'
 
     testCompile 'junit:junit:4.12'
 }

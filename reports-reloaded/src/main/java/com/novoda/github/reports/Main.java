@@ -4,8 +4,8 @@ import com.beust.jcommander.JCommander;
 import com.novoda.github.reports.command.ProjectOptions;
 import com.novoda.github.reports.command.RepoOptions;
 import com.novoda.github.reports.command.UserOptions;
+import com.novoda.github.reports.data.db.DbRepoDataLayer;
 import com.novoda.github.reports.data.mock.MockProjectDataLayer;
-import com.novoda.github.reports.data.mock.MockRepoDataLayer;
 import com.novoda.github.reports.data.mock.MockUserDataLayer;
 import com.novoda.github.reports.data.model.Stats;
 import com.novoda.github.reports.handler.ProjectCommandHandler;
@@ -37,7 +37,7 @@ public class Main {
             UserCommandHandler handler = new UserCommandHandler(new MockUserDataLayer());
             stats = handler.handle(userOptions);
         } else if (command.equals(COMMAND_REPO)) {
-            RepoCommandHandler handler = new RepoCommandHandler(new MockRepoDataLayer());
+            RepoCommandHandler handler = new RepoCommandHandler(new DbRepoDataLayer());
             stats = handler.handle(repoOptions);
         } else if (command.equals(COMMAND_PROJECT)) {
             ProjectCommandHandler handler = new ProjectCommandHandler(new MockProjectDataLayer());
