@@ -7,7 +7,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public enum HttpClientContainer {
+enum HttpClientContainer {
 
     INSTANCE;
 
@@ -31,7 +31,7 @@ public enum HttpClientContainer {
 
     private Response proceedResponse(Interceptor.Chain chain, Request request) throws IOException {
         Response response = chain.proceed(request);
-        response.headers().get("X-RateLimit-Remaining");
+        System.out.printf("*** %s requests remaining\n", response.headers().get("X-RateLimit-Remaining"));
         return response;
     }
 
