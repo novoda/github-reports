@@ -2,7 +2,10 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 //noinspection GroovyUnusedAssignment
-mainClassName = "com.novoda.github.reports.Main"
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+mainClassName = 'com.novoda.github.reports.Main'
 
 run {
     if (project.hasProperty('args')) {
