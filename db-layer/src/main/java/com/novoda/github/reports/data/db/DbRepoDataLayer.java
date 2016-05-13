@@ -92,10 +92,6 @@ public class DbRepoDataLayer implements RepoDataLayer {
     }
 
     private static ProjectRepoStats recordsToStats(Result<Record2<Integer, Integer>> events, Result<Record1<Integer>> people, String repo) {
-        if (events == null && people == null) {
-            return null;
-        }
-
         BigDecimal numberOfOpenedIssues = BigDecimal.valueOf(0);
         BigDecimal numberOfOpenedPullRequests = BigDecimal.valueOf(0);
         BigDecimal numberOfCommentedIssues = BigDecimal.valueOf(0);
