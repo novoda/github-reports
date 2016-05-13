@@ -51,9 +51,9 @@ CREATE TABLE `project` (
 --
 DROP TABLE IF EXISTS `repository`;
 CREATE TABLE `repository` (
-  `_id`  INT(11)      NOT NULL,
-  `name` VARCHAR(255) NOT NULL,
-  `private` TINYINT(1) NOT NULL,
+  `_id`     INT(11)      NOT NULL,
+  `name`    VARCHAR(255) NOT NULL,
+  `private` TINYINT(1)   NOT NULL,
   PRIMARY KEY (`_id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
 );
