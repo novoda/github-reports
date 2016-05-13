@@ -8,14 +8,15 @@ public enum GithubServiceContainer {
 
     INSTANCE;
 
-    private final OkHttpClient okHttpClient = HttpClientContainer.INSTANCE.okHttpClient();
+    private static final String GITHUB_ENDPOINT = "https://api.github.com/";
 
+    private final OkHttpClient okHttpClient = HttpClientContainer.INSTANCE.okHttpClient();
     private final GithubService githubService = retrofit().create(GithubService.class);
 
     private Retrofit retrofit() {
         return new Retrofit.Builder()
                 .client(okHttpClient)
-                .baseUrl("https://api.github.com/")
+                .baseUrl(GITHUB_ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
