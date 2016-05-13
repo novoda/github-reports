@@ -5,3 +5,4 @@
 *.class
 core/build
 db-layer/build
+*.credentials
