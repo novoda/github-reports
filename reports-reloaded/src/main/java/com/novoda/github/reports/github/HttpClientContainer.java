@@ -12,7 +12,6 @@ enum HttpClientContainer {
     INSTANCE;
 
     private static final String REMAINING_RATE_LIMIT_HEADER = "X-RateLimit-Remaining";
-    private static final long MAX_CACHE_SIZE = 1024;
 
     private final OkHttpClient okHttpClient = buildClient();
 
@@ -29,7 +28,6 @@ enum HttpClientContainer {
     private Request injectOAuthTokenThrough(Interceptor.Chain chain) {
         Request oldRequest = chain.request();
         return oldRequest.newBuilder()
-//                .addHeader("", "") // TODO
                 .build();
     }
 
