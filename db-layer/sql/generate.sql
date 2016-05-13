@@ -94,6 +94,7 @@ CREATE TABLE `user` (
 DROP TABLE IF EXISTS `event`;
 CREATE TABLE `event` (
   `_id`            INT(11)   NOT NULL AUTO_INCREMENT,
+  `repository_id` INT(11) NOT NULL,
   `author_user_id` INT(11)   NOT NULL,
   `owner_user_id`  INT(11)   NOT NULL,
   `event_type_id`  INT(11)   NOT NULL,
@@ -103,7 +104,11 @@ CREATE TABLE `event` (
   KEY `owner_INDEX` (`owner_user_id`),
   KEY `event_type_INDEX` (`event_type_id`),
   KEY `date_INDEX` (`date`),
+  KEY `repository_INDEX` (`repository_id`),
   CONSTRAINT `author` FOREIGN KEY (`author_user_id`) REFERENCES `user` (`_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `event_repository` FOREIGN KEY (`repository_id`) REFERENCES `repository` (`_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `event_type` FOREIGN KEY (`event_type_id`) REFERENCES `event_type` (`_id`)
