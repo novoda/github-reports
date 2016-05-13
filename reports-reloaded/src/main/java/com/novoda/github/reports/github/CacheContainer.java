@@ -12,6 +12,8 @@ enum CacheContainer {
     INSTANCE;
 
     private static final long MAX_CACHE_SIZE = 4096;
+    private static final String BASE_DIR = "";
+    private static final String CACHE_DIR = "/okcache/";
 
     private Cache cache = buildCache();
 
@@ -31,18 +33,10 @@ enum CacheContainer {
     }
 
     private File cacheFile() {
-        Path local = Paths.get("");
-        File cache = new File(local.toFile().getAbsolutePath() + "/buildCache.tmp");
-        createNewFile(cache);
+        Path local = Paths.get(BASE_DIR);
+        File cache = new File(local.toFile().getAbsolutePath() + CACHE_DIR);
+        cache.mkdirs();
         return cache;
-    }
-
-    private void createNewFile(File cache) {
-        try {
-            cache.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     Cache cache() {
