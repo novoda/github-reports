@@ -3,6 +3,6 @@
 .gradle
 *.iml
 *.class
-core/build
-db-layer/build
 *.credentials
+*/build/
+out/
