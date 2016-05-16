@@ -7,10 +7,14 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import rx.Observable;
 
 interface GithubService {
 
     @GET("/orgs/{org}/repos")
     Call<List<Repository>> getRepositories(@Path("org") String organisation);
+
+    @GET("/orgs/{org}/repos")
+    Observable<List<Repository>> getRepositoriesFrom(@Path("org") String organisation);
 
 }

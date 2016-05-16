@@ -1,8 +1,9 @@
 package com.novoda.github.reports.github;
 
 import okhttp3.OkHttpClient;
-import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 enum GithubServiceContainer {
 
@@ -18,6 +19,7 @@ enum GithubServiceContainer {
                 .client(okHttpClient)
                 .baseUrl(GITHUB_ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
     }
 

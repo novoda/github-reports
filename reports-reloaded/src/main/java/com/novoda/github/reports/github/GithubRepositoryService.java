@@ -4,6 +4,8 @@ import com.novoda.github.reports.github.repository.RepositoriesListener;
 
 public interface GithubRepositoryService {
 
-    void getRepositoriesFrom(String organisation, RepositoriesListener repositoriesListener);
+    void getRepositories(String organisation, RepositoriesListener repositoriesListener);
+
+    void getRepositoriesFrom(String organisation);
 
 }
