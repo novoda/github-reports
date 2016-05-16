@@ -13,7 +13,7 @@ enum CacheContainer {
 
     private static final long MAX_CACHE_SIZE = 4096;
     private static final String BASE_DIR = "";
-    private static final String CACHE_DIR = "/okcache/";
+    private static final String CACHE_DIR = "/.cache/";
 
     private Cache cache = buildCache();
 
