@@ -14,20 +14,16 @@ run {
 
 repositories {
     mavenCentral()
+}
+
+repositories {
     jcenter()
 }
 
 dependencies {
-    compile project(":core")
-    compile project(":db-layer")
-
     compile 'joda-time:joda-time:2.9.3'
     compile 'com.beust:jcommander:1.48'
-    compile 'io.reactivex:rxjava:1.1.5'
-    compile 'com.squareup.okhttp:okhttp:2.7.5'
-    compile 'com.squareup.retrofit2:retrofit:2.0.2'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
-    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    compile 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
 
     testCompile 'junit:junit:4.12'
 }
