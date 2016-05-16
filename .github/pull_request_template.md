@@ -10,12 +10,7 @@ _Explain high level how have you implemented the task, add any quirks or interes
 
  _yes|no_ and reasoning why
 
-##### Screenshots
-
-| Before | After |
-| ------ | ----- |
-| gif/png _before_ | _gif/png after_ |
-
 ###### Paired with
 
 @ insert github handle
+
