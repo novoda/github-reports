@@ -11,14 +11,14 @@ import retrofit2.Response;
 
 public class RepositoriesService implements GithubRepositoryService {
 
-    private GithubRetrofitService githubService;
+    private GithubService githubService;
 
     public static RepositoriesService newInstance() {
-        GithubRetrofitService githubService = GithubServiceContainer.INSTANCE.githubService();
+        GithubService githubService = GithubServiceContainer.INSTANCE.githubService();
         return new RepositoriesService(githubService);
     }
 
-    RepositoriesService(GithubRetrofitService githubService) {
+    RepositoriesService(GithubService githubService) {
         this.githubService = githubService;
     }
 
