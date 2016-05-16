@@ -4,11 +4,11 @@ import com.novoda.github.reports.properties.CredentialsReader;
 
 import okhttp3.OkHttpClient;
 
-public class HttpClientFactory {
+class HttpClientFactory {
 
-    private OkHttpClient.Builder okHttpClientBuilder;
-    private CredentialsReader credentialsReader;
-    private RateLimitCounter rateLimitCounter;
+    private final OkHttpClient.Builder okHttpClientBuilder;
+    private final CredentialsReader credentialsReader;
+    private final RateLimitCounter rateLimitCounter;
 
     public static HttpClientFactory newInstance() {
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
@@ -25,7 +25,7 @@ public class HttpClientFactory {
         this.rateLimitCounter = rateLimitCounter;
     }
 
-    private OkHttpClient buildClient() {
+    OkHttpClient createClient() {
         String token = credentialsReader.getAuthToken();
         return okHttpClientBuilder
                 .cache(CacheContainer.INSTANCE.cache()) // TODO extract to CacheFactory
