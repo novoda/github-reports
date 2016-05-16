@@ -4,7 +4,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
 
-public enum GithubServiceContainer {
+enum GithubServiceContainer {
 
     INSTANCE;
 
@@ -21,7 +21,7 @@ public enum GithubServiceContainer {
                 .build();
     }
 
-    public GithubRetrofitService githubService() {
+    GithubRetrofitService githubService() {
         return githubService;
     }
 
