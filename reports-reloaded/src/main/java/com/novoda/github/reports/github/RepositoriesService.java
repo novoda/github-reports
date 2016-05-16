@@ -15,8 +15,8 @@ public class RepositoriesService implements GithubRepositoryService {
     private GithubService githubService;
 
     public static RepositoriesService newInstance() {
-        GithubService githubService = GithubServiceContainer.INSTANCE.githubService();
-        return new RepositoriesService(githubService);
+        GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
+        return new RepositoriesService(githubServiceFactory.createService());
     }
 
     RepositoriesService(GithubService githubService) {
