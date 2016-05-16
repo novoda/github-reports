@@ -8,8 +8,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import rx.Subscriber;
-import rx.schedulers.Schedulers;
+import rx.Observable;
 
 public class RepositoriesService implements GithubRepositoryService {
 
@@ -42,26 +41,7 @@ public class RepositoriesService implements GithubRepositoryService {
     }
 
     @Override
-    public void getRepositoriesFrom(String organisation) {
-        githubService.getRepositoriesFrom(organisation)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.immediate())
-                .subscribe(new Subscriber<List<Repository>>() {
-                    @Override
-                    public void onCompleted() {
-                        System.out.println("onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(List<Repository> repositories) {
-                        System.out.println("onNext");
-                        repositories.forEach(repository -> System.out.println(repository.getName()));
-                    }
-                });
+    public Observable<List<Repository>> getRepositoriesFrom(String organisation) {
+        return githubService.getRepositoriesFrom(organisation);
     }
 }
