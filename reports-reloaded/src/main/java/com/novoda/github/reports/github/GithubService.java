@@ -8,7 +8,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-interface GithubRetrofitService {
+interface GithubService {
 
     @GET("/orgs/{org}/repos")
     Call<List<Repository>> getRepositories(@Path("org") String organisation);

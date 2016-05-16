@@ -11,7 +11,7 @@ enum GithubServiceContainer {
     private static final String GITHUB_ENDPOINT = "https://api.github.com/";
 
     private final OkHttpClient okHttpClient = HttpClientContainer.INSTANCE.okHttpClient();
-    private final GithubRetrofitService githubService = retrofit().create(GithubRetrofitService.class);
+    private final GithubService githubService = retrofit().create(GithubService.class);
 
     private Retrofit retrofit() {
         return new Retrofit.Builder()
@@ -21,7 +21,7 @@ enum GithubServiceContainer {
                 .build();
     }
 
-    GithubRetrofitService githubService() {
+    GithubService githubService() {
         return githubService;
     }
 
