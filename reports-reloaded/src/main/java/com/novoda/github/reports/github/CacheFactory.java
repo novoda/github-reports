@@ -1,51 +1,9 @@
 package com.novoda.github.reports.github;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import okhttp3.Cache;
 
-class CacheFactory {
+public interface CacheFactory {
 
-    private static final long MAX_CACHE_SIZE = 4096;
-    private static final String BASE_DIR = "";
-    private static final String CACHE_DIR = "/.cache/";
-
-    private final File cacheFile;
-
-    public static CacheFactory newInstance() {
-        return new CacheFactory(getCacheFile());
-    }
-
-    private static File getCacheFile() {
-        Path local = Paths.get(BASE_DIR);
-        File cache = new File(local.toFile().getAbsolutePath() + CACHE_DIR);
-        cache.mkdirs();
-        return cache;
-    }
-
-    CacheFactory(File cacheFile) {
-        this.cacheFile = cacheFile;
-    }
-
-    private Cache buildCache() { // TODO could be moved to another thread...
-        Cache cache = new Cache(cacheFile, MAX_CACHE_SIZE);
-        initializeCache(cache);
-        return cache;
-    }
-
-    private void initializeCache(Cache cache) {
-        try {
-            cache.initialize();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Cache createCache() {
-        return buildCache();
-    }
+    Cache createCache();
 
 }

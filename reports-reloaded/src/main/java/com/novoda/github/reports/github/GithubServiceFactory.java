@@ -4,7 +4,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-class GithubServiceFactory {
+class GithubServiceFactory implements NetworkServiceFactory {
 
     private static final String GITHUB_ENDPOINT = "https://api.github.com/";
 
@@ -13,7 +13,7 @@ class GithubServiceFactory {
     private final RxJavaCallAdapterFactory rxJavaCallAdapterFactory;
 
     public static GithubServiceFactory newInstance() {
-        HttpClientFactory httpClientFactory = HttpClientFactory.newInstance();
+        HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance();
         GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create();
         RxJavaCallAdapterFactory rxJavaCallAdapterFactory = RxJavaCallAdapterFactory.create();
         return new GithubServiceFactory(httpClientFactory, gsonConverterFactory, rxJavaCallAdapterFactory);
@@ -36,6 +36,7 @@ class GithubServiceFactory {
                 .build();
     }
 
+    @Override
     public GithubService createService() {
         return createRetrofit()
                 .create(GithubService.class);
