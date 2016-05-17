@@ -12,7 +12,12 @@ class RateLimitCountInterceptor implements Interceptor {
 
     private RateLimitRemainingCounter rateLimitRemainingCounter;
 
-    RateLimitCountInterceptor(RateLimitRemainingCounter rateLimitRemainingCounter) {
+    public static RateLimitCountInterceptor newInstance() {
+        RateLimitRemainingCounter rateLimitRemainingCounter = GithubRateLimitRemainingCounter.newInstance();
+        return new RateLimitCountInterceptor(rateLimitRemainingCounter);
+    }
+
+    private RateLimitCountInterceptor(RateLimitRemainingCounter rateLimitRemainingCounter) {
         this.rateLimitRemainingCounter = rateLimitRemainingCounter;
     }
 
