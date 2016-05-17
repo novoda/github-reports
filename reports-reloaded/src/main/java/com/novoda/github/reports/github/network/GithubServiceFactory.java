@@ -1,10 +1,10 @@
-package com.novoda.github.reports.github;
+package com.novoda.github.reports.github.network;
 
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-class GithubServiceFactory implements NetworkServiceFactory {
+public class GithubServiceFactory implements NetworkServiceFactory {
 
     private static final String GITHUB_ENDPOINT = "https://api.github.com/";
 
@@ -12,7 +12,7 @@ class GithubServiceFactory implements NetworkServiceFactory {
     private final GsonConverterFactory gsonConverterFactory;
     private final RxJavaCallAdapterFactory rxJavaCallAdapterFactory;
 
-    static GithubServiceFactory newInstance() {
+    public static GithubServiceFactory newInstance() {
         HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance();
         GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create();
         RxJavaCallAdapterFactory rxJavaCallAdapterFactory = RxJavaCallAdapterFactory.create();
