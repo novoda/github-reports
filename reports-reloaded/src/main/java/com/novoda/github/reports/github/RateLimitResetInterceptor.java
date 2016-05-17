@@ -6,7 +6,7 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class RateLimitResetInterceptor implements Interceptor {
+class RateLimitResetInterceptor implements Interceptor {
 
     private static final String RATE_LIMIT_RESET_HEADER = "X-RateLimit-Reset";
 
