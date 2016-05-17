@@ -1,4 +1,4 @@
-package com.novoda.github.reports.github;
+package com.novoda.github.reports.github.network;
 
 import com.novoda.github.reports.github.repository.Repository;
 
@@ -9,7 +9,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import rx.Observable;
 
-interface GithubService {
+public interface GithubService {
 
     @GET("/orgs/{org}/repos")
     Call<List<Repository>> getRepositories(@Path("org") String organisation);

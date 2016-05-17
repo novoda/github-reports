@@ -1,4 +1,4 @@
-package com.novoda.github.reports.github;
+package com.novoda.github.reports.github.network;
 
 interface RateLimitResetRepository {
 

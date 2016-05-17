@@ -1,6 +1,7 @@
-package com.novoda.github.reports.github;
+package com.novoda.github.reports.github.repository;
 
-import com.novoda.github.reports.github.repository.Repository;
+import com.novoda.github.reports.github.network.GithubService;
+import com.novoda.github.reports.github.network.GithubServiceFactory;
 
 import java.util.List;
 
