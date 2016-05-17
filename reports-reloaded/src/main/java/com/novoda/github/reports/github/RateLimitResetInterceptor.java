@@ -13,6 +13,7 @@ class RateLimitResetInterceptor implements Interceptor {
     private final RateLimitResetRepository rateLimitResetRepository;
 
     public static RateLimitResetInterceptor newInstance() {
+        // FIXME/TODO this repo should be passed in or should be a singleton
         RateLimitResetRepository rateLimitResetRepository = new GithubRateLimitResetRepository(System.currentTimeMillis());
         return new RateLimitResetInterceptor(rateLimitResetRepository);
     }
