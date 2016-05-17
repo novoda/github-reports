@@ -17,6 +17,11 @@ public class GithubRateLimitCounter implements RateLimitCounter {
     }
 
     @Override
+    public int get() {
+        return count.get();
+    }
+
+    @Override
     public int decrement() {
         return count.decrementAndGet();
     }
