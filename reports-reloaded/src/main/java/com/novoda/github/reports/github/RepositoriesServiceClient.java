@@ -18,7 +18,7 @@ public class RepositoriesServiceClient {
         return new RepositoriesServiceClient(repositoriesService);
     }
 
-    RepositoriesServiceClient(RepositoriesService repositoriesService) {
+    private RepositoriesServiceClient(RepositoriesService repositoriesService) {
         this.repositoriesService = repositoriesService;
     }
 

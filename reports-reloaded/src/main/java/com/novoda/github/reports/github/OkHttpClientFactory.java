@@ -11,7 +11,7 @@ class OkHttpClientFactory implements HttpClientFactory {
     private final CredentialsReader credentialsReader;
     private final RateLimitCounter rateLimitCounter;
 
-    public static OkHttpClientFactory newInstance() {
+    static OkHttpClientFactory newInstance() {
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
         CacheFactory cacheFactory = FileCacheFactory.newInstance();
         CredentialsReader credentialsReader = CredentialsReader.newInstance();
@@ -19,10 +19,10 @@ class OkHttpClientFactory implements HttpClientFactory {
         return new OkHttpClientFactory(okHttpClientBuilder, cacheFactory, credentialsReader, rateLimitCounter);
     }
 
-    OkHttpClientFactory(OkHttpClient.Builder okHttpClientBuilder,
-                        CacheFactory cacheFactory,
-                        CredentialsReader credentialsReader,
-                        RateLimitCounter rateLimitCounter) {
+    private OkHttpClientFactory(OkHttpClient.Builder okHttpClientBuilder,
+                                CacheFactory cacheFactory,
+                                CredentialsReader credentialsReader,
+                                RateLimitCounter rateLimitCounter) {
         this.okHttpClientBuilder = okHttpClientBuilder;
         this.cacheFactory = cacheFactory;
         this.credentialsReader = credentialsReader;

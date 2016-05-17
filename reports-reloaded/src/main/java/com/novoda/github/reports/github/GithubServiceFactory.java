@@ -12,16 +12,16 @@ class GithubServiceFactory implements NetworkServiceFactory {
     private final GsonConverterFactory gsonConverterFactory;
     private final RxJavaCallAdapterFactory rxJavaCallAdapterFactory;
 
-    public static GithubServiceFactory newInstance() {
+    static GithubServiceFactory newInstance() {
         HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance();
         GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create();
         RxJavaCallAdapterFactory rxJavaCallAdapterFactory = RxJavaCallAdapterFactory.create();
         return new GithubServiceFactory(httpClientFactory, gsonConverterFactory, rxJavaCallAdapterFactory);
     }
 
-    GithubServiceFactory(HttpClientFactory httpClientFactory,
-                         GsonConverterFactory gsonConverterFactory,
-                         RxJavaCallAdapterFactory rxJavaCallAdapterFactory) {
+    private GithubServiceFactory(HttpClientFactory httpClientFactory,
+                                 GsonConverterFactory gsonConverterFactory,
+                                 RxJavaCallAdapterFactory rxJavaCallAdapterFactory) {
         this.httpClientFactory = httpClientFactory;
         this.gsonConverterFactory = gsonConverterFactory;
         this.rxJavaCallAdapterFactory = rxJavaCallAdapterFactory;
