@@ -9,12 +9,6 @@ interface RateLimitRemainingCounter {
     int get();
 
     /**
-     * Decrements the counter and returns the new value (after decrementing).
-     * @return the updated value
-     */
-    int decrement();
-
-    /**
      * Immediately updates the counter to the given value.
      * @param value the value to set
      */
