@@ -13,6 +13,7 @@ class RateLimitCountInterceptor implements Interceptor {
     private RateLimitRemainingCounter rateLimitRemainingCounter;
 
     public static RateLimitCountInterceptor newInstance() {
+        // FIXME/TODO this counter should be passed in or should be a singleton
         RateLimitRemainingCounter rateLimitRemainingCounter = GithubRateLimitRemainingCounter.newInstance();
         return new RateLimitCountInterceptor(rateLimitRemainingCounter);
     }
