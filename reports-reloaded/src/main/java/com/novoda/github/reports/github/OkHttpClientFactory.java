@@ -9,24 +9,24 @@ class OkHttpClientFactory implements HttpClientFactory {
     private final OkHttpClient.Builder okHttpClientBuilder;
     private final CacheFactory cacheFactory;
     private final CredentialsReader credentialsReader;
-    private final RateLimitCounter rateLimitCounter;
+    private final RateLimitRemainingCounter rateLimitRemainingCounter;
 
     static OkHttpClientFactory newInstance() {
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
         CacheFactory cacheFactory = FileCacheFactory.newInstance();
         CredentialsReader credentialsReader = CredentialsReader.newInstance();
-        RateLimitCounter rateLimitCounter = GithubRateLimitCounter.newInstance();
-        return new OkHttpClientFactory(okHttpClientBuilder, cacheFactory, credentialsReader, rateLimitCounter);
+        RateLimitRemainingCounter rateLimitRemainingCounter = GithubRateLimitRemainingCounter.newInstance();
+        return new OkHttpClientFactory(okHttpClientBuilder, cacheFactory, credentialsReader, rateLimitRemainingCounter);
     }
 
     private OkHttpClientFactory(OkHttpClient.Builder okHttpClientBuilder,
                                 CacheFactory cacheFactory,
                                 CredentialsReader credentialsReader,
-                                RateLimitCounter rateLimitCounter) {
+                                RateLimitRemainingCounter rateLimitRemainingCounter) {
         this.okHttpClientBuilder = okHttpClientBuilder;
         this.cacheFactory = cacheFactory;
         this.credentialsReader = credentialsReader;
-        this.rateLimitCounter = rateLimitCounter;
+        this.rateLimitRemainingCounter = rateLimitRemainingCounter;
     }
 
     @Override
@@ -35,7 +35,7 @@ class OkHttpClientFactory implements HttpClientFactory {
         return okHttpClientBuilder
                 .cache(cacheFactory.createCache())
                 .addNetworkInterceptor(new OAuthTokenInterceptor(token))
-                .addNetworkInterceptor(new RateLimitCountInterceptor(rateLimitCounter)) // @RUI lambda vs objs (?)
+                .addNetworkInterceptor(new RateLimitCountInterceptor(rateLimitRemainingCounter)) // @RUI lambda vs objs (?)
                 .build();
     }
 

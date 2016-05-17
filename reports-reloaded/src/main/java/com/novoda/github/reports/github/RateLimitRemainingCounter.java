@@ -1,6 +1,6 @@
 package com.novoda.github.reports.github;
 
-interface RateLimitCounter {
+interface RateLimitRemainingCounter {
 
     /**
      * Immediately returns the current value.
