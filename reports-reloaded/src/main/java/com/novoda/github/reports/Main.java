@@ -8,7 +8,6 @@ import com.novoda.github.reports.data.mock.MockProjectDataLayer;
 import com.novoda.github.reports.data.mock.MockRepoDataLayer;
 import com.novoda.github.reports.data.mock.MockUserDataLayer;
 import com.novoda.github.reports.data.model.Stats;
-import com.novoda.github.reports.github.RepositoriesServiceClient;
 import com.novoda.github.reports.handler.ProjectCommandHandler;
 import com.novoda.github.reports.handler.RepoCommandHandler;
 import com.novoda.github.reports.handler.UserCommandHandler;
@@ -51,15 +50,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws UnhandledCommandException {
-        //new Main().execute(args);
-        new Main().test();
-        System.out.println("bye!");
+        new Main().execute(args);
     }
 
-    private void test() {
-//        GithubRepositoryService repositoryService = RepositoriesService.newInstance();
-//        repositoryService.getRepositoriesFrom("novoda");
-        RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
-        repositoriesServiceClient.getRepositoriesFrom("novoda");
-    }
 }
