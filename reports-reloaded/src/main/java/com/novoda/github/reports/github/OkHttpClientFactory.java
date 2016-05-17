@@ -18,9 +18,8 @@ class OkHttpClientFactory implements HttpClientFactory {
         CredentialsReader credentialsReader = CredentialsReader.newInstance();
         String token = credentialsReader.getAuthToken();
         OAuthTokenInterceptor oAuthTokenInterceptor = new OAuthTokenInterceptor(token);
-        RateLimitRemainingCounter rateLimitRemainingCounter = GithubRateLimitRemainingCounter.newInstance();
-        RateLimitCountInterceptor rateLimitCountInterceptor = new RateLimitCountInterceptor(rateLimitRemainingCounter);
-        RateLimitResetInterceptor rateLimitResetInterceptor = new RateLimitResetInterceptor();
+        RateLimitCountInterceptor rateLimitCountInterceptor = RateLimitCountInterceptor.newInstance();
+        RateLimitResetInterceptor rateLimitResetInterceptor = RateLimitResetInterceptor.newInstance();
         return new OkHttpClientFactory(
                 okHttpClientBuilder,
                 cacheFactory,
