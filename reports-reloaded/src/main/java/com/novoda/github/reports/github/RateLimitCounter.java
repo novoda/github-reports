@@ -2,10 +2,10 @@ package com.novoda.github.reports.github;
 
 class RateLimitCounter {
 
-    public static RateLimitCounter newInstance() {
+    static RateLimitCounter newInstance() {
         return new RateLimitCounter();
     }
 
-    RateLimitCounter() {
+    private RateLimitCounter() {
     }
 }
