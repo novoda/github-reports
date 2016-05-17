@@ -10,10 +10,10 @@ class RateLimitCountInterceptor implements Interceptor {
 
     private static final String REMAINING_RATE_LIMIT_HEADER = "X-RateLimit-Remaining";
 
-    private RateLimitCounter rateLimitCounter;
+    private RateLimitRemainingCounter rateLimitRemainingCounter;
 
-    RateLimitCountInterceptor(RateLimitCounter rateLimitCounter) {
-        this.rateLimitCounter = rateLimitCounter;
+    RateLimitCountInterceptor(RateLimitRemainingCounter rateLimitRemainingCounter) {
+        this.rateLimitRemainingCounter = rateLimitRemainingCounter;
     }
 
     @Override
@@ -22,7 +22,7 @@ class RateLimitCountInterceptor implements Interceptor {
         Response response = chain.proceed(request);
 
         String countAsString = response.headers().get(REMAINING_RATE_LIMIT_HEADER);
-        rateLimitCounter.set(Integer.valueOf(countAsString));
+        rateLimitRemainingCounter.set(Integer.valueOf(countAsString));
 
         return response;
     }

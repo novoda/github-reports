@@ -2,17 +2,17 @@ package com.novoda.github.reports.github;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GithubRateLimitCounter implements RateLimitCounter {
+public class GithubRateLimitRemainingCounter implements RateLimitRemainingCounter {
 
     private static final int INITIAL_VALUE = 5000; // github's limit for auth'ed requests
 
     private AtomicInteger count;
 
-    static GithubRateLimitCounter newInstance() {
-        return new GithubRateLimitCounter(INITIAL_VALUE);
+    static GithubRateLimitRemainingCounter newInstance() {
+        return new GithubRateLimitRemainingCounter(INITIAL_VALUE);
     }
 
-    private GithubRateLimitCounter(int initialValue) {
+    private GithubRateLimitRemainingCounter(int initialValue) {
         count = new AtomicInteger(initialValue);
     }
 
