@@ -8,11 +8,11 @@ public class GithubRateLimitCounter implements RateLimitCounter {
 
     private AtomicInteger count;
 
-    public static GithubRateLimitCounter newInstance() {
+    static GithubRateLimitCounter newInstance() {
         return new GithubRateLimitCounter(INITIAL_VALUE);
     }
 
-    GithubRateLimitCounter(int initialValue) {
+    private GithubRateLimitCounter(int initialValue) {
         count = new AtomicInteger(initialValue);
     }
 

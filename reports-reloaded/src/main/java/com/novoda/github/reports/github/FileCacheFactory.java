@@ -15,7 +15,7 @@ class FileCacheFactory implements CacheFactory {
 
     private final File cacheFile;
 
-    public static FileCacheFactory newInstance() {
+    static FileCacheFactory newInstance() {
         return new FileCacheFactory(getCacheFile());
     }
 
@@ -26,7 +26,7 @@ class FileCacheFactory implements CacheFactory {
         return cache;
     }
 
-    FileCacheFactory(File cacheFile) {
+    private FileCacheFactory(File cacheFile) {
         this.cacheFile = cacheFile;
     }
 

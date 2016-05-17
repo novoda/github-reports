@@ -6,16 +6,16 @@ import java.util.List;
 
 import rx.Observable;
 
-public class RepositoriesService implements GithubRepositoryService {
+class RepositoriesService implements GithubRepositoryService {
 
     private GithubService githubService;
 
-    public static RepositoriesService newInstance() {
+    static RepositoriesService newInstance() {
         GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
         return new RepositoriesService(githubServiceFactory.createService());
     }
 
-    RepositoriesService(GithubService githubService) {
+    private RepositoriesService(GithubService githubService) {
         this.githubService = githubService;
     }
 
