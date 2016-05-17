@@ -7,18 +7,30 @@ import java.nio.file.Paths;
 
 import okhttp3.Cache;
 
-enum CacheContainer {
-
-    INSTANCE;
+class CacheFactory {
 
     private static final long MAX_CACHE_SIZE = 4096;
     private static final String BASE_DIR = "";
     private static final String CACHE_DIR = "/.cache/";
 
-    private Cache cache = buildCache();
+    private final File cacheFile;
+
+    public static CacheFactory newInstance() {
+        return new CacheFactory(getCacheFile());
+    }
+
+    private static File getCacheFile() {
+        Path local = Paths.get(BASE_DIR);
+        File cache = new File(local.toFile().getAbsolutePath() + CACHE_DIR);
+        cache.mkdirs();
+        return cache;
+    }
+
+    CacheFactory(File cacheFile) {
+        this.cacheFile = cacheFile;
+    }
 
     private Cache buildCache() { // TODO could be moved to another thread...
-        File cacheFile = cacheFile();
         Cache cache = new Cache(cacheFile, MAX_CACHE_SIZE);
         initializeCache(cache);
         return cache;
@@ -32,15 +44,8 @@ enum CacheContainer {
         }
     }
 
-    private File cacheFile() {
-        Path local = Paths.get(BASE_DIR);
-        File cache = new File(local.toFile().getAbsolutePath() + CACHE_DIR);
-        cache.mkdirs();
-        return cache;
-    }
-
-    Cache cache() {
-        return cache;
+    public Cache createCache() {
+        return buildCache();
     }
 
 }
