@@ -27,6 +27,12 @@ class GithubServiceFactory implements NetworkServiceFactory {
         this.rxJavaCallAdapterFactory = rxJavaCallAdapterFactory;
     }
 
+    @Override
+    public GithubService createService() {
+        return createRetrofit()
+                .create(GithubService.class);
+    }
+
     private Retrofit createRetrofit() {
         return new Retrofit.Builder()
                 .client(httpClientFactory.createClient())
@@ -34,12 +40,6 @@ class GithubServiceFactory implements NetworkServiceFactory {
                 .addConverterFactory(gsonConverterFactory)
                 .addCallAdapterFactory(rxJavaCallAdapterFactory)
                 .build();
-    }
-
-    @Override
-    public GithubService createService() {
-        return createRetrofit()
-                .create(GithubService.class);
     }
 
 }
