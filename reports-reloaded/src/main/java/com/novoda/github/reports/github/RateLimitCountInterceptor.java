@@ -21,7 +21,8 @@ class RateLimitCountInterceptor implements Interceptor {
         Request request = chain.request();
         Response response = chain.proceed(request);
 
-        response.headers().get(REMAINING_RATE_LIMIT_HEADER); // TODO rateLimitCounter
+        String countAsString = response.headers().get(REMAINING_RATE_LIMIT_HEADER);
+        rateLimitCounter.set(Integer.valueOf(countAsString));
 
         return response;
     }

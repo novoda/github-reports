@@ -15,7 +15,7 @@ class OkHttpClientFactory implements HttpClientFactory {
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
         CacheFactory cacheFactory = FileCacheFactory.newInstance();
         CredentialsReader credentialsReader = CredentialsReader.newInstance();
-        RateLimitCounter rateLimitCounter = RateLimitCounter.newInstance();
+        RateLimitCounter rateLimitCounter = GithubRateLimitCounter.newInstance();
         return new OkHttpClientFactory(okHttpClientBuilder, cacheFactory, credentialsReader, rateLimitCounter);
     }
 

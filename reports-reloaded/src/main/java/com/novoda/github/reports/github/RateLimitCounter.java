@@ -1,11 +1,16 @@
 package com.novoda.github.reports.github;
 
-public class RateLimitCounter {
+public interface RateLimitCounter {
 
-    public static RateLimitCounter newInstance() {
-        return new RateLimitCounter();
-    }
+    /**
+     * Decrements the counter and returns the new value (after decrementing).
+     * @return the updated value
+     */
+    int decrement();
 
-    RateLimitCounter() {
-    }
+    /**
+     * Immediately updates the counter to the given value.
+     * @param value the value to set
+     */
+    void set(int value);
 }
