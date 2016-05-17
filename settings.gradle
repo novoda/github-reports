@@ -1,8 +1,3 @@
-include 'core'
-include 'db-layer'
-include 'reports-reloaded'
-
-include 'java-reports'
-include 'ruby-reports'
-include 'hosted-aws-reports'
-
+include ':core'
+include ':db-layer'
+include ':reports-reloaded'
