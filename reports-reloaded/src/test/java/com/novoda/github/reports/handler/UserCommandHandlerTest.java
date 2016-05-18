@@ -46,7 +46,7 @@ public class UserCommandHandlerTest {
     }
 
     @Test
-    public void givenADataLayer_whenHandlingAUserCommand_thenWeGetStatsForTheArgsPassedIn() {
+    public void whenHandlingAUserCommand_thenWeGetStatsForTheArgsPassedIn() {
 
         handler.handle(mockUserOptions);
 
@@ -54,7 +54,7 @@ public class UserCommandHandlerTest {
     }
 
     @Test
-    public void givenADataLayer_whenHandlingAUserCommand_theReturnedStatsAreNotMutatedByTheHandler() {
+    public void whenHandlingAUserCommand_theReturnedStatsAreNotMutatedByTheHandler() {
 
         UserStats actual = handler.handle(mockUserOptions);
 
