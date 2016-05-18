@@ -12,7 +12,7 @@ public class GithubRateLimitRemainingCounter implements RateLimitRemainingCounte
         return new GithubRateLimitRemainingCounter(INITIAL_VALUE);
     }
 
-    private GithubRateLimitRemainingCounter(int initialValue) {
+    GithubRateLimitRemainingCounter(int initialValue) {
         count = new AtomicInteger(initialValue);
     }
 
@@ -23,6 +23,9 @@ public class GithubRateLimitRemainingCounter implements RateLimitRemainingCounte
 
     @Override
     public void set(int value) {
+        if (value < 0) {
+            throw new IllegalArgumentException("value can't be negative.");
+        }
         count.set(value);
     }
 }
