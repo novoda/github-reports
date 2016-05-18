@@ -21,6 +21,7 @@ public class RateLimitCountInterceptorTest {
     private static final Protocol ANY_PROTOCOL = Protocol.HTTP_1_1;
     private static final int ANY_STATUS_CODE = 200;
     private static final String ANY_COUNT = "5";
+    private static final Request ANY_REQUEST = new Request.Builder().url(ANY_URL).build();
 
     @Mock
     RateLimitRemainingCounter mockCounter;
@@ -29,7 +30,6 @@ public class RateLimitCountInterceptorTest {
     Interceptor.Chain mockChain;
 
     private RateLimitCountInterceptor interceptor;
-    private Request ANY_REQUEST = new Request.Builder().url(ANY_URL).build();
 
     @Before
     public void setUp() throws Exception {
