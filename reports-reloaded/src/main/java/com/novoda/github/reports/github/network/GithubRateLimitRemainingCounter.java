@@ -24,7 +24,7 @@ public class GithubRateLimitRemainingCounter implements RateLimitRemainingCounte
     @Override
     public void set(int value) {
         if (value < 0) {
-            throw new IllegalArgumentException("value can't be negative.");
+            throw new IllegalArgumentException("value cannot be negative.");
         }
         count.set(value);
     }
