@@ -1,5 +1,8 @@
 package com.novoda.github.reports.data.model;
 
+import jdk.nashorn.internal.ir.annotations.Immutable;
+
+@Immutable
 public class ProjectRepoStats implements Stats {
 
     private final String projectRepoName;
