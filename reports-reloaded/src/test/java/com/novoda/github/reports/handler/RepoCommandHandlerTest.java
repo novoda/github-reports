@@ -44,7 +44,7 @@ public class RepoCommandHandlerTest {
     }
 
     @Test
-    public void givenADataLayer_whenHandlingARepoCommand_thenWeGetStatsForTheArgsPassedIn() {
+    public void whenHandlingARepoCommand_thenWeGetStatsForTheArgsPassedIn() {
 
         handler.handle(mockRepoOptions);
 
@@ -52,7 +52,7 @@ public class RepoCommandHandlerTest {
     }
 
     @Test
-    public void givenADataLayer_whenHandlingARepoCommand_theReturnedStatsAreNotMutatedByTheHandler() {
+    public void whenHandlingARepoCommand_theReturnedStatsAreNotMutatedByTheHandler() {
 
         ProjectRepoStats actual = handler.handle(mockRepoOptions);
 
