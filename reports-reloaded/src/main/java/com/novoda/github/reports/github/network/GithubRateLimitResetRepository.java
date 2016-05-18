@@ -1,6 +1,6 @@
-package com.novoda.github.reports.github;
+package com.novoda.github.reports.github.network;
 
-class GithubRateLimitResetRepository implements RateLimitResetRepository{
+class GithubRateLimitResetRepository implements RateLimitResetRepository {
 
     private long timestamp;
 
