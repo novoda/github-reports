@@ -8,7 +8,7 @@ import okhttp3.Response;
 
 class RateLimitResetInterceptor implements Interceptor {
 
-    private static final String RATE_LIMIT_RESET_HEADER = "X-RateLimit-Reset";
+    static final String RATE_LIMIT_RESET_HEADER = "X-RateLimit-Reset";
 
     private final RateLimitResetRepository rateLimitResetRepository;
 
@@ -18,7 +18,7 @@ class RateLimitResetInterceptor implements Interceptor {
         return new RateLimitResetInterceptor(rateLimitResetRepository);
     }
 
-    private RateLimitResetInterceptor(RateLimitResetRepository rateLimitResetRepository) {
+    RateLimitResetInterceptor(RateLimitResetRepository rateLimitResetRepository) {
         this.rateLimitResetRepository = rateLimitResetRepository;
     }
 
