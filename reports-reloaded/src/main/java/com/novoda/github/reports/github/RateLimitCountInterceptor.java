@@ -10,10 +10,16 @@ class RateLimitCountInterceptor implements Interceptor {
 
     private static final String REMAINING_RATE_LIMIT_HEADER = "X-RateLimit-Remaining";
 
-    private RateLimitCounter rateLimitCounter;
+    private RateLimitRemainingCounter rateLimitRemainingCounter;
 
-    RateLimitCountInterceptor(RateLimitCounter rateLimitCounter) {
-        this.rateLimitCounter = rateLimitCounter;
+    public static RateLimitCountInterceptor newInstance() {
+        // FIXME/TODO this counter should be passed in or should be a singleton
+        RateLimitRemainingCounter rateLimitRemainingCounter = GithubRateLimitRemainingCounter.newInstance();
+        return new RateLimitCountInterceptor(rateLimitRemainingCounter);
+    }
+
+    private RateLimitCountInterceptor(RateLimitRemainingCounter rateLimitRemainingCounter) {
+        this.rateLimitRemainingCounter = rateLimitRemainingCounter;
     }
 
     @Override
@@ -21,7 +27,8 @@ class RateLimitCountInterceptor implements Interceptor {
         Request request = chain.request();
         Response response = chain.proceed(request);
 
-        response.headers().get(REMAINING_RATE_LIMIT_HEADER); // TODO rateLimitCounter
+        String countAsString = response.headers().get(REMAINING_RATE_LIMIT_HEADER);
+        rateLimitRemainingCounter.set(Integer.valueOf(countAsString));
 
         return response;
     }

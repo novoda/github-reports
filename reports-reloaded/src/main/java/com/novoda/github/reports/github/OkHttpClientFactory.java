@@ -8,34 +8,46 @@ class OkHttpClientFactory implements HttpClientFactory {
 
     private final OkHttpClient.Builder okHttpClientBuilder;
     private final CacheFactory cacheFactory;
-    private final CredentialsReader credentialsReader;
-    private final RateLimitCounter rateLimitCounter;
+    private final OAuthTokenInterceptor oAuthTokenInterceptor;
+    private final RateLimitCountInterceptor rateLimitCountInterceptor;
+    private final RateLimitResetInterceptor rateLimitResetInterceptor;
 
     static OkHttpClientFactory newInstance() {
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
         CacheFactory cacheFactory = FileCacheFactory.newInstance();
         CredentialsReader credentialsReader = CredentialsReader.newInstance();
-        RateLimitCounter rateLimitCounter = RateLimitCounter.newInstance();
-        return new OkHttpClientFactory(okHttpClientBuilder, cacheFactory, credentialsReader, rateLimitCounter);
+        String token = credentialsReader.getAuthToken();
+        OAuthTokenInterceptor oAuthTokenInterceptor = new OAuthTokenInterceptor(token);
+        RateLimitCountInterceptor rateLimitCountInterceptor = RateLimitCountInterceptor.newInstance();
+        RateLimitResetInterceptor rateLimitResetInterceptor = RateLimitResetInterceptor.newInstance();
+        return new OkHttpClientFactory(
+                okHttpClientBuilder,
+                cacheFactory,
+                oAuthTokenInterceptor,
+                rateLimitCountInterceptor,
+                rateLimitResetInterceptor
+        );
     }
 
     private OkHttpClientFactory(OkHttpClient.Builder okHttpClientBuilder,
                                 CacheFactory cacheFactory,
-                                CredentialsReader credentialsReader,
-                                RateLimitCounter rateLimitCounter) {
+                                OAuthTokenInterceptor oAuthTokenInterceptor,
+                                RateLimitCountInterceptor rateLimitCountInterceptor,
+                                RateLimitResetInterceptor rateLimitResetInterceptor) {
         this.okHttpClientBuilder = okHttpClientBuilder;
         this.cacheFactory = cacheFactory;
-        this.credentialsReader = credentialsReader;
-        this.rateLimitCounter = rateLimitCounter;
+        this.oAuthTokenInterceptor = oAuthTokenInterceptor;
+        this.rateLimitCountInterceptor = rateLimitCountInterceptor;
+        this.rateLimitResetInterceptor = rateLimitResetInterceptor;
     }
 
     @Override
     public OkHttpClient createClient() {
-        String token = credentialsReader.getAuthToken();
         return okHttpClientBuilder
                 .cache(cacheFactory.createCache())
-                .addNetworkInterceptor(new OAuthTokenInterceptor(token))
-                .addNetworkInterceptor(new RateLimitCountInterceptor(rateLimitCounter)) // @RUI lambda vs objs (?)
+                .addNetworkInterceptor(oAuthTokenInterceptor)
+                .addNetworkInterceptor(rateLimitCountInterceptor) // @RUI lambda vs objs (?)
+                .addNetworkInterceptor(rateLimitResetInterceptor)
                 .build();
     }
 
