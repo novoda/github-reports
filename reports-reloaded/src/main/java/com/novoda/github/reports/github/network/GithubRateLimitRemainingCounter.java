@@ -22,11 +22,6 @@ public class GithubRateLimitRemainingCounter implements RateLimitRemainingCounte
     }
 
     @Override
-    public int decrement() {
-        return count.decrementAndGet();
-    }
-
-    @Override
     public void set(int value) {
         count.set(value);
     }
