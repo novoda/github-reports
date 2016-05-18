@@ -1,4 +1,4 @@
-package com.novoda.github.reports.github;
+package com.novoda.github.reports.github.network;
 
 public interface NetworkServiceFactory {
 
