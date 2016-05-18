@@ -52,7 +52,7 @@ public class ProjectCommandHandlerTest {
     }
 
     @Test
-    public void givenADataLayter_whenHandlingAProjectCommand_theReturnedStatsAreNotMutatedByTheHandler() {
+    public void givenADataLayer_whenHandlingAProjectCommand_theReturnedStatsAreNotMutatedByTheHandler() {
 
         ProjectRepoStats actual = handler.handle(mockProjectOptions);
 
