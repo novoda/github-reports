@@ -15,6 +15,9 @@ class GithubRateLimitResetRepository implements RateLimitResetRepository {
 
     @Override
     public synchronized void set(long timestamp) {
+        if (timestamp < 0) {
+            throw new IllegalArgumentException("timestamp cannot be negative.");
+        }
         this.timestamp = timestamp;
     }
 }
