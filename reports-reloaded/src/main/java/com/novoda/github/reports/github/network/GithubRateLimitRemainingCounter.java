@@ -2,7 +2,7 @@ package com.novoda.github.reports.github.network;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GithubRateLimitRemainingCounter implements RateLimitRemainingCounter {
+class GithubRateLimitRemainingCounter implements RateLimitRemainingCounter {
 
     private static final int INITIAL_VALUE = 5000; // github's limit for auth'ed requests
 

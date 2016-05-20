@@ -50,7 +50,7 @@ public class OAuthTokenInterceptorTest {
 
         Response response = interceptor.intercept(mockChain);
 
-        String actual = response.request().headers().get(OAuthTokenInterceptor.AUTH_TOKEN_HEADER);
-        assertEquals(OAuthTokenInterceptor.AUTH_TOKEN_PREFIX + " " + ANY_TOKEN, actual);
+        String actual = response.request().headers().get("Authorization");
+        assertEquals("token " + ANY_TOKEN, actual);
     }
 }

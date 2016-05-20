@@ -45,7 +45,7 @@ public class RateLimitResetInterceptorTest {
                                 .protocol(ANY_PROTOCOL)
                                 .code(ANY_STATUS_CODE)
                                 .request(ANY_REQUEST)
-                                .header(RateLimitResetInterceptor.RATE_LIMIT_RESET_HEADER, ANY_TIMESTAMP)
+                                .header("X-RateLimit-Reset", ANY_TIMESTAMP)
                                 .build()
         );
     }
@@ -54,7 +54,7 @@ public class RateLimitResetInterceptorTest {
     public void whenTheRequestIsIntercepted_thenWeGetTheLimitResetTimestamp() throws Exception {
 
         Response response = interceptor.intercept(mockChain);
-        long timestamp = Long.parseLong(response.header(RateLimitResetInterceptor.RATE_LIMIT_RESET_HEADER));
+        long timestamp = Long.parseLong(response.header("X-RateLimit-Reset"));
 
         verify(mockLimitRepository).set(timestamp);
     }
