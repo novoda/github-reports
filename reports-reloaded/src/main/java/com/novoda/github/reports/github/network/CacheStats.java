@@ -41,7 +41,7 @@ public enum CacheStats implements CacheStatsRepository {
 
     @Override
     public int writeAbortCount() {
-        return writeAbortCount();
+        return cache.writeAbortCount();
     }
 
     @Override
