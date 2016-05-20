@@ -16,10 +16,9 @@ class OkHttpClientFactory implements HttpClientFactory {
     private final CacheFactory cacheFactory;
     private final CacheStatsRepository cacheStatsRepository;
 
-    static OkHttpClientFactory newInstance() {
+    static OkHttpClientFactory newInstance(CacheStatsRepository cacheStatsRepository) {
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
         CacheFactory cacheFactory = FileCacheFactory.newInstance();
-        CacheStatsRepository cacheStats = new CacheStats();
         CredentialsReader credentialsReader = CredentialsReader.newInstance();
         String token = credentialsReader.getAuthToken();
         OAuthTokenInterceptor oAuthTokenInterceptor = new OAuthTokenInterceptor(token);
@@ -28,7 +27,7 @@ class OkHttpClientFactory implements HttpClientFactory {
         return new OkHttpClientFactory(
                 okHttpClientBuilder,
                 cacheFactory,
-                cacheStats,
+                cacheStatsRepository,
                 oAuthTokenInterceptor,
                 rateLimitCountInterceptor,
                 rateLimitResetInterceptor
