@@ -9,7 +9,7 @@ import okhttp3.Cache;
 
 class FileCacheFactory implements CacheFactory {
 
-    private static final long MAX_CACHE_SIZE = 4096;
+    private static final long MAX_CACHE_SIZE = 10 * 1024 * 1024;
     private static final String BASE_DIR = "";
     private static final String CACHE_DIR = "/.cache/";
 
