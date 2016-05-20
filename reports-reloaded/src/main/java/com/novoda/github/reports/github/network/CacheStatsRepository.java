@@ -20,4 +20,14 @@ interface CacheStatsRepository {
 
     void setCache(Cache cache);
 
+    default String describeStats() {
+        return String.format(
+                "network:%d, request:%d hit:%d, writeSuccess:%d, writeAbort:%d",
+                networkCount(),
+                requestCount(),
+                hitCount(),
+                writeSuccessCount(),
+                writeAbortCount()
+        );
+    }
 }
