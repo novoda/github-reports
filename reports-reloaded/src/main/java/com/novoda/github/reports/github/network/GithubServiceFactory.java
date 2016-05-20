@@ -29,9 +29,9 @@ public class GithubServiceFactory implements NetworkServiceFactory {
     }
 
     @Override
-    public GithubService createService() {
+    public GithubApiService createService() {
         return createRetrofit()
-                .create(GithubService.class);
+                .create(GithubApiService.class);
     }
 
     private Retrofit createRetrofit() {
