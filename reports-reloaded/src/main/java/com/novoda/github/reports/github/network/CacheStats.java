@@ -35,6 +35,16 @@ public enum CacheStats implements CacheStatsRepository {
     }
 
     @Override
+    public int writeSuccessCount() {
+        return cache.writeSuccessCount();
+    }
+
+    @Override
+    public int writeAbortCount() {
+        return writeAbortCount();
+    }
+
+    @Override
     public List<String> urls() {
         throwIfNoCacheSet();
 

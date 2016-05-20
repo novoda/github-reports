@@ -4,13 +4,17 @@ import java.util.List;
 
 import okhttp3.Cache;
 
-public interface CacheStatsRepository {
+interface CacheStatsRepository {
 
     int networkCount();
 
     int requestCount();
 
     int hitCount();
+
+    int writeSuccessCount();
+
+    int writeAbortCount();
 
     List<String> urls();
 
