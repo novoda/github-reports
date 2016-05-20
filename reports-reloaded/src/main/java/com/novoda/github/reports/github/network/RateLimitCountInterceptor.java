@@ -8,7 +8,7 @@ import okhttp3.Response;
 
 class RateLimitCountInterceptor implements Interceptor {
 
-    static final String REMAINING_RATE_LIMIT_HEADER = "X-RateLimit-Remaining";
+    private static final String REMAINING_RATE_LIMIT_HEADER = "X-RateLimit-Remaining";
 
     private RateLimitRemainingCounter rateLimitRemainingCounter;
 
