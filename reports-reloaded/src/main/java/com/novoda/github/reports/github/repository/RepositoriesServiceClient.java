@@ -9,7 +9,7 @@ import rx.schedulers.Schedulers;
 
 public class RepositoriesServiceClient {
 
-    private GithubRepositoriesService repositoriesService;
+    private RepositoryService repositoriesService;
 
     public static RepositoriesServiceClient newInstance() {
         GithubRepositoriesService repositoriesService = GithubRepositoriesService.newInstance();
