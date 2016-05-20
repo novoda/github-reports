@@ -13,7 +13,8 @@ public class GithubServiceFactory implements NetworkServiceFactory {
     private final RxJavaCallAdapterFactory rxJavaCallAdapterFactory;
 
     public static GithubServiceFactory newInstance() {
-        HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance();
+        CacheStatsRepository cacheStatsRepository = CacheStats.INSTANCE;
+        HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance(cacheStatsRepository);
         GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create();
         RxJavaCallAdapterFactory rxJavaCallAdapterFactory = RxJavaCallAdapterFactory.create();
         return new GithubServiceFactory(httpClientFactory, gsonConverterFactory, rxJavaCallAdapterFactory);
