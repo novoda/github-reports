@@ -4,7 +4,7 @@ import java.util.List;
 
 import rx.Observable;
 
-interface GithubRepositoryService {
+interface RepositoryService {
 
     Observable<List<Repository>> getRepositoriesFrom(String organisation);
 

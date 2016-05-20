@@ -9,7 +9,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import rx.Observable;
 
-public interface GithubService {
+public interface GithubApiService {
 
     @GET("/orgs/{org}/repos")
     Observable<List<Repository>> getRepositoriesFrom(@Path("org") String organisation);

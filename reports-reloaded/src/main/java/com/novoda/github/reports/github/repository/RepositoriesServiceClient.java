@@ -8,14 +8,14 @@ import rx.schedulers.Schedulers;
 
 public class RepositoriesServiceClient {
 
-    private RepositoriesService repositoriesService;
+    private RepositoryService repositoriesService;
 
     public static RepositoriesServiceClient newInstance() {
-        RepositoriesService repositoriesService = RepositoriesService.newInstance();
+        GithubRepositoriesService repositoriesService = GithubRepositoriesService.newInstance();
         return new RepositoriesServiceClient(repositoriesService);
     }
 
-    private RepositoriesServiceClient(RepositoriesService repositoriesService) {
+    private RepositoriesServiceClient(GithubRepositoriesService repositoriesService) {
         this.repositoriesService = repositoriesService;
     }
 
