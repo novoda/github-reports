@@ -10,6 +10,8 @@ public interface CacheStatsRepository {
 
     int requestCount();
 
+    int hitCount();
+
     List<String> urls();
 
     void setCache(Cache cache);

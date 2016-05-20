@@ -6,11 +6,13 @@ import java.util.List;
 
 import okhttp3.Cache;
 
-public class CacheStats implements CacheStatsRepository {
+public enum CacheStats implements CacheStatsRepository {
+
+    INSTANCE;
 
     private Cache cache;
 
-    public CacheStats() {
+    CacheStats() {
         //
     }
 
@@ -24,6 +26,12 @@ public class CacheStats implements CacheStatsRepository {
     public int requestCount() {
         throwIfNoCacheSet();
         return cache.requestCount();
+    }
+
+    @Override
+    public int hitCount() {
+        throwIfNoCacheSet();
+        return cache.hitCount();
     }
 
     @Override
