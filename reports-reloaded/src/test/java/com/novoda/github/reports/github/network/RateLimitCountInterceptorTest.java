@@ -45,7 +45,7 @@ public class RateLimitCountInterceptorTest {
                                 .protocol(ANY_PROTOCOL)
                                 .code(ANY_STATUS_CODE)
                                 .request(ANY_REQUEST)
-                                .header(RateLimitCountInterceptor.REMAINING_RATE_LIMIT_HEADER, ANY_COUNT)
+                                .header("X-RateLimit-Remaining", ANY_COUNT)
                                 .build()
         );
     }
@@ -54,7 +54,7 @@ public class RateLimitCountInterceptorTest {
     public void whenTheRequestIsIntercepted_thenWeGetTheRemainingRateLimit() throws Exception {
 
         Response response = interceptor.intercept(mockChain);
-        int count = Integer.parseInt(response.header(RateLimitCountInterceptor.REMAINING_RATE_LIMIT_HEADER));
+        int count = Integer.parseInt(response.header("X-RateLimit-Remaining"));
 
         verify(mockCounter).set(count);
     }
