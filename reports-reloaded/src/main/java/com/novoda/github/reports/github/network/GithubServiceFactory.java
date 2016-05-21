@@ -39,8 +39,11 @@ public class GithubServiceFactory implements NetworkServiceFactory {
                 .client(httpClientFactory.createClient())
                 .baseUrl(GITHUB_ENDPOINT)
                 .addConverterFactory(gsonConverterFactory)
+                .addCallAdapterFactory(ResponseCallAdapterFactory.create())
                 .addCallAdapterFactory(rxJavaCallAdapterFactory)
                 .build();
     }
+
+
 
 }
