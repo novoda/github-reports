@@ -31,4 +31,8 @@ public class RepositoriesServiceClient {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.immediate());
     }
+
+    public void getRepositoriesResponsesFrom(String organisation) {
+        ((GithubRepositoriesService)repositoriesService).getRepositoriesResponsesFrom(organisation);
+    }
 }
