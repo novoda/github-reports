@@ -1,6 +1,6 @@
 package com.novoda.github.reports.github.network;
 
-import com.novoda.github.reports.properties.CredentialsReader;
+import com.novoda.github.reports.properties.GithubCredentialsReader;
 
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -19,8 +19,8 @@ class OkHttpClientFactory implements HttpClientFactory {
     static OkHttpClientFactory newInstance(CacheStatsRepository cacheStatsRepository) {
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
         CacheFactory cacheFactory = FileCacheFactory.newInstance();
-        CredentialsReader credentialsReader = CredentialsReader.newInstance();
-        String token = credentialsReader.getAuthToken();
+        GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance();
+        String token = githubCredentialsReader.getAuthToken();
         OAuthTokenInterceptor oAuthTokenInterceptor = new OAuthTokenInterceptor(token);
         RateLimitCountInterceptor rateLimitCountInterceptor = RateLimitCountInterceptor.newInstance();
         RateLimitResetInterceptor rateLimitResetInterceptor = RateLimitResetInterceptor.newInstance();

@@ -15,7 +15,7 @@ public class PropertiesReader {
         return new PropertiesReader(new Properties(), fileName);
     }
 
-    PropertiesReader(Properties properties, String fileName) {
+    private PropertiesReader(Properties properties, String fileName) {
         this.properties = properties;
         this.fileName = fileName;
     }

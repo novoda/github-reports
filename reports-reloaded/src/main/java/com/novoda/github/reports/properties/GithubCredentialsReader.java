@@ -1,18 +1,18 @@
 package com.novoda.github.reports.properties;
 
-public class CredentialsReader {
+public class GithubCredentialsReader {
 
     private static final String FILENAME = "github.credentials";
     private static final String TOKEN_KEY = "GITHUB_OAUTH_TOKEN";
 
     private PropertiesReader propertiesReader;
 
-    public static CredentialsReader newInstance() {
+    public static GithubCredentialsReader newInstance() {
         PropertiesReader propertiesReader = PropertiesReader.newInstance(FILENAME);
-        return new CredentialsReader(propertiesReader);
+        return new GithubCredentialsReader(propertiesReader);
     }
 
-    CredentialsReader(PropertiesReader propertiesReader) {
+    private GithubCredentialsReader(PropertiesReader propertiesReader) {
         this.propertiesReader = propertiesReader;
     }
 
