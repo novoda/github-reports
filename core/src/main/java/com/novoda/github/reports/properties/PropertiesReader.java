@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-class PropertiesReader {
+public class PropertiesReader {
 
     private Properties properties;
     private String fileName;
 
-    static PropertiesReader newInstance(String fileName) {
+    public static PropertiesReader newInstance(String fileName) {
         return new PropertiesReader(new Properties(), fileName);
     }
 
@@ -20,7 +20,7 @@ class PropertiesReader {
         this.fileName = fileName;
     }
 
-    String readProperty(String key) {
+    public String readProperty(String key) {
         InputStream inputStream = getInputStream(fileName);
         if (inputStream == null) {
             return null;

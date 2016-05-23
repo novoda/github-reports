@@ -1,5 +1,7 @@
 package com.novoda.github.reports.data.db;
 
+import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,7 +12,12 @@ import org.jooq.impl.DSL;
 
 class ConnectionManager {
     static Connection getNewConnection() throws SQLException {
-        return DriverManager.getConnection(BuildConfig.DATABASE_URL, BuildConfig.DATABASE_USERNAME, BuildConfig.DATABASE_PASSWORD);
+        DatabaseCredentialsReader databaseCredentialsReader = DatabaseCredentialsReader.newInstance();
+        return DriverManager.getConnection(
+                databaseCredentialsReader.getConnectionString(),
+                databaseCredentialsReader.getUser(),
+                databaseCredentialsReader.getPassword()
+        );
     }
 
     static DSLContext getNewDSLContext(Connection connection) {
