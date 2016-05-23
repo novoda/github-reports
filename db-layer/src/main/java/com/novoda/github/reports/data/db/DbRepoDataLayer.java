@@ -4,7 +4,7 @@ import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -92,16 +92,16 @@ public class DbRepoDataLayer implements RepoDataLayer {
     }
 
     private static ProjectRepoStats recordsToStats(Result<Record2<Integer, Integer>> events, Result<Record1<Integer>> people, String repo) {
-        BigDecimal numberOfOpenedIssues = BigDecimal.ZERO;
-        BigDecimal numberOfOpenedPullRequests = BigDecimal.ZERO;
-        BigDecimal numberOfCommentedIssues = BigDecimal.ZERO;
-        BigDecimal numberOfMergedPullRequests = BigDecimal.ZERO;
-        BigDecimal numberOfOtherEvents = BigDecimal.ZERO;
+        BigInteger numberOfOpenedIssues = BigInteger.ZERO;
+        BigInteger numberOfOpenedPullRequests = BigInteger.ZERO;
+        BigInteger numberOfCommentedIssues = BigInteger.ZERO;
+        BigInteger numberOfMergedPullRequests = BigInteger.ZERO;
+        BigInteger numberOfOtherEvents = BigInteger.ZERO;
 
         for (Record2<Integer, Integer> record : events) {
             Integer key = record.get(EVENT.EVENT_TYPE_ID);
             Integer intValue = record.get(EVENTS_COUNT, Integer.class);
-            BigDecimal value = BigDecimal.valueOf(intValue);
+            BigInteger value = BigInteger.valueOf(intValue);
             if (key.equals(NUMBER_OPENED_ISSUES_ID)) {
                 numberOfOpenedIssues = value;
             } else if (key.equals(NUMBER_OPENED_PRS_ID)) {
@@ -115,10 +115,10 @@ public class DbRepoDataLayer implements RepoDataLayer {
             }
         }
 
-        BigDecimal numberOfParticipatingUsers = BigDecimal.ZERO;
+        BigInteger numberOfParticipatingUsers = BigInteger.ZERO;
 
         if (people != null && people.isNotEmpty()) {
-            numberOfParticipatingUsers = people.get(0).get(PEOPLE_COUNT, BigDecimal.class);
+            numberOfParticipatingUsers = people.get(0).get(PEOPLE_COUNT, BigInteger.class);
         }
 
         return new ProjectRepoStats(

@@ -1,6 +1,6 @@
 package com.novoda.github.reports.data.model;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import jdk.nashorn.internal.ir.annotations.Immutable;
 
@@ -8,20 +8,20 @@ import jdk.nashorn.internal.ir.annotations.Immutable;
 public class ProjectRepoStats implements Stats {
 
     private final String projectRepoName;
-    private final BigDecimal numberOfOpenedIssues;
-    private final BigDecimal numberOfOpenedPullRequests;
-    private final BigDecimal numberOfCommentedIssues;
-    private final BigDecimal numberOfMergedPullRequests;
-    private final BigDecimal numberOfOtherEvents;
-    private final BigDecimal numberOfParticipatingUsers;
+    private final BigInteger numberOfOpenedIssues;
+    private final BigInteger numberOfOpenedPullRequests;
+    private final BigInteger numberOfCommentedIssues;
+    private final BigInteger numberOfMergedPullRequests;
+    private final BigInteger numberOfOtherEvents;
+    private final BigInteger numberOfParticipatingUsers;
 
     public ProjectRepoStats(String projectRepoName,
-                            BigDecimal numberOfOpenedIssues,
-                            BigDecimal numberOfOpenedPullRequests,
-                            BigDecimal numberOfCommentedIssues,
-                            BigDecimal numberOfMergedPullRequests,
-                            BigDecimal numberOfOtherEvents,
-                            BigDecimal numberOfParticipatingUsers) {
+                            BigInteger numberOfOpenedIssues,
+                            BigInteger numberOfOpenedPullRequests,
+                            BigInteger numberOfCommentedIssues,
+                            BigInteger numberOfMergedPullRequests,
+                            BigInteger numberOfOtherEvents,
+                            BigInteger numberOfParticipatingUsers) {
         this.projectRepoName = projectRepoName;
         this.numberOfOpenedIssues = numberOfOpenedIssues;
         this.numberOfOpenedPullRequests = numberOfOpenedPullRequests;
