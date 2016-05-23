@@ -32,28 +32,12 @@ class GithubRepositoriesService implements RepositoryService {
 
     void getRepositoriesResponsesFrom(String organisation) {
 
-        githubApiService.getRepositoriesResponseFrom(organisation)
-                .map(new Func1<Response, Response>() {
-                    @Override
-                    public Response call(Response response) {
-
-                        // check if there's 'rels'
-                        String linkHeader = response.headers().get("Link");
-                        //String linkHeader = response.header("Link");
-                        if (linkHeader == null) {
-                            return response;
-                        }
-
-                        Pattern pattern = Pattern.compile("\\?page=(\\d)>; rel=\"next\"");
-                        Matcher matcher = pattern.matcher(linkHeader);
-                        while (matcher.find()) {
-                            String group = matcher.group(1);
-                            System.out.println(">>> "+group);
-                        }
-
-                        return response;
-                    }
-                })
+//        githubApiService.getRepositoriesResponseForPage(organisation, null)
+//                .concatMap((Func1<Response<List<Repository>>, Observable<Response<List<Repository>>>>) response -> {
+//                    Integer page = checkForRels(response);
+//                    return githubApiService.getRepositoriesResponseForPage(organisation, page);
+//                })
+                f(organisation, 1)
                 .toBlocking()
                 .subscribe(new Subscriber<Response>() {
                     @Override
@@ -68,7 +52,40 @@ class GithubRepositoriesService implements RepositoryService {
                         System.out.println("+++ "+repositories.size());
                     }
                 });
+    }
 
+    Observable<Response<List<Repository>>> f(String org, Integer page) {
 
+        if (page == null) {
+            return null;
+        }
+
+        return githubApiService.getRepositoriesResponseForPage(org, page)
+                .concatMap(new Func1<Response<List<Repository>>, Observable<Response<List<Repository>>>>() {
+                    @Override
+                    public Observable<Response<List<Repository>>> call(Response<List<Repository>> response) {
+                        Integer page = checkForRels(response);
+                        return f(org, page);
+                    }
+                });
+    }
+
+    private Integer checkForRels(Response response) {
+        // check if there's 'rels'
+        String linkHeader = response.headers().get("Link");
+        //String linkHeader = response.header("Link");
+        if (linkHeader == null) {
+            return null;
+        }
+
+        Pattern pattern = Pattern.compile("\\?page=(\\d)>; rel=\"next\"");
+        Matcher matcher = pattern.matcher(linkHeader);
+        while (matcher.find()) {
+            String group = matcher.group(1);
+            System.out.println(">>> " + group);
+            return Integer.parseInt(group);
+        }
+
+        return null; // FIXME: 23/05/2016 too many return pts
     }
 }
