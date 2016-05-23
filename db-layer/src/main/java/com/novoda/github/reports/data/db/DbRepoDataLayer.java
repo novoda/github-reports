@@ -15,6 +15,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Result;
+import org.jooq.Select;
 import org.jooq.TableField;
 
 import static com.novoda.github.reports.data.db.ConnectionManager.*;
@@ -48,23 +49,8 @@ public class DbRepoDataLayer implements RepoDataLayer {
             Condition betweenCondition = conditionalBetween(EVENT.DATE, from, to);
             Condition repoCondition = REPOSITORY.NAME.equalIgnoreCase(repo);
 
-            eventsResult = create
-                    .select(EVENT.EVENT_TYPE_ID, count(EVENT.EVENT_TYPE_ID).as(EVENTS_COUNT))
-                    .from(EVENT).innerJoin(REPOSITORY)
-                    .on(ON_CONDITION)
-                    .where(betweenCondition)
-                    .and(repoCondition)
-                    .groupBy(EVENT.EVENT_TYPE_ID)
-                    .fetch();
-
-            peopleResult = create
-                    .select(countDistinct(EVENT.AUTHOR_USER_ID).as(PEOPLE_COUNT))
-                    .from(EVENT).innerJoin(REPOSITORY)
-                    .on(ON_CONDITION)
-                    .where(betweenCondition)
-                    .and(repoCondition)
-                    .fetch();
-
+            eventsResult = selectEvents(create, betweenCondition, repoCondition).fetch();
+            peopleResult = selectPeople(create, betweenCondition, repoCondition).fetch();
         } catch (SQLException e) {
             throw new DataLayerException(e);
         } finally {
@@ -89,6 +75,25 @@ public class DbRepoDataLayer implements RepoDataLayer {
 
     private static Timestamp dateToTimestamp(Date date) {
         return new Timestamp(date.getTime());
+    }
+
+    private static Select<Record2<Integer, Integer>> selectEvents(DSLContext create, Condition betweenCondition, Condition repoCondition) {
+        return create
+                .select(EVENT.EVENT_TYPE_ID, count(EVENT.EVENT_TYPE_ID).as(EVENTS_COUNT))
+                .from(EVENT).innerJoin(REPOSITORY)
+                .on(ON_CONDITION)
+                .where(betweenCondition)
+                .and(repoCondition)
+                .groupBy(EVENT.EVENT_TYPE_ID);
+    }
+
+    private static Select<Record1<Integer>> selectPeople(DSLContext create, Condition betweenCondition, Condition repoCondition) {
+        return create
+                .select(countDistinct(EVENT.AUTHOR_USER_ID).as(PEOPLE_COUNT))
+                .from(EVENT).innerJoin(REPOSITORY)
+                .on(ON_CONDITION)
+                .where(betweenCondition)
+                .and(repoCondition);
     }
 
     private static ProjectRepoStats recordsToStats(Result<Record2<Integer, Integer>> events, Result<Record1<Integer>> people, String repo) {
