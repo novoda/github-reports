@@ -4,6 +4,7 @@ import com.novoda.github.reports.command.ProjectOptions;
 import com.novoda.github.reports.data.ProjectDataLayer;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 import org.junit.Before;
@@ -20,7 +21,14 @@ public class ProjectCommandHandlerTest {
     private static final String ANY_PROJECT = "projz";
     private static final Date ANY_FROM_DATE = new Date();
     private static final Date ANY_TO_DATE = new Date();
-    private static final ProjectRepoStats ANY_REPO_STATS = new ProjectRepoStats(ANY_PROJECT, 6, 5, 4, 3, 2, 1);
+    private static final ProjectRepoStats ANY_REPO_STATS = new ProjectRepoStats(
+            ANY_PROJECT,
+            new BigInteger("6"),
+            new BigInteger("5"),
+            new BigInteger("4"),
+            new BigInteger("3"),
+            new BigInteger("2"),
+            new BigInteger("1"));
 
     @Mock
     ProjectOptions mockProjectOptions;
