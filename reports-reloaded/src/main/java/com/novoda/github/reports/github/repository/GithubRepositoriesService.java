@@ -5,6 +5,7 @@ import com.novoda.github.reports.github.network.GithubServiceFactory;
 import com.novoda.github.reports.github.network.NextPageExtractor;
 
 import java.util.List;
+import java.util.Optional;
 
 import retrofit2.Response;
 import rx.Observable;
@@ -35,21 +36,13 @@ class GithubRepositoriesService implements RepositoryService {
         return githubApiService
                 .getRepositoriesResponseForPage(org, page)
                 .concatMap(response -> {
-                    Integer nextPage = getNextPage(response);
+                    Optional<Integer> nextPage = nextPageExtractor.getNextPageFrom(response);
                     Observable<Response<List<Repository>>> observable = Observable.just(response);
-                    if (nextPage != null) {
-                        return observable.mergeWith(getPagedRepositoriesFor(org, nextPage));
+                    if (nextPage.isPresent()) {
+                        return observable.mergeWith(getPagedRepositoriesFor(org, nextPage.get()));
                     }
                     return observable;
                 });
-    }
-
-    private Integer getNextPage(Response response) {
-        String linkHeader = response.headers().get("Link");
-        if (linkHeader == null) {
-            return null;
-        }
-        return nextPageExtractor.getNext(linkHeader);
     }
 
 }
