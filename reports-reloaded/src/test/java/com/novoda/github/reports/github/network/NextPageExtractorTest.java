@@ -35,7 +35,7 @@ public class NextPageExtractorTest {
     }
 
     @Test
-    public void givenAResponseWithoutTheLinkHeader_whenGettingTheNextPage_weGetAnEmptyResult() throws Exception {
+    public void givenResponseWithoutTheLinkHeader_whenGettingTheNextPage_thenReturnsAnEmptyResult() throws Exception {
         response = Response.success(ANY_BODY, ANY_HEADERS_WITHOUT_LINK);
 
         Optional<Integer> actual = nextPageExtractor.getNextPageFrom(response);
@@ -44,7 +44,7 @@ public class NextPageExtractorTest {
     }
 
     @Test
-    public void givenAResponseWithoutTheNextPageLink_whenGettingTheNextPage_weGetAnEmptyResult() throws Exception {
+    public void givenResponseWithoutTheNextPageLink_whenGettingTheNextPage_thenReturnsAnEmptyResult() throws Exception {
         response = Response.success(ANY_BODY, ANY_HEADERS_WITHOUT_NEXT_PAGE);
 
         Optional<Integer> actual = nextPageExtractor.getNextPageFrom(response);
@@ -53,7 +53,7 @@ public class NextPageExtractorTest {
     }
 
     @Test
-    public void givenAResponseWithTheNextPageLink_whenGettingTheNextPage_weGetTheNextPageResult() throws Exception {
+    public void givenResponseWithTheNextPageLink_whenGettingTheNextPage_thenReturnsTheNextPage() throws Exception {
         response = Response.success(ANY_BODY, ANY_HEADERS_WITH_NEXT_PAGE);
 
         Optional<Integer> actual = nextPageExtractor.getNextPageFrom(response);
@@ -62,7 +62,7 @@ public class NextPageExtractorTest {
     }
 
     @Test
-    public void givenAResponseWithTheNextPageLinkAndPerPageCount_whenGettingTheNextPage_weGetTheNextPageResult() throws Exception {
+    public void givenResponseWithTheNextPageLinkAndPerPageCount_whenGettingTheNextPage_thenReturnsTheNextPage() throws Exception {
         response = Response.success(ANY_BODY, ANY_HEADERS_WITH_NEXT_PAGE_AND_PER_PAGE);
 
         Optional<Integer> actual = nextPageExtractor.getNextPageFrom(response);
