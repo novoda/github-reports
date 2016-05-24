@@ -43,6 +43,4 @@ public class GithubServiceFactory implements NetworkServiceFactory {
                 .build();
     }
 
-
-
 }
