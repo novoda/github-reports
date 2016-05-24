@@ -13,7 +13,7 @@ public class NextPageExtractor {
     public Optional<Integer> getNextPageFrom(Response response) {
         String linkHeader = response.headers().get("Link");
         if (linkHeader == null) {
-            return null;
+            return Optional.empty();
         }
         return getNextOrNull(linkHeader);
     }
