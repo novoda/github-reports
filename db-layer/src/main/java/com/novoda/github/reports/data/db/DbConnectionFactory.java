@@ -10,8 +10,14 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
-class ConnectionManager {
-    static Connection getNewConnection() throws SQLException {
+public class DbConnectionFactory implements ConnectionFactory {
+
+    public static DbConnectionFactory newInstance() {
+        return new DbConnectionFactory();
+    }
+
+    @Override
+    public Connection getNewConnection() throws SQLException {
         DatabaseCredentialsReader databaseCredentialsReader = DatabaseCredentialsReader.newInstance();
         return DriverManager.getConnection(
                 databaseCredentialsReader.getConnectionString(),
@@ -20,11 +26,13 @@ class ConnectionManager {
         );
     }
 
-    static DSLContext getNewDSLContext(Connection connection) {
+    @Override
+    public DSLContext getNewDSLContext(Connection connection) {
         return DSL.using(connection, SQLDialect.MYSQL);
     }
 
-    static void attemptCloseConnection(Connection connection) {
+    @Override
+    public void attemptCloseConnection(Connection connection) {
         if (connection != null) {
             try {
                 connection.close();
@@ -32,4 +40,5 @@ class ConnectionManager {
             }
         }
     }
+
 }
