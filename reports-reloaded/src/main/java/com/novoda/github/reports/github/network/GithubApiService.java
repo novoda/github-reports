@@ -1,6 +1,6 @@
 package com.novoda.github.reports.github.network;
 
-import com.novoda.github.reports.github.State;
+import com.novoda.github.reports.github.issue.State;
 import com.novoda.github.reports.github.issue.Issue;
 import com.novoda.github.reports.github.repository.Repository;
 

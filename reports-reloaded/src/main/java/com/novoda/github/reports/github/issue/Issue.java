@@ -1,7 +1,6 @@
 package com.novoda.github.reports.github.issue;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.github.State;
 import com.novoda.github.reports.github.User;
 
 import java.util.Date;
