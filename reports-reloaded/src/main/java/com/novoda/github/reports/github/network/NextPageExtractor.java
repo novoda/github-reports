@@ -9,7 +9,6 @@ import retrofit2.Response;
 public class NextPageExtractor {
 
     private static final String LINK_HEADER_KEY = "Link";
-    private static final String old_PAGE_REGEX = "\\?page=(\\d+)>; rel=\"next\"";
     private static final String PAGE_REGEX = "\\?page=(\\d+)[&per_page=\\d+]*>; rel=\"next\"";
 
     public Optional<Integer> getNextPageFrom(Response response) {
