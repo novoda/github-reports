@@ -1,9 +1,11 @@
 package com.novoda.github.reports.handler;
 
 import com.novoda.github.reports.command.UserOptions;
+import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.UserDataLayer;
 import com.novoda.github.reports.data.model.UserStats;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 import org.junit.Before;
@@ -21,7 +23,16 @@ public class UserCommandHandlerTest {
     private static final String ANY_REPO = "repoz";
     private static final Date ANY_FROM_DATE = new Date();
     private static final Date ANY_TO_DATE = new Date();
-    private static final UserStats ANY_USER_STATS = new UserStats(ANY_USER, 6, 5, 4, 3, 2, 1);
+    private static final UserStats ANY_USER_STATS = new UserStats(
+            ANY_USER,
+            BigInteger.valueOf(6),
+            BigInteger.valueOf(5),
+            BigInteger.valueOf(12),
+            BigInteger.valueOf(4),
+            BigInteger.valueOf(3),
+            BigInteger.valueOf(2),
+            BigInteger.valueOf(1)
+    );
 
     @Mock
     UserOptions mockUserOptions;
@@ -46,7 +57,7 @@ public class UserCommandHandlerTest {
     }
 
     @Test
-    public void whenHandlingAUserCommand_thenWeGetStatsForTheArgsPassedIn() {
+    public void whenHandlingAUserCommand_thenWeGetStatsForTheArgsPassedIn() throws DataLayerException {
 
         handler.handle(mockUserOptions);
 

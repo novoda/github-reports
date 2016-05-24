@@ -1,30 +1,33 @@
 package com.novoda.github.reports.data.model;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class UserStats implements Stats {
     private final String userName;
-    private final BigDecimal numberOfOpenedIssues;
-    private final BigDecimal numberOfOpenedPullRequests;
-    private final BigDecimal numberOfOtherPeopleComments;
-    private final BigDecimal numberOfMergedPullRequests;
-    private final BigDecimal numberOfOtherEvents;
-    private final BigDecimal numberOfProjectsWorkedOn;
+    private final BigInteger numberOfOpenedIssues;
+    private final BigInteger numberOfOpenedPullRequests;
+    private final BigInteger numberOfCommentedIssues;
+    private final BigInteger numberOfOtherPeopleComments;
+    private final BigInteger numberOfMergedPullRequests;
+    private final BigInteger numberOfOtherEvents;
+    private final BigInteger numberOfRepositoriesWorkedOn;
 
     public UserStats(String userName,
-                     BigDecimal numberOfOpenedIssues,
-                     BigDecimal numberOfOpenedPullRequests,
-                     BigDecimal numberOfOtherPeopleComments,
-                     BigDecimal numberOfMergedPullRequests,
-                     BigDecimal numberOfOtherEvents,
-                     BigDecimal numberOfProjectsWorkedOn) {
+                     BigInteger numberOfOpenedIssues,
+                     BigInteger numberOfOpenedPullRequests,
+                     BigInteger numberOfCommentedIssues,
+                     BigInteger numberOfOtherPeopleComments,
+                     BigInteger numberOfMergedPullRequests,
+                     BigInteger numberOfOtherEvents,
+                     BigInteger numberOfRepositoriesWorkedOn) {
         this.userName = userName;
         this.numberOfOpenedIssues = numberOfOpenedIssues;
         this.numberOfOpenedPullRequests = numberOfOpenedPullRequests;
+        this.numberOfCommentedIssues = numberOfCommentedIssues;
         this.numberOfOtherPeopleComments = numberOfOtherPeopleComments;
         this.numberOfMergedPullRequests = numberOfMergedPullRequests;
         this.numberOfOtherEvents = numberOfOtherEvents;
-        this.numberOfProjectsWorkedOn = numberOfProjectsWorkedOn;
+        this.numberOfRepositoriesWorkedOn = numberOfRepositoriesWorkedOn;
     }
 
     public String describeStats() {
@@ -32,17 +35,19 @@ public class UserStats implements Stats {
                 "Username: %s\n" +
                         "Number of opened issues: %s\n" +
                         "Number of opened PRs: %s\n" +
+                        "Number of commented issues: %s\n" +
                         "Number of other people's comments: %s\n" +
                         "Number of merged PRs: %s\n" +
                         "Number of other events: %s\n" +
-                        "Number of projects worked on: %s",
+                        "Number of repositories worked on: %s",
                 userName,
                 numberOfOpenedIssues,
                 numberOfOpenedPullRequests,
+                numberOfCommentedIssues,
                 numberOfOtherPeopleComments,
                 numberOfMergedPullRequests,
                 numberOfOtherEvents,
-                numberOfProjectsWorkedOn
+                numberOfRepositoriesWorkedOn
         );
     }
 }
