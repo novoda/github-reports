@@ -16,10 +16,10 @@ public class NextPageExtractor {
         if (linkHeader == null) {
             return Optional.empty();
         }
-        return getNextOrNull(linkHeader);
+        return getNextOrEmpty(linkHeader);
     }
 
-    private Optional<Integer> getNextOrNull(String value) {
+    private Optional<Integer> getNextOrEmpty(String value) {
         Pattern pattern = Pattern.compile(PAGE_REGEX);
         Matcher matcher = pattern.matcher(value);
         if (matcher.find()) {
