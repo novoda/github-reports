@@ -7,6 +7,6 @@ import java.util.Date;
 @FunctionalInterface
 public interface UserDataLayer {
 
-    UserStats getStats(String user, String repo, Date from, Date to);
+    UserStats getStats(String user, String repo, Date from, Date to) throws DataLayerException;
 
 }
