@@ -1,38 +1,24 @@
 package com.novoda.github.reports.github.repository;
 
-import java.util.List;
-
 import rx.Observable;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class RepositoriesServiceClient {
 
-    private RepositoryService repositoriesService;
+    private RepositoryService repositoryService;
 
     public static RepositoriesServiceClient newInstance() {
         GithubRepositoriesService repositoriesService = GithubRepositoriesService.newInstance();
         return new RepositoriesServiceClient(repositoriesService);
     }
 
-    private RepositoriesServiceClient(GithubRepositoriesService repositoriesService) {
-        this.repositoriesService = repositoriesService;
-    }
-
-    public Observable<List<Repository>> getListOfRepositoriesFrom(String organisation) {
-        return repositoriesService.getRepositoriesFrom(organisation)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.immediate());
+    private RepositoriesServiceClient(GithubRepositoriesService repositoryService) {
+        this.repositoryService = repositoryService;
     }
 
     public Observable<Repository> getRepositoriesFrom(String organisation) {
-        return repositoriesService.getRepositoriesFrom(organisation)
-                .flatMapIterable((Func1<List<Repository>, Iterable<Repository>>) repositories -> repositories)
+        return repositoryService.getPagedRepositoriesFor(organisation)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.immediate());
-    }
-
-    public void getRepositoriesResponsesFrom(String organisation) {
-        ((GithubRepositoriesService)repositoriesService).getRepositoriesResponsesFrom(organisation);
     }
 }
