@@ -57,4 +57,9 @@ public class Repository {
     public boolean issuesPresent() {
         return issuesPresent;
     }
+
+    @Override
+    public String toString() {
+        return fullName;
+    }
 }
