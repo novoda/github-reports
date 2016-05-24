@@ -14,12 +14,17 @@ public class NextPageExtractorTest {
 
     private static final int ANY_NEXT_PAGE = 88;
     private static final String ANY_LINK_WITH_NEXT_PAGE = "<https://api.github.com/search/code?page=" + ANY_NEXT_PAGE + ">; rel=\"next\"";
+    private static final String ANY_LINK_WITH_NEXT_PAGE_AND_PER_PAGE =
+            "<https://api.github.com/organizations/74874/repos?page=" + ANY_NEXT_PAGE +"&per_page=100>; rel=\"next\"";
     private static final String ANY_LINK_WITHOUT_NEXT_PAGE = "<https://api.github.com/search/code?page=34>; rel=\"last\"";
 
     private static final String ANY_BODY = "corpo";
     private static final Headers ANY_HEADERS_WITHOUT_LINK = new Headers.Builder().build();
     private static final Headers ANY_HEADERS_WITHOUT_NEXT_PAGE = new Headers.Builder().add("Link", ANY_LINK_WITHOUT_NEXT_PAGE).build();
     private static final Headers ANY_HEADERS_WITH_NEXT_PAGE = new Headers.Builder().add("Link", ANY_LINK_WITH_NEXT_PAGE).build();
+    private static final Headers ANY_HEADERS_WITH_NEXT_PAGE_AND_PER_PAGE = new Headers.Builder()
+            .add("Link", ANY_LINK_WITH_NEXT_PAGE_AND_PER_PAGE)
+            .build();
 
     private Response<String> response;
     private NextPageExtractor nextPageExtractor;
@@ -50,6 +55,15 @@ public class NextPageExtractorTest {
     @Test
     public void givenAResponseWithTheNextPageLink_whenGettingTheNextPage_weGetTheNextPageResult() throws Exception {
         response = Response.success(ANY_BODY, ANY_HEADERS_WITH_NEXT_PAGE);
+
+        Optional<Integer> actual = nextPageExtractor.getNextPageFrom(response);
+
+        assertEquals(Optional.of(ANY_NEXT_PAGE), actual);
+    }
+
+    @Test
+    public void givenAResponseWithTheNextPageLinkAndPerPageCount_whenGettingTheNextPage_weGetTheNextPageResult() throws Exception {
+        response = Response.success(ANY_BODY, ANY_HEADERS_WITH_NEXT_PAGE_AND_PER_PAGE);
 
         Optional<Integer> actual = nextPageExtractor.getNextPageFrom(response);
 
