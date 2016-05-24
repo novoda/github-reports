@@ -1,6 +1,7 @@
 package com.novoda.github.reports.github.issue;
 
 import com.google.gson.annotations.SerializedName;
+import com.novoda.github.reports.github.State;
 import com.novoda.github.reports.github.User;
 
 import java.util.Date;
@@ -15,7 +16,7 @@ public class Issue {
 
     private User user;
 
-    private String state;
+    private State state;
 
     private String url;
 
@@ -58,7 +59,7 @@ public class Issue {
         return closedAt;
     }
 
-    public String getState() {
+    public State getState() {
         return state;
     }
 
@@ -72,6 +73,6 @@ public class Issue {
 
     @Override
     public String toString() {
-        return String.format("%s (%d) - %s , %s", title, id, user.getUsername(), updatedAt);
+        return String.format("%s (%d) [%s] - %s , %s", title, id, state, user.getUsername(), updatedAt);
     }
 }
