@@ -27,6 +27,8 @@ public interface GithubApiService {
     Observable<Response<List<Issue>>> getIssuesResponseForPage(
             @Path("org") String organisation,
             @Path("repo") String repo,
+            @Query("state") String state,
+            @Query("since") String since, // ISO8601: YYYY-MM-DDTHH:MM:SSZ
             @Query("page") Integer page,
             @Query("per_page") Integer perPageCount
     );
