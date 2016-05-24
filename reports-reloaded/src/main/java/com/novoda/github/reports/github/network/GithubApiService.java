@@ -13,12 +13,6 @@ import rx.Observable;
 public interface GithubApiService {
 
     @GET("/orgs/{org}/repos")
-    Observable<List<Repository>> getRepositoriesFrom(@Path("org") String organisation);
-
-    @GET("/orgs/{org}/repos")
-    Observable<Response<List<Repository>>> getRepositoriesResponseFrom(@Path("org") String organisation);
-
-    @GET("/orgs/{org}/repos")
     Observable<Response<List<Repository>>> getRepositoriesResponseForPage(@Path("org") String organisation, @Query("page") Integer page);
 
 }
