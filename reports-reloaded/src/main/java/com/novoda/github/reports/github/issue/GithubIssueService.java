@@ -1,5 +1,6 @@
 package com.novoda.github.reports.github.issue;
 
+import com.novoda.github.reports.github.State;
 import com.novoda.github.reports.github.network.GithubApiService;
 import com.novoda.github.reports.github.network.GithubServiceFactory;
 import com.novoda.github.reports.github.network.NextPageExtractor;
@@ -16,6 +17,7 @@ import rx.Observable;
 class GithubIssueService implements IssueService {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
+    private static final State DEFAULT_STATE = State.ALL;
 
     private final GithubApiService githubApiService;
     private final NextPageExtractor nextPageExtractor;
@@ -39,7 +41,7 @@ class GithubIssueService implements IssueService {
 
     private Observable<Response<List<Issue>>> getPagedIssuesFor(String organisation, String repository, String since, Integer page) {
         return githubApiService
-                .getIssuesResponseForPage(organisation, repository, "all", since, page, DEFAULT_PER_PAGE_COUNT)
+                .getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, since, page, DEFAULT_PER_PAGE_COUNT)
                 .concatMap(response -> {
                     Optional<Integer> nextPage = nextPageExtractor.getNextPageFrom(response);
                     Observable<Response<List<Issue>>> observable = Observable.just(response);
