@@ -4,6 +4,7 @@ import com.novoda.github.reports.command.UserOptions;
 import com.novoda.github.reports.data.UserDataLayer;
 import com.novoda.github.reports.data.model.UserStats;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.junit.Before;
@@ -21,7 +22,15 @@ public class UserCommandHandlerTest {
     private static final String ANY_REPO = "repoz";
     private static final Date ANY_FROM_DATE = new Date();
     private static final Date ANY_TO_DATE = new Date();
-    private static final UserStats ANY_USER_STATS = new UserStats(ANY_USER, 6, 5, 4, 3, 2, 1);
+    private static final UserStats ANY_USER_STATS = new UserStats(
+            ANY_USER,
+            new BigDecimal("6"),
+            new BigDecimal("5"),
+            new BigDecimal("4"),
+            new BigDecimal("3"),
+            new BigDecimal("2"),
+            new BigDecimal("1")
+    );
 
     @Mock
     UserOptions mockUserOptions;
