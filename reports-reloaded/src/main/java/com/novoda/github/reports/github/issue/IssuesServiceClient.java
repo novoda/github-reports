@@ -16,7 +16,7 @@ public class IssuesServiceClient {
         return new IssuesServiceClient(issueService);
     }
 
-    IssuesServiceClient(IssueService issueService) {
+    private IssuesServiceClient(IssueService issueService) {
         this.issueService = issueService;
     }
 
