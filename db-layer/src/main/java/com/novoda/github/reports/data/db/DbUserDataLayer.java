@@ -3,6 +3,7 @@ package com.novoda.github.reports.data.db;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.UserDataLayer;
 import com.novoda.github.reports.data.model.UserStats;
+import com.novoda.github.reports.util.StringHelper;
 
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -41,7 +42,7 @@ public class DbUserDataLayer implements UserDataLayer {
             Condition userCondition = USER.USERNAME.equalIgnoreCase(user);
             Condition betweenCondition = conditionalBetween(EVENT.DATE, from, to);
             Condition repoCondition = REPOSITORY.NAME.isNotNull();
-            if (!(repo == null || repo.isEmpty())) {
+            if (!StringHelper.isNullOrEmpty(repo)) {
                 repoCondition = REPOSITORY.NAME.equalIgnoreCase(repo);
             }
 
