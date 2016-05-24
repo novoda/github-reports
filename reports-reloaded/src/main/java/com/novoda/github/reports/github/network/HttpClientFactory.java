@@ -2,7 +2,7 @@ package com.novoda.github.reports.github.network;
 
 import okhttp3.OkHttpClient;
 
-public interface HttpClientFactory {
+interface HttpClientFactory {
 
     OkHttpClient createClient();
 
