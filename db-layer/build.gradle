@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'nu.studer.jooq'
 
-apply from: '../core/credentials.gradle'
+apply from: '../credentials.gradle'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -34,16 +34,16 @@ repositories {
 dependencies {
     compile project(':core')
     compile 'org.jooq:jooq:3.8.0'
+    compile 'mysql:mysql-connector-java:6.0.2'
 
     testCompile 'junit:junit:4.12'
 }
 
-// TODO: migrate sensitive/changing data to a properties file and use references here
 jooq {
     reports(sourceSets.main) {
         jdbc {
             driver = 'com.mysql.cj.jdbc.Driver'
-            url = '***REMOVED***'
+            url = getDatabaseConnectionString()
             user = getDatabaseUsername()
             password = getDatabasePassword()
             schema = 'reports'
