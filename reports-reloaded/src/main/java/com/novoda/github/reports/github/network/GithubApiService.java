@@ -15,4 +15,11 @@ public interface GithubApiService {
     @GET("/orgs/{org}/repos")
     Observable<Response<List<Repository>>> getRepositoriesResponseForPage(@Path("org") String organisation, @Query("page") Integer page);
 
+    @GET("/orgs/{org}/repos")
+    Observable<Response<List<Repository>>> getRepositoriesResponseForPage(
+            @Path("org") String organisation,
+            @Query("page") Integer page,
+            @Query("per_page") Integer perPageCount
+    );
+
 }
