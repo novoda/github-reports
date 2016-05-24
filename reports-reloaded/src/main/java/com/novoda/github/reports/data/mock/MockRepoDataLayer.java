@@ -3,11 +3,20 @@ package com.novoda.github.reports.data.mock;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 public class MockRepoDataLayer implements RepoDataLayer {
     @Override
     public ProjectRepoStats getStats(String repo, Date from, Date to) {
-        return new ProjectRepoStats(repo, 5, 4, 5, 8, 23, 4);
+        return new ProjectRepoStats(
+                repo,
+                BigInteger.valueOf(5),
+                BigInteger.valueOf(4),
+                BigInteger.valueOf(5),
+                BigInteger.valueOf(8),
+                BigInteger.valueOf(23),
+                BigInteger.valueOf(4)
+        );
     }
 }
