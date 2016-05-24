@@ -28,7 +28,7 @@ class GithubIssueService implements IssueService {
         return new GithubIssueService(githubServiceFactory.createService(), nextPageExtractor);
     }
 
-    GithubIssueService(GithubApiService githubApiService, NextPageExtractor nextPageExtractor) {
+    private GithubIssueService(GithubApiService githubApiService, NextPageExtractor nextPageExtractor) {
         this.githubApiService = githubApiService;
         this.nextPageExtractor = nextPageExtractor;
     }
