@@ -15,13 +15,18 @@ import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.Select;
 
-import static com.novoda.github.reports.data.db.ConnectionManager.*;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
 import static com.novoda.github.reports.data.db.Tables.REPOSITORY;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.countDistinct;
 
 public class DbRepoDataLayer implements RepoDataLayer {
+
+    private final ConnectionFactory connectionFactory;
+
+    public DbRepoDataLayer(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
 
     @Override
     public ProjectRepoStats getStats(String repo, Date from, Date to) throws DataLayerException {
@@ -30,8 +35,8 @@ public class DbRepoDataLayer implements RepoDataLayer {
         Result<Record1<Integer>> peopleResult;
 
         try {
-            connection = getNewConnection();
-            DSLContext create = getNewDSLContext(connection);
+            connection = connectionFactory.getNewConnection();
+            DSLContext create = connectionFactory.getNewDSLContext(connection);
 
             Condition betweenCondition = DatabaseHelper.conditionalBetween(EVENT.DATE, from, to);
             Condition repoCondition = REPOSITORY.NAME.equalIgnoreCase(repo);
@@ -41,7 +46,7 @@ public class DbRepoDataLayer implements RepoDataLayer {
         } catch (SQLException e) {
             throw new DataLayerException(e);
         } finally {
-            attemptCloseConnection(connection);
+            connectionFactory.attemptCloseConnection(connection);
         }
 
         return DatabaseHelper.recordsToProjectRepoStats(eventsResult, peopleResult, repo);
@@ -65,6 +70,5 @@ public class DbRepoDataLayer implements RepoDataLayer {
                 .where(betweenCondition)
                 .and(repoCondition);
     }
-
 
 }

@@ -17,7 +17,6 @@ import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.Select;
 
-import static com.novoda.github.reports.data.db.ConnectionManager.*;
 import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.Tables.*;
 import static org.jooq.impl.DSL.count;
@@ -28,6 +27,12 @@ public class DbUserDataLayer implements UserDataLayer {
     private static final Condition USER_AUTHOR_ON_CONDITION = EVENT.AUTHOR_USER_ID.eq(USER._ID);
     private static final Condition USER_OWNER_ON_CONDITION = EVENT.OWNER_USER_ID.eq(USER._ID);
 
+    private final ConnectionFactory connectionFactory;
+
+    public DbUserDataLayer(ConnectionFactory connectionFactory) {
+       this.connectionFactory = connectionFactory;
+    }
+
     @Override
     public UserStats getStats(String user, String repo, Date from, Date to) throws DataLayerException {
         Connection connection = null;
@@ -36,8 +41,8 @@ public class DbUserDataLayer implements UserDataLayer {
         Result<Record1<Integer>> repositoriesResult;
 
         try {
-            connection = getNewConnection();
-            DSLContext create = getNewDSLContext(connection);
+            connection = connectionFactory.getNewConnection();
+            DSLContext create = connectionFactory.getNewDSLContext(connection);
 
             Condition userCondition = USER.USERNAME.equalIgnoreCase(user);
             Condition betweenCondition = conditionalBetween(EVENT.DATE, from, to);
@@ -52,7 +57,7 @@ public class DbUserDataLayer implements UserDataLayer {
         } catch (SQLException e) {
             throw new DataLayerException(e);
         } finally {
-            attemptCloseConnection(connection);
+            connectionFactory.attemptCloseConnection(connection);
         }
 
         return recordsToUserStats(eventsResult, otherPeopleCommentsResult, repositoriesResult, user);
