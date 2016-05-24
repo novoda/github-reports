@@ -24,12 +24,12 @@ public class RepoCommandHandlerTest {
     private static final Date ANY_TO_DATE = new Date();
     private static final ProjectRepoStats ANY_REPO_STATS = new ProjectRepoStats(
             ANY_REPO,
-            new BigInteger("6"),
-            new BigInteger("5"),
-            new BigInteger("4"),
-            new BigInteger("3"),
-            new BigInteger("2"),
-            new BigInteger("1")
+            BigInteger.valueOf(6),
+            BigInteger.valueOf(5),
+            BigInteger.valueOf(4),
+            BigInteger.valueOf(3),
+            BigInteger.valueOf(2),
+            BigInteger.valueOf(1)
     );
 
     @Mock

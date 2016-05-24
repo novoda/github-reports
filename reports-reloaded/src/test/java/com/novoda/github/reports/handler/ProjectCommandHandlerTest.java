@@ -1,6 +1,7 @@
 package com.novoda.github.reports.handler;
 
 import com.novoda.github.reports.command.ProjectOptions;
+import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.ProjectDataLayer;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
 
@@ -23,12 +24,13 @@ public class ProjectCommandHandlerTest {
     private static final Date ANY_TO_DATE = new Date();
     private static final ProjectRepoStats ANY_REPO_STATS = new ProjectRepoStats(
             ANY_PROJECT,
-            new BigInteger("6"),
-            new BigInteger("5"),
-            new BigInteger("4"),
-            new BigInteger("3"),
-            new BigInteger("2"),
-            new BigInteger("1"));
+            BigInteger.valueOf(6),
+            BigInteger.valueOf(5),
+            BigInteger.valueOf(4),
+            BigInteger.valueOf(3),
+            BigInteger.valueOf(2),
+            BigInteger.valueOf(1)
+    );
 
     @Mock
     ProjectOptions mockProjectOptions;
@@ -52,7 +54,7 @@ public class ProjectCommandHandlerTest {
     }
 
     @Test
-    public void whenHandlingAProjectCommand_thenWeGetStatsForTheArgsPassedIn() {
+    public void whenHandlingAProjectCommand_thenWeGetStatsForTheArgsPassedIn() throws DataLayerException {
 
         handler.handle(mockProjectOptions);
 
