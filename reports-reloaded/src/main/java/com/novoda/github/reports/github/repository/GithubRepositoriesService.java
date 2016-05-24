@@ -12,6 +12,8 @@ import rx.Observable;
 
 class GithubRepositoriesService implements RepositoryService {
 
+    private static final int DEFAULT_PER_PAGE_COUNT = 100;
+
     private final GithubApiService githubApiService;
     private final NextPageExtractor nextPageExtractor;
 
@@ -34,7 +36,7 @@ class GithubRepositoriesService implements RepositoryService {
 
     private Observable<Response<List<Repository>>> getPagedRepositoriesFor(String org, Integer page) {
         return githubApiService
-                .getRepositoriesResponseForPage(org, page)
+                .getRepositoriesResponseForPage(org, page, DEFAULT_PER_PAGE_COUNT)
                 .concatMap(response -> {
                     Optional<Integer> nextPage = nextPageExtractor.getNextPageFrom(response);
                     Observable<Response<List<Repository>>> observable = Observable.just(response);
