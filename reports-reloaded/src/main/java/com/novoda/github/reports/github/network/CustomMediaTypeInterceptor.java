@@ -6,15 +6,20 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class CustomMediaTypeInterceptor implements Interceptor {
+class CustomMediaTypeInterceptor implements Interceptor {
 
     private static final String ACCEPT_HEADER_KEY = "Accept";
-    private static final String AUTH_TOKEN_PREFIX = "token";
+
+    private static final String TIMELINE_API_MEDIA_TYPE = "application/vnd.github.mockingbird-preview";
 
     private final String customMediaType;
 
-    CustomMediaTypeInterceptor(String type) {
-        //
+    static CustomMediaTypeInterceptor newInstanceForTimelineApi() {
+        return new CustomMediaTypeInterceptor(TIMELINE_API_MEDIA_TYPE);
+    }
+
+    CustomMediaTypeInterceptor(String customMediaType) {
+        this.customMediaType = customMediaType;
     }
 
     @Override
@@ -26,7 +31,7 @@ public class CustomMediaTypeInterceptor implements Interceptor {
     private Request injectOAuthTokenThrough(Chain chain) {
         Request oldRequest = chain.request();
         return oldRequest.newBuilder()
-                .addHeader(AUTH_TOKEN_HEADER, AUTH_TOKEN_PREFIX + " " + oAuthToken)
+                .addHeader(ACCEPT_HEADER_KEY, customMediaType)
                 .build();
     }
 }
