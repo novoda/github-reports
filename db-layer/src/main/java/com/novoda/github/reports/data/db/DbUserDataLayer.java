@@ -48,11 +48,11 @@ public class DbUserDataLayer implements UserDataLayer {
             DSLContext create = connectionManager.getNewDSLContext(connection);
 
             int userResult = updateOrInsert(create, user).execute();
-            if (userResult < 0) {
-                throw new DataLayerException(new SQLException("Could not update or insert the user."));
+            if (userResult <= 0) {
+                throw new SQLException("Could not update or insert the user.");
             }
             if (userResult > 1) {
-                throw new DataLayerException(new SQLException("More than 1 user was updated, check your DB constraints."));
+                throw new SQLException("More than 1 user was updated, check your DB constraints.");
             }
         } catch (SQLException e) {
             throw new DataLayerException(e);
