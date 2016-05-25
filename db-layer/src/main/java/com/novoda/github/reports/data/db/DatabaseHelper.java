@@ -1,5 +1,6 @@
 package com.novoda.github.reports.data.db;
 
+import com.novoda.github.reports.data.db.tables.records.EventRecord;
 import com.novoda.github.reports.data.model.EventStats;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
 
@@ -8,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import org.jooq.Condition;
+import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Result;
@@ -15,13 +17,21 @@ import org.jooq.TableField;
 
 import static com.novoda.github.reports.data.db.Tables.EVENT;
 import static com.novoda.github.reports.data.db.Tables.REPOSITORY;
+import static org.jooq.impl.DSL.count;
+import static org.jooq.impl.DSL.countDistinct;
 
 class DatabaseHelper {
 
     static final String EVENTS_COUNT = "events_count";
-    static final String PEOPLE_COUNT = "people_count";
     static final String REPOSITORIES_COUNT = "repositories_count";
-    static final Condition REPOSITORY_ON_CONDITION = EVENT.REPOSITORY_ID.eq(REPOSITORY._ID);
+    private static final String PEOPLE_COUNT = "people_count";
+
+    static final TableField<EventRecord, Integer> SELECT_EVENT_TYPE = EVENT.EVENT_TYPE_ID;
+    static final Field<Integer> SELECT_PEOPLE_COUNT = countDistinct(EVENT.AUTHOR_USER_ID).as(PEOPLE_COUNT);
+    static final Field<Integer> SELECT_EVENTS_COUNT = count(EVENT.EVENT_TYPE_ID).as(EVENTS_COUNT);
+    static final Field<Integer> SELECT_REPOSITORIES_COUNT = countDistinct(EVENT.REPOSITORY_ID).as(REPOSITORIES_COUNT);
+
+    static final Condition EVENT_REPOSITORY_JOIN_ON_CONDITION = EVENT.REPOSITORY_ID.eq(REPOSITORY._ID);
 
     static final Integer OPENED_ISSUES_ID = 100;
     static final Integer OPENED_PRS_ID = 200;

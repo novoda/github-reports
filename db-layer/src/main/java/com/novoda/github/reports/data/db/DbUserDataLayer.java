@@ -20,8 +20,6 @@ import org.jooq.Select;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.Tables.*;
-import static org.jooq.impl.DSL.count;
-import static org.jooq.impl.DSL.countDistinct;
 
 public class DbUserDataLayer implements UserDataLayer {
 
@@ -30,8 +28,12 @@ public class DbUserDataLayer implements UserDataLayer {
 
     private final ConnectionFactory connectionFactory;
 
+    public DbUserDataLayer newInstance(ConnectionFactory connectionFactory) {
+        return new DbUserDataLayer(connectionFactory);
+    }
+
     public DbUserDataLayer(ConnectionFactory connectionFactory) {
-       this.connectionFactory = connectionFactory;
+        this.connectionFactory = connectionFactory;
     }
 
     @Override
@@ -70,11 +72,12 @@ public class DbUserDataLayer implements UserDataLayer {
             Condition betweenCondition,
             Condition repoCondition
     ) {
+
         return create
-                .select(EVENT.EVENT_TYPE_ID, count(EVENT.EVENT_TYPE_ID).as(EVENTS_COUNT))
+                .select(SELECT_EVENT_TYPE, SELECT_EVENTS_COUNT)
                 .from(EVENT)
                 .innerJoin(REPOSITORY)
-                .on(DatabaseHelper.REPOSITORY_ON_CONDITION)
+                .on(EVENT_REPOSITORY_JOIN_ON_CONDITION)
                 .innerJoin(USER)
                 .on(USER_AUTHOR_ON_CONDITION)
                 .where(betweenCondition)
@@ -90,10 +93,10 @@ public class DbUserDataLayer implements UserDataLayer {
             Condition repoCondition
     ) {
         return create
-                .select(count(EVENT.EVENT_TYPE_ID).as(EVENTS_COUNT))
+                .select(SELECT_EVENTS_COUNT)
                 .from(EVENT)
                 .innerJoin(REPOSITORY)
-                .on(DatabaseHelper.REPOSITORY_ON_CONDITION)
+                .on(EVENT_REPOSITORY_JOIN_ON_CONDITION)
                 .innerJoin(USER)
                 .on(USER_OWNER_ON_CONDITION)
                 .where(betweenCondition)
@@ -112,10 +115,10 @@ public class DbUserDataLayer implements UserDataLayer {
             Condition repoCondition
     ) {
         return create
-                .select(countDistinct(EVENT.REPOSITORY_ID).as(REPOSITORIES_COUNT))
+                .select(SELECT_REPOSITORIES_COUNT)
                 .from(EVENT)
                 .innerJoin(REPOSITORY)
-                .on(REPOSITORY_ON_CONDITION)
+                .on(EVENT_REPOSITORY_JOIN_ON_CONDITION)
                 .innerJoin(USER)
                 .on(USER_AUTHOR_ON_CONDITION)
                 .where(betweenCondition)
@@ -123,7 +126,7 @@ public class DbUserDataLayer implements UserDataLayer {
                 .and(repoCondition);
     }
 
-    private UserStats recordsToUserStats(
+    UserStats recordsToUserStats(
             Result<Record2<Integer, Integer>> events,
             Result<Record1<Integer>> otherPeopleComments,
             Result<Record1<Integer>> repositories,
