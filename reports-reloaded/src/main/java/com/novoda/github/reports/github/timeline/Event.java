@@ -24,13 +24,13 @@ public class Event {
         @SerializedName("commited")
         COMMITED("commited"),
         @SerializedName("assigned")
-        CROSS_REFERENCED("assigned"),
+        CROSS_REFERENCED("cross-referenced"),
         @SerializedName("demilestoned")
         DEMILESTONED("demilestoned"),
-        @SerializedName("assigned")
-        HEAD_RED_DELETED("assigned"),
-        @SerializedName("assigned")
-        HEAD_REF_RESTORED("assigned"),
+        @SerializedName("head_ref_deleted")
+        HEAD_REF_DELETED("head_ref_deleted"),
+        @SerializedName("head_ref_restored")
+        HEAD_REF_RESTORED("head_ref_restored"),
         @SerializedName("labeled")
         LABELED("labeled"),
         @SerializedName("locked")
