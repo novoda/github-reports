@@ -2,6 +2,7 @@ package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.UserDataLayer;
+import com.novoda.github.reports.data.model.EventStats;
 import com.novoda.github.reports.data.model.UserStats;
 import com.novoda.github.reports.util.StringHelper;
 
@@ -17,16 +18,23 @@ import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.Select;
 
-import static com.novoda.github.reports.data.db.ConnectionManager.*;
 import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.Tables.*;
-import static org.jooq.impl.DSL.count;
-import static org.jooq.impl.DSL.countDistinct;
 
 public class DbUserDataLayer implements UserDataLayer {
 
     private static final Condition USER_AUTHOR_ON_CONDITION = EVENT.AUTHOR_USER_ID.eq(USER._ID);
     private static final Condition USER_OWNER_ON_CONDITION = EVENT.OWNER_USER_ID.eq(USER._ID);
+
+    private final ConnectionManager connectionManager;
+
+    public DbUserDataLayer newInstance(ConnectionManager connectionManager) {
+        return new DbUserDataLayer(connectionManager);
+    }
+
+    public DbUserDataLayer(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+    }
 
     @Override
     public UserStats getStats(String user, String repo, Date from, Date to) throws DataLayerException {
@@ -36,8 +44,8 @@ public class DbUserDataLayer implements UserDataLayer {
         Result<Record1<Integer>> repositoriesResult;
 
         try {
-            connection = getNewConnection();
-            DSLContext create = getNewDSLContext(connection);
+            connection = connectionManager.getNewConnection();
+            DSLContext create = connectionManager.getNewDSLContext(connection);
 
             Condition userCondition = USER.USERNAME.equalIgnoreCase(user);
             Condition betweenCondition = conditionalBetween(EVENT.DATE, from, to);
@@ -52,23 +60,22 @@ public class DbUserDataLayer implements UserDataLayer {
         } catch (SQLException e) {
             throw new DataLayerException(e);
         } finally {
-            attemptCloseConnection(connection);
+            connectionManager.attemptCloseConnection(connection);
         }
 
         return recordsToUserStats(eventsResult, otherPeopleCommentsResult, repositoriesResult, user);
     }
 
-    private static Select<Record2<Integer, Integer>> selectEvents(
-            DSLContext create,
-            Condition authorCondition,
-            Condition betweenCondition,
-            Condition repoCondition
-    ) {
+    private static Select<Record2<Integer, Integer>> selectEvents(DSLContext create,
+                                                                  Condition authorCondition,
+                                                                  Condition betweenCondition,
+                                                                  Condition repoCondition) {
+
         return create
-                .select(EVENT.EVENT_TYPE_ID, count(EVENT.EVENT_TYPE_ID).as(EVENTS_COUNT))
+                .select(SELECT_EVENT_TYPE, SELECT_EVENTS_COUNT)
                 .from(EVENT)
                 .innerJoin(REPOSITORY)
-                .on(DatabaseHelper.REPOSITORY_ON_CONDITION)
+                .on(EVENT_REPOSITORY_JOIN_ON_CONDITION)
                 .innerJoin(USER)
                 .on(USER_AUTHOR_ON_CONDITION)
                 .where(betweenCondition)
@@ -77,17 +84,15 @@ public class DbUserDataLayer implements UserDataLayer {
                 .groupBy(EVENT.EVENT_TYPE_ID);
     }
 
-    private static Select<Record1<Integer>> selectOtherPeopleComments(
-            DSLContext create,
-            Condition ownerCondition,
-            Condition betweenCondition,
-            Condition repoCondition
-    ) {
+    private static Select<Record1<Integer>> selectOtherPeopleComments(DSLContext create,
+                                                                      Condition ownerCondition,
+                                                                      Condition betweenCondition,
+                                                                      Condition repoCondition) {
         return create
-                .select(count(EVENT.EVENT_TYPE_ID).as(EVENTS_COUNT))
+                .select(SELECT_EVENTS_COUNT)
                 .from(EVENT)
                 .innerJoin(REPOSITORY)
-                .on(DatabaseHelper.REPOSITORY_ON_CONDITION)
+                .on(EVENT_REPOSITORY_JOIN_ON_CONDITION)
                 .innerJoin(USER)
                 .on(USER_OWNER_ON_CONDITION)
                 .where(betweenCondition)
@@ -99,17 +104,15 @@ public class DbUserDataLayer implements UserDataLayer {
                 .and(EVENT.AUTHOR_USER_ID.ne(EVENT.OWNER_USER_ID));
     }
 
-    private static Select<Record1<Integer>> selectRepositories(
-            DSLContext create,
-            Condition authorCondition,
-            Condition betweenCondition,
-            Condition repoCondition
-    ) {
+    private static Select<Record1<Integer>> selectRepositories(DSLContext create,
+                                                               Condition authorCondition,
+                                                               Condition betweenCondition,
+                                                               Condition repoCondition) {
         return create
-                .select(countDistinct(EVENT.REPOSITORY_ID).as(REPOSITORIES_COUNT))
+                .select(SELECT_REPOSITORIES_COUNT)
                 .from(EVENT)
                 .innerJoin(REPOSITORY)
-                .on(REPOSITORY_ON_CONDITION)
+                .on(EVENT_REPOSITORY_JOIN_ON_CONDITION)
                 .innerJoin(USER)
                 .on(USER_AUTHOR_ON_CONDITION)
                 .where(betweenCondition)
@@ -117,33 +120,11 @@ public class DbUserDataLayer implements UserDataLayer {
                 .and(repoCondition);
     }
 
-    private UserStats recordsToUserStats(
-            Result<Record2<Integer, Integer>> events,
-            Result<Record1<Integer>> otherPeopleComments,
-            Result<Record1<Integer>> repositories,
-            String user
-    ) {
-        BigInteger numberOfOpenedIssues = BigInteger.ZERO;
-        BigInteger numberOfOpenedPullRequests = BigInteger.ZERO;
-        BigInteger numberOfCommentedIssues = BigInteger.ZERO;
-        BigInteger numberOfMergedPullRequests = BigInteger.ZERO;
-        BigInteger numberOfOtherEvents = BigInteger.ZERO;
-
-        for (Record2<Integer, Integer> record : events) {
-            Integer key = record.get(EVENT.EVENT_TYPE_ID);
-            BigInteger value = record.get(EVENTS_COUNT, BigInteger.class);
-            if (key.equals(DatabaseHelper.OPENED_ISSUES_ID)) {
-                numberOfOpenedIssues = value;
-            } else if (key.equals(DatabaseHelper.OPENED_PRS_ID)) {
-                numberOfOpenedPullRequests = value;
-            } else if (key.equals(DatabaseHelper.COMMENTED_ISSUES_ID) || key.equals(DatabaseHelper.COMMENTED_PRS_ID)) {
-                numberOfCommentedIssues = numberOfCommentedIssues.add(value);
-            } else if (key.equals(DatabaseHelper.MERGED_PRS_ID)) {
-                numberOfMergedPullRequests = value;
-            } else {
-                numberOfOtherEvents = numberOfOtherEvents.add(value);
-            }
-        }
+    UserStats recordsToUserStats(Result<Record2<Integer, Integer>> events,
+                                 Result<Record1<Integer>> otherPeopleComments,
+                                 Result<Record1<Integer>> repositories,
+                                 String user) {
+        EventStats eventStats = DatabaseHelper.recordsToEventStats(events);
 
         BigInteger numberOfOtherPeopleComments = BigInteger.ZERO;
 
@@ -159,12 +140,8 @@ public class DbUserDataLayer implements UserDataLayer {
 
         return new UserStats(
                 user,
-                numberOfOpenedIssues,
-                numberOfOpenedPullRequests,
-                numberOfCommentedIssues,
+                eventStats,
                 numberOfOtherPeopleComments,
-                numberOfMergedPullRequests,
-                numberOfOtherEvents,
                 numberOfRepositoriesWorkedOn
         );
     }
