@@ -9,13 +9,11 @@ public class EventStats {
     private final BigInteger numberOfMergedPullRequests;
     private final BigInteger numberOfOtherEvents;
 
-    public EventStats(
-            BigInteger numberOfOpenedIssues,
-            BigInteger numberOfOpenedPullRequests,
-            BigInteger numberOfCommentedIssues,
-            BigInteger numberOfMergedPullRequests,
-            BigInteger numberOfOtherEvents
-    ) {
+    public EventStats(BigInteger numberOfOpenedIssues,
+                      BigInteger numberOfOpenedPullRequests,
+                      BigInteger numberOfCommentedIssues,
+                      BigInteger numberOfMergedPullRequests,
+                      BigInteger numberOfOtherEvents) {
         this.numberOfOpenedIssues = numberOfOpenedIssues;
         this.numberOfOpenedPullRequests = numberOfOpenedPullRequests;
         this.numberOfCommentedIssues = numberOfCommentedIssues;
