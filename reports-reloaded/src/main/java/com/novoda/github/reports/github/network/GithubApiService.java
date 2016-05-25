@@ -35,7 +35,7 @@ public interface GithubApiService {
     );
 
     @GET("/repos/{org}/{repo}/issues/{issue_number}/timeline")
-    Observable<Response<List<Event>>> getEventsFor(
+    Observable<Response<List<Event>>> getTimelineFor(
             @Path("org") String organisation,
             @Path("repo") String repo,
             @Path("issue_number") Integer issueNumber
