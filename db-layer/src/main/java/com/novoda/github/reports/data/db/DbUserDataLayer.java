@@ -28,11 +28,11 @@ public class DbUserDataLayer implements UserDataLayer {
 
     private final ConnectionManager connectionManager;
 
-    public DbUserDataLayer newInstance(ConnectionManager connectionManager) {
+    public static DbUserDataLayer newInstance(ConnectionManager connectionManager) {
         return new DbUserDataLayer(connectionManager);
     }
 
-    public DbUserDataLayer(ConnectionManager connectionManager) {
+    private DbUserDataLayer(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 

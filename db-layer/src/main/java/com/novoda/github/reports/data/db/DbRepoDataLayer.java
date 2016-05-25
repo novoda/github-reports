@@ -23,11 +23,11 @@ public class DbRepoDataLayer implements RepoDataLayer {
 
     private final ConnectionManager connectionManager;
 
-    public DbRepoDataLayer newInstance(ConnectionManager connectionManager) {
+    public static DbRepoDataLayer newInstance(ConnectionManager connectionManager) {
         return new DbRepoDataLayer(connectionManager);
     }
 
-    public DbRepoDataLayer(ConnectionManager connectionManager) {
+    private DbRepoDataLayer(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 
