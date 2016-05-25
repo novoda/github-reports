@@ -15,14 +15,17 @@ import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.Select;
 
+import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
 import static com.novoda.github.reports.data.db.Tables.REPOSITORY;
-import static org.jooq.impl.DSL.count;
-import static org.jooq.impl.DSL.countDistinct;
 
 public class DbRepoDataLayer implements RepoDataLayer {
 
     private final ConnectionFactory connectionFactory;
+
+    public DbRepoDataLayer newInstance(ConnectionFactory connectionFactory) {
+        return new DbRepoDataLayer(connectionFactory);
+    }
 
     public DbRepoDataLayer(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
@@ -54,9 +57,10 @@ public class DbRepoDataLayer implements RepoDataLayer {
 
     private static Select<Record2<Integer, Integer>> selectEvents(DSLContext create, Condition betweenCondition, Condition repoCondition) {
         return create
-                .select(EVENT.EVENT_TYPE_ID, count(EVENT.EVENT_TYPE_ID).as(DatabaseHelper.EVENTS_COUNT))
-                .from(EVENT).innerJoin(REPOSITORY)
-                .on(DatabaseHelper.REPOSITORY_ON_CONDITION)
+                .select(SELECT_EVENT_TYPE, SELECT_EVENTS_COUNT)
+                .from(EVENT)
+                .innerJoin(REPOSITORY)
+                .on(EVENT_REPOSITORY_JOIN_ON_CONDITION)
                 .where(betweenCondition)
                 .and(repoCondition)
                 .groupBy(EVENT.EVENT_TYPE_ID);
@@ -64,9 +68,10 @@ public class DbRepoDataLayer implements RepoDataLayer {
 
     private static Select<Record1<Integer>> selectPeople(DSLContext create, Condition betweenCondition, Condition repoCondition) {
         return create
-                .select(countDistinct(EVENT.AUTHOR_USER_ID).as(DatabaseHelper.PEOPLE_COUNT))
-                .from(EVENT).innerJoin(REPOSITORY)
-                .on(DatabaseHelper.REPOSITORY_ON_CONDITION)
+                .select(SELECT_PEOPLE_COUNT)
+                .from(EVENT)
+                .innerJoin(REPOSITORY)
+                .on(EVENT_REPOSITORY_JOIN_ON_CONDITION)
                 .where(betweenCondition)
                 .and(repoCondition);
     }
