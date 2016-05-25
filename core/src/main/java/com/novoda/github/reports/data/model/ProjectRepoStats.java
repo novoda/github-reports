@@ -8,27 +8,27 @@ import jdk.nashorn.internal.ir.annotations.Immutable;
 public class ProjectRepoStats implements Stats {
 
     private final String projectRepoName;
-    private final BigInteger numberOfOpenedIssues;
-    private final BigInteger numberOfOpenedPullRequests;
-    private final BigInteger numberOfCommentedIssues;
-    private final BigInteger numberOfMergedPullRequests;
-    private final BigInteger numberOfOtherEvents;
+    private final EventStats eventStats;
     private final BigInteger numberOfParticipatingUsers;
 
     public ProjectRepoStats(String projectRepoName,
-                            BigInteger numberOfOpenedIssues,
-                            BigInteger numberOfOpenedPullRequests,
-                            BigInteger numberOfCommentedIssues,
-                            BigInteger numberOfMergedPullRequests,
-                            BigInteger numberOfOtherEvents,
+                            EventStats eventStats,
                             BigInteger numberOfParticipatingUsers) {
         this.projectRepoName = projectRepoName;
-        this.numberOfOpenedIssues = numberOfOpenedIssues;
-        this.numberOfOpenedPullRequests = numberOfOpenedPullRequests;
-        this.numberOfCommentedIssues = numberOfCommentedIssues;
-        this.numberOfMergedPullRequests = numberOfMergedPullRequests;
-        this.numberOfOtherEvents = numberOfOtherEvents;
+        this.eventStats = eventStats;
         this.numberOfParticipatingUsers = numberOfParticipatingUsers;
+    }
+
+    public String getProjectRepoName() {
+        return projectRepoName;
+    }
+
+    public EventStats getEventStats() {
+        return eventStats;
+    }
+
+    public BigInteger getNumberOfParticipatingUsers() {
+        return numberOfParticipatingUsers;
     }
 
     public String describeStats() {
@@ -41,11 +41,11 @@ public class ProjectRepoStats implements Stats {
                         "Number of other events: %s\n" +
                         "Number of participating users: %s",
                 projectRepoName,
-                numberOfOpenedIssues,
-                numberOfOpenedPullRequests,
-                numberOfCommentedIssues,
-                numberOfMergedPullRequests,
-                numberOfOtherEvents,
+                eventStats.getNumberOfOpenedIssues(),
+                eventStats.getNumberOfOpenedPullRequests(),
+                eventStats.getNumberOfCommentedIssues(),
+                eventStats.getNumberOfMergedPullRequests(),
+                eventStats.getNumberOfOtherEvents(),
                 numberOfParticipatingUsers
         );
     }
