@@ -31,20 +31,25 @@ class GithubIssueService implements IssueService {
 
     @Override
     public Observable<Issue> getPagedIssuesFor(String organisation, String repository) {
-        return getPagedIssuesFor(organisation, repository, NO_SINCE_DATE, 1)
+        return getPagedIssuesFor(organisation, repository, NO_SINCE_DATE, 1, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
-    private Observable<Response<List<Issue>>> getPagedIssuesFor(String organisation, String repository, String since, Integer page) {
+    private Observable<Response<List<Issue>>> getPagedIssuesFor(String organisation,
+                                                                String repository,
+                                                                String since,
+                                                                Integer page,
+                                                                Integer pageCount) {
+
         return githubApiService
-                .getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, since, page, DEFAULT_PER_PAGE_COUNT)
-                .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage)));
+                .getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, since, page, pageCount)
+                .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage, pageCount)));
     }
 
     @Override
     public Observable<Issue> getPagedIssuesFor(String organisation, String repository, Date since) {
         String date = new DateTime(since.getTime()).toString();
-        return getPagedIssuesFor(organisation, repository, date, 1)
+        return getPagedIssuesFor(organisation, repository, date, 1, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 }
