@@ -1,5 +1,6 @@
 package com.novoda.github.reports.data.db;
 
+import com.novoda.github.reports.data.model.EventStats;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
 
 import java.math.BigInteger;
@@ -45,29 +46,46 @@ class DatabaseHelper {
         return new Timestamp(date.getTime());
     }
 
-    static ProjectRepoStats recordsToProjectRepoStats(Result<Record2<Integer, Integer>> events, Result<Record1<Integer>> people, String projectOrRepoName) {
+    static EventStats recordsToEventStats(Result<Record2<Integer, Integer>> events) {
         BigInteger numberOfOpenedIssues = BigInteger.ZERO;
         BigInteger numberOfOpenedPullRequests = BigInteger.ZERO;
         BigInteger numberOfCommentedIssues = BigInteger.ZERO;
         BigInteger numberOfMergedPullRequests = BigInteger.ZERO;
         BigInteger numberOfOtherEvents = BigInteger.ZERO;
 
-        for (Record2<Integer, Integer> record : events) {
-            Integer key = record.get(EVENT.EVENT_TYPE_ID);
-            Integer intValue = record.get(EVENTS_COUNT, Integer.class);
-            BigInteger value = BigInteger.valueOf(intValue);
-            if (key.equals(OPENED_ISSUES_ID)) {
-                numberOfOpenedIssues = value;
-            } else if (key.equals(OPENED_PRS_ID)) {
-                numberOfOpenedPullRequests = value;
-            } else if (key.equals(COMMENTED_ISSUES_ID) || key.equals(COMMENTED_PRS_ID)) {
-                numberOfCommentedIssues = numberOfCommentedIssues.add(value);
-            } else if (key.equals(MERGED_PRS_ID)) {
-                numberOfMergedPullRequests = value;
-            } else {
-                numberOfOtherEvents = numberOfOtherEvents.add(value);
+        if (events != null) {
+            for (Record2<Integer, Integer> record : events) {
+                Integer key = record.get(EVENT.EVENT_TYPE_ID);
+                BigInteger value = record.get(EVENTS_COUNT, BigInteger.class);
+                if (key.equals(OPENED_ISSUES_ID)) {
+                    numberOfOpenedIssues = value;
+                } else if (key.equals(OPENED_PRS_ID)) {
+                    numberOfOpenedPullRequests = value;
+                } else if (key.equals(COMMENTED_ISSUES_ID) || key.equals(COMMENTED_PRS_ID)) {
+                    numberOfCommentedIssues = numberOfCommentedIssues.add(value);
+                } else if (key.equals(MERGED_PRS_ID)) {
+                    numberOfMergedPullRequests = value;
+                } else {
+                    numberOfOtherEvents = numberOfOtherEvents.add(value);
+                }
             }
         }
+
+        return new EventStats(
+                numberOfOpenedIssues,
+                numberOfOpenedPullRequests,
+                numberOfCommentedIssues,
+                numberOfMergedPullRequests,
+                numberOfOtherEvents
+        );
+    }
+
+    static ProjectRepoStats recordsToProjectRepoStats(
+            Result<Record2<Integer, Integer>> events,
+            Result<Record1<Integer>> people,
+            String projectOrRepoName
+    ) {
+        EventStats eventStats = recordsToEventStats(events);
 
         BigInteger numberOfParticipatingUsers = BigInteger.ZERO;
 
@@ -77,11 +95,7 @@ class DatabaseHelper {
 
         return new ProjectRepoStats(
                 projectOrRepoName,
-                numberOfOpenedIssues,
-                numberOfOpenedPullRequests,
-                numberOfCommentedIssues,
-                numberOfMergedPullRequests,
-                numberOfOtherEvents,
+                eventStats,
                 numberOfParticipatingUsers
         );
     }

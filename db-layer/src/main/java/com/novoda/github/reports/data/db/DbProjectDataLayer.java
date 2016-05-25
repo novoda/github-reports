@@ -53,7 +53,7 @@ public class DbProjectDataLayer implements ProjectDataLayer {
             connectionFactory.attemptCloseConnection(connection);
         }
 
-        return recordsToProjectRepoStats(eventsResult, peopleResult, project);
+        return DatabaseHelper.recordsToProjectRepoStats(eventsResult, peopleResult, project);
     }
 
     private static Select<Record2<Integer, Integer>> selectEvents(DSLContext create, Condition betweenCondition, Condition projectCondition) {
