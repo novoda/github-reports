@@ -7,7 +7,8 @@ public class Event {
 
     private long id;
 
-    private User user;
+    @SerializedName(value = "actor", alternate = { "user" })
+    private User actor;
 
     private String body;
 
@@ -18,8 +19,8 @@ public class Event {
         return id;
     }
 
-    public User getUser() {
-        return user;
+    public User getActor() {
+        return actor;
     }
 
     public String getBody() {
@@ -33,7 +34,8 @@ public class Event {
     @Override
     public String toString() {
         return String.format("%s [%d], by %s: %s",
-                             type, id, user != null ? user.getUsername() : "{no user}", body != null ? trimmedBody() : "{no body}");
+                             type, id, actor != null ? actor.getUsername() : "{no user}", body != null ? trimmedBody() : "{no body}"
+        );
     }
 
     private String trimmedBody() {
@@ -52,8 +54,8 @@ public class Event {
         CLOSED("closed"),
         @SerializedName("commented")
         COMMENTED("commented"),
-        @SerializedName("commited")
-        COMMITED("commited"),
+        @SerializedName("committed")
+        COMMITTED("committed"),
         @SerializedName("assigned")
         CROSS_REFERENCED("cross-referenced"),
         @SerializedName("demilestoned")
