@@ -2,6 +2,7 @@ package com.novoda.github.reports.github.network;
 
 import com.novoda.github.reports.github.issue.Issue;
 import com.novoda.github.reports.github.repository.Repository;
+import com.novoda.github.reports.github.timeline.Event;
 
 import java.util.List;
 
@@ -31,6 +32,13 @@ public interface GithubApiService {
             @Query("since") String since, // ISO8601: YYYY-MM-DDTHH:MM:SSZ
             @Query("page") Integer page,
             @Query("per_page") Integer perPageCount
+    );
+
+    @GET("/repos/{org}/{repo}/issues/{issue_number}/timeline")
+    Observable<Response<List<Event>>> getEventsFor(
+            @Path("org") String organisation,
+            @Path("repo") String repo,
+            @Path("issue_number") Integer issueNumber
     );
 
 }
