@@ -13,6 +13,22 @@ public class Event {
 
     private Type type;
 
+    public long getId() {
+        return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
     public enum Type {
 
         @SerializedName("assigned")
