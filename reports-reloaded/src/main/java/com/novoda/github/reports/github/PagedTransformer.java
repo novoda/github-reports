@@ -13,7 +13,12 @@ public class PagedTransformer<T> implements Observable.Transformer<Response<List
     private final NextPageExtractor nextPageExtractor;
     private final PageRecursor<T> recursor;
 
-    public PagedTransformer(NextPageExtractor nextPageExtractor, PageRecursor<T> recursor) {
+    public static <T> PagedTransformer<T> newInstance(PageRecursor<T> recursor) {
+        NextPageExtractor nextPageExtractor = new NextPageExtractor();
+        return new PagedTransformer<>(nextPageExtractor, recursor);
+    }
+
+    private PagedTransformer(NextPageExtractor nextPageExtractor, PageRecursor<T> recursor) {
         this.nextPageExtractor = nextPageExtractor;
         this.recursor = recursor;
     }

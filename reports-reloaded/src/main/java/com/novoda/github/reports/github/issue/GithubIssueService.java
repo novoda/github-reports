@@ -3,7 +3,6 @@ package com.novoda.github.reports.github.issue;
 import com.novoda.github.reports.github.PagedTransformer;
 import com.novoda.github.reports.github.network.GithubApiService;
 import com.novoda.github.reports.github.network.GithubServiceFactory;
-import com.novoda.github.reports.github.network.NextPageExtractor;
 
 import java.util.Date;
 import java.util.List;
@@ -20,17 +19,14 @@ class GithubIssueService implements IssueService {
     private static final String NO_SINCE_DATE = null;
 
     private final GithubApiService githubApiService;
-    private final NextPageExtractor nextPageExtractor;
 
     public static IssueService newInstance() {
         GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
-        NextPageExtractor nextPageExtractor = new NextPageExtractor();
-        return new GithubIssueService(githubServiceFactory.createService(), nextPageExtractor);
+        return new GithubIssueService(githubServiceFactory.createService());
     }
 
-    private GithubIssueService(GithubApiService githubApiService, NextPageExtractor nextPageExtractor) {
+    private GithubIssueService(GithubApiService githubApiService) {
         this.githubApiService = githubApiService;
-        this.nextPageExtractor = nextPageExtractor;
     }
 
     @Override
@@ -42,10 +38,7 @@ class GithubIssueService implements IssueService {
     private Observable<Response<List<Issue>>> getPagedIssuesFor(String organisation, String repository, String since, Integer page) {
         return githubApiService
                 .getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, since, page, DEFAULT_PER_PAGE_COUNT)
-                .compose(new PagedTransformer<>(
-                        nextPageExtractor,
-                        nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage)
-                ));
+                .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage)));
     }
 
     @Override
