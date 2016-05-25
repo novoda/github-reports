@@ -15,7 +15,7 @@ import rx.Observable;
 class GithubIssueService implements IssueService {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
-    private static final State DEFAULT_STATE = State.ALL;
+    private static final Issue.State DEFAULT_STATE = Issue.State.ALL;
     private static final String NO_SINCE_DATE = null;
 
     private final GithubApiService githubApiService;
