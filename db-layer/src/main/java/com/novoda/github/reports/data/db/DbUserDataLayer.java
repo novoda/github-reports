@@ -2,6 +2,7 @@ package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.UserDataLayer;
+import com.novoda.github.reports.data.model.EventStats;
 import com.novoda.github.reports.data.model.UserStats;
 import com.novoda.github.reports.util.StringHelper;
 
@@ -128,27 +129,7 @@ public class DbUserDataLayer implements UserDataLayer {
             Result<Record1<Integer>> repositories,
             String user
     ) {
-        BigInteger numberOfOpenedIssues = BigInteger.ZERO;
-        BigInteger numberOfOpenedPullRequests = BigInteger.ZERO;
-        BigInteger numberOfCommentedIssues = BigInteger.ZERO;
-        BigInteger numberOfMergedPullRequests = BigInteger.ZERO;
-        BigInteger numberOfOtherEvents = BigInteger.ZERO;
-
-        for (Record2<Integer, Integer> record : events) {
-            Integer key = record.get(EVENT.EVENT_TYPE_ID);
-            BigInteger value = record.get(EVENTS_COUNT, BigInteger.class);
-            if (key.equals(DatabaseHelper.OPENED_ISSUES_ID)) {
-                numberOfOpenedIssues = value;
-            } else if (key.equals(DatabaseHelper.OPENED_PRS_ID)) {
-                numberOfOpenedPullRequests = value;
-            } else if (key.equals(DatabaseHelper.COMMENTED_ISSUES_ID) || key.equals(DatabaseHelper.COMMENTED_PRS_ID)) {
-                numberOfCommentedIssues = numberOfCommentedIssues.add(value);
-            } else if (key.equals(DatabaseHelper.MERGED_PRS_ID)) {
-                numberOfMergedPullRequests = value;
-            } else {
-                numberOfOtherEvents = numberOfOtherEvents.add(value);
-            }
-        }
+        EventStats eventStats = DatabaseHelper.recordsToEventStats(events);
 
         BigInteger numberOfOtherPeopleComments = BigInteger.ZERO;
 
@@ -164,12 +145,8 @@ public class DbUserDataLayer implements UserDataLayer {
 
         return new UserStats(
                 user,
-                numberOfOpenedIssues,
-                numberOfOpenedPullRequests,
-                numberOfCommentedIssues,
+                eventStats,
                 numberOfOtherPeopleComments,
-                numberOfMergedPullRequests,
-                numberOfOtherEvents,
                 numberOfRepositoriesWorkedOn
         );
     }
