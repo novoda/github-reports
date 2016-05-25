@@ -2,12 +2,18 @@ package com.novoda.github.reports.data.mock;
 
 import com.novoda.github.reports.data.UserDataLayer;
 import com.novoda.github.reports.data.model.EventStats;
+import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.data.model.UserStats;
 
 import java.math.BigInteger;
 import java.util.Date;
 
 public class MockUserDataLayer implements UserDataLayer {
+    @Override
+    public User updateOrInsert(User user) {
+        return User.create(1337, "***REMOVED***");
+    }
+
     @Override
     public UserStats getStats(String user, String repo, Date from, Date to) {
         return new UserStats(
