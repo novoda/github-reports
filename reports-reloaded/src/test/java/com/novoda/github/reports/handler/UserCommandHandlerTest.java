@@ -3,6 +3,7 @@ package com.novoda.github.reports.handler;
 import com.novoda.github.reports.command.UserOptions;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.UserDataLayer;
+import com.novoda.github.reports.data.model.EventStats;
 import com.novoda.github.reports.data.model.UserStats;
 
 import java.math.BigInteger;
@@ -23,16 +24,14 @@ public class UserCommandHandlerTest {
     private static final String ANY_REPO = "repoz";
     private static final Date ANY_FROM_DATE = new Date();
     private static final Date ANY_TO_DATE = new Date();
-    private static final UserStats ANY_USER_STATS = new UserStats(
-            ANY_USER,
+    private static final EventStats ANY_EVENT_STATS = new EventStats(
             BigInteger.valueOf(6),
             BigInteger.valueOf(5),
-            BigInteger.valueOf(12),
             BigInteger.valueOf(4),
             BigInteger.valueOf(3),
-            BigInteger.valueOf(2),
-            BigInteger.valueOf(1)
+            BigInteger.valueOf(2)
     );
+    private static final UserStats ANY_USER_STATS = new UserStats(ANY_USER, ANY_EVENT_STATS, BigInteger.valueOf(1), BigInteger.valueOf(0));
 
     @Mock
     UserOptions mockUserOptions;
