@@ -21,14 +21,14 @@ import static com.novoda.github.reports.data.db.Tables.REPOSITORY;
 
 public class DbRepoDataLayer implements RepoDataLayer {
 
-    private final ConnectionFactory connectionFactory;
+    private final ConnectionManager connectionManager;
 
-    public DbRepoDataLayer newInstance(ConnectionFactory connectionFactory) {
-        return new DbRepoDataLayer(connectionFactory);
+    public DbRepoDataLayer newInstance(ConnectionManager connectionManager) {
+        return new DbRepoDataLayer(connectionManager);
     }
 
-    public DbRepoDataLayer(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
+    public DbRepoDataLayer(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
     }
 
     @Override
@@ -38,8 +38,8 @@ public class DbRepoDataLayer implements RepoDataLayer {
         Result<Record1<Integer>> peopleResult;
 
         try {
-            connection = connectionFactory.getNewConnection();
-            DSLContext create = connectionFactory.getNewDSLContext(connection);
+            connection = connectionManager.getNewConnection();
+            DSLContext create = connectionManager.getNewDSLContext(connection);
 
             Condition betweenCondition = DatabaseHelper.conditionalBetween(EVENT.DATE, from, to);
             Condition repoCondition = REPOSITORY.NAME.equalIgnoreCase(repo);
@@ -49,7 +49,7 @@ public class DbRepoDataLayer implements RepoDataLayer {
         } catch (SQLException e) {
             throw new DataLayerException(e);
         } finally {
-            connectionFactory.attemptCloseConnection(connection);
+            connectionManager.attemptCloseConnection(connection);
         }
 
         return DatabaseHelper.recordsToProjectRepoStats(eventsResult, peopleResult, repo);

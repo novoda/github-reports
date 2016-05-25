@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import org.jooq.DSLContext;
 
-public interface ConnectionFactory {
+public interface ConnectionManager {
 
     Connection getNewConnection() throws SQLException;
 

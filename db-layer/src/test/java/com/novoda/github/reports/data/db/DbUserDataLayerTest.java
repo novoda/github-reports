@@ -23,10 +23,10 @@ public class DbUserDataLayerTest {
 
     @Before
     public void setUp() throws SQLException {
-        ConnectionFactory connectionFactory = MockConnectionFactory.newInstance();
-        Connection connection = connectionFactory.getNewConnection();
-        context = connectionFactory.getNewDSLContext(connection);
-        dataLayer = new DbUserDataLayer(connectionFactory);
+        ConnectionManager connectionManager = MockConnectionManager.newInstance();
+        Connection connection = connectionManager.getNewConnection();
+        context = connectionManager.getNewDSLContext(connection);
+        dataLayer = new DbUserDataLayer(connectionManager);
     }
 
     @Test

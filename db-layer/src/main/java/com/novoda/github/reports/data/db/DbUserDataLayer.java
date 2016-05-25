@@ -26,14 +26,14 @@ public class DbUserDataLayer implements UserDataLayer {
     private static final Condition USER_AUTHOR_ON_CONDITION = EVENT.AUTHOR_USER_ID.eq(USER._ID);
     private static final Condition USER_OWNER_ON_CONDITION = EVENT.OWNER_USER_ID.eq(USER._ID);
 
-    private final ConnectionFactory connectionFactory;
+    private final ConnectionManager connectionManager;
 
-    public DbUserDataLayer newInstance(ConnectionFactory connectionFactory) {
-        return new DbUserDataLayer(connectionFactory);
+    public DbUserDataLayer newInstance(ConnectionManager connectionManager) {
+        return new DbUserDataLayer(connectionManager);
     }
 
-    public DbUserDataLayer(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
+    public DbUserDataLayer(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
     }
 
     @Override
@@ -44,8 +44,8 @@ public class DbUserDataLayer implements UserDataLayer {
         Result<Record1<Integer>> repositoriesResult;
 
         try {
-            connection = connectionFactory.getNewConnection();
-            DSLContext create = connectionFactory.getNewDSLContext(connection);
+            connection = connectionManager.getNewConnection();
+            DSLContext create = connectionManager.getNewDSLContext(connection);
 
             Condition userCondition = USER.USERNAME.equalIgnoreCase(user);
             Condition betweenCondition = conditionalBetween(EVENT.DATE, from, to);
@@ -60,7 +60,7 @@ public class DbUserDataLayer implements UserDataLayer {
         } catch (SQLException e) {
             throw new DataLayerException(e);
         } finally {
-            connectionFactory.attemptCloseConnection(connection);
+            connectionManager.attemptCloseConnection(connection);
         }
 
         return recordsToUserStats(eventsResult, otherPeopleCommentsResult, repositoriesResult, user);
