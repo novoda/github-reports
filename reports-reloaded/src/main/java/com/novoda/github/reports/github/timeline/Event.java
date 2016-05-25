@@ -11,6 +11,7 @@ public class Event {
 
     private String body;
 
+    @SerializedName("event")
     private Type type;
 
     public long getId() {
@@ -27,6 +28,20 @@ public class Event {
 
     public Type getType() {
         return type;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s [%d], by %s: %s",
+                             type, id, user != null ? user.getUsername() : "{no user}", body != null ? trimmedBody() : "{no body}");
+    }
+
+    private String trimmedBody() {
+        int limit = 140;
+        if (body.length() < limit) {
+            limit = body.length();
+        }
+        return body.substring(0, limit);
     }
 
     public enum Type {
