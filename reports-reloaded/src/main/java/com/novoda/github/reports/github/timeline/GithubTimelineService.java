@@ -24,23 +24,9 @@ class GithubTimelineService implements TimelineService {
 
     @Override
     public Observable<Event> getTimelineFor(String organisation, String repository, Integer issueNumber) {
-
-        Observable<Event> result =
-                githubApiService.getTimelineFor(organisation, repository, issueNumber)
-                        .map(new Func1<Response<List<Event>>, List<Event>>() {
-                            @Override
-                            public List<Event> call(Response<List<Event>> listResponse) {
-                                return listResponse.body();
-                            }
-                        })
-                        .flatMapIterable(new Func1<List<Event>, Iterable<Event>>() {
-                            @Override
-                            public Iterable<Event> call(List<Event> events) {
-                                return events;
-                            }
-                        });
-
-        return result;
+        return githubApiService.getTimelineFor(organisation, repository, issueNumber, 1, 100)
+                        .map(Response::body)
+                        .flatMapIterable((Func1<List<Event>, Iterable<Event>>) events -> events);
     }
 
 }
