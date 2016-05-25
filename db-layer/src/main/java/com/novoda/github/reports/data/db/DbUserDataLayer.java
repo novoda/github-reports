@@ -66,12 +66,10 @@ public class DbUserDataLayer implements UserDataLayer {
         return recordsToUserStats(eventsResult, otherPeopleCommentsResult, repositoriesResult, user);
     }
 
-    private static Select<Record2<Integer, Integer>> selectEvents(
-            DSLContext create,
-            Condition authorCondition,
-            Condition betweenCondition,
-            Condition repoCondition
-    ) {
+    private static Select<Record2<Integer, Integer>> selectEvents(DSLContext create,
+                                                                  Condition authorCondition,
+                                                                  Condition betweenCondition,
+                                                                  Condition repoCondition) {
 
         return create
                 .select(SELECT_EVENT_TYPE, SELECT_EVENTS_COUNT)
@@ -86,12 +84,10 @@ public class DbUserDataLayer implements UserDataLayer {
                 .groupBy(EVENT.EVENT_TYPE_ID);
     }
 
-    private static Select<Record1<Integer>> selectOtherPeopleComments(
-            DSLContext create,
-            Condition ownerCondition,
-            Condition betweenCondition,
-            Condition repoCondition
-    ) {
+    private static Select<Record1<Integer>> selectOtherPeopleComments(DSLContext create,
+                                                                      Condition ownerCondition,
+                                                                      Condition betweenCondition,
+                                                                      Condition repoCondition) {
         return create
                 .select(SELECT_EVENTS_COUNT)
                 .from(EVENT)
@@ -108,12 +104,10 @@ public class DbUserDataLayer implements UserDataLayer {
                 .and(EVENT.AUTHOR_USER_ID.ne(EVENT.OWNER_USER_ID));
     }
 
-    private static Select<Record1<Integer>> selectRepositories(
-            DSLContext create,
-            Condition authorCondition,
-            Condition betweenCondition,
-            Condition repoCondition
-    ) {
+    private static Select<Record1<Integer>> selectRepositories(DSLContext create,
+                                                               Condition authorCondition,
+                                                               Condition betweenCondition,
+                                                               Condition repoCondition) {
         return create
                 .select(SELECT_REPOSITORIES_COUNT)
                 .from(EVENT)
@@ -126,12 +120,10 @@ public class DbUserDataLayer implements UserDataLayer {
                 .and(repoCondition);
     }
 
-    UserStats recordsToUserStats(
-            Result<Record2<Integer, Integer>> events,
-            Result<Record1<Integer>> otherPeopleComments,
-            Result<Record1<Integer>> repositories,
-            String user
-    ) {
+    UserStats recordsToUserStats(Result<Record2<Integer, Integer>> events,
+                                 Result<Record1<Integer>> otherPeopleComments,
+                                 Result<Record1<Integer>> repositories,
+                                 String user) {
         EventStats eventStats = DatabaseHelper.recordsToEventStats(events);
 
         BigInteger numberOfOtherPeopleComments = BigInteger.ZERO;

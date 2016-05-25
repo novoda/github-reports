@@ -90,11 +90,9 @@ class DatabaseHelper {
         );
     }
 
-    static ProjectRepoStats recordsToProjectRepoStats(
-            Result<Record2<Integer, Integer>> events,
-            Result<Record1<Integer>> people,
-            String projectOrRepoName
-    ) {
+    static ProjectRepoStats recordsToProjectRepoStats(Result<Record2<Integer, Integer>> events,
+                                                      Result<Record1<Integer>> people,
+                                                      String projectOrRepoName) {
         EventStats eventStats = recordsToEventStats(events);
 
         BigInteger numberOfParticipatingUsers = BigInteger.ZERO;
