@@ -1,6 +1,5 @@
 package com.novoda.github.reports.github.network;
 
-import com.novoda.github.reports.github.issue.State;
 import com.novoda.github.reports.github.issue.Issue;
 import com.novoda.github.reports.github.repository.Repository;
 
@@ -28,7 +27,7 @@ public interface GithubApiService {
     Observable<Response<List<Issue>>> getIssuesResponseForPage(
             @Path("org") String organisation,
             @Path("repo") String repo,
-            @Query("state") State state,
+            @Query("state") Issue.State state,
             @Query("since") String since, // ISO8601: YYYY-MM-DDTHH:MM:SSZ
             @Query("page") Integer page,
             @Query("per_page") Integer perPageCount
