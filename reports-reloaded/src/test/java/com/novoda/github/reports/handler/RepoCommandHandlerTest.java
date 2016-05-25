@@ -3,6 +3,7 @@ package com.novoda.github.reports.handler;
 import com.novoda.github.reports.command.RepoOptions;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.RepoDataLayer;
+import com.novoda.github.reports.data.model.EventStats;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
 
 import java.math.BigInteger;
@@ -22,15 +23,14 @@ public class RepoCommandHandlerTest {
     private static final String ANY_REPO = "repo";
     private static final Date ANY_FROM_DATE = new Date();
     private static final Date ANY_TO_DATE = new Date();
-    private static final ProjectRepoStats ANY_REPO_STATS = new ProjectRepoStats(
-            ANY_REPO,
+    private static final EventStats ANY_EVENT_STATS = new EventStats(
             BigInteger.valueOf(6),
             BigInteger.valueOf(5),
             BigInteger.valueOf(4),
             BigInteger.valueOf(3),
-            BigInteger.valueOf(2),
-            BigInteger.valueOf(1)
+            BigInteger.valueOf(2)
     );
+    private static final ProjectRepoStats ANY_REPO_STATS = new ProjectRepoStats(ANY_REPO, ANY_EVENT_STATS, BigInteger.valueOf(1));
 
     @Mock
     RepoOptions mockRepoOptions;
