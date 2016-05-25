@@ -8,9 +8,9 @@ import org.jooq.impl.DSL;
 import org.jooq.tools.jdbc.MockConnection;
 import org.jooq.tools.jdbc.MockResult;
 
-public class MockConnectionManager implements ConnectionManager {
+class MockConnectionManager implements ConnectionManager {
 
-    public static MockConnectionManager newInstance() {
+    static MockConnectionManager newInstance() {
         return new MockConnectionManager();
     }
 
@@ -26,6 +26,6 @@ public class MockConnectionManager implements ConnectionManager {
 
     @Override
     public void attemptCloseConnection(Connection connection) {
-
+        // Do nothing
     }
 }
