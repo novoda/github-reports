@@ -15,13 +15,21 @@ import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.Select;
 
-import static com.novoda.github.reports.data.db.ConnectionManager.*;
+import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
 import static com.novoda.github.reports.data.db.Tables.REPOSITORY;
-import static org.jooq.impl.DSL.count;
-import static org.jooq.impl.DSL.countDistinct;
 
 public class DbRepoDataLayer implements RepoDataLayer {
+
+    private final ConnectionManager connectionManager;
+
+    public DbRepoDataLayer newInstance(ConnectionManager connectionManager) {
+        return new DbRepoDataLayer(connectionManager);
+    }
+
+    public DbRepoDataLayer(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+    }
 
     @Override
     public ProjectRepoStats getStats(String repo, Date from, Date to) throws DataLayerException {
@@ -30,8 +38,8 @@ public class DbRepoDataLayer implements RepoDataLayer {
         Result<Record1<Integer>> peopleResult;
 
         try {
-            connection = getNewConnection();
-            DSLContext create = getNewDSLContext(connection);
+            connection = connectionManager.getNewConnection();
+            DSLContext create = connectionManager.getNewDSLContext(connection);
 
             Condition betweenCondition = DatabaseHelper.conditionalBetween(EVENT.DATE, from, to);
             Condition repoCondition = REPOSITORY.NAME.equalIgnoreCase(repo);
@@ -41,7 +49,7 @@ public class DbRepoDataLayer implements RepoDataLayer {
         } catch (SQLException e) {
             throw new DataLayerException(e);
         } finally {
-            attemptCloseConnection(connection);
+            connectionManager.attemptCloseConnection(connection);
         }
 
         return DatabaseHelper.recordsToProjectRepoStats(eventsResult, peopleResult, repo);
@@ -49,9 +57,10 @@ public class DbRepoDataLayer implements RepoDataLayer {
 
     private static Select<Record2<Integer, Integer>> selectEvents(DSLContext create, Condition betweenCondition, Condition repoCondition) {
         return create
-                .select(EVENT.EVENT_TYPE_ID, count(EVENT.EVENT_TYPE_ID).as(DatabaseHelper.EVENTS_COUNT))
-                .from(EVENT).innerJoin(REPOSITORY)
-                .on(DatabaseHelper.REPOSITORY_ON_CONDITION)
+                .select(SELECT_EVENT_TYPE, SELECT_EVENTS_COUNT)
+                .from(EVENT)
+                .innerJoin(REPOSITORY)
+                .on(EVENT_REPOSITORY_JOIN_ON_CONDITION)
                 .where(betweenCondition)
                 .and(repoCondition)
                 .groupBy(EVENT.EVENT_TYPE_ID);
@@ -59,12 +68,12 @@ public class DbRepoDataLayer implements RepoDataLayer {
 
     private static Select<Record1<Integer>> selectPeople(DSLContext create, Condition betweenCondition, Condition repoCondition) {
         return create
-                .select(countDistinct(EVENT.AUTHOR_USER_ID).as(DatabaseHelper.PEOPLE_COUNT))
-                .from(EVENT).innerJoin(REPOSITORY)
-                .on(DatabaseHelper.REPOSITORY_ON_CONDITION)
+                .select(SELECT_PEOPLE_COUNT)
+                .from(EVENT)
+                .innerJoin(REPOSITORY)
+                .on(EVENT_REPOSITORY_JOIN_ON_CONDITION)
                 .where(betweenCondition)
                 .and(repoCondition);
     }
-
 
 }
