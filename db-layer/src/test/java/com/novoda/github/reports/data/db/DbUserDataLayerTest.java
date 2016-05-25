@@ -26,7 +26,7 @@ public class DbUserDataLayerTest {
         ConnectionManager connectionManager = MockConnectionManager.newInstance();
         Connection connection = connectionManager.getNewConnection();
         context = connectionManager.getNewDSLContext(connection);
-        dataLayer = new DbUserDataLayer(connectionManager);
+        dataLayer = DbUserDataLayer.newInstance(connectionManager);
     }
 
     @Test
