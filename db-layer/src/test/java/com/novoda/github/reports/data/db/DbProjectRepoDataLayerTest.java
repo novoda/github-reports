@@ -24,9 +24,9 @@ public class DbProjectRepoDataLayerTest {
 
     @Before
     public void setUp() throws SQLException {
-        ConnectionFactory connectionFactory = MockConnectionFactory.newInstance();
-        Connection connection = connectionFactory.getNewConnection();
-        context = connectionFactory.getNewDSLContext(connection);
+        ConnectionManager connectionManager = MockConnectionManager.newInstance();
+        Connection connection = connectionManager.getNewConnection();
+        context = connectionManager.getNewDSLContext(connection);
     }
 
     @Test

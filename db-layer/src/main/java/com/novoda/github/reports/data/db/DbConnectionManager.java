@@ -10,10 +10,10 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
-public class DbConnectionFactory implements ConnectionFactory {
+public class DbConnectionManager implements ConnectionManager {
 
-    public static DbConnectionFactory newInstance() {
-        return new DbConnectionFactory();
+    public static DbConnectionManager newInstance() {
+        return new DbConnectionManager();
     }
 
     @Override

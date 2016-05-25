@@ -23,14 +23,14 @@ public class DbProjectDataLayer implements ProjectDataLayer {
     private static final Condition PROJECT_REPOSITORY_ON_CONDITION = EVENT.REPOSITORY_ID.eq(PROJECT_REPOSITORY.REPOSITORY_ID);
     private static final Condition PROJECT_ON_CONDITION = PROJECT_REPOSITORY.PROJECT_ID.eq(PROJECT._ID);
 
-    private final ConnectionFactory connectionFactory;
+    private final ConnectionManager connectionManager;
 
-    public DbProjectDataLayer newInstance(ConnectionFactory connectionFactory) {
-        return new DbProjectDataLayer(connectionFactory);
+    public DbProjectDataLayer newInstance(ConnectionManager connectionManager) {
+        return new DbProjectDataLayer(connectionManager);
     }
 
-    public DbProjectDataLayer(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
+    public DbProjectDataLayer(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
     }
 
     @Override
@@ -40,8 +40,8 @@ public class DbProjectDataLayer implements ProjectDataLayer {
         Result<Record1<Integer>> peopleResult;
 
         try {
-            connection = connectionFactory.getNewConnection();
-            DSLContext create = connectionFactory.getNewDSLContext(connection);
+            connection = connectionManager.getNewConnection();
+            DSLContext create = connectionManager.getNewDSLContext(connection);
 
             Condition betweenCondition = conditionalBetween(EVENT.DATE, from, to);
             Condition projectCondition = PROJECT.NAME.equalIgnoreCase(project);
@@ -51,7 +51,7 @@ public class DbProjectDataLayer implements ProjectDataLayer {
         } catch (SQLException e) {
             throw new DataLayerException(e);
         } finally {
-            connectionFactory.attemptCloseConnection(connection);
+            connectionManager.attemptCloseConnection(connection);
         }
 
         return DatabaseHelper.recordsToProjectRepoStats(eventsResult, peopleResult, project);

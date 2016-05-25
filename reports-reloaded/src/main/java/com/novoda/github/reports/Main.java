@@ -4,8 +4,8 @@ import com.beust.jcommander.JCommander;
 import com.novoda.github.reports.command.ProjectOptions;
 import com.novoda.github.reports.command.RepoOptions;
 import com.novoda.github.reports.command.UserOptions;
-import com.novoda.github.reports.data.db.ConnectionFactory;
-import com.novoda.github.reports.data.db.DbConnectionFactory;
+import com.novoda.github.reports.data.db.ConnectionManager;
+import com.novoda.github.reports.data.db.DbConnectionManager;
 import com.novoda.github.reports.data.db.DbProjectDataLayer;
 import com.novoda.github.reports.data.db.DbRepoDataLayer;
 import com.novoda.github.reports.data.db.DbUserDataLayer;
@@ -34,16 +34,16 @@ public class Main {
         String command = commander.getParsedCommand();
 
         Stats stats;
-        ConnectionFactory connectionFactory = DbConnectionFactory.newInstance();
+        ConnectionManager connectionManager = DbConnectionManager.newInstance();
 
         if (command.equals(COMMAND_USER)) {
-            UserCommandHandler handler = new UserCommandHandler(new DbUserDataLayer(connectionFactory));
+            UserCommandHandler handler = new UserCommandHandler(new DbUserDataLayer(connectionManager));
             stats = handler.handle(userOptions);
         } else if (command.equals(COMMAND_REPO)) {
-            RepoCommandHandler handler = new RepoCommandHandler(new DbRepoDataLayer(connectionFactory));
+            RepoCommandHandler handler = new RepoCommandHandler(new DbRepoDataLayer(connectionManager));
             stats = handler.handle(repoOptions);
         } else if (command.equals(COMMAND_PROJECT)) {
-            ProjectCommandHandler handler = new ProjectCommandHandler(new DbProjectDataLayer(connectionFactory));
+            ProjectCommandHandler handler = new ProjectCommandHandler(new DbProjectDataLayer(connectionManager));
             stats = handler.handle(projectOptions);
         } else {
             throw new UnhandledCommandException(String.format("The command %s is not supported", command));

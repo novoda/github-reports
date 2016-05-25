@@ -8,10 +8,10 @@ import org.jooq.impl.DSL;
 import org.jooq.tools.jdbc.MockConnection;
 import org.jooq.tools.jdbc.MockResult;
 
-public class MockConnectionFactory implements ConnectionFactory {
+public class MockConnectionManager implements ConnectionManager {
 
-    public static MockConnectionFactory newInstance() {
-        return new MockConnectionFactory();
+    public static MockConnectionManager newInstance() {
+        return new MockConnectionManager();
     }
 
     @Override
