@@ -1,32 +1,43 @@
 package com.novoda.github.reports.data.db;
 
+import com.novoda.github.reports.data.DataLayerException;
+import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.data.model.UserStats;
 
 import java.math.BigInteger;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Result;
+import org.jooq.tools.jdbc.MockResult;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.mockito.Matchers;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 public class DbUserDataLayerTest {
 
     private DbUserDataLayer dataLayer;
+    private MockConnectionManager mockConnectionManager;
     private DSLContext context;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() throws SQLException {
-        ConnectionManager connectionManager = MockConnectionManager.newInstance();
-        Connection connection = connectionManager.getNewConnection();
-        context = connectionManager.getNewDSLContext(connection);
-        dataLayer = DbUserDataLayer.newInstance(connectionManager);
+        mockConnectionManager = MockConnectionManager.newInstance();
+        context = mockConnectionManager.getNewDSLContext(mockConnectionManager.getNewConnection());
+        dataLayer = DbUserDataLayer.newInstance(mockConnectionManager);
     }
 
     @Test
@@ -130,5 +141,45 @@ public class DbUserDataLayerTest {
         Record1<Integer> record = context.newRecord(SELECT_REPOSITORIES_COUNT);
         record.set(SELECT_REPOSITORIES_COUNT, repositories);
         return record;
+    }
+
+    @Test
+    public void givenNewUser_whenUpdateOrInsertUser_thenReturnGivenUser() throws SQLException {
+        User expectedUser = User.create(1337, "Tim Riggins");
+        whenUpdateOrInsertUserAffectsRows(1);
+
+        User actualUser = null;
+        try {
+            actualUser = dataLayer.updateOrInsert(expectedUser);
+        } catch (DataLayerException e) {
+            fail();
+        }
+
+        assertEquals(expectedUser, actualUser);
+    }
+
+    @Test
+    public void givenInvalidDatabase_whenUpdateOrInsertUser_thenThrowDataLayerException() throws SQLException, DataLayerException {
+        User timRigginsUser = User.create(1337, "Tim Riggins");
+        whenUpdateOrInsertUserAffectsRows(2);
+
+        thrown.expect(DataLayerException.class);
+        thrown.expectMessage(Matchers.contains("More than"));
+        dataLayer.updateOrInsert(timRigginsUser);
+    }
+
+    @Test
+    public void givenValidUser_whenUpdateOrInsertUser_thenThrowDataLayerException() throws SQLException, DataLayerException {
+        User timRigginsUser = User.create(1337, "Tim Riggins");
+        whenUpdateOrInsertUserAffectsRows(0);
+
+        thrown.expect(DataLayerException.class);
+        thrown.expectMessage(Matchers.contains("Could not"));
+        dataLayer.updateOrInsert(timRigginsUser);
+    }
+
+    private void whenUpdateOrInsertUserAffectsRows(int numberOfAffectedRows) throws SQLException {
+        when(mockConnectionManager.getMockDataProvider().execute(any()))
+                .thenReturn(new MockResult[]{new MockResult(numberOfAffectedRows, null)});
     }
 }
