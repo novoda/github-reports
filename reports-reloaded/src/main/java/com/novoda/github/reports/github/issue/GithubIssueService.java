@@ -1,12 +1,12 @@
 package com.novoda.github.reports.github.issue;
 
+import com.novoda.github.reports.github.PagedTransformer;
 import com.novoda.github.reports.github.network.GithubApiService;
 import com.novoda.github.reports.github.network.GithubServiceFactory;
 import com.novoda.github.reports.github.network.NextPageExtractor;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.joda.time.DateTime;
 
@@ -42,14 +42,10 @@ class GithubIssueService implements IssueService {
     private Observable<Response<List<Issue>>> getPagedIssuesFor(String organisation, String repository, String since, Integer page) {
         return githubApiService
                 .getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, since, page, DEFAULT_PER_PAGE_COUNT)
-                .concatMap(response -> {
-                    Optional<Integer> nextPage = nextPageExtractor.getNextPageFrom(response);
-                    Observable<Response<List<Issue>>> observable = Observable.just(response);
-                    if (nextPage.isPresent()) {
-                        return observable.mergeWith(getPagedIssuesFor(organisation, repository, since, nextPage.get()));
-                    }
-                    return observable;
-                });
+                .compose(new PagedTransformer<>(
+                        nextPageExtractor,
+                        nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage)
+                ));
     }
 
     @Override
