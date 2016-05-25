@@ -16,18 +16,18 @@ public class IssuesServiceClient {
         return new IssuesServiceClient(issueService);
     }
 
-    IssuesServiceClient(IssueService issueService) {
+    private IssuesServiceClient(IssueService issueService) {
         this.issueService = issueService;
+    }
+
+    public Observable<Issue> getIssuesFrom(String organisation, Repository repository) {
+        return getIssuesFrom(organisation, repository.getName());
     }
 
     public Observable<Issue> getIssuesFrom(String organisation, String repository) {
         return issueService.getPagedIssuesFor(organisation, repository)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.immediate());
-    }
-
-    public Observable<Issue> getIssuesFrom(String organisation, Repository repository) {
-        return getIssuesFrom(organisation, repository.getName());
     }
 
     public Observable<Issue> getIssuesFrom(String organisation, String repository, Date since) {

@@ -1,13 +1,11 @@
 package com.novoda.github.reports.github.issue;
 
-import com.novoda.github.reports.github.State;
+import com.novoda.github.reports.github.PagedTransformer;
 import com.novoda.github.reports.github.network.GithubApiService;
 import com.novoda.github.reports.github.network.GithubServiceFactory;
-import com.novoda.github.reports.github.network.NextPageExtractor;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.joda.time.DateTime;
 
@@ -18,38 +16,29 @@ class GithubIssueService implements IssueService {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
     private static final State DEFAULT_STATE = State.ALL;
+    private static final String NO_SINCE_DATE = null;
 
     private final GithubApiService githubApiService;
-    private final NextPageExtractor nextPageExtractor;
 
     public static IssueService newInstance() {
         GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
-        NextPageExtractor nextPageExtractor = new NextPageExtractor();
-        return new GithubIssueService(githubServiceFactory.createService(), nextPageExtractor);
+        return new GithubIssueService(githubServiceFactory.createService());
     }
 
-    GithubIssueService(GithubApiService githubApiService, NextPageExtractor nextPageExtractor) {
+    private GithubIssueService(GithubApiService githubApiService) {
         this.githubApiService = githubApiService;
-        this.nextPageExtractor = nextPageExtractor;
     }
 
     @Override
     public Observable<Issue> getPagedIssuesFor(String organisation, String repository) {
-        return getPagedIssuesFor(organisation, repository, null, 1)
+        return getPagedIssuesFor(organisation, repository, NO_SINCE_DATE, 1)
                 .flatMapIterable(Response::body);
     }
 
     private Observable<Response<List<Issue>>> getPagedIssuesFor(String organisation, String repository, String since, Integer page) {
         return githubApiService
                 .getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, since, page, DEFAULT_PER_PAGE_COUNT)
-                .concatMap(response -> {
-                    Optional<Integer> nextPage = nextPageExtractor.getNextPageFrom(response);
-                    Observable<Response<List<Issue>>> observable = Observable.just(response);
-                    if (nextPage.isPresent()) {
-                        return observable.mergeWith(getPagedIssuesFor(organisation, repository, since, nextPage.get()));
-                    }
-                    return observable;
-                });
+                .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage)));
     }
 
     @Override
