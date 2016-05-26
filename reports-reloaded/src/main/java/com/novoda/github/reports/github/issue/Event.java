@@ -1,4 +1,4 @@
-package com.novoda.github.reports.github.event;
+package com.novoda.github.reports.github.issue;
 
 import com.google.gson.annotations.SerializedName;
 import com.novoda.github.reports.github.User;
