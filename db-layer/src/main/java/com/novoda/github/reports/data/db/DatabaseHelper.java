@@ -10,8 +10,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jooq.Condition;
+import org.jooq.Constants;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
@@ -142,5 +145,9 @@ class DatabaseHelper {
 
     static Byte boolToByte(boolean value) {
         return value ? TRUE_BYTE : FALSE_BYTE;
+    }
+
+    static void turnOffJooqAd() {
+        Logger.getLogger(Constants.class.getName()).setLevel(Level.WARNING);
     }
 }
