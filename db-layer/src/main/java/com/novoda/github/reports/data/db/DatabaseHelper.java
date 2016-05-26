@@ -44,6 +44,9 @@ class DatabaseHelper {
     static final Integer COMMENTED_PRS_ID = 202;
     static final Integer MERGED_PRS_ID = 207;
 
+    private static final byte FALSE_BYTE = 0;
+    private static final byte TRUE_BYTE = 1;
+
     static Condition conditionalBetween(TableField<?, Timestamp> field, Date from, Date to) {
         Condition condition = field.isNotNull();
         if (from != null) {
@@ -135,5 +138,9 @@ class DatabaseHelper {
         }
 
         return element;
+    }
+
+    static Byte boolToByte(boolean value) {
+        return value ? TRUE_BYTE : FALSE_BYTE;
     }
 }
