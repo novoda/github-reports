@@ -53,4 +53,9 @@ class GithubIssueService implements IssueService {
         return getPagedIssuesFor(organisation, repository, date, 1, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
+
+    @Override
+    public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber) {
+        return null;
+    }
 }
