@@ -17,4 +17,8 @@ public class Comment {
     @SerializedName("updated_at")
     private Date updatedAt;
 
+    @Override
+    public String toString() {
+        return String.format("%s commented [%d] @ %s", user.getUsername(), id, createdAt);
+    }
 }
