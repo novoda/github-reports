@@ -3,7 +3,7 @@ package com.novoda.github.reports.github.timeline;
 import com.google.gson.annotations.SerializedName;
 import com.novoda.github.reports.github.User;
 
-public class Event {
+public class TimelineEvent {
 
     private long id;
 

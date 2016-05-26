@@ -35,4 +35,10 @@ public class IssuesServiceClient {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.immediate());
     }
+
+    public Observable<Event> getEventsFrom(String organisation, String repository, Integer issueNumber) {
+        return issueService.getPagedEventsFor(organisation, repository, issueNumber)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.immediate());
+    }
 }
