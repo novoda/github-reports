@@ -26,6 +26,8 @@ import static org.mockito.Mockito.when;
 
 public class DbUserDataLayerTest {
 
+    private static final int ANY_USER_ID = 1337;
+    private static final String ANY_USER_NAME = "Tim Riggins";
     private DbUserDataLayer dataLayer;
     private MockConnectionManager mockConnectionManager;
     private DSLContext context;
@@ -145,7 +147,7 @@ public class DbUserDataLayerTest {
 
     @Test
     public void givenNewUser_whenUpdateOrInsertUser_thenReturnGivenUser() throws SQLException {
-        User expectedUser = User.create(1337, "Tim Riggins");
+        User expectedUser = User.create(ANY_USER_ID, ANY_USER_NAME);
         whenUpdateOrInsertUserAffectsRows(1);
 
         User actualUser = null;
@@ -160,7 +162,7 @@ public class DbUserDataLayerTest {
 
     @Test
     public void givenInvalidDatabase_whenUpdateOrInsertUser_thenThrowDataLayerException() throws SQLException, DataLayerException {
-        User timRigginsUser = User.create(1337, "Tim Riggins");
+        User timRigginsUser = User.create(ANY_USER_ID, ANY_USER_NAME);
         whenUpdateOrInsertUserAffectsRows(2);
 
         thrown.expect(DataLayerException.class);
@@ -170,7 +172,7 @@ public class DbUserDataLayerTest {
 
     @Test
     public void givenValidUser_whenUpdateOrInsertUser_thenThrowDataLayerException() throws SQLException, DataLayerException {
-        User timRigginsUser = User.create(1337, "Tim Riggins");
+        User timRigginsUser = User.create(ANY_USER_ID, ANY_USER_NAME);
         whenUpdateOrInsertUserAffectsRows(0);
 
         thrown.expect(DataLayerException.class);
