@@ -60,7 +60,7 @@ class DatabaseHelper {
         return condition;
     }
 
-    private static Timestamp dateToTimestamp(Date date) {
+    static Timestamp dateToTimestamp(Date date) {
         return new Timestamp(date.getTime());
     }
 
