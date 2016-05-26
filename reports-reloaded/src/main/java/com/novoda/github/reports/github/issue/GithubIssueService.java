@@ -49,7 +49,7 @@ class GithubIssueService implements IssueService {
     @Override
     public Observable<Issue> getPagedIssuesFor(String organisation, String repository, Date since) {
         String date = new DateTime(since.getTime()).toString();
-        return getPagedIssuesFor(organisation, repository, date, 1, DEFAULT_PER_PAGE_COUNT)
+        return getPagedIssuesFor(organisation, repository, date, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
