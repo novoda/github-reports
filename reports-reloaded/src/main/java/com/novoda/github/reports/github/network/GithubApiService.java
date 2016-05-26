@@ -1,5 +1,6 @@
 package com.novoda.github.reports.github.network;
 
+import com.novoda.github.reports.github.issue.Comment;
 import com.novoda.github.reports.github.issue.Event;
 import com.novoda.github.reports.github.issue.Issue;
 import com.novoda.github.reports.github.repository.Repository;
@@ -34,6 +35,15 @@ public interface GithubApiService {
 
     @GET("/repos/{org}/{repo}/issues/{issue_number}/events")
     Observable<Response<List<Event>>> getEventsResponseForIssueAndPage(
+            @Path("org") String organisation,
+            @Path("repo") String repo,
+            @Path("issue_number") Integer issueNumber,
+            @Query("page") Integer page,
+            @Query("per_page") Integer perPageCount
+    );
+
+    @GET("/repos/{org}/{repo}/issues/{issue_number}/comments")
+    Observable<Response<List<Comment>>> getCommentsResponseForIssueAndPage(
             @Path("org") String organisation,
             @Path("repo") String repo,
             @Path("issue_number") Integer issueNumber,
