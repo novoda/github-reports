@@ -10,6 +10,7 @@ import com.novoda.github.reports.data.db.DbProjectDataLayer;
 import com.novoda.github.reports.data.db.DbRepoDataLayer;
 import com.novoda.github.reports.data.db.DbUserDataLayer;
 import com.novoda.github.reports.data.model.Stats;
+import com.novoda.github.reports.github.issue.Event;
 import com.novoda.github.reports.github.issue.Issue;
 import com.novoda.github.reports.github.issue.IssuesServiceClient;
 import com.novoda.github.reports.github.repository.RepositoriesServiceClient;
@@ -63,7 +64,8 @@ public class Main {
     }
 
     public static void main(String[] args) throws UnhandledCommandException {
-        new Main().execute(args);
+        //new Main().execute(args);
+        getEvents();
     }
 
     private static void getRepositories() {
@@ -109,6 +111,28 @@ public class Main {
                     @Override
                     public void onNext(Issue issue) {
                         System.out.println(issue);
+                    }
+                });
+    }
+
+    private static void getEvents() {
+        IssuesServiceClient.newInstance()
+                .getEventsFrom("novoda", "github-reports", 36)
+                .toBlocking()
+                .subscribe(new Subscriber<Event>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(Event event) {
+                        System.out.println(event);
                     }
                 });
     }
