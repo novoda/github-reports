@@ -37,6 +37,7 @@ dependencies {
     compile 'mysql:mysql-connector-java:6.0.2'
 
     testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.0.53-beta'
 }
 
 jooq {

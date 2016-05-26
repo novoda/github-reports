@@ -2,6 +2,7 @@ package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -19,11 +20,15 @@ public class DbConnectionManager implements ConnectionManager {
     @Override
     public Connection getNewConnection() throws SQLException {
         DatabaseCredentialsReader databaseCredentialsReader = DatabaseCredentialsReader.newInstance();
-        return DriverManager.getConnection(
-                databaseCredentialsReader.getConnectionString(),
-                databaseCredentialsReader.getUser(),
-                databaseCredentialsReader.getPassword()
-        );
+        try {
+            return DriverManager.getConnection(
+                    databaseCredentialsReader.getConnectionString(),
+                    databaseCredentialsReader.getUser(),
+                    databaseCredentialsReader.getPassword()
+            );
+        } catch (URISyntaxException e) {
+            throw new SQLException(e);
+        }
     }
 
     @Override

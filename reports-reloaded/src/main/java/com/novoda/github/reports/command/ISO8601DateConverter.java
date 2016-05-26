@@ -6,7 +6,7 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 
-class ISO8601DateConverter implements IStringConverter<Date> {
+public class ISO8601DateConverter implements IStringConverter<Date> {
     @Override
     public Date convert(String value) {
         if (value == null) {
