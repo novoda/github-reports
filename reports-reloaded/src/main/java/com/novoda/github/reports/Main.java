@@ -14,7 +14,7 @@ import com.novoda.github.reports.github.issue.Issue;
 import com.novoda.github.reports.github.issue.IssuesServiceClient;
 import com.novoda.github.reports.github.repository.RepositoriesServiceClient;
 import com.novoda.github.reports.github.repository.Repository;
-import com.novoda.github.reports.github.timeline.Event;
+import com.novoda.github.reports.github.timeline.TimelineEvent;
 import com.novoda.github.reports.github.timeline.TimelineServiceClient;
 import com.novoda.github.reports.handler.ProjectCommandHandler;
 import com.novoda.github.reports.handler.RepoCommandHandler;
@@ -117,7 +117,7 @@ public class Main {
         TimelineServiceClient.newInstance()
                 .getTimelineFor("novoda", "github-reports", 36)
                 .toBlocking()
-                .subscribe(new Subscriber<Event>() {
+                .subscribe(new Subscriber<TimelineEvent>() {
                     @Override
                     public void onCompleted() {
 
@@ -129,8 +129,8 @@ public class Main {
                     }
 
                     @Override
-                    public void onNext(Event event) {
-                        System.out.println(event);
+                    public void onNext(TimelineEvent timelineEvent) {
+                        System.out.println(timelineEvent);
                     }
                 });
     }
