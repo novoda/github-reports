@@ -68,4 +68,20 @@ class GithubIssueService implements IssueService {
         return githubApiService.getEventsResponseForIssueAndPage(organisation, repository, issueNumber, page, pageCount)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedEventsFor(organisation, repository, issueNumber, nextPage, pageCount)));
     }
+
+    @Override
+    public Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber) {
+        return getPagedCommentsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+                .flatMapIterable(Response::body);
+    }
+
+    private Observable<Response<List<Comment>>> getPagedCommentsFor(String organisation,
+                                                                    String repository,
+                                                                    Integer issueNumber,
+                                                                    Integer page,
+                                                                    Integer pageCount) {
+
+        return githubApiService.getCommentsResponseForIssueAndPage(organisation, repository, issueNumber, page, pageCount)
+                .compose(PagedTransformer.newInstance(nextPage -> getPagedCommentsFor(organisation, repository, issueNumber, nextPage, pageCount)));
+    }
 }
