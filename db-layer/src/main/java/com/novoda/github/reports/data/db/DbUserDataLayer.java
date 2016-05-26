@@ -41,26 +41,7 @@ public class DbUserDataLayer implements UserDataLayer {
 
     @Override
     public User updateOrInsert(User user) throws DataLayerException {
-        Connection connection = null;
-
-        try {
-            connection = connectionManager.getNewConnection();
-            DSLContext create = connectionManager.getNewDSLContext(connection);
-
-            int userResult = updateOrInsert(create, user).execute();
-            if (userResult <= 0) {
-                throw new SQLException("Could not update or insert the user.");
-            }
-            if (userResult > 1) {
-                throw new SQLException("More than 1 user was updated, check your DB constraints.");
-            }
-        } catch (SQLException e) {
-            throw new DataLayerException(e);
-        } finally {
-            connectionManager.attemptCloseConnection(connection);
-        }
-
-        return user;
+        return DatabaseHelper.updateOrInsert(this::updateOrInsert, connectionManager, user);
     }
 
     private InsertOnDuplicateSetMoreStep<UserRecord> updateOrInsert(DSLContext create, User user) {
