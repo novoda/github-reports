@@ -24,11 +24,11 @@ class CustomMediaTypeInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Request request = injectOAuthTokenThrough(chain);
+        Request request = injectAcceptedCustomMediaTypeThrough(chain);
         return chain.proceed(request);
     }
 
-    private Request injectOAuthTokenThrough(Chain chain) {
+    private Request injectAcceptedCustomMediaTypeThrough(Chain chain) {
         Request oldRequest = chain.request();
         return oldRequest.newBuilder()
                 .addHeader(ACCEPT_HEADER_KEY, customMediaType)
