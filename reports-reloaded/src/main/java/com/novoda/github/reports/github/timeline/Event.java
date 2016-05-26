@@ -7,7 +7,7 @@ public class Event {
 
     private long id;
 
-    @SerializedName(value = "actor", alternate = { "user" })
+    @SerializedName(value = "actor", alternate = {"user", "author"})
     private User actor;
 
     @SerializedName("event")

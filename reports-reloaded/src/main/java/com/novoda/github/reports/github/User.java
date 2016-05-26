@@ -6,7 +6,7 @@ public class User {
 
     private int id;
 
-    @SerializedName("login")
+    @SerializedName(value = "login", alternate = {"name"})
     private String username;
 
     public int getId() {
