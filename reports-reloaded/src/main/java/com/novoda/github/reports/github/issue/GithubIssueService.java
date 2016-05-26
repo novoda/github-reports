@@ -15,7 +15,7 @@ import rx.Observable;
 class GithubIssueService implements IssueService {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
-    private static final int FISRT_PAGE = 1;
+    private static final int FIRST_PAGE = 1;
     private static final Issue.State DEFAULT_STATE = Issue.State.ALL;
     private static final String NO_SINCE_DATE = null;
 
@@ -32,7 +32,7 @@ class GithubIssueService implements IssueService {
 
     @Override
     public Observable<Issue> getPagedIssuesFor(String organisation, String repository) {
-        return getPagedIssuesFor(organisation, repository, NO_SINCE_DATE, FISRT_PAGE, DEFAULT_PER_PAGE_COUNT)
+        return getPagedIssuesFor(organisation, repository, NO_SINCE_DATE, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
@@ -55,7 +55,7 @@ class GithubIssueService implements IssueService {
 
     @Override
     public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber) {
-        return getPagedEventsFor(organisation, repository, issueNumber, FISRT_PAGE, DEFAULT_PER_PAGE_COUNT)
+        return getPagedEventsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
