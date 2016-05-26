@@ -42,8 +42,7 @@ class GithubIssueService implements IssueService {
                                                                 Integer page,
                                                                 Integer pageCount) {
 
-        return githubApiService
-                .getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, since, page, pageCount)
+        return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, since, page, pageCount)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage, pageCount)));
     }
 
@@ -56,6 +55,17 @@ class GithubIssueService implements IssueService {
 
     @Override
     public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber) {
-        return null;
+        return getPagedEventsFor(organisation, repository, issueNumber, FISRT_PAGE, DEFAULT_PER_PAGE_COUNT)
+                .flatMapIterable(Response::body);
+    }
+
+    private Observable<Response<List<Event>>> getPagedEventsFor(String organisation,
+                                                                String repository,
+                                                                Integer issueNumber,
+                                                                Integer page,
+                                                                Integer pageCount) {
+
+        return githubApiService.getEventsResponseForIssueAndPage(organisation, repository, issueNumber, page, pageCount)
+                .compose(PagedTransformer.newInstance(nextPage -> getPagedEventsFor(organisation, repository, issueNumber, nextPage, pageCount)));
     }
 }
