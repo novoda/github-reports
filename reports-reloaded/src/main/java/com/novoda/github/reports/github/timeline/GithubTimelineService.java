@@ -9,6 +9,7 @@ import java.util.List;
 import retrofit2.Response;
 import rx.Observable;
 
+@Deprecated
 class GithubTimelineService implements TimelineService {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
