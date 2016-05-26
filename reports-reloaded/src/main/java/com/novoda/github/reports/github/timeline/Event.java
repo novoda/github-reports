@@ -10,8 +10,6 @@ public class Event {
     @SerializedName(value = "actor", alternate = { "user" })
     private User actor;
 
-    private String body;
-
     @SerializedName("event")
     private Type type;
 
@@ -23,27 +21,13 @@ public class Event {
         return actor;
     }
 
-    public String getBody() {
-        return body;
-    }
-
     public Type getType() {
         return type;
     }
 
     @Override
     public String toString() {
-        return String.format("%s [%d], by %s: %s",
-                             type, id, actor != null ? actor.getUsername() : "{no user}", body != null ? trimmedBody() : "{no body}"
-        );
-    }
-
-    private String trimmedBody() {
-        int limit = 140;
-        if (body.length() < limit) {
-            limit = body.length();
-        }
-        return body.substring(0, limit);
+        return String.format("%s [%d], by %s", type, id, actor != null ? actor.getUsername() : "{no user}");
     }
 
     public enum Type {
