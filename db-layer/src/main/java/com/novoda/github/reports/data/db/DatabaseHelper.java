@@ -1,15 +1,20 @@
 package com.novoda.github.reports.data.db;
 
+import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
 import com.novoda.github.reports.data.model.EventStats;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
 
 import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 
 import org.jooq.Condition;
+import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.Record;
 import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Result;
@@ -38,6 +43,9 @@ class DatabaseHelper {
     static final Integer COMMENTED_ISSUES_ID = 102;
     static final Integer COMMENTED_PRS_ID = 202;
     static final Integer MERGED_PRS_ID = 207;
+
+    private static final byte FALSE_BYTE = 0;
+    private static final byte TRUE_BYTE = 1;
 
     static Condition conditionalBetween(TableField<?, Timestamp> field, Date from, Date to) {
         Condition condition = field.isNotNull();
@@ -106,5 +114,33 @@ class DatabaseHelper {
                 eventStats,
                 numberOfParticipatingUsers
         );
+    }
+
+    static <T, R extends Record> T updateOrInsert(UpdateOrInsertGenerator<T, R> generator, ConnectionManager connectionManager, T element)
+            throws DataLayerException {
+        Connection connection = null;
+
+        try {
+            connection = connectionManager.getNewConnection();
+            DSLContext create = connectionManager.getNewDSLContext(connection);
+
+            int userResult = generator.getQuery(create, element).execute();
+            if (userResult <= 0) {
+                throw new SQLException("Could not update or insert the element.");
+            }
+            if (userResult > 1) {
+                throw new SQLException("More than 1 element was updated, check your DB constraints.");
+            }
+        } catch (SQLException e) {
+            throw new DataLayerException(e);
+        } finally {
+            connectionManager.attemptCloseConnection(connection);
+        }
+
+        return element;
+    }
+
+    static Byte boolToByte(boolean value) {
+        return value ? TRUE_BYTE : FALSE_BYTE;
     }
 }
