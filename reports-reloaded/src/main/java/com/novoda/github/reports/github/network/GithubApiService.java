@@ -2,7 +2,7 @@ package com.novoda.github.reports.github.network;
 
 import com.novoda.github.reports.github.issue.Issue;
 import com.novoda.github.reports.github.repository.Repository;
-import com.novoda.github.reports.github.timeline.Event;
+import com.novoda.github.reports.github.timeline.TimelineEvent;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public interface GithubApiService {
     );
 
     @GET("/repos/{org}/{repo}/issues/{issue_number}/timeline")
-    Observable<Response<List<Event>>> getTimelineFor(
+    Observable<Response<List<TimelineEvent>>> getTimelineFor(
             @Path("org") String organisation,
             @Path("repo") String repo,
             @Path("issue_number") Integer issueNumber,
