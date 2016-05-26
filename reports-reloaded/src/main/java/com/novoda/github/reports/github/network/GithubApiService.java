@@ -1,8 +1,8 @@
 package com.novoda.github.reports.github.network;
 
-import com.novoda.github.reports.github.issue.State;
 import com.novoda.github.reports.github.issue.Issue;
 import com.novoda.github.reports.github.repository.Repository;
+import com.novoda.github.reports.github.timeline.Event;
 
 import java.util.List;
 
@@ -15,9 +15,6 @@ import rx.Observable;
 public interface GithubApiService {
 
     @GET("/orgs/{org}/repos")
-    Observable<Response<List<Repository>>> getRepositoriesResponseForPage(@Path("org") String organisation, @Query("page") Integer page);
-
-    @GET("/orgs/{org}/repos")
     Observable<Response<List<Repository>>> getRepositoriesResponseForPage(
             @Path("org") String organisation,
             @Query("page") Integer page,
@@ -28,8 +25,17 @@ public interface GithubApiService {
     Observable<Response<List<Issue>>> getIssuesResponseForPage(
             @Path("org") String organisation,
             @Path("repo") String repo,
-            @Query("state") State state,
+            @Query("state") Issue.State state,
             @Query("since") String since, // ISO8601: YYYY-MM-DDTHH:MM:SSZ
+            @Query("page") Integer page,
+            @Query("per_page") Integer perPageCount
+    );
+
+    @GET("/repos/{org}/{repo}/issues/{issue_number}/timeline")
+    Observable<Response<List<Event>>> getTimelineFor(
+            @Path("org") String organisation,
+            @Path("repo") String repo,
+            @Path("issue_number") Integer issueNumber,
             @Query("page") Integer page,
             @Query("per_page") Integer perPageCount
     );

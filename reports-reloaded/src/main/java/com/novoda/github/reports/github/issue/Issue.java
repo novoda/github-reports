@@ -74,4 +74,28 @@ public class Issue {
     public String toString() {
         return String.format("%s (%d) [%s] - %s , %s", title, id, state, user.getUsername(), updatedAt);
     }
+
+    public enum State {
+
+        @SerializedName("open")
+        OPEN("open"),
+
+        @SerializedName("closed")
+        CLOSED("closed"),
+
+        @SerializedName("all")
+        ALL("all");
+
+        private final String state;
+
+        State(String state) {
+            this.state = state;
+        }
+
+        @Override
+        public String toString() {
+            return state;
+        }
+    }
+
 }
