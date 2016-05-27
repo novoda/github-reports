@@ -23,7 +23,7 @@ public enum EventType {
         value = n;
     }
 
-    public final int value;
+    private final int value;
 
     public int getValue() {
         return value;
