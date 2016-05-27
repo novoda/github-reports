@@ -4,7 +4,7 @@ apply plugin: 'application'
 //noinspection GroovyUnusedAssignment
 targetCompatibility = 1.8
 
-mainClassName = 'com.novoda.github.reports.Main'
+mainClassName = 'com.novoda.github.reports.batch.Main'
 
 run {
     if (project.hasProperty('args')) {
