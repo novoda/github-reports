@@ -143,22 +143,10 @@ public class DebugClient {
         repositoriesServiceClient.getRepositoriesFrom("novoda")
                 .doOnEach(notification -> { /* TODO persist repo */ })
                 .flatMap(
-                        (Func1<Repository, Observable<Issue>>) repository -> {
-                            if (!repository.getFullName().contains("reports")) {
-                                return Observable.empty();
-                            }
-                            return issuesServiceClient.getIssuesFrom("novoda", repository);
-                        },
-                        (repository, issue) -> {
-                            // TODO persist issue
-                            if (issue.getNumber() < 32) {
-                                return Observable.just(new Pair<Comment, Event>(null,null));
-                            }
-                            System.out.println("<<<<< getting issue " + issue.getNumber() + " " + issue.getTitle());
-                            return issuesServiceClient.getCommentsFrom("novoda", repository.getName(), issue.getNumber())
-                                    .zipWith(issuesServiceClient.getEventsFrom("novoda", repository.getName(), issue.getNumber()), Pair::new);
-                        }
-                )
+                        (Func1<Repository, Observable<Issue>>) repository -> issuesServiceClient.getIssuesFrom("novoda", repository),
+                        (repository, issue) -> /* TODO persist issue */
+                                issuesServiceClient.getCommentsFrom("novoda", repository.getName(), issue.getNumber())
+                                    .zipWith(issuesServiceClient.getEventsFrom("novoda", repository.getName(), issue.getNumber()), Pair::new))
                 .concatMap(UtilityFunctions.identity())
                 .toBlocking()
                 .subscribe(new Subscriber<Pair<Comment, Event>>() {
@@ -177,11 +165,6 @@ public class DebugClient {
                         // TODO persist comment and event
                         Comment comment = commentEventPair.getKey();
                         Event event = commentEventPair.getValue();
-
-                        if (comment == null || event == null) {
-                            return;
-                        }
-
                         System.out.println("> getAll comment: " + comment);
                         System.out.println("> getAll event: " + event);
                     }
