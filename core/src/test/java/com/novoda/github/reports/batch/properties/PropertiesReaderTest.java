@@ -1,4 +1,4 @@
-package com.novoda.github.reports.properties;
+package com.novoda.github.reports.batch.properties;
 
 import org.junit.Before;
 import org.junit.Test;

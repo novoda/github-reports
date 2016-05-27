@@ -1,4 +1,4 @@
-package com.novoda.github.reports.github.network;
+package com.novoda.github.reports.batch.github.network;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,6 +1,4 @@
-package com.novoda.github.reports.github;
-
-import com.novoda.github.reports.github.network.NextPageExtractor;
+package com.novoda.github.reports.batch.github.network;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.novoda.github.reports.github.issue;
+package com.novoda.github.reports.batch.github.issue;
 
 import java.util.Date;
 
