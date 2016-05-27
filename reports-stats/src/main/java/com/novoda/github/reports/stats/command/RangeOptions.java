@@ -1,4 +1,4 @@
-package com.novoda.github.reports.command;
+package com.novoda.github.reports.stats.command;
 
 import com.beust.jcommander.Parameter;
 
