@@ -8,53 +8,44 @@ import java.util.Properties;
 
 public class PropertiesReader {
 
+    private final String fileName;
     private Properties properties;
-    private String fileName;
 
     public static PropertiesReader newInstance(String fileName) {
-        return new PropertiesReader(new Properties(), fileName);
+        return new PropertiesReader(fileName);
     }
 
-    private PropertiesReader(Properties properties, String fileName) {
-        this.properties = properties;
+    private PropertiesReader(String fileName) {
         this.fileName = fileName;
     }
 
     public String readProperty(String key) {
-        InputStream inputStream = getInputStream(fileName);
-        if (inputStream == null) {
-            return null;
+        if (properties == null) {
+            initProperties();
         }
-
-        loadInputStream(inputStream);
-        String property = properties.getProperty(key);
-        closeInputStream(inputStream);
-
-        return property;
+        return properties.getProperty(key);
     }
 
-    private InputStream getInputStream(String fileName) {
+    private void initProperties() {
+        this.properties = new Properties();
         try {
-            return new FileInputStream(fileName);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private void loadInputStream(InputStream inputStream) {
-        try {
-            properties.load(inputStream);
+            InputStream inputStream = getInputStream(fileName);
+            loadInputStream(inputStream);
+            closeInputStream(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void closeInputStream(InputStream inputStream) {
-        try {
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private InputStream getInputStream(String fileName) throws FileNotFoundException {
+        return new FileInputStream(fileName);
+    }
+
+    private void loadInputStream(InputStream inputStream) throws IOException {
+        properties.load(inputStream);
+    }
+
+    private void closeInputStream(InputStream inputStream) throws IOException {
+        inputStream.close();
     }
 }

@@ -2,7 +2,9 @@ package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.RepoDataLayer;
+import com.novoda.github.reports.data.db.tables.records.RepositoryRecord;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
+import com.novoda.github.reports.data.model.Repository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,6 +12,7 @@ import java.util.Date;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.InsertOnDuplicateSetMoreStep;
 import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Result;
@@ -23,12 +26,26 @@ public class DbRepoDataLayer implements RepoDataLayer {
 
     private final ConnectionManager connectionManager;
 
-    public DbRepoDataLayer newInstance(ConnectionManager connectionManager) {
+    public static DbRepoDataLayer newInstance(ConnectionManager connectionManager) {
         return new DbRepoDataLayer(connectionManager);
     }
 
-    public DbRepoDataLayer(ConnectionManager connectionManager) {
+    private DbRepoDataLayer(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
+    }
+
+    @Override
+    public Repository updateOrInsert(Repository repository) throws DataLayerException {
+        return DatabaseHelper.updateOrInsert(this::updateOrInsert, connectionManager, repository);
+    }
+
+    private InsertOnDuplicateSetMoreStep<RepositoryRecord> updateOrInsert(DSLContext create, Repository repository) {
+        Byte isPrivate = boolToByte(repository.isPrivate());
+        return create.insertInto(REPOSITORY, REPOSITORY._ID, REPOSITORY.NAME, REPOSITORY.PRIVATE)
+                .values(repository.id(), repository.name(), isPrivate)
+                .onDuplicateKeyUpdate()
+                .set(REPOSITORY.NAME, repository.name())
+                .set(REPOSITORY.PRIVATE, isPrivate);
     }
 
     @Override

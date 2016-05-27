@@ -1,6 +1,7 @@
 package com.novoda.github.reports.github.network;
 
 import com.novoda.github.reports.properties.GithubCredentialsReader;
+import com.novoda.github.reports.properties.PropertiesReader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +14,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 class OkHttpClientFactory implements HttpClientFactory {
 
+    private static final String GITHUB_PROPERTIES_FILENAME = "github.credentials";
+
     private final OkHttpClient.Builder okHttpClientBuilder;
     private final List<Interceptor> interceptors = new ArrayList<>();
     private final CacheFactory cacheFactory;
@@ -21,7 +24,9 @@ class OkHttpClientFactory implements HttpClientFactory {
     static OkHttpClientFactory newInstance(CacheStatsRepository cacheStatsRepository) {
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
         CacheFactory cacheFactory = FileCacheFactory.newInstance();
-        GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance();
+        GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance(
+                PropertiesReader.newInstance(GITHUB_PROPERTIES_FILENAME)
+        );
         String token = githubCredentialsReader.getAuthToken();
         Interceptor oAuthTokenInterceptor = new OAuthTokenInterceptor(token);
         Interceptor rateLimitCountInterceptor = RateLimitCountInterceptor.newInstance();

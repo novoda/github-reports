@@ -54,8 +54,7 @@ CREATE TABLE `repository` (
   `_id`     INT(11)      NOT NULL,
   `name`    VARCHAR(255) NOT NULL,
   `private` TINYINT(1)   NOT NULL,
-  PRIMARY KEY (`_id`),
-  UNIQUE KEY `name_UNIQUE` (`name`)
+  PRIMARY KEY (`_id`)
 );
 
 --
@@ -93,7 +92,7 @@ CREATE TABLE `user` (
 --
 DROP TABLE IF EXISTS `event`;
 CREATE TABLE `event` (
-  `_id`            INT(11)   NOT NULL AUTO_INCREMENT,
+  `_id`            INT(11)   NOT NULL,
   `repository_id`  INT(11)   NOT NULL,
   `author_user_id` INT(11)   NOT NULL,
   `owner_user_id`  INT(11)   NOT NULL,

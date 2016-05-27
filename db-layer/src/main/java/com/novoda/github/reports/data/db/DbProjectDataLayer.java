@@ -25,11 +25,11 @@ public class DbProjectDataLayer implements ProjectDataLayer {
 
     private final ConnectionManager connectionManager;
 
-    public DbProjectDataLayer newInstance(ConnectionManager connectionManager) {
+    public static DbProjectDataLayer newInstance(ConnectionManager connectionManager) {
         return new DbProjectDataLayer(connectionManager);
     }
 
-    public DbProjectDataLayer(ConnectionManager connectionManager) {
+    private DbProjectDataLayer(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 
