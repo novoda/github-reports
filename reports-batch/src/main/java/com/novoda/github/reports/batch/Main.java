@@ -1,7 +1,5 @@
 package com.novoda.github.reports.batch;
 
-import com.novoda.github.reports.batch.github.DebugClient;
-
 public class Main {
 
     private void execute(String[] args) {

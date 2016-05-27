@@ -1,7 +1,7 @@
-package com.novoda.github.reports.batch.github.timeline;
+package com.novoda.github.reports.batch.timeline;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.batch.github.User;
+import com.novoda.github.reports.batch.User;
 
 public class TimelineEvent {
 

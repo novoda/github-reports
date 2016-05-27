@@ -1,7 +1,7 @@
-package com.novoda.github.reports.batch.github.repository;
+package com.novoda.github.reports.batch.repository;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.batch.github.User;
+import com.novoda.github.reports.batch.User;
 
 public class Repository {
 

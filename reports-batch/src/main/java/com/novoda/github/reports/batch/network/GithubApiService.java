@@ -1,10 +1,10 @@
-package com.novoda.github.reports.batch.github.network;
+package com.novoda.github.reports.batch.network;
 
-import com.novoda.github.reports.batch.github.issue.Comment;
-import com.novoda.github.reports.batch.github.issue.Event;
-import com.novoda.github.reports.batch.github.issue.Issue;
-import com.novoda.github.reports.batch.github.repository.Repository;
-import com.novoda.github.reports.batch.github.timeline.TimelineEvent;
+import com.novoda.github.reports.batch.issue.Comment;
+import com.novoda.github.reports.batch.issue.Event;
+import com.novoda.github.reports.batch.issue.Issue;
+import com.novoda.github.reports.batch.repository.Repository;
+import com.novoda.github.reports.batch.timeline.TimelineEvent;
 
 import java.util.List;
 

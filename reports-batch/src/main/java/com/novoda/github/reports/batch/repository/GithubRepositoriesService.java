@@ -1,8 +1,8 @@
-package com.novoda.github.reports.batch.github.repository;
+package com.novoda.github.reports.batch.repository;
 
-import com.novoda.github.reports.batch.github.network.PagedTransformer;
-import com.novoda.github.reports.batch.github.network.GithubApiService;
-import com.novoda.github.reports.batch.github.network.GithubServiceFactory;
+import com.novoda.github.reports.batch.network.PagedTransformer;
+import com.novoda.github.reports.batch.network.GithubApiService;
+import com.novoda.github.reports.batch.network.GithubServiceFactory;
 
 import java.util.List;
 

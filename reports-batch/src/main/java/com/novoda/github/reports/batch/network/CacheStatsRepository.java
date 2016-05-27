@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.github.network;
+package com.novoda.github.reports.batch.network;
 
 import java.util.List;
 

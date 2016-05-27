@@ -1,8 +1,8 @@
-package com.novoda.github.reports.batch.github.issue;
+package com.novoda.github.reports.batch.issue;
 
-import com.novoda.github.reports.batch.github.network.PagedTransformer;
-import com.novoda.github.reports.batch.github.network.GithubApiService;
-import com.novoda.github.reports.batch.github.network.GithubServiceFactory;
+import com.novoda.github.reports.batch.network.GithubApiService;
+import com.novoda.github.reports.batch.network.GithubServiceFactory;
+import com.novoda.github.reports.batch.network.PagedTransformer;
 
 import java.util.Date;
 import java.util.List;
@@ -37,10 +37,10 @@ class GithubIssueService implements IssueService {
     }
 
     private Observable<Response<List<Issue>>> getPagedIssuesFor(String organisation,
-                                                                                                       String repository,
-                                                                                                       String since,
-                                                                                                       Integer page,
-                                                                                                       Integer pageCount) {
+                                                                                                             String repository,
+                                                                                                             String since,
+                                                                                                             Integer page,
+                                                                                                             Integer pageCount) {
 
         return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, since, page, pageCount)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage, pageCount)));

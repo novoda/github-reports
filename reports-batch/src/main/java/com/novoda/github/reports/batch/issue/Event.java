@@ -1,7 +1,7 @@
-package com.novoda.github.reports.batch.github.issue;
+package com.novoda.github.reports.batch.issue;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.batch.github.User;
+import com.novoda.github.reports.batch.User;
 
 import java.util.Date;
 
