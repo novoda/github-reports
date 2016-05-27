@@ -9,6 +9,7 @@ import java.util.List;
 import retrofit2.Response;
 import rx.Observable;
 
+@Deprecated
 class GithubTimelineService implements TimelineService {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
@@ -25,17 +26,17 @@ class GithubTimelineService implements TimelineService {
     }
 
     @Override
-    public Observable<Event> getTimelineFor(String organisation, String repository, Integer issueNumber) {
+    public Observable<TimelineEvent> getTimelineFor(String organisation, String repository, Integer issueNumber) {
         return getTimelineFor(organisation, repository, issueNumber, 1, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
-    private Observable<Response<List<Event>>> getTimelineFor(String organisation,
-                                                             String repository,
-                                                             Integer issueNumber,
-                                                             Integer page,
-                                                             Integer pageCount) {
-        
+    private Observable<Response<List<TimelineEvent>>> getTimelineFor(String organisation,
+                                                                     String repository,
+                                                                     Integer issueNumber,
+                                                                     Integer page,
+                                                                     Integer pageCount) {
+
         return githubApiService.getTimelineFor(organisation, repository, issueNumber, page, pageCount)
                 .compose(PagedTransformer.newInstance(nextPage -> getTimelineFor(organisation, repository, issueNumber, nextPage, pageCount)));
     }

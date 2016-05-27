@@ -10,11 +10,13 @@ import com.novoda.github.reports.data.db.DbProjectDataLayer;
 import com.novoda.github.reports.data.db.DbRepoDataLayer;
 import com.novoda.github.reports.data.db.DbUserDataLayer;
 import com.novoda.github.reports.data.model.Stats;
+import com.novoda.github.reports.github.issue.Comment;
+import com.novoda.github.reports.github.issue.Event;
 import com.novoda.github.reports.github.issue.Issue;
 import com.novoda.github.reports.github.issue.IssuesServiceClient;
 import com.novoda.github.reports.github.repository.RepositoriesServiceClient;
 import com.novoda.github.reports.github.repository.Repository;
-import com.novoda.github.reports.github.timeline.Event;
+import com.novoda.github.reports.github.timeline.TimelineEvent;
 import com.novoda.github.reports.github.timeline.TimelineServiceClient;
 import com.novoda.github.reports.handler.ProjectCommandHandler;
 import com.novoda.github.reports.handler.RepoCommandHandler;
@@ -22,8 +24,9 @@ import com.novoda.github.reports.handler.UserCommandHandler;
 
 import java.util.Calendar;
 
-import rx.Observable;
 import rx.Subscriber;
+
+import rx.Observable;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.internal.util.UtilityFunctions;
@@ -68,54 +71,7 @@ public class Main {
 
     public static void main(String[] args) throws UnhandledCommandException {
         //new Main().execute(args);
-
-        //getRepositories();
-        //getIssues();
-        //getTimeline();
-
-        getAll();
-
-    }
-
-    private static void getAll() {
-        RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
-        IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
-        TimelineServiceClient timelineServiceClient = TimelineServiceClient.newInstance();
-
-        repositoriesServiceClient.getRepositoriesFrom("novoda") // TODO @RUI consider .zip()
-                .flatMap((Func1<Repository, Observable<Issue>>) repository -> {
-                            if (!repository.getFullName().contains("reports")) {
-                                return Observable.empty();
-                            }
-                            System.out.println("<<<< GETTING BACK repository: " + repository.getFullName());
-                            return issuesServiceClient.getIssuesFrom("novoda", repository);},
-                         (Func2<Repository, Issue, Observable<Event>>) (repository, issue) -> {
-                             if (!repository.getFullName().contains("reports") || issue.getNumber() < 32) {
-                                 return Observable.empty();
-                             }
-                             System.out.println("<<<< GETTING BACK issue: " + issue.getId() + "/" + issue.getNumber() + " from " + repository.getFullName());
-                             return timelineServiceClient.getTimelineFor("novoda", repository.getName(), issue.getNumber())
-                                     .onErrorReturn(throwable -> new Event());
-                         }
-                )
-                .concatMap(UtilityFunctions.identity())
-                .toBlocking()
-                .subscribe(new Subscriber<Event>() {
-                    @Override
-                    public void onCompleted() {
-                        System.out.println(">>>>> COMPLETED!");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        System.out.println(">>>>> ERROR: " + e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(Event event) {
-                        System.out.println("> " + event);
-                    }
-                });
+        getComments();
     }
 
     private static void getRepositories() {
@@ -165,9 +121,9 @@ public class Main {
                 });
     }
 
-    private static void getTimeline() {
-        TimelineServiceClient.newInstance()
-                .getTimelineFor("novoda", "github-reports", 36)
+    private static void getEvents() {
+        IssuesServiceClient.newInstance()
+                .getEventsFrom("novoda", "github-reports", 36)
                 .toBlocking()
                 .subscribe(new Subscriber<Event>() {
                     @Override
@@ -183,6 +139,93 @@ public class Main {
                     @Override
                     public void onNext(Event event) {
                         System.out.println(event);
+                    }
+                });
+    }
+
+    private static void getComments() {
+        IssuesServiceClient.newInstance()
+                .getCommentsFrom("novoda", "github-reports", 36)
+                .toBlocking()
+                .subscribe(new Subscriber<Comment>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(Comment comment) {
+                        System.out.println(comment);
+                    }
+                });
+    }
+
+    private static void getTimeline() {
+        TimelineServiceClient.newInstance()
+                .getTimelineFor("novoda", "github-reports", 36)
+                .toBlocking()
+                .subscribe(new Subscriber<TimelineEvent>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(TimelineEvent timelineEvent) {
+                        System.out.println(timelineEvent);
+                    }
+                });
+    }
+
+    private static void getAll() {
+        RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
+        IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
+        TimelineServiceClient timelineServiceClient = TimelineServiceClient.newInstance();
+
+        repositoriesServiceClient.getRepositoriesFrom("novoda")
+                .flatMap(
+                        (Func1<Repository, Observable<Issue>>) repository -> {
+                            if (!repository.getFullName().contains("reports")) {
+                                return Observable.empty();
+                            }
+                            System.out.println("<<<< GETTING BACK repository: " + repository.getFullName());
+                            return issuesServiceClient.getIssuesFrom("novoda", repository);
+                        },
+                        (Func2<Repository, Issue, Observable<TimelineEvent>>) (repository, issue) -> {
+                            if (!repository.getFullName().contains("reports") || issue.getNumber() < 32) {
+                                return Observable.empty();
+                            }
+                            System.out.println("<<<< GETTING BACK issue: " + issue.getId() + "/" + issue.getNumber() + " from " + repository.getFullName());
+                            return timelineServiceClient.getTimelineFor("novoda", repository.getName(), issue.getNumber())
+                                    .onErrorReturn(throwable -> new TimelineEvent());
+                        }
+                )
+                .concatMap(UtilityFunctions.identity())
+                .toBlocking()
+                .subscribe(new Subscriber<TimelineEvent>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println(">>>>> COMPLETED!");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println(">>>>> ERROR: " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(TimelineEvent event) {
+                        System.out.println("> " + event);
                     }
                 });
     }
