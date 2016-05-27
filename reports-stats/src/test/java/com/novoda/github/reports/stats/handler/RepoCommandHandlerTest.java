@@ -1,4 +1,4 @@
-package com.novoda.github.reports.handler;
+package com.novoda.github.reports.stats.handler;
 
 import com.novoda.github.reports.command.RepoOptions;
 import com.novoda.github.reports.data.DataLayerException;
