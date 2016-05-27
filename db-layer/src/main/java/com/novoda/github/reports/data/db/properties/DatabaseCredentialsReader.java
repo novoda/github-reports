@@ -37,7 +37,7 @@ public class DatabaseCredentialsReader {
         URI uri = URI.create(baseConnection.replaceAll("^jdbc:", ""));
 
         String query = uri.getQuery();
-        query = (query == null) ? "" : "&";
+        query = (query == null) ? "" : query + "&";
         query += CONNECTION_STRING_COMPENSATE_ON_DUPLICATE_KEY_UPDATE_COUNTS + "=";
         try {
             query += URLEncoder.encode("true", "UTF-8");
