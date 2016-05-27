@@ -1,6 +1,6 @@
-package com.novoda.github.reports.handler;
+package com.novoda.github.reports.stats.handler;
 
-import com.novoda.github.reports.command.Options;
+import com.novoda.github.reports.stats.command.Options;
 import com.novoda.github.reports.data.model.Stats;
 
 @FunctionalInterface
