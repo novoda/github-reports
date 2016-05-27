@@ -9,7 +9,6 @@ import java.net.URLEncoder;
 
 public class DatabaseCredentialsReader {
 
-    private static final String FILENAME = "database.credentials";
     private static final String USER_KEY = "DB_USER";
     private static final String PASSWORD_KEY = "DB_PASSWORD";
     private static final String CONNECTION_STRING_KEY = "DB_CONNECTION_STRING";
@@ -17,8 +16,7 @@ public class DatabaseCredentialsReader {
 
     private PropertiesReader propertiesReader;
 
-    public static DatabaseCredentialsReader newInstance() {
-        PropertiesReader propertiesReader = PropertiesReader.newInstance(FILENAME);
+    public static DatabaseCredentialsReader newInstance(PropertiesReader propertiesReader) {
         return new DatabaseCredentialsReader(propertiesReader);
     }
 

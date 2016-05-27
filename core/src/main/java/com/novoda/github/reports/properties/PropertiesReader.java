@@ -8,53 +8,36 @@ import java.util.Properties;
 
 public class PropertiesReader {
 
-    private Properties properties;
-    private String fileName;
+    private final Properties properties;
 
     public static PropertiesReader newInstance(String fileName) {
-        return new PropertiesReader(new Properties(), fileName);
+        return new PropertiesReader(fileName);
     }
 
-    private PropertiesReader(Properties properties, String fileName) {
-        this.properties = properties;
-        this.fileName = fileName;
+    private PropertiesReader(String fileName) {
+        this.properties = new Properties();
+        try {
+            InputStream inputStream = getInputStream(fileName);
+            loadInputStream(inputStream);
+            closeInputStream(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public String readProperty(String key) {
-        InputStream inputStream = getInputStream(fileName);
-        if (inputStream == null) {
-            return null;
-        }
-
-        loadInputStream(inputStream);
-        String property = properties.getProperty(key);
-        closeInputStream(inputStream);
-
-        return property;
+        return properties.getProperty(key);
     }
 
-    private InputStream getInputStream(String fileName) {
-        try {
-            return new FileInputStream(fileName);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
+    private InputStream getInputStream(String fileName) throws FileNotFoundException {
+        return new FileInputStream(fileName);
     }
 
-    private void loadInputStream(InputStream inputStream) {
-        try {
-            properties.load(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void loadInputStream(InputStream inputStream) throws IOException {
+        properties.load(inputStream);
     }
 
-    private void closeInputStream(InputStream inputStream) {
-        try {
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void closeInputStream(InputStream inputStream) throws IOException {
+        inputStream.close();
     }
 }
