@@ -6,17 +6,29 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.jooq.tools.jdbc.MockConnection;
-import org.jooq.tools.jdbc.MockResult;
+import org.jooq.tools.jdbc.MockDataProvider;
+import org.mockito.Mock;
+
+import static org.mockito.MockitoAnnotations.initMocks;
 
 class MockConnectionManager implements ConnectionManager {
 
+    static {
+        DatabaseHelper.turnOffJooqAd();
+    }
+
+    @Mock
+    MockDataProvider mockDataProvider;
+
     static MockConnectionManager newInstance() {
-        return new MockConnectionManager();
+        MockConnectionManager connectionManager = new MockConnectionManager();
+        initMocks(connectionManager);
+        return connectionManager;
     }
 
     @Override
     public Connection getNewConnection() {
-        return new MockConnection(ctx -> new MockResult[0]);
+        return new MockConnection(mockDataProvider);
     }
 
     @Override
@@ -27,5 +39,9 @@ class MockConnectionManager implements ConnectionManager {
     @Override
     public void attemptCloseConnection(Connection connection) {
         // Do nothing
+    }
+
+    public MockDataProvider getMockDataProvider() {
+        return mockDataProvider;
     }
 }

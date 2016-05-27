@@ -37,13 +37,13 @@ public class Main {
         ConnectionManager connectionManager = DbConnectionManager.newInstance();
 
         if (command.equals(COMMAND_USER)) {
-            UserCommandHandler handler = new UserCommandHandler(new DbUserDataLayer(connectionManager));
+            UserCommandHandler handler = new UserCommandHandler(DbUserDataLayer.newInstance(connectionManager));
             stats = handler.handle(userOptions);
         } else if (command.equals(COMMAND_REPO)) {
-            RepoCommandHandler handler = new RepoCommandHandler(new DbRepoDataLayer(connectionManager));
+            RepoCommandHandler handler = new RepoCommandHandler(DbRepoDataLayer.newInstance(connectionManager));
             stats = handler.handle(repoOptions);
         } else if (command.equals(COMMAND_PROJECT)) {
-            ProjectCommandHandler handler = new ProjectCommandHandler(new DbProjectDataLayer(connectionManager));
+            ProjectCommandHandler handler = new ProjectCommandHandler(DbProjectDataLayer.newInstance(connectionManager));
             stats = handler.handle(projectOptions);
         } else {
             throw new UnhandledCommandException(String.format("The command %s is not supported", command));
