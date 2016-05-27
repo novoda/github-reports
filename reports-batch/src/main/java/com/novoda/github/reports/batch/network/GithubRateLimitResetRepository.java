@@ -4,6 +4,10 @@ class GithubRateLimitResetRepository implements RateLimitResetRepository {
 
     private long timestamp;
 
+    public static GithubRateLimitResetRepository newInstance() {
+        return new GithubRateLimitResetRepository(System.currentTimeMillis());
+    }
+
     GithubRateLimitResetRepository(long timestamp) {
         this.timestamp = timestamp;
     }
