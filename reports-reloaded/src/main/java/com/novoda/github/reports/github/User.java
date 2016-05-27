@@ -6,7 +6,7 @@ public class User {
 
     private int id;
 
-    @SerializedName(value = "login", alternate = {"name"})
+    @SerializedName(value = "login", alternate = {"name"}) // "name" as an alternative due to compatibility issues with the Timeline API
     private String username;
 
     public int getId() {
