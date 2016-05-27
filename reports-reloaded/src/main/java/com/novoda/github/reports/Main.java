@@ -10,7 +10,6 @@ import com.novoda.github.reports.data.db.DbProjectDataLayer;
 import com.novoda.github.reports.data.db.DbRepoDataLayer;
 import com.novoda.github.reports.data.db.DbUserDataLayer;
 import com.novoda.github.reports.data.model.Stats;
-import com.novoda.github.reports.github.DebugClient;
 import com.novoda.github.reports.handler.ProjectCommandHandler;
 import com.novoda.github.reports.handler.RepoCommandHandler;
 import com.novoda.github.reports.handler.UserCommandHandler;
@@ -54,7 +53,6 @@ public class Main {
     }
 
     public static void main(String[] args) throws UnhandledCommandException {
-        //new Main().execute(args);
-        DebugClient.getAll();
+        new Main().execute(args);
     }
 }
