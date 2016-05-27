@@ -92,7 +92,7 @@ CREATE TABLE `user` (
 --
 DROP TABLE IF EXISTS `event`;
 CREATE TABLE `event` (
-  `_id`            INT(11)   NOT NULL AUTO_INCREMENT,
+  `_id`            INT(11)   NOT NULL,
   `repository_id`  INT(11)   NOT NULL,
   `author_user_id` INT(11)   NOT NULL,
   `owner_user_id`  INT(11)   NOT NULL,

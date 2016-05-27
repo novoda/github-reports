@@ -1,7 +1,6 @@
 package com.novoda.github.reports.data.db.properties;
 
 import com.novoda.github.reports.properties.PropertiesReader;
-import com.novoda.github.reports.util.StringHelper;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -40,11 +39,7 @@ public class DatabaseCredentialsReader {
         URI uri = URI.create(baseConnection.replaceAll("^jdbc:", ""));
 
         String query = uri.getQuery();
-        if (StringHelper.isNullOrEmpty(query)) {
-            query = "?";
-        } else {
-            query += "&";
-        }
+        query = (query == null) ? "" : "&";
         query += CONNECTION_STRING_COMPENSATE_ON_DUPLICATE_KEY_UPDATE_COUNTS + "=";
         try {
             query += URLEncoder.encode("true", "UTF-8");

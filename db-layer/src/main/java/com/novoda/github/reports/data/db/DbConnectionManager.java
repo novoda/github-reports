@@ -13,6 +13,10 @@ import org.jooq.impl.DSL;
 
 public class DbConnectionManager implements ConnectionManager {
 
+    static {
+        DatabaseHelper.turnOffJooqAd();
+    }
+
     public static DbConnectionManager newInstance() {
         return new DbConnectionManager();
     }
