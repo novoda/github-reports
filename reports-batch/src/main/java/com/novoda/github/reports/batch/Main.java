@@ -1,4 +1,4 @@
-package com.novoda.github.reports;
+package com.novoda.github.reports.batch;
 
 public class Main {
 
