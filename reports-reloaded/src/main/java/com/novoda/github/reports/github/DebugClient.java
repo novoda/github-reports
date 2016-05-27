@@ -20,6 +20,10 @@ import rx.internal.util.UtilityFunctions;
 
 public class DebugClient {
 
+    private DebugClient() {
+        // non-instantiable
+    }
+
     public static void getRepositories() {
         RepositoriesServiceClient.newInstance()
                 .getRepositoriesFrom("novoda")
