@@ -31,17 +31,17 @@ public class DebugClient {
                 .subscribe(new Subscriber<Repository>() {
                     @Override
                     public void onCompleted() {
-
+                        System.out.println(">>>>> getRepositories completed");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        System.out.println(e.getMessage());
+                        System.out.println(">>>>> getRepositories error: " + e.getMessage());
                     }
 
                     @Override
                     public void onNext(Repository repository) {
-                        System.out.println(repository.getFullName());
+                        System.out.println("> getRepositories: " + repository.getFullName());
                     }
                 });
     }
@@ -50,23 +50,22 @@ public class DebugClient {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2016, Calendar.MAY, 24, 13, 30, 30);
         IssuesServiceClient.newInstance()
-                //.getIssuesFrom("novoda", "all-4", calendar.getTime())
-                .getIssuesFrom("novoda", "accessibilitools")
+                .getIssuesFrom("novoda", "all-4", calendar.getTime())
                 .toBlocking()
                 .subscribe(new Subscriber<Issue>() {
                     @Override
                     public void onCompleted() {
-
+                        System.out.println(">>>>> getIssues completed");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        System.out.println(e.getMessage());
+                        System.out.println(">>>>> getIssues error: " + e.getMessage());
                     }
 
                     @Override
                     public void onNext(Issue issue) {
-                        System.out.println(issue);
+                        System.out.println("> getIssues: " + issue);
                     }
                 });
     }
@@ -78,17 +77,17 @@ public class DebugClient {
                 .subscribe(new Subscriber<Event>() {
                     @Override
                     public void onCompleted() {
-
+                        System.out.println(">>>>> getEvents completed");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        System.out.println(e.getMessage());
+                        System.out.println(">>>>> getEvents error: " + e.getMessage());
                     }
 
                     @Override
                     public void onNext(Event event) {
-                        System.out.println(event);
+                        System.out.println("> getEvents: " + event);
                     }
                 });
     }
@@ -100,17 +99,17 @@ public class DebugClient {
                 .subscribe(new Subscriber<Comment>() {
                     @Override
                     public void onCompleted() {
-
+                        System.out.println(">>>>> getComments completed");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        System.out.println(e.getMessage());
+                        System.out.println(">>>>> getComments error: " + e.getMessage());
                     }
 
                     @Override
                     public void onNext(Comment comment) {
-                        System.out.println(comment);
+                        System.out.println("> getComments: " + comment);
                     }
                 });
     }
@@ -122,17 +121,17 @@ public class DebugClient {
                 .subscribe(new Subscriber<TimelineEvent>() {
                     @Override
                     public void onCompleted() {
-
+                        System.out.println(">>>>> getTimeline completed");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        System.out.println(e.getMessage());
+                        System.out.println(">>>>> getTimeline error: " + e.getMessage());
                     }
 
                     @Override
                     public void onNext(TimelineEvent timelineEvent) {
-                        System.out.println(timelineEvent);
+                        System.out.println("> getTimeline: " + timelineEvent);
                     }
                 });
     }
@@ -216,17 +215,17 @@ public class DebugClient {
                 .subscribe(new Subscriber<TimelineEvent>() {
                     @Override
                     public void onCompleted() {
-                        System.out.println(">>>>> COMPLETED!");
+                        System.out.println(">>>>> getAllTimelineEvents completed");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        System.out.println(">>>>> ERROR: " + e.getMessage());
+                        System.out.println(">>>>> getAllTimelineEvents error: " + e.getMessage());
                     }
 
                     @Override
                     public void onNext(TimelineEvent event) {
-                        System.out.println("> " + event);
+                        System.out.println("> getAllTimelineEvents: " + event);
                     }
                 });
     }
