@@ -1,6 +1,6 @@
 package com.novoda.github.reports.stats.handler;
 
-import com.novoda.github.reports.command.RepoOptions;
+import com.novoda.github.reports.stats.command.RepoOptions;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.model.EventStats;
