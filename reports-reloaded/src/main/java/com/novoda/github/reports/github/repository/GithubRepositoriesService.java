@@ -26,14 +26,14 @@ class GithubRepositoriesService implements RepositoryService {
 
     @Override
     public Observable<Repository> getPagedRepositoriesFor(String organisation) {
-        return getPagedRepositoriesFor(organisation, 1)
+        return getPagedRepositoriesFor(organisation, 1, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
-    private Observable<Response<List<Repository>>> getPagedRepositoriesFor(String org, Integer page) {
+    private Observable<Response<List<Repository>>> getPagedRepositoriesFor(String org, Integer page, Integer pageCount) {
         return githubApiService
-                .getRepositoriesResponseForPage(org, page, DEFAULT_PER_PAGE_COUNT)
-                .compose(PagedTransformer.newInstance(nextPage -> getPagedRepositoriesFor(org, nextPage)));
+                .getRepositoriesResponseForPage(org, page, pageCount)
+                .compose(PagedTransformer.newInstance(nextPage -> getPagedRepositoriesFor(org, nextPage, pageCount)));
     }
 
 }
