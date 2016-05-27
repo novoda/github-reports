@@ -164,12 +164,12 @@ public class DebugClient {
                 .subscribe(new Subscriber<Pair<Comment, Event>>() {
                     @Override
                     public void onCompleted() {
-                        System.out.println(">>>>> Completed!");
+                        System.out.println(">>>>> getAll completed");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        System.out.println(">>>>> " + e.getMessage());
+                        System.out.println(">>>>> getAll error: " + e.getMessage());
                     }
 
                     @Override
@@ -182,11 +182,10 @@ public class DebugClient {
                             return;
                         }
 
-                        System.out.println("> COMMENT: " + comment);
-                        System.out.println("> EVENT: " + event);
+                        System.out.println("> getAll comment: " + comment);
+                        System.out.println("> getAll event: " + event);
                     }
                 });
-
     }
 
     public static void getAllTimelineEvents() {
