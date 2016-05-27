@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.github.repository;
+package com.novoda.github.reports.batch.repository;
 
 import rx.Observable;
 

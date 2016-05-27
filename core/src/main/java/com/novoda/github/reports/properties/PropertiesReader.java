@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.properties;
+package com.novoda.github.reports.properties;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

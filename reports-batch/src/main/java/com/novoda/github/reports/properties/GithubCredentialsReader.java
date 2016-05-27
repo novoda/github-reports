@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.properties;
+package com.novoda.github.reports.properties;
 
 public class GithubCredentialsReader {
 

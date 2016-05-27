@@ -1,6 +1,6 @@
 package com.novoda.github.reports.data.db;
 
-import com.novoda.github.reports.batch.properties.PropertiesReader;
+import com.novoda.github.reports.properties.PropertiesReader;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 
 import java.net.URISyntaxException;

@@ -1,6 +1,6 @@
-package com.novoda.github.reports.batch.github.issue;
+package com.novoda.github.reports.batch.issue;
 
-import com.novoda.github.reports.batch.github.repository.Repository;
+import com.novoda.github.reports.batch.repository.Repository;
 
 import java.util.Date;
 

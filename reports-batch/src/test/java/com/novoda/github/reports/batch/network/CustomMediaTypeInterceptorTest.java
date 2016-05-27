@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.github.network;
+package com.novoda.github.reports.batch.network;
 
 import org.junit.Before;
 import org.junit.Test;

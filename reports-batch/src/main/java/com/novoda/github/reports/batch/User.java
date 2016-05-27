@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.github;
+package com.novoda.github.reports.batch;
 
 import com.google.gson.annotations.SerializedName;
 
