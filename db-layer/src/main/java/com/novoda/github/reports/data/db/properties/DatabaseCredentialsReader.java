@@ -9,9 +9,9 @@ import java.net.URLEncoder;
 
 public class DatabaseCredentialsReader {
 
-    private static final String USER_KEY = "DB_USER";
-    private static final String PASSWORD_KEY = "DB_PASSWORD";
-    private static final String CONNECTION_STRING_KEY = "DB_CONNECTION_STRING";
+    static final String USER_KEY = "DB_USER";
+    static final String PASSWORD_KEY = "DB_PASSWORD";
+    static final String CONNECTION_STRING_KEY = "DB_CONNECTION_STRING";
     private static final String CONNECTION_STRING_COMPENSATE_ON_DUPLICATE_KEY_UPDATE_COUNTS = "compensateOnDuplicateKeyUpdateCounts";
 
     private PropertiesReader propertiesReader;
