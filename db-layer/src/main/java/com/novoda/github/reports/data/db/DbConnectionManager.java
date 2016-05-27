@@ -1,6 +1,7 @@
 package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
+import com.novoda.github.reports.properties.PropertiesReader;
 
 import java.net.URISyntaxException;
 import java.sql.Connection;
@@ -17,13 +18,19 @@ public class DbConnectionManager implements ConnectionManager {
         DatabaseHelper.turnOffJooqAd();
     }
 
+    private static final String DATABASE_CREDENTIALS_FILENAME = "database.credentials";
+    private final DatabaseCredentialsReader databaseCredentialsReader;
+
     public static DbConnectionManager newInstance() {
         return new DbConnectionManager();
     }
 
+    private DbConnectionManager() {
+        databaseCredentialsReader = DatabaseCredentialsReader.newInstance(PropertiesReader.newInstance(DATABASE_CREDENTIALS_FILENAME));
+    }
+
     @Override
     public Connection getNewConnection() throws SQLException {
-        DatabaseCredentialsReader databaseCredentialsReader = DatabaseCredentialsReader.newInstance();
         try {
             return DriverManager.getConnection(
                     databaseCredentialsReader.getConnectionString(),
