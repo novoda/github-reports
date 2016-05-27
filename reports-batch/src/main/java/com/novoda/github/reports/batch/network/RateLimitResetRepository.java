@@ -1,6 +1,6 @@
 package com.novoda.github.reports.batch.network;
 
-interface RateLimitResetRepository {
+public interface RateLimitResetRepository {
 
     long get();
 
