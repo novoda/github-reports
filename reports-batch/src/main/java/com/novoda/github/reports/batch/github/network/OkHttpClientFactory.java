@@ -1,7 +1,7 @@
-package com.novoda.github.reports.github.network;
+package com.novoda.github.reports.batch.github.network;
 
-import com.novoda.github.reports.properties.GithubCredentialsReader;
-import com.novoda.github.reports.properties.PropertiesReader;
+import com.novoda.github.reports.batch.properties.GithubCredentialsReader;
+import com.novoda.github.reports.batch.properties.PropertiesReader;
 
 import java.util.ArrayList;
 import java.util.Arrays;

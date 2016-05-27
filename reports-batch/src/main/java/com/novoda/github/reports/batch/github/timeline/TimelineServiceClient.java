@@ -1,4 +1,4 @@
-package com.novoda.github.reports.github.timeline;
+package com.novoda.github.reports.batch.github.timeline;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;

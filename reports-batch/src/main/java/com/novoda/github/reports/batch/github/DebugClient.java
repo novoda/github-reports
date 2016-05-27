@@ -1,13 +1,13 @@
-package com.novoda.github.reports.github;
+package com.novoda.github.reports.batch.github;
 
-import com.novoda.github.reports.github.issue.Comment;
-import com.novoda.github.reports.github.issue.Event;
-import com.novoda.github.reports.github.issue.Issue;
-import com.novoda.github.reports.github.issue.IssuesServiceClient;
-import com.novoda.github.reports.github.repository.RepositoriesServiceClient;
-import com.novoda.github.reports.github.repository.Repository;
-import com.novoda.github.reports.github.timeline.TimelineEvent;
-import com.novoda.github.reports.github.timeline.TimelineServiceClient;
+import com.novoda.github.reports.batch.github.issue.Comment;
+import com.novoda.github.reports.batch.github.issue.Event;
+import com.novoda.github.reports.batch.github.issue.Issue;
+import com.novoda.github.reports.batch.github.issue.IssuesServiceClient;
+import com.novoda.github.reports.batch.github.repository.RepositoriesServiceClient;
+import com.novoda.github.reports.batch.github.repository.Repository;
+import com.novoda.github.reports.batch.github.timeline.TimelineEvent;
+import com.novoda.github.reports.batch.github.timeline.TimelineServiceClient;
 
 import java.util.Calendar;
 

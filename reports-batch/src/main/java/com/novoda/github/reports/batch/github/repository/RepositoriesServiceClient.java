@@ -1,4 +1,4 @@
-package com.novoda.github.reports.github.repository;
+package com.novoda.github.reports.batch.github.repository;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;

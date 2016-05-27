@@ -1,7 +1,7 @@
-package com.novoda.github.reports.github.issue;
+package com.novoda.github.reports.batch.github.issue;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.github.User;
+import com.novoda.github.reports.batch.github.User;
 
 import java.util.Date;
 
@@ -25,7 +25,7 @@ public class Event {
         return String.format("%s [%d] @ %s by %s", type, id, createdAt, actor.getUsername());
     }
 
-    public enum Type {
+    private enum Type {
 
         @SerializedName("assigned")
         ASSIGNED("assigned"),

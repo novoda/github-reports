@@ -1,6 +1,6 @@
-package com.novoda.github.reports.github.network;
+package com.novoda.github.reports.batch.github.network;
 
-public interface NetworkServiceFactory {
+interface NetworkServiceFactory {
 
     GithubApiService createService();
 

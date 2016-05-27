@@ -1,6 +1,6 @@
-package com.novoda.github.reports.github.issue;
+package com.novoda.github.reports.batch.github.issue;
 
-import com.novoda.github.reports.github.repository.Repository;
+import com.novoda.github.reports.batch.github.repository.Repository;
 
 import java.util.Date;
 
@@ -24,7 +24,7 @@ public class IssuesServiceClient {
         return getIssuesFrom(organisation, repository.getName());
     }
 
-    public Observable<Issue> getIssuesFrom(String organisation, String repository) {
+    private Observable<Issue> getIssuesFrom(String organisation, String repository) {
         return issueService.getPagedIssuesFor(organisation, repository)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.immediate());

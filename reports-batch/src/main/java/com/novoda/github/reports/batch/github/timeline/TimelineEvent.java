@@ -1,7 +1,7 @@
-package com.novoda.github.reports.github.timeline;
+package com.novoda.github.reports.batch.github.timeline;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.github.User;
+import com.novoda.github.reports.batch.github.User;
 
 public class TimelineEvent {
 
@@ -30,7 +30,7 @@ public class TimelineEvent {
         return String.format("%s [%d], by %s", type, id, actor != null ? actor.getUsername() : "{no user}");
     }
 
-    public enum Type {
+    private enum Type {
 
         @SerializedName("assigned")
         ASSIGNED("assigned"),
