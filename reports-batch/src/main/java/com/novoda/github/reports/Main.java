@@ -1,4 +1,6 @@
-package com.novoda.github.reports.batch;
+package com.novoda.github.reports;
+
+import com.novoda.github.reports.batch.DebugClient;
 
 public class Main {
 
