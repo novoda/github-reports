@@ -2,13 +2,11 @@ package com.novoda.github.reports.properties;
 
 public class GithubCredentialsReader {
 
-    private static final String FILENAME = "github.credentials";
     private static final String TOKEN_KEY = "GITHUB_OAUTH_TOKEN";
 
     private PropertiesReader propertiesReader;
 
-    public static GithubCredentialsReader newInstance() {
-        PropertiesReader propertiesReader = PropertiesReader.newInstance(FILENAME);
+    public static GithubCredentialsReader newInstance(PropertiesReader propertiesReader) {
         return new GithubCredentialsReader(propertiesReader);
     }
 
