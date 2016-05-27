@@ -70,7 +70,7 @@ public class DebugClient {
                 });
     }
 
-    protected static void getEvents() {
+    public static void getEvents() {
         IssuesServiceClient.newInstance()
                 .getEventsFrom("novoda", "github-reports", 36)
                 .toBlocking()
@@ -92,7 +92,7 @@ public class DebugClient {
                 });
     }
 
-    protected static void getComments() {
+    public static void getComments() {
         IssuesServiceClient.newInstance()
                 .getCommentsFrom("novoda", "github-reports", 36)
                 .toBlocking()
@@ -114,7 +114,7 @@ public class DebugClient {
                 });
     }
 
-    protected static void getTimeline() {
+    public static void getTimeline() {
         TimelineServiceClient.newInstance()
                 .getTimelineFor("novoda", "github-reports", 36)
                 .toBlocking()
