@@ -8,13 +8,25 @@ import java.util.Properties;
 
 public class PropertiesReader {
 
-    private final Properties properties;
+    private final String fileName;
+    private Properties properties;
 
     public static PropertiesReader newInstance(String fileName) {
         return new PropertiesReader(fileName);
     }
 
     private PropertiesReader(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String readProperty(String key) {
+        if (properties == null) {
+            initProperties();
+        }
+        return properties.getProperty(key);
+    }
+
+    private void initProperties() {
         this.properties = new Properties();
         try {
             InputStream inputStream = getInputStream(fileName);
@@ -23,10 +35,6 @@ public class PropertiesReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String readProperty(String key) {
-        return properties.getProperty(key);
     }
 
     private InputStream getInputStream(String fileName) throws FileNotFoundException {
