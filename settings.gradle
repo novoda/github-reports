@@ -1,5 +1,5 @@
 include ':core'
 include ':db-layer'
-include ':reports-reloaded'
+include ':reports-batch'
 include ':reports-stats'
 
