@@ -171,6 +171,57 @@ public class DebugClient {
                 });
     }
 
+    public static void getAllFilteringOutEverythingBut(String repositoryName, Integer issueNumber) {
+        RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
+        IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
+
+        repositoriesServiceClient.getRepositoriesFrom("novoda")
+                .doOnEach(notification -> {
+                    /* TODO persist repo */
+                })
+                .flatMap(
+                        (Func1<Repository, Observable<Issue>>) repository -> {
+                            if (!repository.getFullName().contains(repositoryName)) {
+                                return Observable.empty();
+                            }
+                            return issuesServiceClient.getIssuesFrom("novoda", repository);
+                        },
+                        (repository, issue) -> {
+                            /* TODO persist issue */
+                            if (issue.getNumber() != issueNumber) {
+                                return Observable.just(new Pair<Comment, Event>(null, null));
+                            }
+                            return issuesServiceClient.getCommentsFrom("novoda", repository.getName(), issue.getNumber())
+                                    .zipWith(issuesServiceClient.getEventsFrom("novoda", repository.getName(), issue.getNumber()), Pair::new);
+                        }
+                )
+                .concatMap(UtilityFunctions.identity())
+                .toBlocking()
+                .subscribe(new Subscriber<Pair<Comment, Event>>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println(">>>>> getAll completed");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println(">>>>> getAll error: " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(Pair<Comment, Event> commentEventPair) {
+                        // TODO persist comment and event
+                        Comment comment = commentEventPair.getKey();
+                        Event event = commentEventPair.getValue();
+                        if (comment == null || event == null) {
+                            return;
+                        }
+                        System.out.println("> getAll comment: " + comment);
+                        System.out.println("> getAll event: " + event);
+                    }
+                });
+    }
+
     public static void getAllTimelineEvents() {
         RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
         IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
