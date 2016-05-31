@@ -5,11 +5,11 @@ class GithubRateLimitResetRepository implements RateLimitResetRepository {
     private long timestamp;
 
     public static GithubRateLimitResetRepository newInstance() {
-        return new GithubRateLimitResetRepository(System.currentTimeMillis());
+        return new GithubRateLimitResetRepository(0);
     }
 
-    GithubRateLimitResetRepository(long timestamp) {
-        this.timestamp = timestamp;
+    GithubRateLimitResetRepository(long timestampSeconds) {
+        this.timestamp = timestampSeconds;
     }
 
     @Override
@@ -18,10 +18,10 @@ class GithubRateLimitResetRepository implements RateLimitResetRepository {
     }
 
     @Override
-    public synchronized void set(long timestamp) {
-        if (timestamp < 0) {
+    public synchronized void set(long timestampSeconds) {
+        if (timestampSeconds < 0) {
             throw new IllegalArgumentException("timestamp cannot be negative.");
         }
-        this.timestamp = timestamp;
+        this.timestamp = timestampSeconds;
     }
 }
