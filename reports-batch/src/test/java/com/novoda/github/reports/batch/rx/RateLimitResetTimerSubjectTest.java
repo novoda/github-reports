@@ -5,10 +5,10 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 
+import rx.Observable;
 import rx.Subscription;
 import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
-import rx.subjects.PublishSubject;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -19,7 +19,7 @@ public class RateLimitResetTimerSubjectTest {
     private static final long[] ANY_DESCENDING_TIME_SERIES_MILLIS = new long[]{1000, 800, 400};
 
     private RateLimitResetTimerSubject rateLimitResetTimerSubject;
-    private PublishSubject<Long> timeSubject;
+    private Observable<Long> timeSubject;
     private TestScheduler testScheduler;
     private TestSubscriber<Object> testSubscriber;
 
@@ -27,7 +27,7 @@ public class RateLimitResetTimerSubjectTest {
     public void setUp() {
         testScheduler = new TestScheduler();
         rateLimitResetTimerSubject = RateLimitResetTimerSubject.newInstance(testScheduler);
-        timeSubject = rateLimitResetTimerSubject.getTimeSubject();
+        timeSubject = rateLimitResetTimerSubject.getTimeObservable();
         testSubscriber = new TestSubscriber<>();
     }
 
