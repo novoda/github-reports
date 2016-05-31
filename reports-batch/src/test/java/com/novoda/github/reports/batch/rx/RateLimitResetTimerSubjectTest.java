@@ -18,7 +18,7 @@ public class RateLimitResetTimerSubjectTest {
     private RateLimitResetTimerSubject rateLimitResetTimerSubject;
     private PublishSubject<Object> timeSubject;
     private TestScheduler testScheduler;
-    TestSubscriber<Object> testSubscriber;
+    private TestSubscriber<Object> testSubscriber;
 
     @Before
     public void setUp() {
