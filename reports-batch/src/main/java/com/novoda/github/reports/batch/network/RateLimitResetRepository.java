@@ -4,6 +4,6 @@ public interface RateLimitResetRepository {
 
     long get();
 
-    void set(long timestamp);
+    void set(long timestampSeconds);
 
 }
