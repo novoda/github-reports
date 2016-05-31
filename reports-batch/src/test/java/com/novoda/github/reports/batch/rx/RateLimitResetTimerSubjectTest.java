@@ -15,6 +15,9 @@ import static org.junit.Assert.assertNotEquals;
 
 public class RateLimitResetTimerSubjectTest {
 
+    private static final long ANY_TIME_MILLIS = 1000;
+    private static final long[] ANY_DESCENDING_TIME_SERIES_MILLIS = new long[]{1000, 800, 400};
+
     private RateLimitResetTimerSubject rateLimitResetTimerSubject;
     private PublishSubject<Long> timeSubject;
     private TestScheduler testScheduler;
@@ -39,7 +42,7 @@ public class RateLimitResetTimerSubjectTest {
     public void givenNewResetTime_whenSetRateLimitResetTimer_thenSetNewTimer() {
         Subscription oldTimer = rateLimitResetTimerSubject.timer;
 
-        rateLimitResetTimerSubject.setRateLimitResetTimer(1000);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(ANY_TIME_MILLIS);
         Subscription newTimer = rateLimitResetTimerSubject.timer;
 
         assertNotEquals(oldTimer, newTimer);
@@ -47,40 +50,34 @@ public class RateLimitResetTimerSubjectTest {
 
     @Test
     public void givenNewResetTime_whenSetRateLimitResetTimer_thenExpectNewValueAfterTimeout() {
-        long millis = 1000;
-
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(ANY_TIME_MILLIS);
 
         timeSubject.subscribe(testSubscriber);
-        testScheduler.advanceTimeBy(1000, TimeUnit.MILLISECONDS);
+        testScheduler.advanceTimeBy(ANY_TIME_MILLIS, TimeUnit.MILLISECONDS);
 
-        testSubscriber.assertValue(millis);
+        testSubscriber.assertValue(ANY_TIME_MILLIS);
     }
 
     @Test
     public void givenMultipleNewResetTimes_whenSetRateLimitResetTimer_thenExpectLatestValueAfterTimeout() {
-        long[] millis = new long[] {1000, 800, 400};
-
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[0]);
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[1]);
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[2]);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(ANY_DESCENDING_TIME_SERIES_MILLIS[0]);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(ANY_DESCENDING_TIME_SERIES_MILLIS[1]);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(ANY_DESCENDING_TIME_SERIES_MILLIS[2]);
 
         timeSubject.subscribe(testSubscriber);
-        testScheduler.advanceTimeBy(400, TimeUnit.MILLISECONDS);
+        testScheduler.advanceTimeBy(ANY_DESCENDING_TIME_SERIES_MILLIS[2], TimeUnit.MILLISECONDS);
 
-        testSubscriber.assertValue(millis[2]);
+        testSubscriber.assertValue(ANY_DESCENDING_TIME_SERIES_MILLIS[2]);
     }
 
     @Test
     public void givenAnyNumberOfResetTimes_whenSetRateLimitResetTimer_thenStreamNeverTerminates() {
-        long[] millis = new long[]{1000, 800, 400};
-
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[0]);
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[1]);
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[2]);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(ANY_DESCENDING_TIME_SERIES_MILLIS[0]);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(ANY_DESCENDING_TIME_SERIES_MILLIS[1]);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(ANY_DESCENDING_TIME_SERIES_MILLIS[2]);
 
         timeSubject.subscribe(testSubscriber);
-        testScheduler.advanceTimeBy(1000, TimeUnit.MILLISECONDS);
+        testScheduler.advanceTimeBy(ANY_DESCENDING_TIME_SERIES_MILLIS[0], TimeUnit.MILLISECONDS);
 
         testSubscriber.assertNoTerminalEvent();
     }
