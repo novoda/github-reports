@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNotEquals;
 public class RateLimitResetTimerSubjectTest {
 
     private RateLimitResetTimerSubject rateLimitResetTimerSubject;
-    private PublishSubject<Object> timeSubject;
+    private PublishSubject<Long> timeSubject;
     private TestScheduler testScheduler;
     private TestSubscriber<Object> testSubscriber;
 
