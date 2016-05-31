@@ -2,26 +2,26 @@ package com.novoda.github.reports.batch.network;
 
 class GithubRateLimitResetRepository implements RateLimitResetRepository {
 
-    private long timestampMi;
+    private long timestampMillis;
 
     public static GithubRateLimitResetRepository newInstance() {
         return new GithubRateLimitResetRepository(0);
     }
 
-    GithubRateLimitResetRepository(long timestampSeconds) {
-        this.timestamp = timestampSeconds;
+    GithubRateLimitResetRepository(long timestampMillis) {
+        this.timestampMillis = timestampMillis;
     }
 
     @Override
     public synchronized long get() {
-        return timestamp;
+        return timestampMillis;
     }
 
     @Override
-    public synchronized void set(long timestampSeconds) {
-        if (timestampSeconds < 0) {
-            throw new IllegalArgumentException("timestamp cannot be negative.");
+    public synchronized void set(long timestampMillis) {
+        if (timestampMillis < 0) {
+            throw new IllegalArgumentException("timestampMillis cannot be negative.");
         }
-        this.timestamp = timestampSeconds;
+        this.timestampMillis = timestampMillis;
     }
 }
