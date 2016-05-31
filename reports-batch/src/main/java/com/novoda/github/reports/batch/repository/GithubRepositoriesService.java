@@ -16,14 +16,17 @@ class GithubRepositoriesService implements RepositoryService {
     private static final int FIRST_PAGE = 1;
 
     private final GithubApiService githubApiService;
+    private final RateLimitDelayTransformer rateLimitDelayTransformer;
 
     static GithubRepositoriesService newInstance() {
         GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
-        return new GithubRepositoriesService(githubServiceFactory.createService());
+        RateLimitDelayTransformer rateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
+        return new GithubRepositoriesService(githubServiceFactory.createService(), rateLimitDelayTransformer);
     }
 
-    private GithubRepositoriesService(GithubApiService githubApiService) {
+    private GithubRepositoriesService(GithubApiService githubApiService, RateLimitDelayTransformer rateLimitDelayTransformer) {
         this.githubApiService = githubApiService;
+        this.rateLimitDelayTransformer = rateLimitDelayTransformer;
     }
 
     @Override
@@ -34,7 +37,7 @@ class GithubRepositoriesService implements RepositoryService {
 
     private Observable<Response<List<Repository>>> getPagedRepositoriesFor(String organisation, Integer page, Integer pageCount) {
         return githubApiService.getRepositoriesResponseForPage(organisation, page, pageCount)
-                .compose(RateLimitDelayTransformer.newInstance())
+                .compose(rateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedRepositoriesFor(organisation, nextPage, pageCount)));
     }
 }
