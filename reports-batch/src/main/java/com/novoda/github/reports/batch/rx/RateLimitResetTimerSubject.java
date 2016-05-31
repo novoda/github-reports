@@ -10,22 +10,24 @@ import rx.subjects.PublishSubject;
 
 class RateLimitResetTimerSubject {
 
-    private PublishSubject<Object> timeSubject;
+    private final Scheduler scheduler;
+    private final PublishSubject<Object> timeSubject;
     Subscription timer;
 
-    public static RateLimitResetTimerSubject newInstance() {
-        return new RateLimitResetTimerSubject();
+    public static RateLimitResetTimerSubject newInstance(Scheduler scheduler) {
+        return new RateLimitResetTimerSubject(scheduler);
     }
 
-    private RateLimitResetTimerSubject() {
+    public static RateLimitResetTimerSubject newInstance() {
+        return new RateLimitResetTimerSubject(Schedulers.computation());
+    }
+
+    private RateLimitResetTimerSubject(Scheduler scheduler) {
         timeSubject = PublishSubject.create();
+        this.scheduler = scheduler;
     }
 
     void setRateLimitResetTimer(long millis) {
-        setRateLimitResetTimer(millis, Schedulers.computation());
-    }
-
-    void setRateLimitResetTimer(long millis, Scheduler scheduler) {
         if (timer != null && !timer.isUnsubscribed()) {
             timer.unsubscribe();
         }

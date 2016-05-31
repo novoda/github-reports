@@ -7,35 +7,23 @@ import java.util.Date;
 
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
-import rx.Scheduler;
-import rx.schedulers.Schedulers;
 
 class RetryWhenTokenResets<T> implements Observable.Transformer<T, T> {
 
     private final RateLimitResetRepository rateLimitResetRepository;
     private final RateLimitResetTimerSubject resetTimerSubject;
-    private final Scheduler scheduler;
 
     public static <T> RetryWhenTokenResets<T> newInstance(
             RateLimitResetTimerSubject rateLimitResetTimerSubject,
             RateLimitResetRepository rateLimitResetRepository) {
-        return new RetryWhenTokenResets<>(rateLimitResetTimerSubject, rateLimitResetRepository, Schedulers.computation());
-    }
-
-    public static <T> RetryWhenTokenResets<T> newInstance(
-            RateLimitResetTimerSubject rateLimitResetTimerSubject,
-            RateLimitResetRepository rateLimitResetRepository,
-            Scheduler scheduler) {
-        return new RetryWhenTokenResets<>(rateLimitResetTimerSubject, rateLimitResetRepository, scheduler);
+        return new RetryWhenTokenResets<>(rateLimitResetTimerSubject, rateLimitResetRepository);
     }
 
     private RetryWhenTokenResets(
             RateLimitResetTimerSubject rateLimitResetTimerSubject,
-            RateLimitResetRepository rateLimitResetRepository,
-            Scheduler scheduler) {
+            RateLimitResetRepository rateLimitResetRepository) {
         this.resetTimerSubject = rateLimitResetTimerSubject;
         this.rateLimitResetRepository = rateLimitResetRepository;
-        this.scheduler = scheduler;
     }
 
     @Override
@@ -43,7 +31,7 @@ class RetryWhenTokenResets<T> implements Observable.Transformer<T, T> {
         return inObservable.retryWhen(errors -> errors.switchMap(error -> {
             if (error instanceof HttpException) {
                 long nextTick = getTimeDiffInMillisFromNow(rateLimitResetRepository.getNextResetTime());
-                resetTimerSubject.setRateLimitResetTimer(nextTick, scheduler);
+                resetTimerSubject.setRateLimitResetTimer(nextTick);
                 return resetTimerSubject.getTimeSubject().take(1);
             }
             return Observable.error(error);
