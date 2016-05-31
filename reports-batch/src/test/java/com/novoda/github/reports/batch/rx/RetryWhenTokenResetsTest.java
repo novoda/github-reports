@@ -22,7 +22,6 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,13 +30,13 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class RetryWhenTokenResetsTest {
 
     @Mock
-    RateLimitResetTimerSubject rateLimitResetTimerSubject;
-
-    @Mock
     RateLimitResetRepository rateLimitResetRepository;
 
     @Spy
     Scheduler testScheduler = new TestScheduler();
+
+    @Spy
+    RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubject.newInstance(testScheduler);
 
     @InjectMocks
     RetryWhenTokenResets<Integer> retryWhenTokenResetsTransformer;
@@ -59,7 +58,7 @@ public class RetryWhenTokenResetsTest {
         when(rateLimitResetTimerSubject.getTimeSubject()).thenReturn(PublishSubject.create());
         testObservable.subscribe(testSubscriber);
 
-        verify(rateLimitResetTimerSubject).setRateLimitResetTimer(anyLong(), any(Scheduler.class));
+        verify(rateLimitResetTimerSubject).setRateLimitResetTimer(anyLong());
     }
 
     @Test

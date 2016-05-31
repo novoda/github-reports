@@ -22,9 +22,9 @@ public class RateLimitResetTimerSubjectTest {
 
     @Before
     public void setUp() {
-        rateLimitResetTimerSubject = RateLimitResetTimerSubject.newInstance();
-        timeSubject = rateLimitResetTimerSubject.getTimeSubject();
         testScheduler = new TestScheduler();
+        rateLimitResetTimerSubject = RateLimitResetTimerSubject.newInstance(testScheduler);
+        timeSubject = rateLimitResetTimerSubject.getTimeSubject();
         testSubscriber = new TestSubscriber<>();
     }
 
@@ -49,7 +49,7 @@ public class RateLimitResetTimerSubjectTest {
     public void givenNewResetTime_whenSetRateLimitResetTimer_thenExpectNewValueAfterTimeout() {
         long millis = 1000;
 
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis, testScheduler);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(millis);
 
         timeSubject.subscribe(testSubscriber);
         testScheduler.advanceTimeBy(1000, TimeUnit.MILLISECONDS);
@@ -61,9 +61,9 @@ public class RateLimitResetTimerSubjectTest {
     public void givenMultipleNewResetTimes_whenSetRateLimitResetTimer_thenExpectLatestValueAfterTimeout() {
         long[] millis = new long[] {1000, 800, 400};
 
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[0], testScheduler);
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[1], testScheduler);
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[2], testScheduler);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[0]);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[1]);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[2]);
 
         timeSubject.subscribe(testSubscriber);
         testScheduler.advanceTimeBy(400, TimeUnit.MILLISECONDS);
@@ -75,9 +75,9 @@ public class RateLimitResetTimerSubjectTest {
     public void givenAnyNumberOfResetTimes_whenSetRateLimitResetTimer_thenStreamNeverTerminates() {
         long[] millis = new long[]{1000, 800, 400};
 
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[0], testScheduler);
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[1], testScheduler);
-        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[2], testScheduler);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[0]);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[1]);
+        rateLimitResetTimerSubject.setRateLimitResetTimer(millis[2]);
 
         timeSubject.subscribe(testSubscriber);
         testScheduler.advanceTimeBy(1000, TimeUnit.MILLISECONDS);
