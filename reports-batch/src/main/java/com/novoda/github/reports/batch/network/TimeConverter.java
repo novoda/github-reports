@@ -1,13 +1,9 @@
 package com.novoda.github.reports.batch.network;
 
-public class TimeConverter {
+interface TimeConverter {
 
-    public long epochToMillis(long epoch) {
-        return epoch * 1000L;
-    }
+    long toMillis(long time);
 
-    public long millisToEpoch(long millis) {
-        return millis / 1000L;
-    }
+    long toSeconds(long time);
 
 }
