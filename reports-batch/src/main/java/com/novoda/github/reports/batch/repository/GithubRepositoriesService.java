@@ -13,6 +13,7 @@ import rx.Observable;
 class GithubRepositoriesService implements RepositoryService {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
+    private static final int FIRST_PAGE = 1;
 
     private final GithubApiService githubApiService;
 
@@ -27,7 +28,7 @@ class GithubRepositoriesService implements RepositoryService {
 
     @Override
     public Observable<Repository> getPagedRepositoriesFor(String organisation) {
-        return getPagedRepositoriesFor(organisation, 1, DEFAULT_PER_PAGE_COUNT)
+        return getPagedRepositoriesFor(organisation, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
