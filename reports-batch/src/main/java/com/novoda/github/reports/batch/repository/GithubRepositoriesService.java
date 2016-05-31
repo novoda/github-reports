@@ -6,7 +6,6 @@ import com.novoda.github.reports.batch.network.PagedTransformer;
 import com.novoda.github.reports.batch.network.RateLimitRemainingCounterContainer;
 import com.novoda.github.reports.batch.network.RateLimitRemainingResetRepositoryContainer;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -35,18 +34,15 @@ class GithubRepositoriesService implements RepositoryService {
     }
 
     private Observable<Response<List<Repository>>> getPagedRepositoriesFor(String org, Integer page, Integer pageCount) {
-        return //githubApiService.getRepositoriesResponseForPage(org, page, pageCount)
-                delayGetPagedRepositoriesFor(org, page, pageCount)
+        return delayIfNeededGetPagedRepositoriesFor(org, page, pageCount)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedRepositoriesFor(org, nextPage, pageCount)));
     }
 
-    private Observable<Response<List<Repository>>> delayGetPagedRepositoriesFor(String organisation, Integer page, Integer pageCount) {
+    private Observable<Response<List<Repository>>> delayIfNeededGetPagedRepositoriesFor(String organisation, Integer page, Integer pageCount) {
         int numberOfRemainingRequests = RateLimitRemainingCounterContainer.getInstance().get();
         if (numberOfRemainingRequests == 0) {
-            long now = Instant.now().getEpochSecond();
             long resetTimestamp = RateLimitRemainingResetRepositoryContainer.getInstance().get();
-            long delay = (resetTimestamp - now) * 1000L;
-            System.out.println("*** Delaying...");
+            long delay = resetTimestamp - System.currentTimeMillis();
             return githubApiService
                     .getRepositoriesResponseForPage(organisation, page, pageCount)
                     .delaySubscription(delay, TimeUnit.MILLISECONDS);
