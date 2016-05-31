@@ -32,7 +32,7 @@ class RetryWhenTokenResets<T> implements Observable.Transformer<T, T> {
             if (error instanceof HttpException) {
                 long nextTick = getTimeDiffInMillisFromNow(rateLimitResetRepository.getNextResetTime());
                 resetTimerSubject.setRateLimitResetTimer(nextTick);
-                return resetTimerSubject.getTimeSubject().take(1);
+                return resetTimerSubject.getTimeObservable().take(1);
             }
             return Observable.<Long>error(error);
         }));

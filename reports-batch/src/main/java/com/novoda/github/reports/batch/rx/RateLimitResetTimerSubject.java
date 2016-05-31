@@ -38,8 +38,8 @@ class RateLimitResetTimerSubject {
                 });
     }
 
-    PublishSubject<Long> getTimeSubject() {
-        return timeSubject;
+    Observable<Long> getTimeObservable() {
+        return timeSubject.asObservable();
     }
 
 }

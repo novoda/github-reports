@@ -114,7 +114,7 @@ public class RetryWhenTokenResetsTest {
         observable = observable.compose(retryWhenTokenResetsTransformer);
 
         when(rateLimitResetRepository.getNextResetTime()).thenReturn(getTimeNow() + ANY_TIME_MILLIS);
-        when(rateLimitResetTimerSubject.getTimeSubject()).thenReturn(timeSubject);
+        when(rateLimitResetTimerSubject.getTimeObservable()).thenReturn(timeSubject);
 
         observable.subscribe(testSubscriber);
         return observable;
