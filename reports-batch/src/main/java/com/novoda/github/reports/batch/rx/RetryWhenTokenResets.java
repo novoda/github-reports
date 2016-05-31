@@ -34,7 +34,7 @@ class RetryWhenTokenResets<T> implements Observable.Transformer<T, T> {
                 resetTimerSubject.setRateLimitResetTimer(nextTick);
                 return resetTimerSubject.getTimeSubject().take(1);
             }
-            return Observable.error(error);
+            return Observable.<Long>error(error);
         }));
     }
 
