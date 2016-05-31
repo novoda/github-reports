@@ -11,14 +11,17 @@ class RateLimitResetInterceptor implements Interceptor {
     private static final String RATE_LIMIT_RESET_HEADER = "X-RateLimit-Reset";
 
     private final RateLimitResetRepository rateLimitResetRepository;
+    private final TimeConverter timeConverter;
 
     public static RateLimitResetInterceptor newInstance() {
         RateLimitResetRepository rateLimitResetRepository = RateLimitRemainingResetRepositoryContainer.getInstance();
-        return new RateLimitResetInterceptor(rateLimitResetRepository);
+        EpochTimeConverter timeConverter = new EpochTimeConverter();
+        return new RateLimitResetInterceptor(rateLimitResetRepository, timeConverter);
     }
 
-    RateLimitResetInterceptor(RateLimitResetRepository rateLimitResetRepository) {
+    RateLimitResetInterceptor(RateLimitResetRepository rateLimitResetRepository, TimeConverter timeConverter) {
         this.rateLimitResetRepository = rateLimitResetRepository;
+        this.timeConverter = timeConverter;
     }
 
     @Override
@@ -27,7 +30,8 @@ class RateLimitResetInterceptor implements Interceptor {
         Response response = chain.proceed(request);
 
         String resetTimestampAsString = response.headers().get(RATE_LIMIT_RESET_HEADER);
-        rateLimitResetRepository.set(Long.parseLong(resetTimestampAsString));
+        long epochTime = Long.parseLong(resetTimestampAsString);
+        rateLimitResetRepository.set(timeConverter.toMillis(epochTime));
 
         return response;
     }
