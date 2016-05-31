@@ -29,6 +29,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class RetryWhenTokenResetsTest {
 
+    private final static long ANY_TIME_MILLIS = 10000;
+
     @Mock
     RateLimitResetRepository rateLimitResetRepository;
 
@@ -41,36 +43,30 @@ public class RetryWhenTokenResetsTest {
     @InjectMocks
     RetryWhenTokenResets<Integer> retryWhenTokenResetsTransformer;
 
+    private PublishSubject<Long> timeSubject;
     private TestSubscriber<Integer> testSubscriber;
 
     @Before
     public void setUp() {
         initMocks(this);
+        timeSubject = PublishSubject.create();
         testSubscriber = new TestSubscriber<>();
     }
 
     @Test
     public void givenErroringOnceObservableWithRetryMechanism_whenSubscribe_thenResetTimer() {
-        Observable<Integer> testObservable = givenErroringOnceObservable()
-                .compose(retryWhenTokenResetsTransformer);
+        Observable<Integer> testObservable = givenErroringOnceObservable();
 
-        when(rateLimitResetRepository.getNextResetTime()).thenReturn(getTimeNow() + 10000);
-        when(rateLimitResetTimerSubject.getTimeSubject()).thenReturn(PublishSubject.create());
-        testObservable.subscribe(testSubscriber);
+        whenComposeWithRetryMechanismAndSubscribe(testObservable);
 
         verify(rateLimitResetTimerSubject).setRateLimitResetTimer(anyLong());
     }
 
     @Test
     public void givenAlwaysErroringObservableWithRetryMechanism_whenSubscribe_thenNeverComplete() {
-        Observable<Integer> testObservable = givenAlwaysErroringObservable()
-                .compose(retryWhenTokenResetsTransformer);
-        PublishSubject<Long> timeSubject = PublishSubject.create();
+        Observable<Integer> testObservable = givenAlwaysErroringObservable();
 
-        long millis = 10000;
-        when(rateLimitResetRepository.getNextResetTime()).thenReturn(getTimeNow() + millis);
-        when(rateLimitResetTimerSubject.getTimeSubject()).thenReturn(timeSubject);
-        testObservable.subscribe(testSubscriber);
+        whenComposeWithRetryMechanismAndSubscribe(testObservable);
 
         testSubscriber.assertNoErrors();
         testSubscriber.assertNotCompleted();
@@ -82,18 +78,13 @@ public class RetryWhenTokenResetsTest {
 
     @Test
     public void givenErroringOnceObservableWithRetryMechanism_whenSubscribe_thenRetryAndComplete() {
-        Observable<Integer> testObservable = givenErroringOnceObservable()
-                .compose(retryWhenTokenResetsTransformer);
-        PublishSubject<Long> timeSubject = PublishSubject.create();
+        Observable<Integer> testObservable = givenErroringOnceObservable();
 
-        long millis = 10000;
-        when(rateLimitResetRepository.getNextResetTime()).thenReturn(getTimeNow() + millis);
-        when(rateLimitResetTimerSubject.getTimeSubject()).thenReturn(timeSubject);
-        testObservable.subscribe(testSubscriber);
+        whenComposeWithRetryMechanismAndSubscribe(testObservable);
 
         testSubscriber.assertValues(1, 2, 3);
-        timeSubject.onNext(millis);
-        ((TestScheduler) testScheduler).advanceTimeBy(millis, TimeUnit.MILLISECONDS);
+        timeSubject.onNext(ANY_TIME_MILLIS);
+        ((TestScheduler) testScheduler).advanceTimeBy(ANY_TIME_MILLIS, TimeUnit.MILLISECONDS);
         testSubscriber.assertValues(1, 2, 3, 1, 2, 3, 4);
         testSubscriber.assertNoErrors();
         testSubscriber.assertCompleted();
@@ -117,6 +108,16 @@ public class RetryWhenTokenResetsTest {
 
     private HttpException givenHttpException() {
         return new HttpException(Response.error(403, ResponseBody.create(MediaType.parse("application/json"), "{}")));
+    }
+
+    private Observable<Integer> whenComposeWithRetryMechanismAndSubscribe(Observable<Integer> observable) {
+        observable = observable.compose(retryWhenTokenResetsTransformer);
+
+        when(rateLimitResetRepository.getNextResetTime()).thenReturn(getTimeNow() + ANY_TIME_MILLIS);
+        when(rateLimitResetTimerSubject.getTimeSubject()).thenReturn(timeSubject);
+
+        observable.subscribe(testSubscriber);
+        return observable;
     }
 
     private long getTimeNow() {
