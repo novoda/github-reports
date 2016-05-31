@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import retrofit2.Response;
 import rx.Observable;
 
-class RateLimitDelayTransformer implements Observable.Transformer<Response<List<Repository>>, Response<List<Repository>>> {
+public class RateLimitDelayTransformer implements Observable.Transformer<Response<List<Repository>>, Response<List<Repository>>> {
 
     private final RateLimitRemainingCounter rateLimitRemainingCounter;
     private final RateLimitResetRepository rateLimitResetRepository;
