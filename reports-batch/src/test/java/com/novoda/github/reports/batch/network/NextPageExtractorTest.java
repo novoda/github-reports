@@ -1,6 +1,5 @@
 package com.novoda.github.reports.batch.network;
 
-
 import java.util.Optional;
 
 import org.junit.Before;

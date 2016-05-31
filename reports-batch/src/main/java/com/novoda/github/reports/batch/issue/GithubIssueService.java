@@ -37,10 +37,10 @@ class GithubIssueService implements IssueService {
     }
 
     private Observable<Response<List<Issue>>> getPagedIssuesFor(String organisation,
-                                                                                                             String repository,
-                                                                                                             String since,
-                                                                                                             Integer page,
-                                                                                                             Integer pageCount) {
+                                                                String repository,
+                                                                String since,
+                                                                Integer page,
+                                                                Integer pageCount) {
 
         return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, since, page, pageCount)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage, pageCount)));
