@@ -2,7 +2,7 @@ package com.novoda.github.reports.batch.network;
 
 class GithubRateLimitResetRepository implements RateLimitResetRepository {
 
-    private long timestamp;
+    private long timestampMi;
 
     public static GithubRateLimitResetRepository newInstance() {
         return new GithubRateLimitResetRepository(0);
