@@ -65,7 +65,7 @@ public class RetryWhenTokenResetsTest {
     public void givenAlwaysErroringObservableWithRetryMechanism_whenSubscribe_thenNeverComplete() {
         Observable<Integer> testObservable = givenAlwaysErroringObservable()
                 .compose(retryWhenTokenResetsTransformer);
-        PublishSubject<Object> timeSubject = PublishSubject.create();
+        PublishSubject<Long> timeSubject = PublishSubject.create();
 
         long millis = 10000;
         when(rateLimitResetRepository.getNextResetTime()).thenReturn(getTimeNow() + millis);
@@ -84,7 +84,7 @@ public class RetryWhenTokenResetsTest {
     public void givenErroringOnceObservableWithRetryMechanism_whenSubscribe_thenRetryAndComplete() {
         Observable<Integer> testObservable = givenErroringOnceObservable()
                 .compose(retryWhenTokenResetsTransformer);
-        PublishSubject<Object> timeSubject = PublishSubject.create();
+        PublishSubject<Long> timeSubject = PublishSubject.create();
 
         long millis = 10000;
         when(rateLimitResetRepository.getNextResetTime()).thenReturn(getTimeNow() + millis);

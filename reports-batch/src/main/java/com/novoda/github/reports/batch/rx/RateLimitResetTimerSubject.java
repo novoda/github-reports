@@ -11,7 +11,7 @@ import rx.subjects.PublishSubject;
 class RateLimitResetTimerSubject {
 
     private final Scheduler scheduler;
-    private final PublishSubject<Object> timeSubject;
+    private final PublishSubject<Long> timeSubject;
     Subscription timer;
 
     public static RateLimitResetTimerSubject newInstance(Scheduler scheduler) {
@@ -38,7 +38,7 @@ class RateLimitResetTimerSubject {
                 });
     }
 
-    PublishSubject<Object> getTimeSubject() {
+    PublishSubject<Long> getTimeSubject() {
         return timeSubject;
     }
 
