@@ -40,11 +40,13 @@ public class RateLimitResetTimerSubjectTest {
 
     @Test
     public void givenNewResetTime_whenSetRateLimitResetTimer_thenSetNewTimer() {
+        rateLimitResetTimerSubject.setRateLimitResetTimer(ANY_TIME_MILLIS);
         Subscription oldTimer = rateLimitResetTimerSubject.timer;
 
         rateLimitResetTimerSubject.setRateLimitResetTimer(ANY_TIME_MILLIS);
         Subscription newTimer = rateLimitResetTimerSubject.timer;
 
+        assertEquals(true, oldTimer.isUnsubscribed());
         assertNotEquals(oldTimer, newTimer);
     }
 
