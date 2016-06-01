@@ -2,7 +2,7 @@ package com.novoda.github.reports.batch.repository;
 
 import com.novoda.github.reports.batch.persistence.ConnectionManagerContainer;
 import com.novoda.github.reports.batch.persistence.Converter;
-import com.novoda.github.reports.batch.persistence.PersistRepositoryOperator;
+import com.novoda.github.reports.batch.persistence.PersistRepositoryTransformer;
 import com.novoda.github.reports.batch.persistence.RepositoryConverter;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
@@ -35,7 +35,7 @@ public class RepositoriesServiceClient {
 
     public Observable<Repository> retrieveRepositoriesFrom(String organisation) {
         return repositoryService.getPagedRepositoriesFor(organisation)
-                .lift(PersistRepositoryOperator.newInstance(repoDataLayer, converter))
+                .compose(PersistRepositoryTransformer.newInstance(repoDataLayer, converter))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.immediate());
     }
