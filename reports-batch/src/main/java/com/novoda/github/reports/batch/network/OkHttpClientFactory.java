@@ -14,7 +14,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 class OkHttpClientFactory implements HttpClientFactory {
 
-    private static final String GITHUB_PROPERTIES_FILENAME = "../github.credentials";
+    private static final String GITHUB_PROPERTIES_FILENAME = "github.credentials";
 
     private final OkHttpClient.Builder okHttpClientBuilder;
     private final List<Interceptor> interceptors = new ArrayList<>();
