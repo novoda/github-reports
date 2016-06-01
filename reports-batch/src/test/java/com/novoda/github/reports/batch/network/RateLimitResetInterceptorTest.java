@@ -56,7 +56,7 @@ public class RateLimitResetInterceptorTest {
         Response response = interceptor.intercept(mockChain);
         long timestamp = Long.parseLong(response.header("X-RateLimit-Reset"));
 
-        verify(mockLimitRepository).set(timestamp);
+        verify(mockLimitRepository).setNextResetTime(timestamp);
     }
 
 }

@@ -1,9 +1,9 @@
 package com.novoda.github.reports.batch.network;
 
-interface RateLimitResetRepository {
+public interface RateLimitResetRepository {
 
-    long get();
+    long getNextResetTime();
 
-    void set(long timestamp);
+    void setNextResetTime(long timestamp);
 
 }
