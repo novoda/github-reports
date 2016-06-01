@@ -46,7 +46,7 @@ public class RateLimitDelayTransformer implements Observable.Transformer<Respons
     }
 
     private long getDelayAmount() {
-        long resetTimestamp = rateLimitResetRepository.get();
+        long resetTimestamp = rateLimitResetRepository.getNextResetTime();
         return resetTimestamp - systemClock.currentTimeMillis();
     }
 }

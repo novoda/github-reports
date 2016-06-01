@@ -19,7 +19,7 @@ public class GithubRateLimitResetRepositoryTest {
     @Test
     public void givenAnInitialValue_whenWeGetTheCurrentTimestampWithoutSetting_thenItIsTheInitialTimestamp() {
 
-        long actual = rateLimitResetRepository.get();
+        long actual = rateLimitResetRepository.getNextResetTime();
 
         assertEquals(actual, INITIAL_TIMESTAMP);
     }
@@ -27,14 +27,14 @@ public class GithubRateLimitResetRepositoryTest {
     @Test
     public void whenWeSetATimestamp_thenWeGetThatTimestamp() {
         long expected = INITIAL_TIMESTAMP + 1974;
-        rateLimitResetRepository.set(expected);
+        rateLimitResetRepository.setNextResetTime(expected);
 
-        assertEquals(expected, rateLimitResetRepository.get());
+        assertEquals(expected, rateLimitResetRepository.getNextResetTime());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void whenWeSetANegativeTimestamp_thenAnExceptionIsThrown() throws Exception {
-        rateLimitResetRepository.set(-INITIAL_TIMESTAMP);
+        rateLimitResetRepository.setNextResetTime(-INITIAL_TIMESTAMP);
     }
 
 }
