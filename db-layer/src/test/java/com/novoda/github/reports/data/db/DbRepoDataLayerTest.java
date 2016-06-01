@@ -18,7 +18,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 public class DbRepoDataLayerTest {
-    private static final int ANY_REPOSITORY_ID = 1337;
+    private static final Long ANY_REPOSITORY_ID = 1337L;
     private static final String ANY_REPOSITORY_NAME = "awesome-stuff";
     private static final boolean ANY_REPOSITORY_PRIVATE = false;
     private DbRepoDataLayer dataLayer;
