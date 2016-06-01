@@ -1,6 +1,6 @@
 package com.novoda.github.reports.batch.network;
 
-interface RateLimitRemainingCounter {
+public interface RateLimitRemainingCounter {
 
     /**
      * Immediately returns the current value.
