@@ -144,7 +144,8 @@ public class DebugClient {
                 .doOnEach(notification -> { /* TODO persist repo */ })
                 .flatMap(
                         (Func1<Repository, Observable<Issue>>) repository -> issuesServiceClient.getIssuesFrom("novoda", repository),
-                        (repository, issue) -> /* TODO persist issue */
+                        (repository, issue) ->
+                                /* TODO persist issue */
                                 issuesServiceClient.getCommentsFrom("novoda", repository.getName(), issue.getNumber())
                                     .zipWith(issuesServiceClient.getEventsFrom("novoda", repository.getName(), issue.getNumber()), Pair::new))
                 .concatMap(UtilityFunctions.identity())
