@@ -18,7 +18,7 @@ public class Main {
         DebugClient.getAllFilteringOutEverythingBut("github-reports", 32);
 
         System.out.println("x Remaining number of requests: " + remainingCounter.get());
-        System.out.println("x Reset time: " + resetRepository.get() + ", " + new Date(resetRepository.get() * 1000L));
+        System.out.println("x Reset time: " + resetRepository.getNextResetTime() + ", " + new Date(resetRepository.getNextResetTime() * 1000L));
     }
 
     public static void main(String[] args) {

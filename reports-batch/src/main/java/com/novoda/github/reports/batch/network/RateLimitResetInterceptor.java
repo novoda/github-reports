@@ -31,7 +31,7 @@ class RateLimitResetInterceptor implements Interceptor {
 
         String resetTimestampAsString = response.headers().get(RATE_LIMIT_RESET_HEADER);
         long epochTime = Long.parseLong(resetTimestampAsString);
-        rateLimitResetRepository.set(timeConverter.toMillis(epochTime));
+        rateLimitResetRepository.setNextResetTime(timeConverter.toMillis(epochTime));
 
         return response;
     }

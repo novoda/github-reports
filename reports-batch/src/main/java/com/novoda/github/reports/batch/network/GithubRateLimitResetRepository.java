@@ -13,12 +13,12 @@ class GithubRateLimitResetRepository implements RateLimitResetRepository {
     }
 
     @Override
-    public synchronized long get() {
+    public synchronized long getNextResetTime() {
         return timestampMillis;
     }
 
     @Override
-    public synchronized void set(long timestampMillis) {
+    public synchronized void setNextResetTime(long timestampMillis) {
         if (timestampMillis < 0) {
             throw new IllegalArgumentException("timestampMillis cannot be negative.");
         }

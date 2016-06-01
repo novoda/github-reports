@@ -60,7 +60,7 @@ public class RateLimitResetInterceptorTest {
 
         interceptor.intercept(mockChain);
 
-        verify(mockLimitRepository).set(anyLong());
+        verify(mockLimitRepository).setNextResetTime(anyLong());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class RateLimitResetInterceptorTest {
         long epochTimestamp = Long.parseLong(response.header("X-RateLimit-Reset"));
 
         long expected = timeConverter.toMillis(epochTimestamp);
-        verify(mockLimitRepository).set(expected);
+        verify(mockLimitRepository).setNextResetTime(expected);
     }
 
     private static class TestTimeConverter implements TimeConverter {
