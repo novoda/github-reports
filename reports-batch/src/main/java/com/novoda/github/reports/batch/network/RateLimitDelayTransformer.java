@@ -42,7 +42,7 @@ public class RateLimitDelayTransformer implements Observable.Transformer<Respons
     }
 
     private boolean hasExhaustedRateLimit() {
-        return rateLimitRemainingCounter.get() == 0;
+        return rateLimitRemainingCounter.get() <= 0;
     }
 
     private long getDelayAmount() {
