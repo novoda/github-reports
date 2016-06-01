@@ -10,7 +10,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.observers.SafeSubscriber;
 
-public class PersistRepositoriesOperator implements Observable.Operator<List<Repository>, List<Repository>> {
+class PersistRepositoriesOperator implements Observable.Operator<List<Repository>, List<Repository>> {
     private final RepoDataLayer repoDataLayer;
     private final Converter<Repository, com.novoda.github.reports.data.model.Repository> converter;
 
@@ -19,8 +19,8 @@ public class PersistRepositoriesOperator implements Observable.Operator<List<Rep
         return new PersistRepositoriesOperator(repoDataLayer, converter);
     }
 
-    PersistRepositoriesOperator(RepoDataLayer repoDataLayer,
-                                Converter<Repository, com.novoda.github.reports.data.model.Repository> converter) {
+    private PersistRepositoriesOperator(RepoDataLayer repoDataLayer,
+                                        Converter<Repository, com.novoda.github.reports.data.model.Repository> converter) {
         this.repoDataLayer = repoDataLayer;
         this.converter = converter;
     }
