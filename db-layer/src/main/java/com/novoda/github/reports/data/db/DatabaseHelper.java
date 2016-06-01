@@ -9,14 +9,18 @@ import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.jooq.Condition;
 import org.jooq.Constants;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Record1;
 import org.jooq.Record2;
@@ -119,20 +123,36 @@ class DatabaseHelper {
         );
     }
 
-    static <T, R extends Record> T updateOrInsert(UpdateOrInsertGenerator<T, R> generator, ConnectionManager connectionManager, T element)
-            throws DataLayerException {
+    static <T, R extends Record> T updateOrInsert(
+            UpdateOrInsertGenerator<T, R> generator,
+            ConnectionManager connectionManager,
+            T element) throws DataLayerException {
+
+        return updateOrInsertBatch(generator, connectionManager, Collections.singletonList(element)).get(0);
+    }
+
+    static <T, R extends Record> List<T> updateOrInsertBatch(
+            UpdateOrInsertGenerator<T, R> generator,
+            ConnectionManager connectionManager,
+            List<T> elements) throws DataLayerException {
+
         Connection connection = null;
 
         try {
             connection = connectionManager.getNewConnection();
             DSLContext create = connectionManager.getNewDSLContext(connection);
 
-            int userResult = generator.getQuery(create, element).execute();
-            if (userResult <= 0) {
-                throw new SQLException("Could not update or insert the element.");
-            }
-            if (userResult > 1) {
-                throw new SQLException("More than 1 element was updated, check your DB constraints.");
+            List<? extends Query> queries = elements.stream()
+                    .map(element -> generator.getQuery(create, element))
+                    .collect(Collectors.toList());
+            int[] results = create.batch(queries).execute();
+            for (int result : results) {
+                if (result <= 0) {
+                    throw new SQLException("Could not update or insert the element.");
+                }
+                if (result > 1) {
+                    throw new SQLException("More than 1 element was updated, check your DB constraints.");
+                }
             }
         } catch (SQLException e) {
             throw new DataLayerException(e);
@@ -140,7 +160,7 @@ class DatabaseHelper {
             connectionManager.attemptCloseConnection(connection);
         }
 
-        return element;
+        return elements;
     }
 
     static Byte boolToByte(boolean value) {
