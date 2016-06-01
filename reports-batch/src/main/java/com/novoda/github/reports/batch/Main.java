@@ -15,7 +15,7 @@ public class Main {
         RateLimitRemainingCounter remainingCounter = RateLimitRemainingCounterContainer.getInstance();
         RateLimitResetRepository resetRepository = RateLimitRemainingResetRepositoryContainer.getInstance();
 
-        DebugClient.getAllFilteringOutEverythingBut("github-reports", 32);
+        DebugClient.retrieveRepositories();
 
         System.out.println("x Remaining number of requests: " + remainingCounter.get());
         System.out.println("x Reset time: " + resetRepository.getNextResetTime() + ", " + new Date(resetRepository.getNextResetTime() * 1000L));
