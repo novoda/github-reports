@@ -1,6 +1,5 @@
-package com.novoda.github.reports;
+package com.novoda.github.reports.batch;
 
-import com.novoda.github.reports.batch.DebugClient;
 import com.novoda.github.reports.batch.network.RateLimitRemainingCounter;
 import com.novoda.github.reports.batch.network.RateLimitRemainingCounterContainer;
 import com.novoda.github.reports.batch.network.RateLimitRemainingResetRepositoryContainer;
