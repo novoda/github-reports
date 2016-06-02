@@ -14,6 +14,7 @@ class GithubRepositoriesService implements RepositoryService {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
     private static final int FIRST_PAGE = 1;
+    private static final String NO_SINCE_DATE = null;
 
     private final GithubApiService githubApiService;
     private final RateLimitDelayTransformer<Repository> rateLimitDelayTransformer;
@@ -36,8 +37,19 @@ class GithubRepositoriesService implements RepositoryService {
     }
 
     private Observable<Response<List<Repository>>> getPagedRepositoriesFor(String organisation, Integer page, Integer pageCount) {
-        return githubApiService.getRepositoriesResponseForPage(organisation, page, pageCount)
+        return githubApiService.getRepositoriesResponseForPage(organisation, NO_SINCE_DATE, page, pageCount)
                 .compose(rateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedRepositoriesFor(organisation, nextPage, pageCount)));
+    }
+
+    public Observable<Repository> getPagedRepositoriesSince(String organisation, String since) {
+        return getPagedRepositories(organisation, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+                .flatMapIterable(Response::body);
+    }
+
+    private Observable<Response<List<Repository>>> getPagedRepositories(String organisation, String since, Integer page, Integer pageCount) {
+        return githubApiService.getRepositoriesResponseForPage(organisation, since, page, pageCount)
+                .compose(rateLimitDelayTransformer)
+                .compose(PagedTransformer.newInstance(nextPage -> getPagedRepositories(organisation, since, nextPage, pageCount)));
     }
 }
