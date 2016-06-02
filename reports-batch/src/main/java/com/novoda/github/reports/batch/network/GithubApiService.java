@@ -19,6 +19,7 @@ public interface GithubApiService {
     @GET("/orgs/{org}/repos")
     Observable<Response<List<Repository>>> getRepositoriesResponseForPage(
             @Path("org") String organisation,
+            @Query("since") String since, // ISO8601: YYYY-MM-DDTHH:MM:SSZ
             @Query("page") Integer page,
             @Query("per_page") Integer perPageCount
     );
