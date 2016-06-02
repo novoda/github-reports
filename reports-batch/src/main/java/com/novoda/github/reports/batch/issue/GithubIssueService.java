@@ -18,7 +18,7 @@ class GithubIssueService implements IssueService {
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
     private static final int FIRST_PAGE = 1;
     private static final Issue.State DEFAULT_STATE = Issue.State.ALL;
-    private static final String NO_SINCE_DATE = null;
+    private static final Date NO_SINCE_DATE = null;
 
     private final GithubApiService githubApiService;
     private final RateLimitDelayTransformer<Issue> issueRateLimitDelayTransformer;
@@ -54,19 +54,25 @@ class GithubIssueService implements IssueService {
 
     private Observable<Response<List<Issue>>> getPagedIssuesFor(String organisation,
                                                                 String repository,
-                                                                String since,
+                                                                Date since,
                                                                 Integer page,
                                                                 Integer pageCount) {
-
-        return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, since, page, pageCount)
+        String date = convertDateToString(since);
+        return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, date, page, pageCount)
                 .compose(issueRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage, pageCount)));
     }
 
+    private String convertDateToString(Date date) {
+        if (date == null) {
+            return null;
+        }
+        return new DateTime(date.getTime()).toString();
+    }
+
     @Override
     public Observable<Issue> getPagedIssuesFor(String organisation, String repository, Date since) {
-        String date = new DateTime(since.getTime()).toString();
-        return getPagedIssuesFor(organisation, repository, date, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+        return getPagedIssuesFor(organisation, repository, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
