@@ -1,5 +1,6 @@
 package com.novoda.github.reports.batch.issue;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 import com.novoda.github.reports.batch.User;
 
@@ -29,6 +30,9 @@ public class Issue {
 
     @SerializedName("closed_at")
     private Date closedAt;
+
+    @SerializedName("pull_request")
+    private JsonElement pullRequest;
 
     public long getId() {
         return id;
@@ -68,6 +72,10 @@ public class Issue {
 
     public int getComments() {
         return comments;
+    }
+
+    public boolean isPullRequest() {
+        return pullRequest != null;
     }
 
     @Override

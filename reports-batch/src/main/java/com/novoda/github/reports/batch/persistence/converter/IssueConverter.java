@@ -16,11 +16,12 @@ public class IssueConverter implements Converter<RepositoryIssue, Event> {
     public Event convertFrom(RepositoryIssue repositoryIssue) {
         Issue issue = repositoryIssue.getIssue();
         Repository repo = repositoryIssue.getRepository();
+        EventType type = issue.isPullRequest() ? EventType.PULL_REQUEST_OPEN : EventType.ISSUE_OPEN;
         return Event.create(issue.getId(),
                             repo.getId(),
                             issue.getUser().getId(),
                             issue.getUser().getId(),
-                            EventType.ISSUE_OPEN,
+                            type,
                             issue.getCreatedAt());
     }
 }
