@@ -3,6 +3,7 @@ package com.novoda.github.reports.batch.issue;
 import com.novoda.github.reports.batch.network.GithubApiService;
 import com.novoda.github.reports.batch.network.GithubServiceFactory;
 import com.novoda.github.reports.batch.network.PagedTransformer;
+import com.novoda.github.reports.batch.network.RateLimitDelayTransformer;
 
 import java.util.Date;
 import java.util.List;
@@ -20,14 +21,29 @@ class GithubIssueService implements IssueService {
     private static final String NO_SINCE_DATE = null;
 
     private final GithubApiService githubApiService;
+    private final RateLimitDelayTransformer<Issue> issueRateLimitDelayTransformer;
+    private final RateLimitDelayTransformer<Event> eventRateLimitDelayTransformer;
+    private final RateLimitDelayTransformer<Comment> commentRateLimitDelayTransformer;
 
     public static IssueService newInstance() {
         GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
-        return new GithubIssueService(githubServiceFactory.createService());
+        RateLimitDelayTransformer<Issue> issueRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
+        RateLimitDelayTransformer<Event> eventRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
+        RateLimitDelayTransformer<Comment> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
+        return new GithubIssueService(githubServiceFactory.createService(),
+                                      issueRateLimitDelayTransformer,
+                                      eventRateLimitDelayTransformer,
+                                      commentRateLimitDelayTransformer);
     }
 
-    private GithubIssueService(GithubApiService githubApiService) {
+    private GithubIssueService(GithubApiService githubApiService,
+                               RateLimitDelayTransformer<Issue> issueRateLimitDelayTransformer,
+                               RateLimitDelayTransformer<Event> eventRateLimitDelayTransformer,
+                               RateLimitDelayTransformer<Comment> commentRateLimitDelayTransformer) {
         this.githubApiService = githubApiService;
+        this.issueRateLimitDelayTransformer = issueRateLimitDelayTransformer;
+        this.eventRateLimitDelayTransformer = eventRateLimitDelayTransformer;
+        this.commentRateLimitDelayTransformer = commentRateLimitDelayTransformer;
     }
 
     @Override
@@ -43,6 +59,7 @@ class GithubIssueService implements IssueService {
                                                                 Integer pageCount) {
 
         return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, since, page, pageCount)
+                .compose(issueRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage, pageCount)));
     }
 
@@ -66,6 +83,7 @@ class GithubIssueService implements IssueService {
                                                                 Integer pageCount) {
 
         return githubApiService.getEventsResponseForIssueAndPage(organisation, repository, issueNumber, page, pageCount)
+                .compose(eventRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedEventsFor(organisation, repository, issueNumber, nextPage, pageCount)));
     }
 
@@ -82,6 +100,7 @@ class GithubIssueService implements IssueService {
                                                                     Integer pageCount) {
 
         return githubApiService.getCommentsResponseForIssueAndPage(organisation, repository, issueNumber, page, pageCount)
+                .compose(commentRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedCommentsFor(organisation, repository, issueNumber, nextPage, pageCount)));
     }
 }
