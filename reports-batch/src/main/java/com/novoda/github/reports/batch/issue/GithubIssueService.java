@@ -8,8 +8,6 @@ import com.novoda.github.reports.batch.network.RateLimitDelayTransformer;
 import java.util.Date;
 import java.util.List;
 
-import org.joda.time.DateTime;
-
 import retrofit2.Response;
 import rx.Observable;
 
@@ -21,26 +19,31 @@ class GithubIssueService implements IssueService {
     private static final Date NO_SINCE_DATE = null;
 
     private final GithubApiService githubApiService;
+    private final DateToISO8601Converter dateConverter;
     private final RateLimitDelayTransformer<Issue> issueRateLimitDelayTransformer;
     private final RateLimitDelayTransformer<Event> eventRateLimitDelayTransformer;
     private final RateLimitDelayTransformer<Comment> commentRateLimitDelayTransformer;
 
     public static IssueService newInstance() {
         GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
+        DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         RateLimitDelayTransformer<Issue> issueRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
         RateLimitDelayTransformer<Event> eventRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
         RateLimitDelayTransformer<Comment> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
         return new GithubIssueService(githubServiceFactory.createService(),
+                                      dateConverter,
                                       issueRateLimitDelayTransformer,
                                       eventRateLimitDelayTransformer,
                                       commentRateLimitDelayTransformer);
     }
 
     private GithubIssueService(GithubApiService githubApiService,
+                               DateToISO8601Converter dateConverter,
                                RateLimitDelayTransformer<Issue> issueRateLimitDelayTransformer,
                                RateLimitDelayTransformer<Event> eventRateLimitDelayTransformer,
                                RateLimitDelayTransformer<Comment> commentRateLimitDelayTransformer) {
         this.githubApiService = githubApiService;
+        this.dateConverter = dateConverter;
         this.issueRateLimitDelayTransformer = issueRateLimitDelayTransformer;
         this.eventRateLimitDelayTransformer = eventRateLimitDelayTransformer;
         this.commentRateLimitDelayTransformer = commentRateLimitDelayTransformer;
@@ -57,17 +60,10 @@ class GithubIssueService implements IssueService {
                                                                 Date since,
                                                                 Integer page,
                                                                 Integer pageCount) {
-        String date = convertDateToString(since);
+        String date = dateConverter.toISO8601OrNull(since);
         return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, date, page, pageCount)
                 .compose(issueRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage, pageCount)));
-    }
-
-    private String convertDateToString(Date date) {
-        if (date == null) {
-            return null;
-        }
-        return new DateTime(date.getTime()).toString();
     }
 
     @Override
@@ -105,7 +101,7 @@ class GithubIssueService implements IssueService {
                                                                     Date since,
                                                                     Integer page,
                                                                     Integer pageCount) {
-        String date = convertDateToString(since);
+        String date = dateConverter.toISO8601OrNull(since);
         return githubApiService.getCommentsResponseForIssueAndPage(organisation, repository, issueNumber, date, page, pageCount)
                 .compose(commentRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedCommentsFor(organisation,
