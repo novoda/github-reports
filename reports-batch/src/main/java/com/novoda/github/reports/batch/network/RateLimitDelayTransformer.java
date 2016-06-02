@@ -1,7 +1,5 @@
 package com.novoda.github.reports.batch.network;
 
-import com.novoda.github.reports.batch.repository.Repository;
-
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -10,17 +8,17 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
-public class RateLimitDelayTransformer implements Observable.Transformer<Response<List<Repository>>, Response<List<Repository>>> {
+public class RateLimitDelayTransformer<T> implements Observable.Transformer<Response<List<T>>, Response<List<T>>> {
 
     private final RateLimitRemainingCounter rateLimitRemainingCounter;
     private final RateLimitResetRepository rateLimitResetRepository;
     private final SystemClock systemClock;
     private final Scheduler scheduler;
 
-    public static RateLimitDelayTransformer newInstance() {
+    public static <T> RateLimitDelayTransformer<T> newInstance() {
         RateLimitRemainingCounter rateLimitRemainingCounter = RateLimitRemainingCounterContainer.getInstance();
         RateLimitResetRepository rateLimitResetRepository = RateLimitRemainingResetRepositoryContainer.getInstance();
-        return new RateLimitDelayTransformer(rateLimitRemainingCounter, rateLimitResetRepository, new SystemClock() {}, Schedulers.computation());
+        return new RateLimitDelayTransformer<>(rateLimitRemainingCounter, rateLimitResetRepository, new SystemClock() {}, Schedulers.computation());
     }
 
     RateLimitDelayTransformer(RateLimitRemainingCounter rateLimitRemainingCounter,
@@ -34,7 +32,7 @@ public class RateLimitDelayTransformer implements Observable.Transformer<Respons
     }
 
     @Override
-    public Observable<Response<List<Repository>>> call(Observable<Response<List<Repository>>> observable) {
+    public Observable<Response<List<T>>> call(Observable<Response<List<T>>> observable) {
         if (hasExhaustedRateLimit()) {
             return observable.delaySubscription(getDelayAmount(), TimeUnit.MILLISECONDS, scheduler);
         }

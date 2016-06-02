@@ -42,7 +42,7 @@ public class RateLimitDelayTransformerTest {
 
     private SystemClock systemClock;
 
-    private RateLimitDelayTransformer rateLimitDelayTransformer;
+    private RateLimitDelayTransformer<Repository> rateLimitDelayTransformer;
 
     @Before
     public void setUp() throws Exception {
@@ -53,10 +53,12 @@ public class RateLimitDelayTransformerTest {
 
         systemClock = new TestClock();
 
-        rateLimitDelayTransformer = new RateLimitDelayTransformer(mockRateLimitRemainingCounter,
-                                                                  mockRateLimitResetRepository,
-                                                                  systemClock,
-                                                                  testScheduler);
+        rateLimitDelayTransformer = new RateLimitDelayTransformer<>(
+                mockRateLimitRemainingCounter,
+                mockRateLimitResetRepository,
+                systemClock,
+                testScheduler
+        );
 
         publishSubject = PublishSubject.create();
         observable = publishSubject.asObservable();

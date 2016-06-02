@@ -16,15 +16,15 @@ class GithubRepositoriesService implements RepositoryService {
     private static final int FIRST_PAGE = 1;
 
     private final GithubApiService githubApiService;
-    private final RateLimitDelayTransformer rateLimitDelayTransformer;
+    private final RateLimitDelayTransformer<Repository> rateLimitDelayTransformer;
 
     static GithubRepositoriesService newInstance() {
         GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
-        RateLimitDelayTransformer rateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
+        RateLimitDelayTransformer<Repository> rateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
         return new GithubRepositoriesService(githubServiceFactory.createService(), rateLimitDelayTransformer);
     }
 
-    private GithubRepositoriesService(GithubApiService githubApiService, RateLimitDelayTransformer rateLimitDelayTransformer) {
+    private GithubRepositoriesService(GithubApiService githubApiService, RateLimitDelayTransformer<Repository> rateLimitDelayTransformer) {
         this.githubApiService = githubApiService;
         this.rateLimitDelayTransformer = rateLimitDelayTransformer;
     }
