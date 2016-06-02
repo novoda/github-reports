@@ -15,7 +15,7 @@ public class Main {
         RateLimitRemainingCounter remainingCounter = RateLimitRemainingCounterContainer.getInstance();
         RateLimitResetRepository resetRepository = RateLimitRemainingResetRepositoryContainer.getInstance();
 
-        DebugClient.retrieveRepositories();
+        DebugClient.retrieveRepositoriesAndIssues("novoda", null);
 
         System.out.println("x Remaining number of requests: " + remainingCounter.get());
         System.out.println("x Reset time: " + resetRepository.getNextResetTime() + ", " + new Date(resetRepository.getNextResetTime() * 1000L));
