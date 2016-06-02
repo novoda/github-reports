@@ -9,6 +9,7 @@ import com.novoda.github.reports.data.model.Repository;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
@@ -37,6 +38,11 @@ public class DbRepoDataLayer implements RepoDataLayer {
     @Override
     public Repository updateOrInsert(Repository repository) throws DataLayerException {
         return DatabaseHelper.updateOrInsert(this::updateOrInsert, connectionManager, repository);
+    }
+
+    @Override
+    public List<Repository> updateOrInsert(List<Repository> repositories) throws DataLayerException {
+        return DatabaseHelper.updateOrInsertBatch(this::updateOrInsert, connectionManager, repositories);
     }
 
     private InsertOnDuplicateSetMoreStep<RepositoryRecord> updateOrInsert(DSLContext create, Repository repository) {
