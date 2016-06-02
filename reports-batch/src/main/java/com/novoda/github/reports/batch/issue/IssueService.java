@@ -14,4 +14,6 @@ interface IssueService {
 
     Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber);
 
+    Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber, Date since);
+
 }

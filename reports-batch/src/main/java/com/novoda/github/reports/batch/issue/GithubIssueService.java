@@ -95,18 +95,30 @@ class GithubIssueService implements IssueService {
 
     @Override
     public Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber) {
-        return getPagedCommentsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+        return getPagedCommentsFor(organisation, repository, issueNumber, NO_SINCE_DATE, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
     private Observable<Response<List<Comment>>> getPagedCommentsFor(String organisation,
                                                                     String repository,
                                                                     Integer issueNumber,
+                                                                    Date since,
                                                                     Integer page,
                                                                     Integer pageCount) {
-
-        return githubApiService.getCommentsResponseForIssueAndPage(organisation, repository, issueNumber, page, pageCount)
+        String date = convertDateToString(since);
+        return githubApiService.getCommentsResponseForIssueAndPage(organisation, repository, issueNumber, date, page, pageCount)
                 .compose(commentRateLimitDelayTransformer)
-                .compose(PagedTransformer.newInstance(nextPage -> getPagedCommentsFor(organisation, repository, issueNumber, nextPage, pageCount)));
+                .compose(PagedTransformer.newInstance(nextPage -> getPagedCommentsFor(organisation,
+                                                                                      repository,
+                                                                                      issueNumber,
+                                                                                      since,
+                                                                                      nextPage,
+                                                                                      pageCount)));
+    }
+
+    @Override
+    public Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber, Date since) {
+        return getPagedCommentsFor(organisation, repository, issueNumber, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+                .flatMapIterable(Response::body);
     }
 }

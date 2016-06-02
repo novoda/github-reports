@@ -47,6 +47,7 @@ public interface GithubApiService {
             @Path("org") String organisation,
             @Path("repo") String repo,
             @Path("issue_number") Integer issueNumber,
+            @Query("since") String since, // ISO8601: YYYY-MM-DDTHH:MM:SSZ
             @Query("page") Integer page,
             @Query("per_page") Integer perPageCount
     );

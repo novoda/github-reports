@@ -47,4 +47,10 @@ public class IssuesServiceClient {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.immediate());
     }
+
+    public Observable<Comment> getCommentsFrom(String organisation, String repository, Integer issueNumber, Date since) {
+        return issueService.getPagedCommentsFor(organisation, repository, issueNumber, since)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.immediate());
+    }
 }
