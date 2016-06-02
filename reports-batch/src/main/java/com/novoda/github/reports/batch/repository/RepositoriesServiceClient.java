@@ -8,10 +8,6 @@ import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbRepoDataLayer;
 
-import java.util.Date;
-
-import org.joda.time.DateTime;
-
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -40,14 +36,6 @@ public class RepositoriesServiceClient {
     public Observable<Repository> retrieveRepositoriesFrom(String organisation) {
         return repositoryService.getPagedRepositoriesFor(organisation)
                 .compose(PersistRepositoryTransformer.newInstance(repoDataLayer, converter))
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.immediate());
-    }
-
-    public Observable<Repository> getRepositoriesSince(String organisation, Date since) {
-        DateTime dateTime = new DateTime(since.getTime());
-        return repositoryService.getPagedRepositoriesSince(organisation, dateTime.toString())
-                //.compose(PersistRepositoryTransformer.newInstance(repoDataLayer, converter))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.immediate());
     }

@@ -46,32 +46,6 @@ class DebugClient {
                 });
     }
 
-    static void getRepositories() {
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2016, Calendar.MARCH, 1, 10, 30, 0);
-
-        RepositoriesServiceClient.newInstance()
-                .getRepositoriesSince("novoda", calendar.getTime())
-                .toBlocking()
-                .subscribe(new Subscriber<Repository>() {
-                    @Override
-                    public void onCompleted() {
-                        System.out.println(">>>>> retrieveRepositories completed");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        System.out.println(">>>>> retrieveRepositories error: " + e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(Repository repository) {
-                        System.out.println("> retrieveRepositories: " + repository.getFullName());
-                    }
-                });
-    }
-
     static void getIssues() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2016, Calendar.MAY, 24, 13, 30, 30);

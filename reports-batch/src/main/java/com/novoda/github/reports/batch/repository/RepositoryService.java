@@ -6,6 +6,4 @@ interface RepositoryService {
 
     Observable<Repository> getPagedRepositoriesFor(String organisation);
 
-    Observable<Repository> getPagedRepositoriesSince(String organisation, String date);
-
 }
