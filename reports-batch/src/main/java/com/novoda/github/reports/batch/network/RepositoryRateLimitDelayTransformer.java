@@ -10,23 +10,23 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
-public class RateLimitDelayTransformer implements Observable.Transformer<Response<List<Repository>>, Response<List<Repository>>> {
+public class RepositoryRateLimitDelayTransformer implements Observable.Transformer<Response<List<Repository>>, Response<List<Repository>>> {
 
     private final RateLimitRemainingCounter rateLimitRemainingCounter;
     private final RateLimitResetRepository rateLimitResetRepository;
     private final SystemClock systemClock;
     private final Scheduler scheduler;
 
-    public static RateLimitDelayTransformer newInstance() {
+    public static RepositoryRateLimitDelayTransformer newInstance() {
         RateLimitRemainingCounter rateLimitRemainingCounter = RateLimitRemainingCounterContainer.getInstance();
         RateLimitResetRepository rateLimitResetRepository = RateLimitRemainingResetRepositoryContainer.getInstance();
-        return new RateLimitDelayTransformer(rateLimitRemainingCounter, rateLimitResetRepository, new SystemClock() {}, Schedulers.computation());
+        return new RepositoryRateLimitDelayTransformer(rateLimitRemainingCounter, rateLimitResetRepository, new SystemClock() {}, Schedulers.computation());
     }
 
-    RateLimitDelayTransformer(RateLimitRemainingCounter rateLimitRemainingCounter,
-                              RateLimitResetRepository rateLimitResetRepository,
-                              SystemClock systemClock,
-                              Scheduler scheduler) {
+    RepositoryRateLimitDelayTransformer(RateLimitRemainingCounter rateLimitRemainingCounter,
+                                        RateLimitResetRepository rateLimitResetRepository,
+                                        SystemClock systemClock,
+                                        Scheduler scheduler) {
         this.rateLimitRemainingCounter = rateLimitRemainingCounter;
         this.rateLimitResetRepository = rateLimitResetRepository;
         this.systemClock = systemClock;
