@@ -1,5 +1,6 @@
 package com.novoda.github.reports.batch.persistence;
 
+import com.novoda.github.reports.batch.persistence.converter.Converter;
 import com.novoda.github.reports.batch.repository.Repository;
 import com.novoda.github.reports.data.RepoDataLayer;
 
