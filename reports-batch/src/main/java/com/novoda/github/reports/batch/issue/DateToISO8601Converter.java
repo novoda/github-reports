@@ -7,7 +7,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 class DateToISO8601Converter {
 
-    String toISO8601OrNull(Date date) {
+    String toISO8601NoMillisOrNull(Date date) {
         if (date == null) {
             return null;
         }

@@ -60,7 +60,7 @@ class GithubIssueService implements IssueService {
                                                                 Date since,
                                                                 Integer page,
                                                                 Integer pageCount) {
-        String date = dateConverter.toISO8601OrNull(since);
+        String date = dateConverter.toISO8601NoMillisOrNull(since);
         return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, date, page, pageCount)
                 .compose(issueRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage, pageCount)));
@@ -101,7 +101,7 @@ class GithubIssueService implements IssueService {
                                                                     Date since,
                                                                     Integer page,
                                                                     Integer pageCount) {
-        String date = dateConverter.toISO8601OrNull(since);
+        String date = dateConverter.toISO8601NoMillisOrNull(since);
         return githubApiService.getCommentsResponseForIssueAndPage(organisation, repository, issueNumber, date, page, pageCount)
                 .compose(commentRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedCommentsFor(organisation,
