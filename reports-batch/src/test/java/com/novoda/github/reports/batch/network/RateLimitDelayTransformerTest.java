@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class RepositoryRateLimitDelayTransformerTest {
+public class RateLimitDelayTransformerTest {
 
     private static final int ANY_POSITIVE_REMAINING_RATE_LIMIT = 88;
     private static final long ANY_RESET_TIMESTAMP = 23L;
@@ -42,7 +42,7 @@ public class RepositoryRateLimitDelayTransformerTest {
 
     private SystemClock systemClock;
 
-    private RepositoryRateLimitDelayTransformer rateLimitDelayTransformer;
+    private RateLimitDelayTransformer<Repository> rateLimitDelayTransformer;
 
     @Before
     public void setUp() throws Exception {
@@ -53,10 +53,12 @@ public class RepositoryRateLimitDelayTransformerTest {
 
         systemClock = new TestClock();
 
-        rateLimitDelayTransformer = new RepositoryRateLimitDelayTransformer(mockRateLimitRemainingCounter,
-                                                                            mockRateLimitResetRepository,
-                                                                            systemClock,
-                                                                            testScheduler);
+        rateLimitDelayTransformer = new RateLimitDelayTransformer<>(
+                mockRateLimitRemainingCounter,
+                mockRateLimitResetRepository,
+                systemClock,
+                testScheduler
+        );
 
         publishSubject = PublishSubject.create();
         observable = publishSubject.asObservable();
