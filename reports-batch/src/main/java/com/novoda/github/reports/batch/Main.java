@@ -16,7 +16,7 @@ public class Main {
         RateLimitResetRepository resetRepository = RateLimitRemainingResetRepositoryContainer.getInstance();
 
         //DebugClient.retrieveRepositories();
-        DebugClient.getRepositories();
+        DebugClient.getComments();
 
         System.out.println("x Remaining number of requests: " + remainingCounter.get());
         System.out.println("x Reset time: " + resetRepository.getNextResetTime() + ", " + new Date(resetRepository.getNextResetTime() * 1000L));
