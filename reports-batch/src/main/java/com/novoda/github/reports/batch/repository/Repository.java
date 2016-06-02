@@ -5,7 +5,7 @@ import com.novoda.github.reports.batch.User;
 
 public class Repository {
 
-    private String id;
+    private Long id;
 
     private String name;
 
@@ -26,7 +26,7 @@ public class Repository {
     @SerializedName("has_issues")
     private boolean issuesPresent;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 

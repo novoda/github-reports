@@ -1,13 +1,20 @@
 package com.novoda.github.reports.data.db;
 
-import com.novoda.github.reports.properties.PropertiesReader;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
+import com.novoda.github.reports.properties.PropertiesReader;
 
+import javax.sql.DataSource;
 import java.net.URISyntaxException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.apache.commons.dbcp2.ConnectionFactory;
+import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
+import org.apache.commons.dbcp2.PoolableConnection;
+import org.apache.commons.dbcp2.PoolableConnectionFactory;
+import org.apache.commons.dbcp2.PoolingDataSource;
+import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -20,6 +27,7 @@ public class DbConnectionManager implements ConnectionManager {
 
     private static final String DATABASE_CREDENTIALS_FILENAME = "database.credentials";
     private final DatabaseCredentialsReader databaseCredentialsReader;
+    private DataSource dataSource;
 
     public static DbConnectionManager newInstance() {
         return new DbConnectionManager();
@@ -31,12 +39,25 @@ public class DbConnectionManager implements ConnectionManager {
 
     @Override
     public Connection getNewConnection() throws SQLException {
+        buildDataSource();
+        return dataSource.getConnection();
+    }
+
+    private synchronized void buildDataSource() throws SQLException {
+        if (dataSource != null) {
+            return;
+        }
         try {
-            return DriverManager.getConnection(
+            ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(
                     databaseCredentialsReader.getConnectionString(),
                     databaseCredentialsReader.getUser(),
-                    databaseCredentialsReader.getPassword()
-            );
+                    databaseCredentialsReader.getPassword());
+
+            PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
+            ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<>(poolableConnectionFactory);
+            poolableConnectionFactory.setPool(connectionPool);
+
+            dataSource = new PoolingDataSource<>(connectionPool);
         } catch (URISyntaxException e) {
             throw new SQLException(e);
         }

@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 public class DbUserDataLayerTest {
 
-    private static final int ANY_USER_ID = 1337;
+    private static final Long ANY_USER_ID = 1337L;
     private static final String ANY_USER_NAME = "Tim Riggins";
     private DbUserDataLayer dataLayer;
     private MockConnectionManager mockConnectionManager;

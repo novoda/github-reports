@@ -24,24 +24,24 @@ public class DebugClient {
         // non-instantiable
     }
 
-    public static void getRepositories() {
+    public static void retrieveRepositories() {
         RepositoriesServiceClient.newInstance()
-                .getRepositoriesFrom("novoda")
+                .retrieveRepositoriesFrom("novoda")
                 .toBlocking()
                 .subscribe(new Subscriber<Repository>() {
                     @Override
                     public void onCompleted() {
-                        System.out.println(">>>>> getRepositories completed");
+                        System.out.println(">>>>> retrieveRepositories completed");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        System.out.println(">>>>> getRepositories error: " + e.getMessage());
+                        System.out.println(">>>>> retrieveRepositories error: " + e.getMessage());
                     }
 
                     @Override
                     public void onNext(Repository repository) {
-                        System.out.println("> getRepositories: " + repository.getFullName());
+                        System.out.println("> retrieveRepositories: " + repository.getFullName());
                     }
                 });
     }
@@ -140,7 +140,7 @@ public class DebugClient {
         RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
         IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
 
-        repositoriesServiceClient.getRepositoriesFrom("novoda")
+        repositoriesServiceClient.retrieveRepositoriesFrom("novoda")
                 .doOnEach(notification -> { /* TODO persist repo */ })
                 .flatMap(
                         (Func1<Repository, Observable<Issue>>) repository -> issuesServiceClient.getIssuesFrom("novoda", repository),
@@ -176,7 +176,7 @@ public class DebugClient {
         RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
         IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
 
-        repositoriesServiceClient.getRepositoriesFrom("novoda")
+        repositoriesServiceClient.retrieveRepositoriesFrom("novoda")
                 .doOnEach(notification -> {
                     /* TODO persist repo */
                 })
@@ -228,7 +228,7 @@ public class DebugClient {
         IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
         TimelineServiceClient timelineServiceClient = TimelineServiceClient.newInstance();
 
-        repositoriesServiceClient.getRepositoriesFrom("novoda")
+        repositoriesServiceClient.retrieveRepositoriesFrom("novoda")
                 .flatMap(
                         (Func1<Repository, Observable<Issue>>) repository -> {
                             if (!repository.getFullName().contains("reports")) {
