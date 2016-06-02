@@ -93,8 +93,10 @@ class DebugClient {
     }
 
     static void getComments() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2016, Calendar.MAY, 25, 12, 00, 30);
         IssuesServiceClient.newInstance()
-                .getCommentsFrom("novoda", "github-reports", 36)
+                .getCommentsFrom("novoda", "github-reports", 35, calendar.getTime())
                 .toBlocking()
                 .subscribe(new Subscriber<Comment>() {
                     @Override
