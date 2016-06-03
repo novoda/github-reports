@@ -17,9 +17,6 @@ public class Event {
     @SerializedName("created_at")
     private Date createdAt;
 
-    @SerializedName("updated_at")
-    private Date updatedAt;
-
     public Date getCreatedAt() {
         return createdAt;
     }
