@@ -16,7 +16,6 @@ public class Main {
         RateLimitRemainingCounter remainingCounter = RateLimitRemainingCounterContainer.getInstance();
         RateLimitResetRepository resetRepository = RateLimitRemainingResetRepositoryContainer.getInstance();
 
-        // 2015-08-07T15:06:58Z
         Calendar calendar = Calendar.getInstance();
         calendar.set(2015, Calendar.AUGUST, 7, 15, 00, 30);
         DebugClient.getEvents(calendar.getTime());
