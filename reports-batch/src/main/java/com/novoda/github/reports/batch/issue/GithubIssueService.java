@@ -101,6 +101,7 @@ class GithubIssueService implements IssueService {
                                                                     Date since,
                                                                     Integer page,
                                                                     Integer pageCount) {
+
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return githubApiService.getCommentsResponseForIssueAndPage(organisation, repository, issueNumber, date, page, pageCount)
                 .compose(commentRateLimitDelayTransformer)
