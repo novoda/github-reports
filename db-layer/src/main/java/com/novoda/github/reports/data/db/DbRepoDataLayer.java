@@ -49,8 +49,8 @@ public class DbRepoDataLayer extends DbDataLayer<Repository, RepositoryRecord> i
         Result<Record1<Integer>> peopleResult;
 
         try {
-            connection = getConnectionManager().getNewConnection();
-            DSLContext create = getConnectionManager().getNewDSLContext(connection);
+            connection = getNewConnection();
+            DSLContext create = getNewDSLContext(connection);
 
             Condition betweenCondition = DatabaseHelper.conditionalBetween(EVENT.DATE, from, to);
             Condition repoCondition = REPOSITORY.NAME.equalIgnoreCase(repo);
@@ -60,7 +60,7 @@ public class DbRepoDataLayer extends DbDataLayer<Repository, RepositoryRecord> i
         } catch (SQLException e) {
             throw new DataLayerException(e);
         } finally {
-            getConnectionManager().attemptCloseConnection(connection);
+            attemptCloseConnection(connection);
         }
 
         return DatabaseHelper.recordsToProjectRepoStats(eventsResult, peopleResult, repo);
