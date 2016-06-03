@@ -1,8 +1,8 @@
 package com.novoda.github.reports.batch.persistence;
 
-import com.novoda.github.reports.batch.repository.Repository;
+import com.novoda.github.reports.batch.persistence.converter.Converter;
+import com.novoda.github.reports.data.DataLayer;
 import com.novoda.github.reports.data.DataLayerException;
-import com.novoda.github.reports.data.RepoDataLayer;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,26 +22,26 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class PersistRepositoriesOperatorTest {
+public class PersistOperatorTest {
 
     @Mock
-    RepoDataLayer repoDataLayer;
+    DataLayer<Object> dataLayer;
 
     @Mock
-    Converter<Repository, com.novoda.github.reports.data.model.Repository> converter;
+    Converter<Object, Object> converter;
 
     @InjectMocks
-    PersistRepositoriesOperator operator;
+    PersistOperator<Object, Object> operator;
 
-    private static final Repository ANY_REPOSITORY = new Repository();
+    private static final Object ANY_OBJECT = new Object();
 
-    private static final List<List<Repository>> repositoryLists = Arrays.asList(
-            Arrays.asList(ANY_REPOSITORY, ANY_REPOSITORY),
-            Collections.singletonList(ANY_REPOSITORY),
-            Arrays.asList(ANY_REPOSITORY, ANY_REPOSITORY, ANY_REPOSITORY)
+    private static final List<List<Object>> objectLists = Arrays.asList(
+            Arrays.asList(ANY_OBJECT, ANY_OBJECT),
+            Collections.singletonList(ANY_OBJECT),
+            Arrays.asList(ANY_OBJECT, ANY_OBJECT, ANY_OBJECT)
     );
 
-    private static final Observable<List<Repository>> ANY_OBSERVABLE = Observable.from(repositoryLists);
+    private static final Observable<List<Object>> ANY_OBSERVABLE = Observable.from(objectLists);
 
     @Before
     public void setUp() {
@@ -54,7 +54,7 @@ public class PersistRepositoriesOperatorTest {
                 .lift(operator)
                 .subscribe();
 
-        verify(converter, VerificationModeFactory.times(3)).convertListFrom(anyListOf(Repository.class));
+        verify(converter, VerificationModeFactory.times(3)).convertListFrom(anyListOfModelObject());
     }
 
     @Test
@@ -63,12 +63,12 @@ public class PersistRepositoriesOperatorTest {
                 .lift(operator)
                 .subscribe();
 
-        verify(repoDataLayer, VerificationModeFactory.times(3)).updateOrInsert(anyListOfModelRepository());
+        verify(dataLayer, VerificationModeFactory.times(3)).updateOrInsert(anyListOfModelObject());
     }
 
     @Test
     public void givenAnyCompletedObservable_whenLift_thenComplete() throws DataLayerException {
-        TestSubscriber<List<Repository>> testSubscriber = new TestSubscriber<>();
+        TestSubscriber<List<Object>> testSubscriber = new TestSubscriber<>();
         ANY_OBSERVABLE
                 .lift(operator)
                 .subscribe(testSubscriber);
@@ -79,20 +79,20 @@ public class PersistRepositoriesOperatorTest {
 
     @Test
     public void givenAnyObservable_whenLift_thenEmitSameItems() throws DataLayerException {
-        TestSubscriber<List<Repository>> testSubscriber = new TestSubscriber<>();
+        TestSubscriber<List<Object>> testSubscriber = new TestSubscriber<>();
         ANY_OBSERVABLE
                 .lift(operator)
                 .subscribe(testSubscriber);
 
-        testSubscriber.assertValues((List<Repository>[]) repositoryLists.toArray());
+        testSubscriber.assertValues((List<Object>[]) objectLists.toArray());
         testSubscriber.assertCompleted();
     }
 
     @Test
     public void givenAnyObservableAndFailingPersist_whenLift_thenEmitError() throws DataLayerException {
-        when(repoDataLayer.updateOrInsert(anyListOfModelRepository())).thenThrow(DataLayerException.class);
+        when(dataLayer.updateOrInsert(anyListOfModelObject())).thenThrow(DataLayerException.class);
 
-        TestSubscriber<List<Repository>> testSubscriber = new TestSubscriber<>();
+        TestSubscriber<List<Object>> testSubscriber = new TestSubscriber<>();
         ANY_OBSERVABLE
                 .lift(operator)
                 .subscribe(testSubscriber);
@@ -101,8 +101,8 @@ public class PersistRepositoriesOperatorTest {
         testSubscriber.assertNotCompleted();
     }
 
-    private static List<com.novoda.github.reports.data.model.Repository> anyListOfModelRepository() {
-        return anyListOf(com.novoda.github.reports.data.model.Repository.class);
+    private static List<Object> anyListOfModelObject() {
+        return anyListOf(Object.class);
     }
 
 }

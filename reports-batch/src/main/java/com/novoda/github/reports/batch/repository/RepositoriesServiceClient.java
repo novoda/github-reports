@@ -1,9 +1,9 @@
 package com.novoda.github.reports.batch.repository;
 
 import com.novoda.github.reports.batch.persistence.ConnectionManagerContainer;
-import com.novoda.github.reports.batch.persistence.Converter;
+import com.novoda.github.reports.batch.persistence.converter.Converter;
 import com.novoda.github.reports.batch.persistence.PersistRepositoryTransformer;
-import com.novoda.github.reports.batch.persistence.RepositoryConverter;
+import com.novoda.github.reports.batch.persistence.converter.RepositoryConverter;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbRepoDataLayer;
