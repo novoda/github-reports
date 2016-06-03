@@ -139,10 +139,10 @@ class DebugClient {
         return repositoryIssueObservable -> {
             Observable<RepositoryIssueEvent> comments = repositoryIssueObservable
                     .flatMap(repositoryIssue -> IssuesServiceClient.newInstance()
-                            .retrieveCommentsFrom(repositoryIssue));
+                            .retrieveCommentsFrom(repositoryIssue, since));
             Observable<RepositoryIssueEvent> events = repositoryIssueObservable
                     .flatMap(repositoryIssue -> IssuesServiceClient.newInstance()
-                            .retrieveEventsFrom(repositoryIssue));
+                            .retrieveEventsFrom(repositoryIssue, since));
             return Observable.merge(comments, events);
         };
     }

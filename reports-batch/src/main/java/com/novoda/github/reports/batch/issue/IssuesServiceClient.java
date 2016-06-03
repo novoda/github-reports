@@ -95,12 +95,13 @@ public class IssuesServiceClient {
                 .observeOn(Schedulers.immediate());
     }
 
-    public Observable<RepositoryIssueEvent> retrieveCommentsFrom(RepositoryIssue repositoryIssue) {
+    public Observable<RepositoryIssueEvent> retrieveCommentsFrom(RepositoryIssue repositoryIssue, Date since) {
         return issueService
                 .getPagedCommentsFor(
                         repositoryIssue.getRepository().getOwner().getUsername(),
                         repositoryIssue.getRepository().getName(),
-                        repositoryIssue.getIssue().getNumber()
+                        repositoryIssue.getIssue().getNumber(),
+                        since
                 )
                 .map(comment -> RepositoryIssueEventComment.newInstance(repositoryIssue, comment))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
@@ -109,12 +110,13 @@ public class IssuesServiceClient {
                 .observeOn(Schedulers.immediate());
     }
 
-    public Observable<RepositoryIssueEvent> retrieveEventsFrom(RepositoryIssue repositoryIssue) {
+    public Observable<RepositoryIssueEvent> retrieveEventsFrom(RepositoryIssue repositoryIssue, Date since) {
         return issueService
                 .getPagedEventsFor(
                         repositoryIssue.getRepository().getOwner().getUsername(),
                         repositoryIssue.getRepository().getName(),
                         repositoryIssue.getIssue().getNumber()
+                        // TODO add since parameter
                 )
                 .filter(this::isInterestingEvent)
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))

@@ -12,6 +12,8 @@ interface IssueService {
 
     Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber);
 
+    Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber, Date since);
+
     Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber);
 
     Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber, Date since);
