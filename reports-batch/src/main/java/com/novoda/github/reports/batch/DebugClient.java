@@ -10,6 +10,7 @@ import com.novoda.github.reports.batch.repository.Repository;
 import com.novoda.github.reports.batch.timeline.TimelineEvent;
 import com.novoda.github.reports.batch.timeline.TimelineServiceClient;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
@@ -111,7 +112,7 @@ class DebugClient {
                 });
     }
 
-    public static void getEvents() {
+    static void getEvents() {
         IssuesServiceClient.newInstance()
                 .getEventsFrom("novoda", "github-reports", 36)
                 .toBlocking()
@@ -133,9 +134,11 @@ class DebugClient {
                 });
     }
 
-    public static void getComments() {
+    static void getComments() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2016, Calendar.MAY, 25, 12, 00, 30);
         IssuesServiceClient.newInstance()
-                .getCommentsFrom("novoda", "github-reports", 36)
+                .getCommentsFrom("novoda", "github-reports", 35, calendar.getTime())
                 .toBlocking()
                 .subscribe(new Subscriber<Comment>() {
                     @Override
@@ -155,7 +158,7 @@ class DebugClient {
                 });
     }
 
-    public static void getTimeline() {
+    static void getTimeline() {
         TimelineServiceClient.newInstance()
                 .getTimelineFor("novoda", "github-reports", 36)
                 .toBlocking()
@@ -177,7 +180,7 @@ class DebugClient {
                 });
     }
 
-    public static void getAll() {
+    static void getAll() {
         RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
         IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
 
@@ -215,7 +218,7 @@ class DebugClient {
                 });
     }
 
-    public static void getAllFilteringOutEverythingBut(String repositoryName, Integer issueNumber) {
+    static void getAllFilteringOutEverythingBut(String repositoryName, Integer issueNumber) {
         RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
         IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
 
@@ -266,7 +269,7 @@ class DebugClient {
                 });
     }
 
-    public static void getAllTimelineEvents() {
+    static void getAllTimelineEvents() {
         RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
         IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
         TimelineServiceClient timelineServiceClient = TimelineServiceClient.newInstance();
