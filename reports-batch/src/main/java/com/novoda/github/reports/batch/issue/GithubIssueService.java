@@ -10,6 +10,7 @@ import java.util.List;
 
 import retrofit2.Response;
 import rx.Observable;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 class GithubIssueService implements IssueService {
 
@@ -76,6 +77,12 @@ class GithubIssueService implements IssueService {
     public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber) {
         return getPagedEventsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
+    }
+
+    @Override
+    public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber, Date since) {
+        // TODO here
+        throw new NotImplementedException();
     }
 
     private Observable<Response<List<Event>>> getPagedEventsFor(String organisation,
