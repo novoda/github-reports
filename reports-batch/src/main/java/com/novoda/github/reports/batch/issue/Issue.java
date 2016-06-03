@@ -30,6 +30,9 @@ public class Issue {
     @SerializedName("closed_at")
     private Date closedAt;
 
+    @SerializedName("pull_request")
+    private PullRequest pullRequest;
+
     public long getId() {
         return id;
     }
@@ -68,6 +71,10 @@ public class Issue {
 
     public int getComments() {
         return comments;
+    }
+
+    public boolean isPullRequest() {
+        return pullRequest != null;
     }
 
     @Override

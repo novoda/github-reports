@@ -65,8 +65,8 @@ class GithubIssueService implements IssueService {
 
     @Override
     public Observable<Issue> getPagedIssuesFor(String organisation, String repository, Date since) {
-        String date = new DateTime(since.getTime()).toString();
-        return getPagedIssuesFor(organisation, repository, date, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+        String sinceDate = (since != null ? new DateTime(since.getTime()).toString() : null);
+        return getPagedIssuesFor(organisation, repository, sinceDate, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
