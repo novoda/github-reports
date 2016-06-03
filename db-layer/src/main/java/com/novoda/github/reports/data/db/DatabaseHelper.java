@@ -39,7 +39,7 @@ class DatabaseHelper {
     static final Integer OPENED_PRS_ID = 200;
     static final Integer COMMENTED_ISSUES_ID = 102;
     static final Integer COMMENTED_PRS_ID = 202;
-    static final Integer MERGED_PRS_ID = 207;
+    static final Integer MERGED_PRS_ID = 205;
 
     private static final byte FALSE_BYTE = 0;
     private static final byte TRUE_BYTE = 1;
