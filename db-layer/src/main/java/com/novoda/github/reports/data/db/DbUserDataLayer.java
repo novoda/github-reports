@@ -24,31 +24,25 @@ import org.jooq.Select;
 import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.Tables.*;
 
-public class DbUserDataLayer implements UserDataLayer {
+public class DbUserDataLayer extends DbDataLayer<User, UserRecord> implements UserDataLayer {
 
     private static final Condition USER_AUTHOR_ON_CONDITION = EVENT.AUTHOR_USER_ID.eq(USER._ID);
     private static final Condition USER_OWNER_ON_CONDITION = EVENT.OWNER_USER_ID.eq(USER._ID);
-
-    private final ConnectionManager connectionManager;
 
     public static DbUserDataLayer newInstance(ConnectionManager connectionManager) {
         return new DbUserDataLayer(connectionManager);
     }
 
     private DbUserDataLayer(ConnectionManager connectionManager) {
-        this.connectionManager = connectionManager;
+        super(connectionManager);
     }
 
     @Override
-    public User updateOrInsert(User user) throws DataLayerException {
-        return DatabaseHelper.updateOrInsert(this::updateOrInsert, connectionManager, user);
-    }
-
-    private InsertOnDuplicateSetMoreStep<UserRecord> updateOrInsert(DSLContext create, User user) {
+    InsertOnDuplicateSetMoreStep<UserRecord> buildUpdateOrInsertListQuery(DSLContext create, User element) {
         return create.insertInto(USER, USER._ID, USER.USERNAME)
-                .values(user.id(), user.username())
+                .values(element.id(), element.username())
                 .onDuplicateKeyUpdate()
-                .set(USER.USERNAME, user.username());
+                .set(USER.USERNAME, element.username());
     }
 
     @Override
@@ -59,8 +53,8 @@ public class DbUserDataLayer implements UserDataLayer {
         Result<Record1<Integer>> repositoriesResult;
 
         try {
-            connection = connectionManager.getNewConnection();
-            DSLContext create = connectionManager.getNewDSLContext(connection);
+            connection = getNewConnection();
+            DSLContext create = getNewDSLContext(connection);
 
             Condition userCondition = USER.USERNAME.equalIgnoreCase(user);
             Condition betweenCondition = conditionalBetween(EVENT.DATE, from, to);
@@ -75,7 +69,7 @@ public class DbUserDataLayer implements UserDataLayer {
         } catch (SQLException e) {
             throw new DataLayerException(e);
         } finally {
-            connectionManager.attemptCloseConnection(connection);
+            attemptCloseConnection(connection);
         }
 
         return recordsToUserStats(eventsResult, otherPeopleCommentsResult, repositoriesResult, user);
