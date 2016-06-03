@@ -5,9 +5,7 @@ import com.novoda.github.reports.data.model.UserStats;
 
 import java.util.Date;
 
-public interface UserDataLayer {
-
-    User updateOrInsert(User user) throws DataLayerException;
+public interface UserDataLayer extends DataLayer<User> {
 
     UserStats getStats(String user, String repo, Date from, Date to) throws DataLayerException;
 

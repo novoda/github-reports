@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.persistence;
+package com.novoda.github.reports.batch.persistence.converter;
 
 import com.novoda.github.reports.batch.repository.Repository;
 
@@ -15,7 +15,6 @@ public class RepositoryConverter implements Converter<Repository, com.novoda.git
                 repository.getName(),
                 repository.isPrivateRepo()
         );
-
     }
 
 }

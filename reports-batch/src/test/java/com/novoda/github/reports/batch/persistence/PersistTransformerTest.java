@@ -1,7 +1,5 @@
 package com.novoda.github.reports.batch.persistence;
 
-import com.novoda.github.reports.batch.repository.Repository;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -18,21 +17,24 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class PersistRepositoryTransformerTest {
+public class PersistTransformerTest {
 
     @Mock
-    Observable.Operator<List<Repository>, List<Repository>> operator;
+    PersistOperator<Object, Object> operator;
+
+    @Spy
+    PersistBuffer buffer = PersistBuffer.newInstance(10);
 
     @InjectMocks
-    PersistRepositoryTransformer transformer;
+    PersistTransformer<Object, Object> transformer;
 
-    private TestSubscriber<Repository> testSubscriber;
+    private TestSubscriber<Object> testSubscriber;
 
-    private static final Repository ANY_REPOSITORY = new Repository();
+    private static final Object ANY_OBJECT = new Object();
 
-    private static final List<Repository> repositoryList = Arrays.asList(ANY_REPOSITORY, ANY_REPOSITORY);
+    private static final List<Object> objectList = Arrays.asList(ANY_OBJECT, ANY_OBJECT);
 
-    private static final Observable<Repository> ANY_OBSERVABLE = Observable.from(repositoryList);
+    private static final Observable<Object> ANY_OBSERVABLE = Observable.from(objectList);
 
     @Before
     public void setUp() throws Exception {
@@ -47,7 +49,7 @@ public class PersistRepositoryTransformerTest {
 
         ANY_OBSERVABLE.compose(transformer).subscribe(testSubscriber);
 
-        testSubscriber.assertValues(repositoryList.toArray(new Repository[0]));
+        testSubscriber.assertValues(objectList.toArray(new Object[0]));
         testSubscriber.assertCompleted();
     }
 
