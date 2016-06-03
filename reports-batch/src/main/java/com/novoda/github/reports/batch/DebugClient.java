@@ -72,7 +72,7 @@ class DebugClient {
 
     static void getEvents() {
         IssuesServiceClient.newInstance()
-                .getEventsFrom("novoda", "github-reports", 36)
+                .getEventsFrom("novoda", "all-4", 1034)
                 .toBlocking()
                 .subscribe(new Subscriber<Event>() {
                     @Override
