@@ -56,8 +56,16 @@ abstract class DbDataLayer<T, D extends Record> implements DataLayer<T> {
         return elements;
     }
 
-    public ConnectionManager getConnectionManager() {
-        return connectionManager;
+    Connection getNewConnection() throws SQLException {
+        return connectionManager.getNewConnection();
+    }
+
+    DSLContext getNewDSLContext(Connection connection) {
+        return connectionManager.getNewDSLContext(connection);
+    }
+
+    void attemptCloseConnection(Connection connection) {
+        connectionManager.attemptCloseConnection(connection);
     }
 
     abstract InsertOnDuplicateSetMoreStep<D> buildUpdateOrInsertListQuery(DSLContext create, T element);

@@ -53,8 +53,8 @@ public class DbUserDataLayer extends DbDataLayer<User, UserRecord> implements Us
         Result<Record1<Integer>> repositoriesResult;
 
         try {
-            connection = getConnectionManager().getNewConnection();
-            DSLContext create = getConnectionManager().getNewDSLContext(connection);
+            connection = getNewConnection();
+            DSLContext create = getNewDSLContext(connection);
 
             Condition userCondition = USER.USERNAME.equalIgnoreCase(user);
             Condition betweenCondition = conditionalBetween(EVENT.DATE, from, to);
@@ -69,7 +69,7 @@ public class DbUserDataLayer extends DbDataLayer<User, UserRecord> implements Us
         } catch (SQLException e) {
             throw new DataLayerException(e);
         } finally {
-            getConnectionManager().attemptCloseConnection(connection);
+            attemptCloseConnection(connection);
         }
 
         return recordsToUserStats(eventsResult, otherPeopleCommentsResult, repositoriesResult, user);
