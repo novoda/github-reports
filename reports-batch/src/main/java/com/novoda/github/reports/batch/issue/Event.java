@@ -20,6 +20,10 @@ public class Event {
     @SerializedName("updated_at")
     private Date updatedAt;
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
     @Override
     public String toString() {
         return String.format("%s [%d] @ %s by %s", type, id, createdAt, actor.getUsername());
