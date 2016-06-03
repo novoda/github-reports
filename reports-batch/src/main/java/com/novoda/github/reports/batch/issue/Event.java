@@ -17,7 +17,7 @@ public class Event {
     @SerializedName("created_at")
     private Date createdAt;
 
-    public Date getCreatedAt() {
+    Date getCreatedAt() {
         return createdAt;
     }
 
