@@ -10,6 +10,7 @@ import com.novoda.github.reports.batch.timeline.TimelineEvent;
 import com.novoda.github.reports.batch.timeline.TimelineServiceClient;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import javafx.util.Pair;
 import rx.Observable;
@@ -73,6 +74,28 @@ class DebugClient {
     static void getEvents() {
         IssuesServiceClient.newInstance()
                 .getEventsFrom("novoda", "all-4", 1034)
+                .toBlocking()
+                .subscribe(new Subscriber<Event>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println(">>>>> getEvents completed");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println(">>>>> getEvents error: " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(Event event) {
+                        System.out.println("> getEvents: " + event);
+                    }
+                });
+    }
+
+    static void getEvents(Date since) {
+        IssuesServiceClient.newInstance()
+                .getEventsFrom("novoda", "all-4", 1034, since)
                 .toBlocking()
                 .subscribe(new Subscriber<Event>() {
                     @Override
