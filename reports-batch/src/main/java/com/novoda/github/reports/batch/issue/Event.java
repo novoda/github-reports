@@ -20,15 +20,33 @@ public class Event {
     @SerializedName("updated_at")
     private Date updatedAt;
 
+    public long getId() {
+        return id;
+    }
+
+    public User getActor() {
+        return actor;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
     @Override
     public String toString() {
         return String.format("%s [%d] @ %s by %s", type, id, createdAt, actor.getUsername());
     }
 
-    private enum Type {
+    public enum Type {
 
         @SerializedName("assigned")
         ASSIGNED("assigned"),
+        @SerializedName("commented")
+        COMMENTED("commented"),
         @SerializedName("closed")
         CLOSED("closed"),
         @SerializedName("assigned")
