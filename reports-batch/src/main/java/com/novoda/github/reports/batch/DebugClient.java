@@ -4,12 +4,15 @@ import com.novoda.github.reports.batch.issue.Comment;
 import com.novoda.github.reports.batch.issue.Event;
 import com.novoda.github.reports.batch.issue.Issue;
 import com.novoda.github.reports.batch.issue.IssuesServiceClient;
+import com.novoda.github.reports.batch.issue.RepositoryIssue;
 import com.novoda.github.reports.batch.repository.RepositoriesServiceClient;
 import com.novoda.github.reports.batch.repository.Repository;
 import com.novoda.github.reports.batch.timeline.TimelineEvent;
 import com.novoda.github.reports.batch.timeline.TimelineServiceClient;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 
 import javafx.util.Pair;
 import rx.Observable;
@@ -24,7 +27,70 @@ class DebugClient {
         // non-instantiable
     }
 
-    static void retrieveRepositories() {
+    static void retrieveRepositoriesAndIssues(String organisation, Date since) {
+        Observable.from(Collections.singletonList(organisation))
+                .compose(retrieveRepositoriesFromOrganizations())
+                .compose(retrieveIssuesFromRepositories(since))
+                .toBlocking()
+                .subscribe(new Subscriber<RepositoryIssue>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println(">>>>> retrieveRepositoriesAndIssues completed");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println(">>>>> retrieveRepositoriesAndIssues error: " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(RepositoryIssue issue) {
+                        System.out.println("> retrieveRepositoriesAndIssues: " + issue.getIssue());
+                    }
+                });
+    }
+
+    static void retrieveIssues(String organisation, Long repoId, String repoName) {
+        Repository repo = new Repository();
+        repo.setName(repoName);
+        repo.setId(repoId);
+        User owner = new User();
+        owner.setUsername(organisation);
+        repo.setOwner(owner);
+        Observable.from(Collections.singletonList(repo))
+                .compose(retrieveIssuesFromRepositories(null))
+                .toBlocking()
+                .subscribe(new Subscriber<RepositoryIssue>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println(">>>>> retrieveRepositoriesAndIssues completed");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println(">>>>> retrieveRepositoriesAndIssues error: " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(RepositoryIssue issue) {
+                        System.out.println("> retrieveRepositoriesAndIssues: " + issue.getIssue());
+                    }
+                });
+    }
+
+    private static Observable.Transformer<? super String, ? extends Repository> retrieveRepositoriesFromOrganizations() {
+        return organizationObservable ->
+                organizationObservable.flatMap(organization -> RepositoriesServiceClient.newInstance()
+                        .retrieveRepositoriesFrom(organization));
+    }
+
+    private static Observable.Transformer<? super Repository, ? extends RepositoryIssue> retrieveIssuesFromRepositories(Date since) {
+        return repositoryObservable ->
+                repositoryObservable.flatMap(repository -> IssuesServiceClient.newInstance()
+                        .retrieveIssuesFrom(repository.getOwner().getUsername(), repository, since));
+    }
+
+    public static void retrieveRepositories() {
         RepositoriesServiceClient.newInstance()
                 .retrieveRepositoriesFrom("novoda")
                 .toBlocking()
@@ -42,30 +108,6 @@ class DebugClient {
                     @Override
                     public void onNext(Repository repository) {
                         System.out.println("> retrieveRepositories: " + repository.getFullName());
-                    }
-                });
-    }
-
-    static void getIssues() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2016, Calendar.MAY, 24, 13, 30, 30);
-        IssuesServiceClient.newInstance()
-                .getIssuesFrom("novoda", "all-4", calendar.getTime())
-                .toBlocking()
-                .subscribe(new Subscriber<Issue>() {
-                    @Override
-                    public void onCompleted() {
-                        System.out.println(">>>>> getIssues completed");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        System.out.println(">>>>> getIssues error: " + e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(Issue issue) {
-                        System.out.println("> getIssues: " + issue);
                     }
                 });
     }
@@ -145,11 +187,13 @@ class DebugClient {
         repositoriesServiceClient.retrieveRepositoriesFrom("novoda")
                 .doOnEach(notification -> { /* TODO persist repo */ })
                 .flatMap(
-                        (Func1<Repository, Observable<Issue>>) repository -> issuesServiceClient.getIssuesFrom("novoda", repository),
+                        (Func1<Repository, Observable<Issue>>) repository -> issuesServiceClient
+                                .retrieveIssuesFrom("novoda", repository, null).map(RepositoryIssue::getIssue),
                         (repository, issue) ->
                                 /* TODO persist issue */
                                 issuesServiceClient.getCommentsFrom("novoda", repository.getName(), issue.getNumber())
-                                    .zipWith(issuesServiceClient.getEventsFrom("novoda", repository.getName(), issue.getNumber()), Pair::new))
+                                        .zipWith(issuesServiceClient.getEventsFrom("novoda", repository.getName(), issue.getNumber()), Pair::new)
+                )
                 .concatMap(UtilityFunctions.identity())
                 .toBlocking()
                 .subscribe(new Subscriber<Pair<Comment, Event>>() {
@@ -187,7 +231,7 @@ class DebugClient {
                             if (!repository.getFullName().contains(repositoryName)) {
                                 return Observable.empty();
                             }
-                            return issuesServiceClient.getIssuesFrom("novoda", repository);
+                            return issuesServiceClient.retrieveIssuesFrom("novoda", repository, null).map(RepositoryIssue::getIssue);
                         },
                         (repository, issue) -> {
                             /* TODO persist issue */
@@ -236,7 +280,7 @@ class DebugClient {
                             if (!repository.getFullName().contains("reports")) {
                                 return Observable.empty();
                             }
-                            return issuesServiceClient.getIssuesFrom("novoda", repository);
+                            return issuesServiceClient.retrieveIssuesFrom("novoda", repository, null).map(RepositoryIssue::getIssue);
                         },
                         (Func2<Repository, Issue, Observable<TimelineEvent>>) (repository, issue) -> {
                             if (!repository.getFullName().contains("reports") || issue.getNumber() < 32) {

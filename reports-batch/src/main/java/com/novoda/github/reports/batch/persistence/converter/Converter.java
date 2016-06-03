@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.persistence;
+package com.novoda.github.reports.batch.persistence.converter;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,4 +12,5 @@ public interface Converter<From, To> {
                 .map(this::convertFrom)
                 .collect(Collectors.toList());
     }
+
 }
