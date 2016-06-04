@@ -65,6 +65,12 @@ public class IssuesServiceClient {
                 .observeOn(Schedulers.immediate());
     }
 
+    public Observable<Event> getEventsFrom(String organisation, String repository, Integer issueNumber, Date since) {
+        return issueService.getPagedEventsFor(organisation, repository, issueNumber, since)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.immediate());
+    }
+
     public Observable<Comment> getCommentsFrom(String organisation, String repository, Integer issueNumber) {
         return issueService.getPagedCommentsFor(organisation, repository, issueNumber)
                 .subscribeOn(Schedulers.io())

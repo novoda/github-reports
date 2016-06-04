@@ -60,6 +60,7 @@ class GithubIssueService implements IssueService {
                                                                 Date since,
                                                                 Integer page,
                                                                 Integer pageCount) {
+
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, date, page, pageCount)
                 .compose(issueRateLimitDelayTransformer)
@@ -90,6 +91,13 @@ class GithubIssueService implements IssueService {
     }
 
     @Override
+    public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber, Date since) {
+        return getPagedEventsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+                .flatMapIterable(Response::body)
+                .filter(event -> event.getCreatedAt().after(since));
+    }
+
+    @Override
     public Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber) {
         return getPagedCommentsFor(organisation, repository, issueNumber, NO_SINCE_DATE, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
@@ -101,6 +109,7 @@ class GithubIssueService implements IssueService {
                                                                     Date since,
                                                                     Integer page,
                                                                     Integer pageCount) {
+
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return githubApiService.getCommentsResponseForIssueAndPage(organisation, repository, issueNumber, date, page, pageCount)
                 .compose(commentRateLimitDelayTransformer)
