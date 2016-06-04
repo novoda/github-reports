@@ -10,7 +10,6 @@ import java.util.List;
 
 import retrofit2.Response;
 import rx.Observable;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 class GithubIssueService implements IssueService {
 
@@ -56,21 +55,22 @@ class GithubIssueService implements IssueService {
                 .flatMapIterable(Response::body);
     }
 
+    @Override
+    public Observable<Issue> getPagedIssuesFor(String organisation, String repository, Date since) {
+        return getPagedIssuesFor(organisation, repository, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+                .flatMapIterable(Response::body);
+    }
+
     private Observable<Response<List<Issue>>> getPagedIssuesFor(String organisation,
                                                                 String repository,
                                                                 Date since,
                                                                 Integer page,
                                                                 Integer pageCount) {
+
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, date, page, pageCount)
                 .compose(issueRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage, pageCount)));
-    }
-
-    @Override
-    public Observable<Issue> getPagedIssuesFor(String organisation, String repository, Date since) {
-        return getPagedIssuesFor(organisation, repository, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
-                .flatMapIterable(Response::body);
     }
 
     @Override
@@ -81,8 +81,9 @@ class GithubIssueService implements IssueService {
 
     @Override
     public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber, Date since) {
-        // TODO here
-        throw new NotImplementedException();
+        return getPagedEventsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+                .flatMapIterable(Response::body)
+                .filter(event -> event.getCreatedAt().after(since));
     }
 
     private Observable<Response<List<Event>>> getPagedEventsFor(String organisation,
@@ -102,12 +103,19 @@ class GithubIssueService implements IssueService {
                 .flatMapIterable(Response::body);
     }
 
+    @Override
+    public Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber, Date since) {
+        return getPagedCommentsFor(organisation, repository, issueNumber, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+                .flatMapIterable(Response::body);
+    }
+
     private Observable<Response<List<Comment>>> getPagedCommentsFor(String organisation,
                                                                     String repository,
                                                                     Integer issueNumber,
                                                                     Date since,
                                                                     Integer page,
                                                                     Integer pageCount) {
+
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return githubApiService.getCommentsResponseForIssueAndPage(organisation, repository, issueNumber, date, page, pageCount)
                 .compose(commentRateLimitDelayTransformer)
@@ -117,11 +125,5 @@ class GithubIssueService implements IssueService {
                                                                                       since,
                                                                                       nextPage,
                                                                                       pageCount)));
-    }
-
-    @Override
-    public Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber, Date since) {
-        return getPagedCommentsFor(organisation, repository, issueNumber, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
-                .flatMapIterable(Response::body);
     }
 }
