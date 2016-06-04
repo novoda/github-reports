@@ -17,23 +17,20 @@ public class Event {
     @SerializedName("created_at")
     private Date createdAt;
 
-    @SerializedName("updated_at")
-    private Date updatedAt;
+    Date getCreatedAt() {
+        return createdAt;
+    }
 
     public long getId() {
         return id;
     }
 
-    public User getActor() {
+    User getActor() {
         return actor;
     }
 
-    public Type getType() {
+    Type getType() {
         return type;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
     }
 
     @Override
