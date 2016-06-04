@@ -17,8 +17,9 @@ public class Event {
     @SerializedName("created_at")
     private Date createdAt;
 
-    @SerializedName("updated_at")
-    private Date updatedAt;
+    Date getCreatedAt() {
+        return createdAt;
+    }
 
     @Override
     public String toString() {
