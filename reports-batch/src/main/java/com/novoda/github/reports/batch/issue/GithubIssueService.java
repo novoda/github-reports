@@ -94,7 +94,7 @@ class GithubIssueService implements IssueService {
     public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber, Date since) {
         return getPagedEventsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body)
-                .skipWhile(event -> event.getCreatedAt().before(since));
+                .filter(event -> event.getCreatedAt().before(since));
     }
 
     @Override
