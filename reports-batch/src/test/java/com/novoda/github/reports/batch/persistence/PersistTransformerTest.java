@@ -18,7 +18,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class PersistTransformerTest {
 
     private static final int ANY_BUFFER_SIZE = 10;
-    
+
     @Mock
     PersistOperator<Object, Object> operator;
 
