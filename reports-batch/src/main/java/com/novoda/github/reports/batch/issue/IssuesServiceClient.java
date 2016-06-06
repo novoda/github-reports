@@ -10,6 +10,8 @@ import com.novoda.github.reports.batch.persistence.converter.Converter;
 import com.novoda.github.reports.batch.persistence.converter.EventConverter;
 import com.novoda.github.reports.batch.persistence.converter.IssueConverter;
 import com.novoda.github.reports.batch.persistence.converter.UserConverter;
+import com.novoda.github.reports.batch.pullrequest.GithubPullRequestService;
+import com.novoda.github.reports.batch.pullrequest.PullRequestService;
 import com.novoda.github.reports.batch.repository.Repository;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.UserDataLayer;
@@ -96,13 +98,21 @@ public class IssuesServiceClient {
     }
 
     public Observable<RepositoryIssueEvent> retrieveCommentsFrom(RepositoryIssue repositoryIssue, Date since) {
+        String organisation = repositoryIssue.getRepository().getOwner().getUsername();
+        String repository = repositoryIssue.getRepository().getName();
+        int issueNumber = repositoryIssue.getIssue().getNumber();
+
+        PullRequestService pullRequestService = GithubPullRequestService.newInstance();
+
         return issueService
-                .getCommentsFor(
-                        repositoryIssue.getRepository().getOwner().getUsername(),
-                        repositoryIssue.getRepository().getName(),
-                        repositoryIssue.getIssue().getNumber(),
-                        since
-                )
+                .getCommentsFor(organisation, repository, issueNumber, since)
+                .compose(observable -> {
+                    if (repositoryIssue.getIssue().isPullRequest()) {
+                        return observable.mergeWith(
+                                pullRequestService.getReviewCommentsForPullRequestFor(organisation, repository, issueNumber, since));
+                    }
+                    return observable;
+                })
                 .map(comment -> RepositoryIssueEventComment.newInstance(repositoryIssue, comment))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
                 .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter))
