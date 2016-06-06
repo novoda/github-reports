@@ -2,17 +2,15 @@ package com.novoda.github.reports.data.db.properties;
 
 import com.novoda.github.reports.properties.PropertiesReader;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
+import java.util.Properties;
 
 public class DatabaseCredentialsReader {
 
     static final String USER_KEY = "DB_USER";
     static final String PASSWORD_KEY = "DB_PASSWORD";
     static final String CONNECTION_STRING_KEY = "DB_CONNECTION_STRING";
-    private static final String CONNECTION_STRING_COMPENSATE_ON_DUPLICATE_KEY_UPDATE_COUNTS = "compensateOnDuplicateKeyUpdateCounts";
+    static final String PROPERTY_USERNAME = "user";
+    static final String PROPERTY_PASSWORD = "password";
 
     private PropertiesReader propertiesReader;
 
@@ -24,28 +22,22 @@ public class DatabaseCredentialsReader {
         this.propertiesReader = propertiesReader;
     }
 
-    public String getUser() {
+    public String getConnectionString() {
+        return propertiesReader.readProperty(CONNECTION_STRING_KEY);
+    }
+
+    public Properties getConnectionProperties() {
+        Properties properties = new Properties();
+        properties.setProperty(PROPERTY_USERNAME, getUser());
+        properties.setProperty(PROPERTY_PASSWORD, getPassword());
+        return properties;
+    }
+
+    private String getUser() {
         return propertiesReader.readProperty(USER_KEY);
     }
 
-    public String getPassword() {
+    private String getPassword() {
         return propertiesReader.readProperty(PASSWORD_KEY);
-    }
-
-    public String getConnectionString() throws URISyntaxException {
-        String baseConnection = propertiesReader.readProperty(CONNECTION_STRING_KEY);
-        URI uri = URI.create(baseConnection.replaceAll("^jdbc:", ""));
-
-        String query = uri.getQuery();
-        query = (query == null) ? "" : query + "&";
-        query += CONNECTION_STRING_COMPENSATE_ON_DUPLICATE_KEY_UPDATE_COUNTS + "=";
-        try {
-            query += URLEncoder.encode("true", "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            query += "true";
-        }
-
-        URI actualUri = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), query, uri.getFragment());
-        return "jdbc:" + actualUri.toString();
     }
 }
