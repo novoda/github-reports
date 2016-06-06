@@ -14,6 +14,8 @@ import rx.Subscriber;
 
 class DebugClient {
 
+    private static final Date NO_SINCE_DATE = null;
+
     private DebugClient() {
         // non-instantiable
     }
@@ -101,8 +103,8 @@ class DebugClient {
         owner.setUsername(organisation);
         repo.setOwner(owner);
         Observable.from(Collections.singletonList(repo))
-                .compose(retrieveIssuesFromRepositories(null))
-                .compose(retrieveEventsFromIssues(null))
+                .compose(retrieveIssuesFromRepositories(NO_SINCE_DATE))
+                .compose(retrieveEventsFromIssues(NO_SINCE_DATE))
                 .toBlocking()
                 .subscribe(new Subscriber<RepositoryIssueEvent>() {
                     @Override
