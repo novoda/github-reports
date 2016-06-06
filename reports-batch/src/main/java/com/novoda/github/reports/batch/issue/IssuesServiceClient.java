@@ -78,7 +78,8 @@ public class IssuesServiceClient {
                 userConverter,
                 userEventConverter,
                 eventConverter,
-                rateLimitResetRepository, rateLimitResetTimerSubject
+                rateLimitResetRepository,
+                rateLimitResetTimerSubject
         );
     }
 
