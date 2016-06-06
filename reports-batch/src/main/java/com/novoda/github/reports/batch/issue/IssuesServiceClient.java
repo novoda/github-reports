@@ -110,13 +110,12 @@ public class IssuesServiceClient {
                 .observeOn(Schedulers.immediate());
     }
 
-    public Observable<RepositoryIssueEvent> retrieveEventsFrom(RepositoryIssue repositoryIssue, Date since) {
+    public Observable<RepositoryIssueEvent> retrieveEventsFrom(RepositoryIssue repositoryIssue) {
         return issueService
                 .getPagedEventsFor(
                         repositoryIssue.getRepository().getOwner().getUsername(),
                         repositoryIssue.getRepository().getName(),
                         repositoryIssue.getIssue().getNumber()
-                        // TODO add since parameter
                 )
                 .filter(this::isInterestingEvent)
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
