@@ -14,6 +14,9 @@ import rx.Subscriber;
 
 class DebugClient {
 
+    private static final IssuesServiceClient issueServiceClient = IssuesServiceClient.newInstance();
+    private static final RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
+
     private DebugClient() {
         // non-instantiable
     }
@@ -125,24 +128,20 @@ class DebugClient {
 
     private static Observable.Transformer<? super String, ? extends Repository> retrieveRepositoriesFromOrganizations() {
         return organizationObservable ->
-                organizationObservable.flatMap(organization -> RepositoriesServiceClient.newInstance()
-                        .retrieveRepositoriesFrom(organization));
+                organizationObservable.flatMap(repositoriesServiceClient::retrieveRepositoriesFrom);
     }
 
     private static Observable.Transformer<? super Repository, ? extends RepositoryIssue> retrieveIssuesFromRepositories(Date since) {
         return repositoryObservable ->
-                repositoryObservable.flatMap(repository -> IssuesServiceClient.newInstance()
-                        .retrieveIssuesFrom(repository, since));
+                repositoryObservable.flatMap(repository -> issueServiceClient.retrieveIssuesFrom(repository, since));
     }
 
     private static Observable.Transformer<? super RepositoryIssue, ? extends RepositoryIssueEvent> retrieveEventsFromIssues(Date since) {
         return repositoryIssueObservable -> {
             Observable<RepositoryIssueEvent> comments = repositoryIssueObservable
-                    .flatMap(repositoryIssue -> IssuesServiceClient.newInstance()
-                            .retrieveCommentsFrom(repositoryIssue, since));
+                    .flatMap(repositoryIssue -> issueServiceClient.retrieveCommentsFrom(repositoryIssue, since));
             Observable<RepositoryIssueEvent> events = repositoryIssueObservable
-                    .flatMap(repositoryIssue -> IssuesServiceClient.newInstance()
-                            .retrieveEventsFrom(repositoryIssue, since));
+                    .flatMap(repositoryIssue -> issueServiceClient.retrieveEventsFrom(repositoryIssue, since));
             return Observable.merge(comments, events);
         };
     }
