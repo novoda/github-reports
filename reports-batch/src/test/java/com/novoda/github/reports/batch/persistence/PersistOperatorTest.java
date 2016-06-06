@@ -18,7 +18,6 @@ import org.mockito.internal.verification.VerificationModeFactory;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,16 +50,12 @@ public class PersistOperatorTest {
     }
 
     @Test
-    public void givenAnyObservable_whenLift_thenConvert() {
+    public void givenAnyObservable_whenLift_thenConvert() throws ConverterException {
         ANY_OBSERVABLE
                 .lift(operator)
                 .subscribe();
 
-        try {
-            verify(converter, VerificationModeFactory.times(3)).convertListFrom(anyListOfModelObject());
-        } catch (ConverterException e) {
-            fail();
-        }
+        verify(converter, VerificationModeFactory.times(3)).convertListFrom(anyListOfModelObject());
     }
 
     @Test
