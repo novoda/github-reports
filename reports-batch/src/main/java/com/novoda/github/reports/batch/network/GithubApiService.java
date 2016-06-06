@@ -52,6 +52,25 @@ public interface GithubApiService {
             @Query("per_page") Integer perPageCount
     );
 
+//    @GET("/repos/{owner}/{repo}/pulls/{number}/commits")
+//    Observable<Response<List<Commit>>> getCommitsResponseForPullRequestAndPage(
+//            @Path("org") String organisation,
+//            @Path("repo") String repo,
+//            @Path("number") Integer pullRequestNumber,
+//            @Query("page") Integer page,
+//            @Query("per_page") Integer perPageCount
+//    );
+
+    @GET("/repos/{owner}/{repo}/pulls/{number}/comments")
+    Observable<Response<List<Comment>>> getReviewCommentsResponseForPullRequestAndPage(
+            @Path("org") String organisation,
+            @Path("repo") String repo,
+            @Path("number") Integer pullRequestNumber,
+            @Query("since") String since, // ISO8601: YYYY-MM-DDTHH:MM:SSZ
+            @Query("page") Integer page,
+            @Query("per_page") Integer perPageCount
+    );
+
     @GET("/repos/{org}/{repo}/issues/{issue_number}/timeline")
     Observable<Response<List<TimelineEvent>>> getTimelineFor(
             @Path("org") String organisation,
