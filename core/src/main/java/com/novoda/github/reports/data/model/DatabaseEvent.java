@@ -8,7 +8,7 @@ import java.util.Date;
 public abstract class DatabaseEvent {
 
     public static DatabaseEvent create(Long id, Long repositoryId, Long authorUserId, Long ownerUserId, EventType eventType, Date date) {
-        return new AutoValue_Database_Event(id, repositoryId, authorUserId, ownerUserId, eventType, date);
+        return new AutoValue_DatabaseEvent(id, repositoryId, authorUserId, ownerUserId, eventType, date);
     }
 
     public abstract Long id();

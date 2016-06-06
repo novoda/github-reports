@@ -16,7 +16,7 @@ import com.novoda.github.reports.data.UserDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbEventDataLayer;
 import com.novoda.github.reports.data.db.DbUserDataLayer;
-import com.novoda.github.reports.data.model.Event;
+import com.novoda.github.reports.data.model.DatabaseEvent;
 import com.novoda.github.reports.data.model.User;
 
 import java.util.Arrays;
@@ -42,22 +42,22 @@ public class IssuesServiceClient {
 
     private final IssueService issueService;
     private final EventDataLayer eventDataLayer;
-    private final Converter<RepositoryIssue, com.novoda.github.reports.data.model.Event> issueConverter;
+    private final Converter<RepositoryIssue, DatabaseEvent> issueConverter;
     private final UserDataLayer userDataLayer;
     private final Converter<RepositoryIssue, com.novoda.github.reports.data.model.User> userConverter;
     private final Converter<RepositoryIssueEvent, com.novoda.github.reports.data.model.User> eventUserConverter;
-    private final Converter<RepositoryIssueEvent, com.novoda.github.reports.data.model.Event> eventConverter;
+    private final Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter;
 
     public static IssuesServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
 
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
-        Converter<RepositoryIssue, com.novoda.github.reports.data.model.Event> issueConverter = IssueConverter.newInstance();
+        Converter<RepositoryIssue, DatabaseEvent> issueConverter = IssueConverter.newInstance();
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssue, com.novoda.github.reports.data.model.User> userConverter = UserConverter.newInstance();
         Converter<RepositoryIssueEvent, com.novoda.github.reports.data.model.User> userEventConverter = EventUserConverter.newInstance();
-        Converter<RepositoryIssueEvent, com.novoda.github.reports.data.model.Event> eventConverter = EventConverter.newInstance();
+        Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter = EventConverter.newInstance();
 
         return new IssuesServiceClient(
                 issueService,
@@ -72,11 +72,11 @@ public class IssuesServiceClient {
 
     private IssuesServiceClient(IssueService issueService,
                                 EventDataLayer eventDataLayer,
-                                Converter<RepositoryIssue, Event> issueConverter,
+                                Converter<RepositoryIssue, DatabaseEvent> issueConverter,
                                 UserDataLayer userDataLayer,
                                 Converter<RepositoryIssue, User> userConverter,
                                 Converter<RepositoryIssueEvent, User> eventUserConverter,
-                                Converter<RepositoryIssueEvent, Event> eventConverter) {
+                                Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter) {
         this.issueService = issueService;
         this.eventDataLayer = eventDataLayer;
         this.issueConverter = issueConverter;
