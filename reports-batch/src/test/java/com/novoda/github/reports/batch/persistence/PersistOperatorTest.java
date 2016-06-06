@@ -1,6 +1,7 @@
 package com.novoda.github.reports.batch.persistence;
 
 import com.novoda.github.reports.batch.persistence.converter.Converter;
+import com.novoda.github.reports.batch.persistence.converter.ConverterException;
 import com.novoda.github.reports.data.DataLayer;
 import com.novoda.github.reports.data.DataLayerException;
 
@@ -17,6 +18,7 @@ import org.mockito.internal.verification.VerificationModeFactory;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,7 +56,11 @@ public class PersistOperatorTest {
                 .lift(operator)
                 .subscribe();
 
-        verify(converter, VerificationModeFactory.times(3)).convertListFrom(anyListOfModelObject());
+        try {
+            verify(converter, VerificationModeFactory.times(3)).convertListFrom(anyListOfModelObject());
+        } catch (ConverterException e) {
+            fail();
+        }
     }
 
     @Test
