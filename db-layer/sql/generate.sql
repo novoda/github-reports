@@ -17,23 +17,18 @@ CREATE TABLE `event_type` (
 --
 -- Dumping data for table `event_type`
 --
-INSERT INTO `event_type` VALUES (301, 'branch_delete');
-INSERT INTO `event_type` VALUES (300, 'commit');
-INSERT INTO `event_type` VALUES (102, 'issue_add_comment');
-INSERT INTO `event_type` VALUES (105, 'issue_add_label');
-INSERT INTO `event_type` VALUES (101, 'issue_close');
-INSERT INTO `event_type` VALUES (103, 'issue_edit_comment');
 INSERT INTO `event_type` VALUES (100, 'issue_open');
-INSERT INTO `event_type` VALUES (104, 'issue_remove_comment');
-INSERT INTO `event_type` VALUES (106, 'issue_remove_label');
-INSERT INTO `event_type` VALUES (202, 'pr_add_comment');
-INSERT INTO `event_type` VALUES (205, 'pr_add_label');
-INSERT INTO `event_type` VALUES (201, 'pr_close');
-INSERT INTO `event_type` VALUES (203, 'pr_edit_comment');
-INSERT INTO `event_type` VALUES (207, 'pr_merge');
+INSERT INTO `event_type` VALUES (101, 'issue_close');
+INSERT INTO `event_type` VALUES (102, 'issue_comment');
+INSERT INTO `event_type` VALUES (103, 'issue_label_add');
+INSERT INTO `event_type` VALUES (104, 'issue_label_remove');
 INSERT INTO `event_type` VALUES (200, 'pr_open');
-INSERT INTO `event_type` VALUES (204, 'pr_remove_comment');
-INSERT INTO `event_type` VALUES (206, 'pr_remove_label');
+INSERT INTO `event_type` VALUES (201, 'pr_close');
+INSERT INTO `event_type` VALUES (202, 'pr_comment');
+INSERT INTO `event_type` VALUES (203, 'pr_label_add');
+INSERT INTO `event_type` VALUES (204, 'pr_label_remove');
+INSERT INTO `event_type` VALUES (205, 'pr_merge');
+INSERT INTO `event_type` VALUES (300, 'branch_delete');
 
 --
 -- Table structure for table `project`

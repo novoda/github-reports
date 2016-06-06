@@ -17,6 +17,18 @@ public class Comment {
     @SerializedName("updated_at")
     private Date updatedAt;
 
+    public long getId() {
+        return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
     @Override
     public String toString() {
         return String.format("%s commented [%d] @ %s", user.getUsername(), id, createdAt);

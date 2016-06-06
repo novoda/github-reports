@@ -26,7 +26,7 @@ public class DbEventDataLayerTest {
     private static final Long ANY_EVENT_REPO_ID = 1L;
     private static final Long ANY_EVENT_AUTHOR_ID = 2L;
     private static final Long ANY_EVENT_OWNER_ID = 3L;
-    private static final EventType ANY_EVENT_TYPE = EventType.ISSUE_COMMENT_ADD;
+    private static final EventType ANY_EVENT_TYPE = EventType.ISSUE_COMMENT;
     private static final Date ANY_EVENT_DATE = new GregorianCalendar(2016, 4, 26, 18, 20).getTime();
     private DbEventDataLayer dataLayer;
     private MockConnectionManager mockConnectionManager;

@@ -55,6 +55,12 @@ class GithubIssueService implements IssueService {
                 .flatMapIterable(Response::body);
     }
 
+    @Override
+    public Observable<Issue> getPagedIssuesFor(String organisation, String repository, Date since) {
+        return getPagedIssuesFor(organisation, repository, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+                .flatMapIterable(Response::body);
+    }
+
     private Observable<Response<List<Issue>>> getPagedIssuesFor(String organisation,
                                                                 String repository,
                                                                 Date since,
@@ -68,15 +74,16 @@ class GithubIssueService implements IssueService {
     }
 
     @Override
-    public Observable<Issue> getPagedIssuesFor(String organisation, String repository, Date since) {
-        return getPagedIssuesFor(organisation, repository, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+    public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber) {
+        return getPagedEventsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
     @Override
-    public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber) {
+    public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber, Date since) {
         return getPagedEventsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
-                .flatMapIterable(Response::body);
+                .flatMapIterable(Response::body)
+                .filter(event -> event.getCreatedAt().after(since));
     }
 
     private Observable<Response<List<Event>>> getPagedEventsFor(String organisation,
@@ -91,15 +98,14 @@ class GithubIssueService implements IssueService {
     }
 
     @Override
-    public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber, Date since) {
-        return getPagedEventsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
-                .flatMapIterable(Response::body)
-                .filter(event -> event.getCreatedAt().after(since));
+    public Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber) {
+        return getPagedCommentsFor(organisation, repository, issueNumber, NO_SINCE_DATE, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+                .flatMapIterable(Response::body);
     }
 
     @Override
-    public Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber) {
-        return getPagedCommentsFor(organisation, repository, issueNumber, NO_SINCE_DATE, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+    public Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber, Date since) {
+        return getPagedCommentsFor(organisation, repository, issueNumber, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
@@ -119,11 +125,5 @@ class GithubIssueService implements IssueService {
                                                                                       since,
                                                                                       nextPage,
                                                                                       pageCount)));
-    }
-
-    @Override
-    public Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber, Date since) {
-        return getPagedCommentsFor(organisation, repository, issueNumber, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
-                .flatMapIterable(Response::body);
     }
 }
