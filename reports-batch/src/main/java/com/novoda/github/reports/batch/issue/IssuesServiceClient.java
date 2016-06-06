@@ -115,8 +115,8 @@ public class IssuesServiceClient {
                 .getEventsFor(
                         repositoryIssue.getRepository().getOwner().getUsername(),
                         repositoryIssue.getRepository().getName(),
-                        repositoryIssue.getIssue().getNumber()
-                        // TODO add since parameter
+                        repositoryIssue.getIssue().getNumber(),
+                        since
                 )
                 .filter(this::isInterestingEvent)
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
