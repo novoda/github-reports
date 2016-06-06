@@ -126,7 +126,7 @@ public class IssuesServiceClient {
                 .observeOn(Schedulers.immediate());
     }
 
-    private boolean isInterestingEvent(com.novoda.github.reports.batch.issue.Event event) {
+    private boolean isInterestingEvent(Event event) {
         return typeSet.contains(event.getType());
     }
 
