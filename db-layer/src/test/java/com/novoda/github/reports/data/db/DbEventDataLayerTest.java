@@ -61,7 +61,7 @@ public class DbEventDataLayerTest {
         whenUpdateOrInsertEventAffectsRows(2);
 
         thrown.expect(DataLayerException.class);
-        thrown.expectMessage(Matchers.contains("More than"));
+        thrown.expectMessage(Matchers.contains("Unhandled"));
         dataLayer.updateOrInsert(awesomeEvent);
     }
 

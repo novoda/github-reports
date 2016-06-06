@@ -54,7 +54,7 @@ public class DbRepoDataLayerTest {
         whenUpdateOrInsertRepoAffectsRows(2);
 
         thrown.expect(DataLayerException.class);
-        thrown.expectMessage(Matchers.contains("More than"));
+        thrown.expectMessage(Matchers.contains("Unhandled"));
         dataLayer.updateOrInsert(awesomeRepo);
     }
 
