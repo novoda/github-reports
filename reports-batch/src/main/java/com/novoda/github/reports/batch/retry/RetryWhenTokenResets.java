@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.rx;
+package com.novoda.github.reports.batch.retry;
 
 import com.novoda.github.reports.batch.network.RateLimitResetRepository;
 
@@ -8,7 +8,7 @@ import java.util.Date;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 
-class RetryWhenTokenResets<T> implements Observable.Transformer<T, T> {
+public class RetryWhenTokenResets<T> implements Observable.Transformer<T, T> {
 
     private final RateLimitResetRepository rateLimitResetRepository;
     private final RateLimitResetTimerSubject resetTimerSubject;
