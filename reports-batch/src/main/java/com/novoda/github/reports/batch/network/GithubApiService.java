@@ -61,7 +61,7 @@ public interface GithubApiService {
 //            @Query("per_page") Integer perPageCount
 //    );
 
-    @GET("/repos/{owner}/{repo}/pulls/{number}/comments")
+    @GET("/repos/{org}/{repo}/pulls/{number}/comments")
     Observable<Response<List<Comment>>> getReviewCommentsResponseForPullRequestAndPage(
             @Path("org") String organisation,
             @Path("repo") String repo,
