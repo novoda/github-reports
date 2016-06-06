@@ -31,7 +31,7 @@ import static com.novoda.github.reports.batch.issue.Event.Type.*;
 
 public class IssuesServiceClient {
 
-    private final Set<com.novoda.github.reports.batch.issue.Event.Type> typeSet = new HashSet<>(Arrays.asList(
+    private static final Set<Event.Type> EVENT_TYPES_TO_BE_STORED = new HashSet<>(Arrays.asList(
             COMMENTED,
             CLOSED,
             HEAD_REF_DELETED,
@@ -118,7 +118,7 @@ public class IssuesServiceClient {
                         repositoryIssue.getIssue().getNumber(),
                         since
                 )
-                .filter(this::isInterestingEvent)
+                .filter(this::shouldStoreEvent)
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
                 .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter))
@@ -126,8 +126,8 @@ public class IssuesServiceClient {
                 .observeOn(Schedulers.immediate());
     }
 
-    private boolean isInterestingEvent(Event event) {
-        return typeSet.contains(event.getType());
+    private boolean shouldStoreEvent(Event event) {
+        return EVENT_TYPES_TO_BE_STORED.contains(event.getType());
     }
 
 }
