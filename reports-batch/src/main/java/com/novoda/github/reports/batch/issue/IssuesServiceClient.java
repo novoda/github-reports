@@ -1,5 +1,7 @@
 package com.novoda.github.reports.batch.issue;
 
+import com.novoda.github.reports.batch.network.RateLimitRemainingResetRepositoryContainer;
+import com.novoda.github.reports.batch.network.RateLimitResetRepository;
 import com.novoda.github.reports.batch.persistence.ConnectionManagerContainer;
 import com.novoda.github.reports.batch.persistence.EventUserConverter;
 import com.novoda.github.reports.batch.persistence.PersistEventTransformer;
@@ -11,6 +13,9 @@ import com.novoda.github.reports.batch.persistence.converter.EventConverter;
 import com.novoda.github.reports.batch.persistence.converter.IssueConverter;
 import com.novoda.github.reports.batch.persistence.converter.UserConverter;
 import com.novoda.github.reports.batch.repository.Repository;
+import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubject;
+import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubjectContainer;
+import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.UserDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
@@ -48,6 +53,9 @@ public class IssuesServiceClient {
     private final Converter<RepositoryIssueEvent, com.novoda.github.reports.data.model.User> eventUserConverter;
     private final Converter<RepositoryIssueEvent, com.novoda.github.reports.data.model.Event> eventConverter;
 
+    private final RateLimitResetRepository rateLimitResetRepository;
+    private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
+
     public static IssuesServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
@@ -59,6 +67,9 @@ public class IssuesServiceClient {
         Converter<RepositoryIssueEvent, com.novoda.github.reports.data.model.User> userEventConverter = EventUserConverter.newInstance();
         Converter<RepositoryIssueEvent, com.novoda.github.reports.data.model.Event> eventConverter = EventConverter.newInstance();
 
+        RateLimitResetRepository rateLimitResetRepository = RateLimitRemainingResetRepositoryContainer.getInstance();
+        RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
+
         return new IssuesServiceClient(
                 issueService,
                 eventDataLayer,
@@ -66,7 +77,8 @@ public class IssuesServiceClient {
                 userDataLayer,
                 userConverter,
                 userEventConverter,
-                eventConverter
+                eventConverter,
+                rateLimitResetRepository, rateLimitResetTimerSubject
         );
     }
 
@@ -76,7 +88,9 @@ public class IssuesServiceClient {
                                 UserDataLayer userDataLayer,
                                 Converter<RepositoryIssue, User> userConverter,
                                 Converter<RepositoryIssueEvent, User> eventUserConverter,
-                                Converter<RepositoryIssueEvent, Event> eventConverter) {
+                                Converter<RepositoryIssueEvent, Event> eventConverter,
+                                RateLimitResetRepository rateLimitResetRepository,
+                                RateLimitResetTimerSubject rateLimitResetTimerSubject) {
         this.issueService = issueService;
         this.eventDataLayer = eventDataLayer;
         this.issueConverter = issueConverter;
@@ -84,10 +98,13 @@ public class IssuesServiceClient {
         this.userConverter = userConverter;
         this.eventUserConverter = eventUserConverter;
         this.eventConverter = eventConverter;
+        this.rateLimitResetRepository = rateLimitResetRepository;
+        this.rateLimitResetTimerSubject = rateLimitResetTimerSubject;
     }
 
     public Observable<RepositoryIssue> retrieveIssuesFrom(Repository repository, Date since) {
         return issueService.getPagedIssuesFor(repository.getOwner().getUsername(), repository.getName(), since)
+                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject, rateLimitResetRepository))
                 .map(issue -> RepositoryIssue.newInstance(repository, issue))
                 .compose(PersistUserTransformer.newInstance(userDataLayer, userConverter))
                 .compose(PersistIssueTransformer.newInstance(eventDataLayer, issueConverter))
@@ -103,6 +120,7 @@ public class IssuesServiceClient {
                         repositoryIssue.getIssue().getNumber(),
                         since
                 )
+                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject, rateLimitResetRepository))
                 .map(comment -> RepositoryIssueEventComment.newInstance(repositoryIssue, comment))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
                 .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter))
@@ -117,6 +135,7 @@ public class IssuesServiceClient {
                         repositoryIssue.getRepository().getName(),
                         repositoryIssue.getIssue().getNumber()
                 )
+                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject, rateLimitResetRepository))
                 .filter(this::isInterestingEvent)
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
