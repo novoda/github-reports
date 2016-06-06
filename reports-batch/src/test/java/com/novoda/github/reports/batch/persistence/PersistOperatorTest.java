@@ -1,6 +1,7 @@
 package com.novoda.github.reports.batch.persistence;
 
 import com.novoda.github.reports.batch.persistence.converter.Converter;
+import com.novoda.github.reports.batch.persistence.converter.ConverterException;
 import com.novoda.github.reports.data.DataLayer;
 import com.novoda.github.reports.data.DataLayerException;
 
@@ -49,7 +50,7 @@ public class PersistOperatorTest {
     }
 
     @Test
-    public void givenAnyObservable_whenLift_thenConvert() {
+    public void givenAnyObservable_whenLift_thenConvert() throws ConverterException {
         ANY_OBSERVABLE
                 .lift(operator)
                 .subscribe();
