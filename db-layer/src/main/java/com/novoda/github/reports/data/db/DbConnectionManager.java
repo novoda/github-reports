@@ -4,7 +4,6 @@ import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.properties.PropertiesReader;
 
 import javax.sql.DataSource;
-import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -43,24 +42,20 @@ public class DbConnectionManager implements ConnectionManager {
         return dataSource.getConnection();
     }
 
-    private synchronized void buildDataSource() throws SQLException {
+    private synchronized void buildDataSource() {
         if (dataSource != null) {
             return;
         }
-        try {
-            ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(
-                    databaseCredentialsReader.getConnectionString(),
-                    databaseCredentialsReader.getUser(),
-                    databaseCredentialsReader.getPassword());
+        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(
+                databaseCredentialsReader.getConnectionString(),
+                databaseCredentialsReader.getConnectionProperties()
+        );
 
-            PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
-            ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<>(poolableConnectionFactory);
-            poolableConnectionFactory.setPool(connectionPool);
+        PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
+        ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<>(poolableConnectionFactory);
+        poolableConnectionFactory.setPool(connectionPool);
 
-            dataSource = new PoolingDataSource<>(connectionPool);
-        } catch (URISyntaxException e) {
-            throw new SQLException(e);
-        }
+        dataSource = new PoolingDataSource<>(connectionPool);
     }
 
     @Override

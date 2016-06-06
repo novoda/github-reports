@@ -40,11 +40,11 @@ abstract class DbDataLayer<T, D extends Record> implements DataLayer<T> {
                     .collect(Collectors.toList());
             int[] results = create.batch(queries).execute();
             for (int result : results) {
-                if (result <= 0) {
+                if (result < 0) {
                     throw new SQLException("Could not update or insert the element.");
                 }
-                if (result > 1) {
-                    throw new SQLException("More than 1 element was updated, check your DB constraints.");
+                if (result > 2) {
+                    throw new SQLException("Unhandled return value, check your DB constraints.");
                 }
             }
         } catch (SQLException e) {

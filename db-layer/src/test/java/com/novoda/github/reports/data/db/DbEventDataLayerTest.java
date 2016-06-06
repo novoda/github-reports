@@ -58,17 +58,17 @@ public class DbEventDataLayerTest {
     @Test
     public void givenInvalidDatabase_whenUpdateOrInsertEvent_thenThrowDataLayerException() throws SQLException, DataLayerException {
         Event awesomeEvent = Event.create(ANY_EVENT_ID, ANY_EVENT_REPO_ID, ANY_EVENT_AUTHOR_ID, ANY_EVENT_OWNER_ID, ANY_EVENT_TYPE, ANY_EVENT_DATE);
-        whenUpdateOrInsertEventAffectsRows(2);
+        whenUpdateOrInsertEventAffectsRows(3);
 
         thrown.expect(DataLayerException.class);
-        thrown.expectMessage(Matchers.contains("More than"));
+        thrown.expectMessage(Matchers.contains("Unhandled"));
         dataLayer.updateOrInsert(awesomeEvent);
     }
 
     @Test
     public void givenValidEvent_whenUpdateOrInsertEvent_thenThrowDataLayerException() throws SQLException, DataLayerException {
         Event awesomeEvent = Event.create(ANY_EVENT_ID, ANY_EVENT_REPO_ID, ANY_EVENT_AUTHOR_ID, ANY_EVENT_OWNER_ID, ANY_EVENT_TYPE, ANY_EVENT_DATE);
-        whenUpdateOrInsertEventAffectsRows(0);
+        whenUpdateOrInsertEventAffectsRows(-1);
 
         thrown.expect(DataLayerException.class);
         thrown.expectMessage(Matchers.contains("Could not"));
