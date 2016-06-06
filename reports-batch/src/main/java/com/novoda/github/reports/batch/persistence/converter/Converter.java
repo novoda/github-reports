@@ -1,16 +1,18 @@
 package com.novoda.github.reports.batch.persistence.converter;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public interface Converter<From, To> {
 
-    To convertFrom(From from);
+    To convertFrom(From from) throws ConverterException;
 
-    default List<To> convertListFrom(List<From> repositories) {
-        return repositories.stream()
-                .map(this::convertFrom)
-                .collect(Collectors.toList());
+    default List<To> convertListFrom(List<From> elements) throws ConverterException {
+        List<To> list = new ArrayList<>(elements.size());
+        for (From element : elements) {
+            list.add(convertFrom(element));
+        }
+        return list;
     }
 
 }

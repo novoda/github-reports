@@ -21,15 +21,29 @@ public class Event {
         return createdAt;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    User getActor() {
+        return actor;
+    }
+
+    Type getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return String.format("%s [%d] @ %s by %s", type, id, createdAt, actor.getUsername());
     }
 
-    private enum Type {
+    public enum Type {
 
         @SerializedName("assigned")
         ASSIGNED("assigned"),
+        @SerializedName("commented")
+        COMMENTED("commented"),
         @SerializedName("closed")
         CLOSED("closed"),
         @SerializedName("assigned")
