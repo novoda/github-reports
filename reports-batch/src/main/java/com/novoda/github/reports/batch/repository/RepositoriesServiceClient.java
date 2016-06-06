@@ -29,6 +29,7 @@ public class RepositoriesServiceClient {
     private RepositoriesServiceClient(GithubRepositoriesService repositoryService,
                                       RepoDataLayer repoDataLayer,
                                       Converter<Repository, DatabaseRepository> converter) {
+
         this.repositoryService = repositoryService;
         this.repoDataLayer = repoDataLayer;
         this.converter = converter;
