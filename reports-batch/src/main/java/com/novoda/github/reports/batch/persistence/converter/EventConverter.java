@@ -13,8 +13,13 @@ public class EventConverter implements Converter<RepositoryIssueEvent, Event> {
     }
 
     @Override
-    public Event convertFrom(RepositoryIssueEvent repositoryIssueEvent) {
-        EventType eventType = convertEventType(repositoryIssueEvent.getEventType(), repositoryIssueEvent.isComment());
+    public Event convertFrom(RepositoryIssueEvent repositoryIssueEvent) throws ConverterException {
+        EventType eventType;
+        try {
+            eventType = convertEventType(repositoryIssueEvent.getEventType(), repositoryIssueEvent.isComment());
+        } catch (UnsupportedEventTypeException e) {
+            throw new ConverterException(e);
+        }
 
         return Event.create(
                 repositoryIssueEvent.getEventId(),
@@ -26,7 +31,7 @@ public class EventConverter implements Converter<RepositoryIssueEvent, Event> {
         );
     }
 
-    private EventType convertEventType(com.novoda.github.reports.batch.issue.Event.Type type, boolean isComment) {
+    private EventType convertEventType(com.novoda.github.reports.batch.issue.Event.Type type, boolean isComment) throws UnsupportedEventTypeException {
         if (type == HEAD_REF_DELETED) {
             return EventType.BRANCH_DELETE;
         }
@@ -63,7 +68,7 @@ public class EventConverter implements Converter<RepositoryIssueEvent, Event> {
             return PULL_REQUEST_MERGE;
         }
 
-        return null;
+        throw new UnsupportedEventTypeException(type);
     }
 
 }
