@@ -87,7 +87,7 @@ public class IssuesServiceClient {
     }
 
     public Observable<RepositoryIssue> retrieveIssuesFrom(Repository repository, Date since) {
-        return issueService.getPagedIssuesFor(repository.getOwner().getUsername(), repository.getName(), since)
+        return issueService.getIssuesFor(repository.getOwner().getUsername(), repository.getName(), since)
                 .map(issue -> RepositoryIssue.newInstance(repository, issue))
                 .compose(PersistUserTransformer.newInstance(userDataLayer, userConverter))
                 .compose(PersistIssueTransformer.newInstance(eventDataLayer, issueConverter))
@@ -97,7 +97,7 @@ public class IssuesServiceClient {
 
     public Observable<RepositoryIssueEvent> retrieveCommentsFrom(RepositoryIssue repositoryIssue, Date since) {
         return issueService
-                .getPagedCommentsFor(
+                .getCommentsFor(
                         repositoryIssue.getRepository().getOwner().getUsername(),
                         repositoryIssue.getRepository().getName(),
                         repositoryIssue.getIssue().getNumber(),
@@ -112,7 +112,7 @@ public class IssuesServiceClient {
 
     public Observable<RepositoryIssueEvent> retrieveEventsFrom(RepositoryIssue repositoryIssue, Date since) {
         return issueService
-                .getPagedEventsFor(
+                .getEventsFor(
                         repositoryIssue.getRepository().getOwner().getUsername(),
                         repositoryIssue.getRepository().getName(),
                         repositoryIssue.getIssue().getNumber()
