@@ -23,6 +23,10 @@ public abstract class RepositoryIssueEvent {
         return issue;
     }
 
+    public boolean isIssue() {
+        return !issue.isPullRequest();
+    }
+
     public abstract Long getEventId();
 
     public abstract User getUser();
@@ -30,6 +34,4 @@ public abstract class RepositoryIssueEvent {
     public abstract Date getDate();
 
     public abstract Event.Type getEventType();
-
-    public abstract boolean isComment();
 }
