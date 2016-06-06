@@ -9,14 +9,12 @@ public class PersistEventTransformer extends PersistTransformer<RepositoryIssueE
 
     private static final int EVENT_BUFFER_SIZE = 100;
 
-    public static PersistEventTransformer newInstance(
-            EventDataLayer eventDataLayer, Converter<RepositoryIssueEvent, DatabaseEvent> converter) {
+    public static PersistEventTransformer newInstance(EventDataLayer eventDataLayer, Converter<RepositoryIssueEvent, DatabaseEvent> converter) {
         PersistEventsOperator operator = PersistEventsOperator.newInstance(eventDataLayer, converter);
-        PersistBuffer buffer = PersistBuffer.newInstance(EVENT_BUFFER_SIZE);
-        return new PersistEventTransformer(operator, buffer);
+        return new PersistEventTransformer(operator, EVENT_BUFFER_SIZE);
     }
 
-    private PersistEventTransformer(PersistOperator<RepositoryIssueEvent, DatabaseEvent> operator, PersistBuffer buffer) {
-        super(operator, buffer);
+    private PersistEventTransformer(PersistOperator<RepositoryIssueEvent, DatabaseEvent> operator, int bufferSize) {
+        super(operator, bufferSize);
     }
 }

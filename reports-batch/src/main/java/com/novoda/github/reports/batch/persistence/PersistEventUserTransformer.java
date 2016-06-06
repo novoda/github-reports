@@ -9,15 +9,13 @@ public class PersistEventUserTransformer extends PersistTransformer<RepositoryIs
 
     private final static int USER_BUFFER_SIZE = 100;
 
-    public static PersistEventUserTransformer newInstance(UserDataLayer userDataLayer,
-                                                          Converter<RepositoryIssueEvent, DatabaseUser> converter) {
+    public static PersistEventUserTransformer newInstance(UserDataLayer userDataLayer, Converter<RepositoryIssueEvent, DatabaseUser> converter) {
         PersistEventUserOperator operator = PersistEventUserOperator.newInstance(userDataLayer, converter);
-        PersistBuffer buffer = PersistBuffer.newInstance(USER_BUFFER_SIZE);
-        return new PersistEventUserTransformer(operator, buffer);
+        return new PersistEventUserTransformer(operator, USER_BUFFER_SIZE);
     }
 
-    private PersistEventUserTransformer(PersistOperator<RepositoryIssueEvent, DatabaseUser> operator, PersistBuffer buffer) {
-        super(operator, buffer);
+    private PersistEventUserTransformer(PersistOperator<RepositoryIssueEvent, DatabaseUser> operator, int bufferSize) {
+        super(operator, bufferSize);
     }
 
 }
