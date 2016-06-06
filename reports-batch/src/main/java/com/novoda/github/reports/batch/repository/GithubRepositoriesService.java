@@ -30,7 +30,7 @@ class GithubRepositoriesService implements RepositoryService {
     }
 
     @Override
-    public Observable<Repository> getPagedRepositoriesFor(String organisation) {
+    public Observable<Repository> getRepositoriesFor(String organisation) {
         return getPagedRepositoriesFor(organisation, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
