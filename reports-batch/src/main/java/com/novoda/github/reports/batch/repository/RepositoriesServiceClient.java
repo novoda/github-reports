@@ -34,7 +34,7 @@ public class RepositoriesServiceClient {
     }
 
     public Observable<Repository> retrieveRepositoriesFrom(String organisation) {
-        return repositoryService.getPagedRepositoriesFor(organisation)
+        return repositoryService.getRepositoriesFor(organisation)
                 .compose(PersistRepositoryTransformer.newInstance(repoDataLayer, converter))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.immediate());
