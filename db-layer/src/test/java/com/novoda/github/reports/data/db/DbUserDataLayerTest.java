@@ -163,7 +163,7 @@ public class DbUserDataLayerTest {
     @Test
     public void givenInvalidDatabase_whenUpdateOrInsertUser_thenThrowDataLayerException() throws SQLException, DataLayerException {
         DatabaseUser timRigginsUser = DatabaseUser.create(ANY_USER_ID, ANY_USER_NAME);
-        whenUpdateOrInsertUserAffectsRows(2);
+        whenUpdateOrInsertUserAffectsRows(3);
 
         thrown.expect(DataLayerException.class);
         thrown.expectMessage(Matchers.contains("Unhandled"));
@@ -173,7 +173,7 @@ public class DbUserDataLayerTest {
     @Test
     public void givenValidUser_whenUpdateOrInsertUser_thenThrowDataLayerException() throws SQLException, DataLayerException {
         DatabaseUser timRigginsUser = DatabaseUser.create(ANY_USER_ID, ANY_USER_NAME);
-        whenUpdateOrInsertUserAffectsRows(0);
+        whenUpdateOrInsertUserAffectsRows(-1);
 
         thrown.expect(DataLayerException.class);
         thrown.expectMessage(Matchers.contains("Could not"));

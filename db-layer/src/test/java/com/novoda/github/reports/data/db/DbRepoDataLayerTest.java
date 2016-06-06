@@ -51,7 +51,7 @@ public class DbRepoDataLayerTest {
     @Test
     public void givenInvalidDatabase_whenUpdateOrInsertRepo_thenThrowDataLayerException() throws SQLException, DataLayerException {
         DatabaseRepository awesomeRepo = DatabaseRepository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
-        whenUpdateOrInsertRepoAffectsRows(2);
+        whenUpdateOrInsertRepoAffectsRows(3);
 
         thrown.expect(DataLayerException.class);
         thrown.expectMessage(Matchers.contains("Unhandled"));
@@ -61,7 +61,7 @@ public class DbRepoDataLayerTest {
     @Test
     public void givenValidRepo_whenUpdateOrInsertRepo_thenThrowDataLayerException() throws SQLException, DataLayerException {
         DatabaseRepository awesomeRepo = DatabaseRepository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
-        whenUpdateOrInsertRepoAffectsRows(0);
+        whenUpdateOrInsertRepoAffectsRows(-1);
 
         thrown.expect(DataLayerException.class);
         thrown.expectMessage(Matchers.contains("Could not"));
