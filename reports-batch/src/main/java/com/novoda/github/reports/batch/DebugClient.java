@@ -133,8 +133,7 @@ class DebugClient {
 
     private static Observable.Transformer<? super Repository, ? extends RepositoryIssue> retrieveIssuesFromRepositories(Date since) {
         return repositoryObservable ->
-                repositoryObservable.flatMap(repository -> IssuesServiceClient.newInstance()
-                        .retrieveIssuesFrom(repository, since));
+                repositoryObservable.flatMap(repository -> IssuesServiceClient.newInstance().retrieveIssuesFrom(repository, since));
     }
 
     private static Observable.Transformer<? super RepositoryIssue, ? extends RepositoryIssueEvent> retrieveEventsFromIssues(Date since) {

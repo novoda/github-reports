@@ -25,7 +25,7 @@ public class DbConnectionManager implements ConnectionManager {
         DatabaseHelper.turnOffJooqAd();
     }
 
-    private static final String DATABASE_CREDENTIALS_FILENAME = "database.credentials";
+    private static final String DATABASE_CREDENTIALS_FILENAME = "../database.credentials";
     private final DatabaseCredentialsReader databaseCredentialsReader;
     private DataSource dataSource;
 
