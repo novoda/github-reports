@@ -51,80 +51,80 @@ class GithubIssueService implements IssueService {
     }
 
     @Override
-    public Observable<Issue> getPagedIssuesFor(String organisation, String repository) {
-        return getPagedIssuesFor(organisation, repository, NO_SINCE_DATE, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+    public Observable<Issue> getIssuesFor(String organisation, String repository) {
+        return getIssuesFor(organisation, repository, NO_SINCE_DATE, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
     @Override
-    public Observable<Issue> getPagedIssuesFor(String organisation, String repository, Date since) {
-        return getPagedIssuesFor(organisation, repository, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+    public Observable<Issue> getIssuesFor(String organisation, String repository, Date since) {
+        return getIssuesFor(organisation, repository, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
-    private Observable<Response<List<Issue>>> getPagedIssuesFor(String organisation,
-                                                                String repository,
-                                                                Date since,
-                                                                Integer page,
-                                                                Integer pageCount) {
+    private Observable<Response<List<Issue>>> getIssuesFor(String organisation,
+                                                           String repository,
+                                                           Date since,
+                                                           Integer page,
+                                                           Integer pageCount) {
 
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, date, page, pageCount)
                 .compose(issueRateLimitDelayTransformer)
-                .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage, pageCount)));
+                .compose(PagedTransformer.newInstance(nextPage -> getIssuesFor(organisation, repository, since, nextPage, pageCount)));
     }
 
     @Override
-    public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber) {
-        return getPagedEventsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+    public Observable<Event> getEventsFor(String organisation, String repository, Integer issueNumber) {
+        return getEventsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
     @Override
-    public Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber, Date since) {
-        return getPagedEventsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+    public Observable<Event> getEventsFor(String organisation, String repository, Integer issueNumber, Date since) {
+        return getEventsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body)
                 .filter(event -> event.getCreatedAt().after(since));
     }
 
-    private Observable<Response<List<Event>>> getPagedEventsFor(String organisation,
-                                                                String repository,
-                                                                Integer issueNumber,
-                                                                Integer page,
-                                                                Integer pageCount) {
+    private Observable<Response<List<Event>>> getEventsFor(String organisation,
+                                                           String repository,
+                                                           Integer issueNumber,
+                                                           Integer page,
+                                                           Integer pageCount) {
 
         return githubApiService.getEventsResponseForIssueAndPage(organisation, repository, issueNumber, page, pageCount)
                 .compose(eventRateLimitDelayTransformer)
-                .compose(PagedTransformer.newInstance(nextPage -> getPagedEventsFor(organisation, repository, issueNumber, nextPage, pageCount)));
+                .compose(PagedTransformer.newInstance(nextPage -> getEventsFor(organisation, repository, issueNumber, nextPage, pageCount)));
     }
 
     @Override
-    public Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber) {
-        return getPagedCommentsFor(organisation, repository, issueNumber, NO_SINCE_DATE, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+    public Observable<Comment> getCommentsFor(String organisation, String repository, Integer issueNumber) {
+        return getCommentsFor(organisation, repository, issueNumber, NO_SINCE_DATE, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
     @Override
-    public Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber, Date since) {
-        return getPagedCommentsFor(organisation, repository, issueNumber, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+    public Observable<Comment> getCommentsFor(String organisation, String repository, Integer issueNumber, Date since) {
+        return getCommentsFor(organisation, repository, issueNumber, since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
-    private Observable<Response<List<Comment>>> getPagedCommentsFor(String organisation,
-                                                                    String repository,
-                                                                    Integer issueNumber,
-                                                                    Date since,
-                                                                    Integer page,
-                                                                    Integer pageCount) {
+    private Observable<Response<List<Comment>>> getCommentsFor(String organisation,
+                                                               String repository,
+                                                               Integer issueNumber,
+                                                               Date since,
+                                                               Integer page,
+                                                               Integer pageCount) {
 
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return githubApiService.getCommentsResponseForIssueAndPage(organisation, repository, issueNumber, date, page, pageCount)
                 .compose(commentRateLimitDelayTransformer)
-                .compose(PagedTransformer.newInstance(nextPage -> getPagedCommentsFor(organisation,
-                                                                                      repository,
-                                                                                      issueNumber,
-                                                                                      since,
-                                                                                      nextPage,
-                                                                                      pageCount)));
+                .compose(PagedTransformer.newInstance(nextPage -> getCommentsFor(organisation,
+                                                                                 repository,
+                                                                                 issueNumber,
+                                                                                 since,
+                                                                                 nextPage,
+                                                                                 pageCount)));
     }
 }
