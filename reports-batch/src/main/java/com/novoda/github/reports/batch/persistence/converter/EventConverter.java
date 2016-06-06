@@ -13,8 +13,14 @@ public class EventConverter implements Converter<RepositoryIssueEvent, DatabaseE
     }
 
     @Override
-    public DatabaseEvent convertFrom(RepositoryIssueEvent repositoryIssueEvent) {
-        EventType eventType = convertEventType(repositoryIssueEvent.getEventType(), repositoryIssueEvent.isComment());
+    public DatabaseEvent convertFrom(RepositoryIssueEvent repositoryIssueEvent) throws ConverterException {
+        EventType eventType;
+
+        try {
+            eventType = convertEventType(repositoryIssueEvent.getEventType(), repositoryIssueEvent.isIssue());
+        } catch (UnsupportedEventTypeException e) {
+            throw new ConverterException(e);
+        }
 
         return DatabaseEvent.create(
                 repositoryIssueEvent.getEventId(),
@@ -26,34 +32,34 @@ public class EventConverter implements Converter<RepositoryIssueEvent, DatabaseE
         );
     }
 
-    private EventType convertEventType(com.novoda.github.reports.batch.issue.Event.Type type, boolean isComment) {
+    private EventType convertEventType(com.novoda.github.reports.batch.issue.Event.Type type, boolean isIssue) throws UnsupportedEventTypeException {
         if (type == HEAD_REF_DELETED) {
             return EventType.BRANCH_DELETE;
         }
 
         if (type == COMMENTED) {
-            if (isComment) {
+            if (isIssue) {
                 return EventType.ISSUE_COMMENT;
             }
             return EventType.PULL_REQUEST_COMMENT;
         }
 
         if (type == CLOSED) {
-            if (isComment) {
+            if (isIssue) {
                 return EventType.ISSUE_CLOSE;
             }
             return EventType.PULL_REQUEST_CLOSE;
         }
 
         if (type == LABELED) {
-            if (isComment) {
+            if (isIssue) {
                 return EventType.ISSUE_LABEL_ADD;
             }
             return EventType.PULL_REQUEST_LABEL_ADD;
         }
 
         if (type == UNLABELED) {
-            if (isComment) {
+            if (isIssue) {
                 return EventType.ISSUE_LABEL_REMOVE;
             }
             return EventType.PULL_REQUEST_LABEL_REMOVE;
@@ -63,7 +69,7 @@ public class EventConverter implements Converter<RepositoryIssueEvent, DatabaseE
             return PULL_REQUEST_MERGE;
         }
 
-        return null;
+        throw new UnsupportedEventTypeException(type);
     }
 
 }
