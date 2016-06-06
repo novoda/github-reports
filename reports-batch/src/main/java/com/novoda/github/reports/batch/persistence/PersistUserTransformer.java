@@ -9,15 +9,13 @@ public class PersistUserTransformer extends PersistTransformer<RepositoryIssue, 
 
     private final static int USER_BUFFER_SIZE = 100;
 
-    public static PersistUserTransformer newInstance(UserDataLayer userDataLayer,
-                                                     Converter<RepositoryIssue, DatabaseUser> converter) {
+    public static PersistUserTransformer newInstance(UserDataLayer userDataLayer, Converter<RepositoryIssue, DatabaseUser> converter) {
         PersistUserOperator operator = PersistUserOperator.newInstance(userDataLayer, converter);
-        PersistBuffer buffer = PersistBuffer.newInstance(USER_BUFFER_SIZE);
-        return new PersistUserTransformer(operator, buffer);
+        return new PersistUserTransformer(operator, USER_BUFFER_SIZE);
     }
 
-    private PersistUserTransformer(PersistOperator<RepositoryIssue, DatabaseUser> operator, PersistBuffer buffer) {
-        super(operator, buffer);
+    private PersistUserTransformer(PersistOperator<RepositoryIssue, DatabaseUser> operator, int bufferSize) {
+        super(operator, bufferSize);
     }
 
 }

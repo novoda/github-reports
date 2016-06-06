@@ -8,17 +8,17 @@ import rx.internal.util.UtilityFunctions;
 class PersistTransformer<T, R> implements Observable.Transformer<T, T> {
 
     private final Observable.Operator<List<T>, List<T>> operator;
-    private final PersistBuffer buffer;
+    private final int bufferSize;
 
-    PersistTransformer(PersistOperator<T, R> operator, PersistBuffer buffer) {
+    PersistTransformer(PersistOperator<T, R> operator, int bufferSize) {
         this.operator = operator;
-        this.buffer = buffer;
+        this.bufferSize = bufferSize;
     }
 
     @Override
     public Observable<T> call(Observable<T> repositoryObservable) {
         return repositoryObservable
-                .buffer(buffer.getSize())
+                .buffer(bufferSize)
                 .lift(operator)
                 .flatMapIterable(UtilityFunctions.identity());
     }

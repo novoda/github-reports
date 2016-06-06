@@ -12,12 +12,11 @@ public class PersistIssueTransformer extends PersistTransformer<RepositoryIssue,
     public static PersistIssueTransformer newInstance(EventDataLayer eventDataLayer,
                                                       Converter<RepositoryIssue, DatabaseEvent> converter) {
         PersistIssuesOperator operator = PersistIssuesOperator.newInstance(eventDataLayer, converter);
-        PersistBuffer buffer = PersistBuffer.newInstance(ISSUE_BUFFER_SIZE);
-        return new PersistIssueTransformer(operator, buffer);
+        return new PersistIssueTransformer(operator, ISSUE_BUFFER_SIZE);
     }
 
-    private PersistIssueTransformer(PersistOperator<RepositoryIssue, DatabaseEvent> operator, PersistBuffer buffer) {
-        super(operator, buffer);
+    private PersistIssueTransformer(PersistOperator<RepositoryIssue, DatabaseEvent> operator, int bufferSize) {
+        super(operator, bufferSize);
     }
 
 }
