@@ -24,9 +24,8 @@ class OkHttpClientFactory implements HttpClientFactory {
     static OkHttpClientFactory newInstance(CacheStatsRepository cacheStatsRepository) {
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
         CacheFactory cacheFactory = FileCacheFactory.newInstance();
-        GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance(
-                PropertiesReader.newInstance(GITHUB_PROPERTIES_FILENAME)
-        );
+        PropertiesReader propertiesReader = PropertiesReader.newInstance(GITHUB_PROPERTIES_FILENAME);
+        GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance(propertiesReader);
         String token = githubCredentialsReader.getAuthToken();
         Interceptor oAuthTokenInterceptor = new OAuthTokenInterceptor(token);
         Interceptor rateLimitCountInterceptor = RateLimitCountInterceptor.newInstance();
