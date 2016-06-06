@@ -1,5 +1,6 @@
 package com.novoda.github.reports.batch.issue;
 
+import com.novoda.github.reports.batch.network.DateToISO8601Converter;
 import com.novoda.github.reports.batch.network.GithubApiService;
 import com.novoda.github.reports.batch.network.GithubServiceFactory;
 import com.novoda.github.reports.batch.network.PagedTransformer;
