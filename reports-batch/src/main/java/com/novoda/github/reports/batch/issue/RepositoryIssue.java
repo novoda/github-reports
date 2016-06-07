@@ -5,7 +5,6 @@ import com.novoda.github.reports.batch.repository.GithubRepository;
 public class RepositoryIssue {
 
     private final GithubRepository repository;
-
     private final GithubIssue issue;
 
     public static RepositoryIssue newInstance(GithubRepository repository, GithubIssue issue) {
@@ -23,5 +22,25 @@ public class RepositoryIssue {
 
     public GithubIssue getIssue() {
         return issue;
+    }
+
+    String getOwnerUsername() {
+        return repository.getOwnerUsername();
+    }
+
+    String getRepositoryName() {
+        return repository.getName();
+    }
+
+    boolean isPullRequest() {
+        return issue.isPullRequest();
+    }
+
+    int getIssueNumber() {
+        return issue.getNumber();
+    }
+
+    Long getUserId() {
+        return issue.getUserId();
     }
 }

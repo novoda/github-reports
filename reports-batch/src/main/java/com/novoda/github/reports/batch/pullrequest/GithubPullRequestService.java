@@ -3,7 +3,7 @@ package com.novoda.github.reports.batch.pullrequest;
 import com.novoda.github.reports.batch.issue.GithubComment;
 import com.novoda.github.reports.batch.network.DateToISO8601Converter;
 import com.novoda.github.reports.batch.network.GithubApiService;
-import com.novoda.github.reports.batch.network.GithubServiceFactory;
+import com.novoda.github.reports.batch.network.GithubServiceContainer;
 import com.novoda.github.reports.batch.network.PagedTransformer;
 import com.novoda.github.reports.batch.network.RateLimitDelayTransformer;
 
@@ -23,10 +23,10 @@ public class GithubPullRequestService implements PullRequestService {
     private final RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer;
 
     public static GithubPullRequestService newInstance() {
-        GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
+        GithubApiService githubApiService = GithubServiceContainer.getGithubService();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
-        return new GithubPullRequestService(githubServiceFactory.createService(), dateConverter, commentRateLimitDelayTransformer);
+        return new GithubPullRequestService(githubApiService, dateConverter, commentRateLimitDelayTransformer);
     }
 
     private GithubPullRequestService(GithubApiService githubApiService,

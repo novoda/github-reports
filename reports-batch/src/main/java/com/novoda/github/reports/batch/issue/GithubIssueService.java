@@ -2,7 +2,7 @@ package com.novoda.github.reports.batch.issue;
 
 import com.novoda.github.reports.batch.network.DateToISO8601Converter;
 import com.novoda.github.reports.batch.network.GithubApiService;
-import com.novoda.github.reports.batch.network.GithubServiceFactory;
+import com.novoda.github.reports.batch.network.GithubServiceContainer;
 import com.novoda.github.reports.batch.network.PagedTransformer;
 import com.novoda.github.reports.batch.network.RateLimitDelayTransformer;
 
@@ -26,12 +26,12 @@ class GithubIssueService implements IssueService {
     private final RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer;
 
     public static IssueService newInstance() {
-        GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
+        GithubApiService githubApiService = GithubServiceContainer.getGithubService();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         RateLimitDelayTransformer<GithubIssue> issueRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
         RateLimitDelayTransformer<GithubEvent> eventRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
         RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
-        return new GithubIssueService(githubServiceFactory.createService(),
+        return new GithubIssueService(githubApiService,
                                       dateConverter,
                                       issueRateLimitDelayTransformer,
                                       eventRateLimitDelayTransformer,

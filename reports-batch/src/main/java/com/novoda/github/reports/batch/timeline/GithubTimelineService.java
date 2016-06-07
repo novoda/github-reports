@@ -1,7 +1,7 @@
 package com.novoda.github.reports.batch.timeline;
 
 import com.novoda.github.reports.batch.network.GithubApiService;
-import com.novoda.github.reports.batch.network.GithubServiceFactory;
+import com.novoda.github.reports.batch.network.GithubServiceContainer;
 import com.novoda.github.reports.batch.network.PagedTransformer;
 
 import java.util.List;
@@ -17,8 +17,8 @@ class GithubTimelineService implements TimelineService {
     private final GithubApiService githubApiService;
 
     public static GithubTimelineService newInstance() {
-        GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
-        return new GithubTimelineService(githubServiceFactory.createService());
+        GithubApiService githubApiService = GithubServiceContainer.getGithubService();
+        return new GithubTimelineService(githubApiService);
     }
 
     private GithubTimelineService(GithubApiService githubApiService) {

@@ -19,8 +19,8 @@ public class IssueConverter implements Converter<RepositoryIssue, Event> {
         EventType type = issue.isPullRequest() ? EventType.PULL_REQUEST_OPEN : EventType.ISSUE_OPEN;
         return Event.create(issue.getId(),
                             repo.getId(),
-                            issue.getUser().getId(),
-                            issue.getUser().getId(),
+                            issue.getUserId(),
+                            issue.getUserId(),
                             type,
                             issue.getCreatedAt());
     }
