@@ -43,6 +43,7 @@ public class IssuesServiceClient {
     ));
 
     private final IssueService issueService;
+    private final PullRequestService pullRequestService;
     private final EventDataLayer eventDataLayer;
     private final Converter<RepositoryIssue, DatabaseEvent> issueConverter;
     private final UserDataLayer userDataLayer;
@@ -52,6 +53,7 @@ public class IssuesServiceClient {
 
     public static IssuesServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
+        PullRequestService pullRequestService = GithubPullRequestService.newInstance();
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
 
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
@@ -63,6 +65,7 @@ public class IssuesServiceClient {
 
         return new IssuesServiceClient(
                 issueService,
+                pullRequestService,
                 eventDataLayer,
                 issueConverter,
                 userDataLayer,
@@ -73,6 +76,7 @@ public class IssuesServiceClient {
     }
 
     private IssuesServiceClient(IssueService issueService,
+                                PullRequestService pullRequestService,
                                 EventDataLayer eventDataLayer,
                                 Converter<RepositoryIssue, DatabaseEvent> issueConverter,
                                 UserDataLayer userDataLayer,
@@ -80,6 +84,7 @@ public class IssuesServiceClient {
                                 Converter<RepositoryIssueEvent, DatabaseUser> eventUserConverter,
                                 Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter) {
         this.issueService = issueService;
+        this.pullRequestService = pullRequestService;
         this.eventDataLayer = eventDataLayer;
         this.issueConverter = issueConverter;
         this.userDataLayer = userDataLayer;
@@ -101,9 +106,6 @@ public class IssuesServiceClient {
         String organisation = repositoryIssue.getRepository().getOwner().getUsername();
         String repository = repositoryIssue.getRepository().getName();
         int issueNumber = repositoryIssue.getIssue().getNumber();
-
-        PullRequestService pullRequestService = GithubPullRequestService.newInstance();
-
         return issueService
                 .getCommentsFor(organisation, repository, issueNumber, since)
                 .compose(observable -> {
