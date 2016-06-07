@@ -2,18 +2,18 @@ package com.novoda.github.reports.batch.persistence;
 
 import com.novoda.github.reports.batch.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.batch.persistence.converter.Converter;
-import com.novoda.github.reports.data.model.User;
+import com.novoda.github.reports.data.model.DatabaseUser;
 
-public class EventUserConverter implements Converter<RepositoryIssueEvent, User> {
+public class EventUserConverter implements Converter<RepositoryIssueEvent, DatabaseUser> {
 
     public static EventUserConverter newInstance() {
         return new EventUserConverter();
     }
 
     @Override
-    public User convertFrom(RepositoryIssueEvent repositoryIssueEvent) {
+    public DatabaseUser convertFrom(RepositoryIssueEvent repositoryIssueEvent) {
         com.novoda.github.reports.batch.User originalUser = repositoryIssueEvent.getUser();
-        return User.create(originalUser.getId(), originalUser.getUsername());
+        return DatabaseUser.create(originalUser.getId(), originalUser.getUsername());
     }
 
 }

@@ -1,7 +1,7 @@
 package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.DataLayerException;
-import com.novoda.github.reports.data.model.Repository;
+import com.novoda.github.reports.data.model.DatabaseRepository;
 
 import java.sql.SQLException;
 
@@ -35,10 +35,10 @@ public class DbRepoDataLayerTest {
 
     @Test
     public void givenNewRepo_whenUpdateOrInsertRepo_thenReturnGivenRepo() throws SQLException {
-        Repository expectedRepo = Repository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
+        DatabaseRepository expectedRepo = DatabaseRepository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
         whenUpdateOrInsertRepoAffectsRows(1);
 
-        Repository actualRepo = null;
+        DatabaseRepository actualRepo = null;
         try {
             actualRepo = dataLayer.updateOrInsert(expectedRepo);
         } catch (DataLayerException e) {
@@ -50,18 +50,18 @@ public class DbRepoDataLayerTest {
 
     @Test
     public void givenInvalidDatabase_whenUpdateOrInsertRepo_thenThrowDataLayerException() throws SQLException, DataLayerException {
-        Repository awesomeRepo = Repository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
-        whenUpdateOrInsertRepoAffectsRows(2);
+        DatabaseRepository awesomeRepo = DatabaseRepository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
+        whenUpdateOrInsertRepoAffectsRows(3);
 
         thrown.expect(DataLayerException.class);
-        thrown.expectMessage(Matchers.contains("More than"));
+        thrown.expectMessage(Matchers.contains("Unhandled"));
         dataLayer.updateOrInsert(awesomeRepo);
     }
 
     @Test
     public void givenValidRepo_whenUpdateOrInsertRepo_thenThrowDataLayerException() throws SQLException, DataLayerException {
-        Repository awesomeRepo = Repository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
-        whenUpdateOrInsertRepoAffectsRows(0);
+        DatabaseRepository awesomeRepo = DatabaseRepository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
+        whenUpdateOrInsertRepoAffectsRows(-1);
 
         thrown.expect(DataLayerException.class);
         thrown.expectMessage(Matchers.contains("Could not"));
