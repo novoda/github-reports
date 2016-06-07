@@ -1,6 +1,14 @@
-# github-reports
+github-reports
+==============
 
-Gets info from GitHub!
+_Team statistics from GitHub into your shell._
 
-At the moment on the `ruby-reports` module is functional. The Java module is a work in progress.
-See [ruby-reports/README.md](ruby-reports/README.md) for more details.
+--------------
+
+The project is made of the following modules (you can click on each project to access the specific documentation):
+
+* [`core`](core/README.md) contains all the models and main interfaces shared across the project
+* [`db-layer`](db-layer/README.md) implements the persistence layer on a MySQL database
+* [`reports-batch`](reports-batch/README.md) contains a CLI to query the Github APIs and store retrieved data on the database
+* [`reports-stats`](reports-stats/README.md) contains a CLI to query for statistics on data available on the database
+
