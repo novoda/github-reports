@@ -1,9 +1,9 @@
 package com.novoda.github.reports.batch.retry;
 
+import com.novoda.github.reports.batch.network.RateLimitEncounteredException;
 import com.novoda.github.reports.batch.network.RateLimitResetRepository;
-import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubject;
-import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
@@ -14,10 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 
-import okhttp3.MediaType;
-import okhttp3.ResponseBody;
-import retrofit2.Response;
-import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 import rx.Scheduler;
 import rx.observers.TestSubscriber;
@@ -75,7 +71,7 @@ public class RetryWhenTokenResetsTest {
     }
 
     private Observable<Integer> givenAlwaysErroringObservable() {
-        return Observable.error(givenHttpException());
+        return Observable.error(givenRateLimitException());
     }
 
     @Test
@@ -99,7 +95,7 @@ public class RetryWhenTokenResetsTest {
             subscriber.onNext(2);
             subscriber.onNext(3);
             if (!errored[0]) {
-                subscriber.onError(givenHttpException());
+                subscriber.onError(givenRateLimitException());
                 errored[0] = true;
             } else {
                 subscriber.onNext(4);
@@ -108,8 +104,8 @@ public class RetryWhenTokenResetsTest {
         });
     }
 
-    private HttpException givenHttpException() {
-        return new HttpException(Response.error(403, ResponseBody.create(MediaType.parse("application/json"), "{}")));
+    private IOException givenRateLimitException() {
+        return new IOException(new RateLimitEncounteredException("Banana"));
     }
 
     private Observable<Integer> whenComposeWithRetryMechanismAndSubscribe(Observable<Integer> observable) {
