@@ -108,13 +108,15 @@ public class IssuesServiceClient {
         int issueNumber = repositoryIssue.getIssue().getNumber();
         return issueService
                 .getCommentsFor(organisation, repository, issueNumber, since)
-                .compose(observable -> {
-                    if (repositoryIssue.getIssue().isPullRequest()) {
-                        return observable.mergeWith(
-                                pullRequestService.getReviewCommentsForPullRequestFor(organisation, repository, issueNumber, since));
-                    }
-                    return observable;
-                })
+                .compose(ReviewCommentsTransformer.newInstance(
+                        repositoryIssue,
+                        () -> pullRequestService.getReviewCommentsForPullRequestFor(
+                                organisation,
+                                repository,
+                                issueNumber,
+                                since
+                        )
+                ))
                 .map(comment -> RepositoryIssueEventComment.newInstance(repositoryIssue, comment))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
                 .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter))
