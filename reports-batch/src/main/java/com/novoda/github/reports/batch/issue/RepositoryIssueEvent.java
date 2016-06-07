@@ -19,6 +19,18 @@ public abstract class RepositoryIssueEvent {
         return repository;
     }
 
+    public Long getRepositoryId() {
+        return repository.getId();
+    }
+
+    public Long getAuthorUserId() {
+        return getUser().getId();
+    }
+
+    public Long getOwnerUserId() {
+        return getIssue().getUser().getId();
+    }
+
     public GithubIssue getIssue() {
         return issue;
     }
