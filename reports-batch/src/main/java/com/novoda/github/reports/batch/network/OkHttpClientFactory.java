@@ -15,7 +15,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 class OkHttpClientFactory implements HttpClientFactory {
 
-    private static final String GITHUB_PROPERTIES_FILENAME = "../github.credentials";
+    private static final String GITHUB_PROPERTIES_FILENAME = "github.credentials";
 
     private final OkHttpClient.Builder okHttpClientBuilder;
     private final List<Interceptor> interceptors = new ArrayList<>();
@@ -49,7 +49,7 @@ class OkHttpClientFactory implements HttpClientFactory {
                 okHttpClientBuilder,
                 cacheFactory,
                 cacheStatsRepository,
-                (Interceptor[]) Stream.concat(Arrays.stream(extraInterceptors), Arrays.stream(defaultInterceptors)).toArray()
+                Stream.concat(Arrays.stream(extraInterceptors), Arrays.stream(defaultInterceptors)).toArray(Interceptor[]::new)
         );
     }
 
