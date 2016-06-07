@@ -1,12 +1,13 @@
 package com.novoda.github.reports.batch.retry;
 
+import com.novoda.github.reports.batch.network.RateLimitEncounteredException;
 import com.novoda.github.reports.batch.network.RateLimitRemainingResetRepositoryContainer;
 import com.novoda.github.reports.batch.network.RateLimitResetRepository;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 
-import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 
 public class RetryWhenTokenResets<T> implements Observable.Transformer<T, T> {
@@ -29,7 +30,7 @@ public class RetryWhenTokenResets<T> implements Observable.Transformer<T, T> {
     @Override
     public Observable<T> call(Observable<T> inObservable) {
         return inObservable.retryWhen(errors -> errors.switchMap(error -> {
-            if (error instanceof HttpException) {
+            if (error instanceof IOException && error.getCause() instanceof RateLimitEncounteredException) {
                 long nextTick = getTimeDiffInMillisFromNow(rateLimitResetRepository.getNextResetTime());
                 resetTimerSubject.setRateLimitResetTimer(nextTick);
                 return resetTimerSubject.getTimeObservable().take(1);
