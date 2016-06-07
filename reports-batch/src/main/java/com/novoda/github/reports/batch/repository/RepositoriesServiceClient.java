@@ -10,7 +10,7 @@ import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbRepoDataLayer;
-import com.novoda.github.reports.data.model.DatabaseRepository;
+import com.novoda.github.reports.data.model.Repository;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -19,7 +19,7 @@ public class RepositoriesServiceClient {
 
     private final RepositoryService repositoryService;
     private final RepoDataLayer repoDataLayer;
-    private final Converter<GithubRepository, DatabaseRepository> converter;
+    private final Converter<GithubRepository, Repository> converter;
 
     private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
 
@@ -27,14 +27,14 @@ public class RepositoriesServiceClient {
         GithubRepositoriesService repositoriesService = GithubRepositoriesService.newInstance();
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
         RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
-        Converter<GithubRepository, DatabaseRepository> converter = RepositoryConverter.newInstance();
+        Converter<GithubRepository, Repository> converter = RepositoryConverter.newInstance();
         RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
         return new RepositoriesServiceClient(repositoriesService, repoDataLayer, converter, rateLimitResetTimerSubject);
     }
 
     private RepositoriesServiceClient(GithubRepositoriesService repositoryService,
                                       RepoDataLayer repoDataLayer,
-                                      Converter<GithubRepository, DatabaseRepository> converter,
+                                      Converter<GithubRepository, Repository> converter,
                                       RateLimitResetTimerSubject rateLimitResetTimerSubject) {
         this.repositoryService = repositoryService;
         this.repoDataLayer = repoDataLayer;

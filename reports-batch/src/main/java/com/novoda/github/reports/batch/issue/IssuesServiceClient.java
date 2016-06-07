@@ -21,8 +21,8 @@ import com.novoda.github.reports.data.UserDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbEventDataLayer;
 import com.novoda.github.reports.data.db.DbUserDataLayer;
-import com.novoda.github.reports.data.model.DatabaseEvent;
-import com.novoda.github.reports.data.model.DatabaseUser;
+import com.novoda.github.reports.data.model.Event;
+import com.novoda.github.reports.data.model.User;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -48,11 +48,11 @@ public class IssuesServiceClient {
     private final IssueService issueService;
     private final PullRequestService pullRequestService;
     private final EventDataLayer eventDataLayer;
-    private final Converter<RepositoryIssue, DatabaseEvent> issueConverter;
+    private final Converter<RepositoryIssue, Event> issueConverter;
     private final UserDataLayer userDataLayer;
-    private final Converter<RepositoryIssue, DatabaseUser> userConverter;
-    private final Converter<RepositoryIssueEvent, DatabaseUser> eventUserConverter;
-    private final Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter;
+    private final Converter<RepositoryIssue, User> userConverter;
+    private final Converter<RepositoryIssueEvent, User> eventUserConverter;
+    private final Converter<RepositoryIssueEvent, Event> eventConverter;
 
     private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
 
@@ -62,11 +62,11 @@ public class IssuesServiceClient {
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
 
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
-        Converter<RepositoryIssue, DatabaseEvent> issueConverter = IssueConverter.newInstance();
+        Converter<RepositoryIssue, Event> issueConverter = IssueConverter.newInstance();
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
-        Converter<RepositoryIssue, DatabaseUser> userConverter = UserConverter.newInstance();
-        Converter<RepositoryIssueEvent, DatabaseUser> userEventConverter = EventUserConverter.newInstance();
-        Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter = EventConverter.newInstance();
+        Converter<RepositoryIssue, User> userConverter = UserConverter.newInstance();
+        Converter<RepositoryIssueEvent, User> userEventConverter = EventUserConverter.newInstance();
+        Converter<RepositoryIssueEvent, Event> eventConverter = EventConverter.newInstance();
 
         RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
 
@@ -86,11 +86,11 @@ public class IssuesServiceClient {
     private IssuesServiceClient(IssueService issueService,
                                 PullRequestService pullRequestService,
                                 EventDataLayer eventDataLayer,
-                                Converter<RepositoryIssue, DatabaseEvent> issueConverter,
+                                Converter<RepositoryIssue, Event> issueConverter,
                                 UserDataLayer userDataLayer,
-                                Converter<RepositoryIssue, DatabaseUser> userConverter,
-                                Converter<RepositoryIssueEvent, DatabaseUser> eventUserConverter,
-                                Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter,
+                                Converter<RepositoryIssue, User> userConverter,
+                                Converter<RepositoryIssueEvent, User> eventUserConverter,
+                                Converter<RepositoryIssueEvent, Event> eventConverter,
                                 RateLimitResetTimerSubject rateLimitResetTimerSubject) {
         this.issueService = issueService;
         this.pullRequestService = pullRequestService;
