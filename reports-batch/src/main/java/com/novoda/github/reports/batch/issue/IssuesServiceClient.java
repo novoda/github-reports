@@ -104,7 +104,7 @@ public class IssuesServiceClient {
     }
 
     public Observable<RepositoryIssue> retrieveIssuesFrom(GithubRepository repository, Date since) {
-        return issueService.getIssuesFor(repository.getOwner().getUsername(), repository.getName(), since)
+        return issueService.getIssuesFor(repository.getOwnerUsername(), repository.getName(), since)
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
                 .map(issue -> RepositoryIssue.newInstance(repository, issue))
                 .compose(PersistUserTransformer.newInstance(userDataLayer, userConverter))
@@ -127,9 +127,9 @@ public class IssuesServiceClient {
     }
 
     private Observable<GithubComment> retrieveCommentsFromIssue(RepositoryIssue repositoryIssue, Date since) {
-        String organisation = repositoryIssue.getRepository().getOwner().getUsername();
-        String repository = repositoryIssue.getRepository().getName();
-        int issueNumber = repositoryIssue.getIssue().getNumber();
+        String organisation = repositoryIssue.getOwnerUsername();
+        String repository = repositoryIssue.getRepositoryName();
+        int issueNumber = repositoryIssue.getIssueNumber();
         return issueService
                 .getCommentsFor(organisation, repository, issueNumber, since)
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject));
@@ -139,24 +139,24 @@ public class IssuesServiceClient {
         if (isNotPullRequest(repositoryIssue)) {
             return Observable.empty();
         }
-        String organisation = repositoryIssue.getRepository().getOwner().getUsername();
-        String repository = repositoryIssue.getRepository().getName();
-        int issueNumber = repositoryIssue.getIssue().getNumber();
+        String organisation = repositoryIssue.getOwnerUsername();
+        String repository = repositoryIssue.getRepositoryName();
+        int issueNumber = repositoryIssue.getIssueNumber();
         return pullRequestService
                 .getReviewCommentsForPullRequestFor(organisation, repository, issueNumber, since)
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject));
     }
 
     private boolean isNotPullRequest(RepositoryIssue repositoryIssue) {
-        return !repositoryIssue.getIssue().isPullRequest();
+            return !repositoryIssue.isPullRequest();
     }
 
     public Observable<RepositoryIssueEvent> retrieveEventsFrom(RepositoryIssue repositoryIssue, Date since) {
         return issueService
                 .getEventsFor(
-                        repositoryIssue.getRepository().getOwner().getUsername(),
-                        repositoryIssue.getRepository().getName(),
-                        repositoryIssue.getIssue().getNumber(),
+                        repositoryIssue.getOwnerUsername(),
+                        repositoryIssue.getRepositoryName(),
+                        repositoryIssue.getIssueNumber(),
                         since
                 )
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
