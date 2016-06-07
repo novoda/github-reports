@@ -16,26 +16,26 @@ class GithubRepositoriesService implements RepositoryService {
     private static final int FIRST_PAGE = 1;
 
     private final GithubApiService githubApiService;
-    private final RateLimitDelayTransformer<Repository> rateLimitDelayTransformer;
+    private final RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer;
 
     static GithubRepositoriesService newInstance() {
         GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
-        RateLimitDelayTransformer<Repository> rateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
+        RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
         return new GithubRepositoriesService(githubServiceFactory.createService(), rateLimitDelayTransformer);
     }
 
-    private GithubRepositoriesService(GithubApiService githubApiService, RateLimitDelayTransformer<Repository> rateLimitDelayTransformer) {
+    private GithubRepositoriesService(GithubApiService githubApiService, RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer) {
         this.githubApiService = githubApiService;
         this.rateLimitDelayTransformer = rateLimitDelayTransformer;
     }
 
     @Override
-    public Observable<Repository> getRepositoriesFor(String organisation) {
+    public Observable<GithubRepository> getRepositoriesFor(String organisation) {
         return getPagedRepositoriesFor(organisation, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
-    private Observable<Response<List<Repository>>> getPagedRepositoriesFor(String organisation, Integer page, Integer pageCount) {
+    private Observable<Response<List<GithubRepository>>> getPagedRepositoriesFor(String organisation, Integer page, Integer pageCount) {
         return githubApiService.getRepositoriesResponseForPage(organisation, page, pageCount)
                 .compose(rateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedRepositoriesFor(organisation, nextPage, pageCount)));

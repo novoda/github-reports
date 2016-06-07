@@ -19,7 +19,7 @@ public class RepositoriesServiceClient {
 
     private final RepositoryService repositoryService;
     private final RepoDataLayer repoDataLayer;
-    private final Converter<Repository, DatabaseRepository> converter;
+    private final Converter<GithubRepository, DatabaseRepository> converter;
 
     private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
 
@@ -27,14 +27,14 @@ public class RepositoriesServiceClient {
         GithubRepositoriesService repositoriesService = GithubRepositoriesService.newInstance();
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
         RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
-        Converter<Repository, DatabaseRepository> converter = RepositoryConverter.newInstance();
+        Converter<GithubRepository, DatabaseRepository> converter = RepositoryConverter.newInstance();
         RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
         return new RepositoriesServiceClient(repositoriesService, repoDataLayer, converter, rateLimitResetTimerSubject);
     }
 
     private RepositoriesServiceClient(GithubRepositoriesService repositoryService,
                                       RepoDataLayer repoDataLayer,
-                                      Converter<Repository, DatabaseRepository> converter,
+                                      Converter<GithubRepository, DatabaseRepository> converter,
                                       RateLimitResetTimerSubject rateLimitResetTimerSubject) {
         this.repositoryService = repositoryService;
         this.repoDataLayer = repoDataLayer;
@@ -42,7 +42,7 @@ public class RepositoriesServiceClient {
         this.rateLimitResetTimerSubject = rateLimitResetTimerSubject;
     }
 
-    public Observable<Repository> retrieveRepositoriesFrom(String organisation) {
+    public Observable<GithubRepository> retrieveRepositoriesFrom(String organisation) {
         return repositoryService.getRepositoriesFor(organisation)
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
                 .compose(PersistRepositoryTransformer.newInstance(repoDataLayer, converter))

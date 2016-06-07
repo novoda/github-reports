@@ -1,15 +1,15 @@
 package com.novoda.github.reports.batch.issue;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.batch.User;
+import com.novoda.github.reports.batch.GithubUser;
 
 import java.util.Date;
 
-public class Comment {
+public class GithubComment {
 
     private long id;
 
-    private User user;
+    private GithubUser user;
 
     @SerializedName("created_at")
     private Date createdAt;
@@ -21,7 +21,7 @@ public class Comment {
         return id;
     }
 
-    public User getUser() {
+    public GithubUser getUser() {
         return user;
     }
 

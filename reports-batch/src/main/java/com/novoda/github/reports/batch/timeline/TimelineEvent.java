@@ -1,14 +1,14 @@
 package com.novoda.github.reports.batch.timeline;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.batch.User;
+import com.novoda.github.reports.batch.GithubUser;
 
 public class TimelineEvent {
 
     private long id;
 
     @SerializedName(value = "actor", alternate = {"user", "author"})
-    private User actor;
+    private GithubUser actor;
 
     @SerializedName("event")
     private Type type;
@@ -17,7 +17,7 @@ public class TimelineEvent {
         return id;
     }
 
-    public User getActor() {
+    public GithubUser getActor() {
         return actor;
     }
 

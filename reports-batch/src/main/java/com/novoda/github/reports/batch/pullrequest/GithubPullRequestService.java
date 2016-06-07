@@ -1,6 +1,6 @@
 package com.novoda.github.reports.batch.pullrequest;
 
-import com.novoda.github.reports.batch.issue.Comment;
+import com.novoda.github.reports.batch.issue.GithubComment;
 import com.novoda.github.reports.batch.network.DateToISO8601Converter;
 import com.novoda.github.reports.batch.network.GithubApiService;
 import com.novoda.github.reports.batch.network.GithubServiceFactory;
@@ -20,18 +20,18 @@ public class GithubPullRequestService implements PullRequestService {
 
     private final GithubApiService githubApiService;
     private final DateToISO8601Converter dateConverter;
-    private final RateLimitDelayTransformer<Comment> commentRateLimitDelayTransformer;
+    private final RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer;
 
     public static GithubPullRequestService newInstance() {
         GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
-        RateLimitDelayTransformer<Comment> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
+        RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
         return new GithubPullRequestService(githubServiceFactory.createService(), dateConverter, commentRateLimitDelayTransformer);
     }
 
     private GithubPullRequestService(GithubApiService githubApiService,
                                      DateToISO8601Converter dateConverter,
-                                     RateLimitDelayTransformer<Comment> commentRateLimitDelayTransformer) {
+                                     RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer) {
 
         this.githubApiService = githubApiService;
         this.dateConverter = dateConverter;
@@ -39,18 +39,18 @@ public class GithubPullRequestService implements PullRequestService {
     }
 
     @Override
-    public Observable<Comment> getReviewCommentsForPullRequestFor(String organisation, String repository, Integer pullRequestNumber, Date since) {
+    public Observable<GithubComment> getReviewCommentsForPullRequestFor(String organisation, String repository, Integer pullRequestNumber, Date since) {
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return getPagedReviewCommentsForPullRequestFor(organisation, repository, pullRequestNumber, date, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
-    private Observable<Response<List<Comment>>> getPagedReviewCommentsForPullRequestFor(String organisation,
-                                                                                        String repository,
-                                                                                        Integer pullRequestNumber,
-                                                                                        String since,
-                                                                                        Integer page,
-                                                                                        Integer pageCount) {
+    private Observable<Response<List<GithubComment>>> getPagedReviewCommentsForPullRequestFor(String organisation,
+                                                                                              String repository,
+                                                                                              Integer pullRequestNumber,
+                                                                                              String since,
+                                                                                              Integer page,
+                                                                                              Integer pageCount) {
 
         return githubApiService.getReviewCommentsResponseForPullRequestAndPage(organisation, repository, pullRequestNumber, since, page, pageCount)
                 .compose(commentRateLimitDelayTransformer)

@@ -12,7 +12,7 @@ import com.novoda.github.reports.batch.persistence.converter.IssueConverter;
 import com.novoda.github.reports.batch.persistence.converter.UserConverter;
 import com.novoda.github.reports.batch.pullrequest.GithubPullRequestService;
 import com.novoda.github.reports.batch.pullrequest.PullRequestService;
-import com.novoda.github.reports.batch.repository.Repository;
+import com.novoda.github.reports.batch.repository.GithubRepository;
 import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubject;
 import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubjectContainer;
 import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
@@ -32,11 +32,11 @@ import java.util.Set;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static com.novoda.github.reports.batch.issue.Event.Type.*;
+import static com.novoda.github.reports.batch.issue.GithubEvent.Type.*;
 
 public class IssuesServiceClient {
 
-    private static final Set<Event.Type> EVENT_TYPES_TO_BE_STORED = new HashSet<>(Arrays.asList(
+    private static final Set<GithubEvent.Type> EVENT_TYPES_TO_BE_STORED = new HashSet<>(Arrays.asList(
             COMMENTED,
             CLOSED,
             HEAD_REF_DELETED,
@@ -103,7 +103,7 @@ public class IssuesServiceClient {
         this.rateLimitResetTimerSubject = rateLimitResetTimerSubject;
     }
 
-    public Observable<RepositoryIssue> retrieveIssuesFrom(Repository repository, Date since) {
+    public Observable<RepositoryIssue> retrieveIssuesFrom(GithubRepository repository, Date since) {
         return issueService.getIssuesFor(repository.getOwner().getUsername(), repository.getName(), since)
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
                 .map(issue -> RepositoryIssue.newInstance(repository, issue))
@@ -126,7 +126,7 @@ public class IssuesServiceClient {
                 .observeOn(Schedulers.immediate());
     }
 
-    private Observable<Comment> retrieveCommentsFromIssue(RepositoryIssue repositoryIssue, Date since) {
+    private Observable<GithubComment> retrieveCommentsFromIssue(RepositoryIssue repositoryIssue, Date since) {
         String organisation = repositoryIssue.getRepository().getOwner().getUsername();
         String repository = repositoryIssue.getRepository().getName();
         int issueNumber = repositoryIssue.getIssue().getNumber();
@@ -135,7 +135,7 @@ public class IssuesServiceClient {
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject));
     }
 
-    private Observable<Comment> retrieveCommentsFromPullRequestReview(RepositoryIssue repositoryIssue, Date since) {
+    private Observable<GithubComment> retrieveCommentsFromPullRequestReview(RepositoryIssue repositoryIssue, Date since) {
         if (!repositoryIssue.getIssue().isPullRequest()) {
             return Observable.empty();
         }
@@ -164,7 +164,7 @@ public class IssuesServiceClient {
                 .observeOn(Schedulers.immediate());
     }
 
-    private boolean shouldStoreEvent(Event event) {
+    private boolean shouldStoreEvent(GithubEvent event) {
         return EVENT_TYPES_TO_BE_STORED.contains(event.getType());
     }
 

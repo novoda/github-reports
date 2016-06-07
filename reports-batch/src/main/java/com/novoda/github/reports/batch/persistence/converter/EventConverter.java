@@ -1,9 +1,10 @@
 package com.novoda.github.reports.batch.persistence.converter;
 
+import com.novoda.github.reports.batch.issue.GithubEvent;
 import com.novoda.github.reports.batch.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.data.model.DatabaseEvent;
 import com.novoda.github.reports.data.model.EventType;
-import static com.novoda.github.reports.batch.issue.Event.Type.*;
+import static com.novoda.github.reports.batch.issue.GithubEvent.Type.*;
 import static com.novoda.github.reports.data.model.EventType.PULL_REQUEST_MERGE;
 
 public class EventConverter implements Converter<RepositoryIssueEvent, DatabaseEvent> {
@@ -32,7 +33,7 @@ public class EventConverter implements Converter<RepositoryIssueEvent, DatabaseE
         );
     }
 
-    private EventType convertEventType(com.novoda.github.reports.batch.issue.Event.Type type, boolean isIssue) throws UnsupportedEventTypeException {
+    private EventType convertEventType(GithubEvent.Type type, boolean isIssue) throws UnsupportedEventTypeException {
         if (type == HEAD_REF_DELETED) {
             return EventType.BRANCH_DELETE;
         }
