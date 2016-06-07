@@ -1,12 +1,12 @@
 package com.novoda.github.reports.batch.issue;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.batch.User;
-import com.novoda.github.reports.batch.pullrequest.PullRequest;
+import com.novoda.github.reports.batch.GithubUser;
+import com.novoda.github.reports.batch.pullrequest.GithubPullRequest;
 
 import java.util.Date;
 
-public class Issue {
+public class GithubIssue {
 
     private long id;
 
@@ -14,7 +14,7 @@ public class Issue {
 
     private String title;
 
-    private User user;
+    private GithubUser user;
 
     private State state;
 
@@ -32,7 +32,7 @@ public class Issue {
     private Date closedAt;
 
     @SerializedName("pull_request")
-    private PullRequest pullRequest;
+    private GithubPullRequest pullRequest;
 
     public long getId() {
         return id;
@@ -46,7 +46,7 @@ public class Issue {
         return title;
     }
 
-    public User getUser() {
+    public GithubUser getUser() {
         return user;
     }
 
