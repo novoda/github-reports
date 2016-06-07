@@ -1,18 +1,18 @@
 package com.novoda.github.reports.batch.issue;
 
-import com.novoda.github.reports.batch.User;
+import com.novoda.github.reports.batch.GithubUser;
 
 import java.util.Date;
 
 public class RepositoryIssueEventComment extends RepositoryIssueEvent {
 
-    private final Comment comment;
+    private final GithubComment comment;
 
-    public static RepositoryIssueEvent newInstance(RepositoryIssue repositoryIssue, Comment comment) {
+    public static RepositoryIssueEvent newInstance(RepositoryIssue repositoryIssue, GithubComment comment) {
         return new RepositoryIssueEventComment(repositoryIssue, comment);
     }
 
-    private RepositoryIssueEventComment(RepositoryIssue repositoryIssue, Comment comment) {
+    private RepositoryIssueEventComment(RepositoryIssue repositoryIssue, GithubComment comment) {
         super(repositoryIssue);
         this.comment = comment;
     }
@@ -23,7 +23,7 @@ public class RepositoryIssueEventComment extends RepositoryIssueEvent {
     }
 
     @Override
-    public User getUser() {
+    public GithubUser getUser() {
         return comment.getUser();
     }
 
@@ -33,12 +33,14 @@ public class RepositoryIssueEventComment extends RepositoryIssueEvent {
     }
 
     @Override
-    public Event.Type getEventType() {
-        return Event.Type.COMMENTED;
+    public GithubEvent.Type getEventType() {
+        return GithubEvent.Type.COMMENTED;
     }
 
     @Override
     public String toString() {
-        return comment.toString();
+        return comment.toString() +
+                " on issue " + getIssue().toString() +
+                " for repository " + getRepository().getName();
     }
 }
