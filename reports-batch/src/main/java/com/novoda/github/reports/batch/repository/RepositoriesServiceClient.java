@@ -13,7 +13,6 @@ import com.novoda.github.reports.data.db.DbRepoDataLayer;
 import com.novoda.github.reports.data.model.Repository;
 
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 public class RepositoriesServiceClient {
 
@@ -45,9 +44,7 @@ public class RepositoriesServiceClient {
     public Observable<GithubRepository> retrieveRepositoriesFrom(String organisation) {
         return repositoryService.getRepositoriesFor(organisation)
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
-                .compose(PersistRepositoryTransformer.newInstance(repoDataLayer, converter))
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.immediate());
+                .compose(PersistRepositoryTransformer.newInstance(repoDataLayer, converter));
     }
 
 }
