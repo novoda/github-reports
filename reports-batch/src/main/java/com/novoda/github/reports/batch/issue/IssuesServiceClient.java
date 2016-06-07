@@ -12,14 +12,17 @@ import com.novoda.github.reports.batch.persistence.converter.IssueConverter;
 import com.novoda.github.reports.batch.persistence.converter.UserConverter;
 import com.novoda.github.reports.batch.pullrequest.GithubPullRequestService;
 import com.novoda.github.reports.batch.pullrequest.PullRequestService;
-import com.novoda.github.reports.batch.repository.Repository;
+import com.novoda.github.reports.batch.repository.GithubRepository;
+import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubject;
+import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubjectContainer;
+import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.UserDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbEventDataLayer;
 import com.novoda.github.reports.data.db.DbUserDataLayer;
-import com.novoda.github.reports.data.model.DatabaseEvent;
-import com.novoda.github.reports.data.model.DatabaseUser;
+import com.novoda.github.reports.data.model.Event;
+import com.novoda.github.reports.data.model.User;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -29,11 +32,11 @@ import java.util.Set;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static com.novoda.github.reports.batch.issue.Event.Type.*;
+import static com.novoda.github.reports.batch.issue.GithubEvent.Type.*;
 
 public class IssuesServiceClient {
 
-    private static final Set<Event.Type> EVENT_TYPES_TO_BE_STORED = new HashSet<>(Arrays.asList(
+    private static final Set<GithubEvent.Type> EVENT_TYPES_TO_BE_STORED = new HashSet<>(Arrays.asList(
             COMMENTED,
             CLOSED,
             HEAD_REF_DELETED,
@@ -45,11 +48,13 @@ public class IssuesServiceClient {
     private final IssueService issueService;
     private final PullRequestService pullRequestService;
     private final EventDataLayer eventDataLayer;
-    private final Converter<RepositoryIssue, DatabaseEvent> issueConverter;
+    private final Converter<RepositoryIssue, Event> issueConverter;
     private final UserDataLayer userDataLayer;
-    private final Converter<RepositoryIssue, DatabaseUser> userConverter;
-    private final Converter<RepositoryIssueEvent, DatabaseUser> eventUserConverter;
-    private final Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter;
+    private final Converter<RepositoryIssue, User> userConverter;
+    private final Converter<RepositoryIssueEvent, User> eventUserConverter;
+    private final Converter<RepositoryIssueEvent, Event> eventConverter;
+
+    private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
 
     public static IssuesServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
@@ -57,11 +62,13 @@ public class IssuesServiceClient {
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
 
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
-        Converter<RepositoryIssue, DatabaseEvent> issueConverter = IssueConverter.newInstance();
+        Converter<RepositoryIssue, Event> issueConverter = IssueConverter.newInstance();
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
-        Converter<RepositoryIssue, DatabaseUser> userConverter = UserConverter.newInstance();
-        Converter<RepositoryIssueEvent, DatabaseUser> userEventConverter = EventUserConverter.newInstance();
-        Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter = EventConverter.newInstance();
+        Converter<RepositoryIssue, User> userConverter = UserConverter.newInstance();
+        Converter<RepositoryIssueEvent, User> userEventConverter = EventUserConverter.newInstance();
+        Converter<RepositoryIssueEvent, Event> eventConverter = EventConverter.newInstance();
+
+        RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
 
         return new IssuesServiceClient(
                 issueService,
@@ -71,18 +78,20 @@ public class IssuesServiceClient {
                 userDataLayer,
                 userConverter,
                 userEventConverter,
-                eventConverter
+                eventConverter,
+                rateLimitResetTimerSubject
         );
     }
 
     private IssuesServiceClient(IssueService issueService,
                                 PullRequestService pullRequestService,
                                 EventDataLayer eventDataLayer,
-                                Converter<RepositoryIssue, DatabaseEvent> issueConverter,
+                                Converter<RepositoryIssue, Event> issueConverter,
                                 UserDataLayer userDataLayer,
-                                Converter<RepositoryIssue, DatabaseUser> userConverter,
-                                Converter<RepositoryIssueEvent, DatabaseUser> eventUserConverter,
-                                Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter) {
+                                Converter<RepositoryIssue, User> userConverter,
+                                Converter<RepositoryIssueEvent, User> eventUserConverter,
+                                Converter<RepositoryIssueEvent, Event> eventConverter,
+                                RateLimitResetTimerSubject rateLimitResetTimerSubject) {
         this.issueService = issueService;
         this.pullRequestService = pullRequestService;
         this.eventDataLayer = eventDataLayer;
@@ -91,10 +100,12 @@ public class IssuesServiceClient {
         this.userConverter = userConverter;
         this.eventUserConverter = eventUserConverter;
         this.eventConverter = eventConverter;
+        this.rateLimitResetTimerSubject = rateLimitResetTimerSubject;
     }
 
-    public Observable<RepositoryIssue> retrieveIssuesFrom(Repository repository, Date since) {
+    public Observable<RepositoryIssue> retrieveIssuesFrom(GithubRepository repository, Date since) {
         return issueService.getIssuesFor(repository.getOwner().getUsername(), repository.getName(), since)
+                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
                 .map(issue -> RepositoryIssue.newInstance(repository, issue))
                 .compose(PersistUserTransformer.newInstance(userDataLayer, userConverter))
                 .compose(PersistIssueTransformer.newInstance(eventDataLayer, issueConverter))
@@ -103,25 +114,37 @@ public class IssuesServiceClient {
     }
 
     public Observable<RepositoryIssueEvent> retrieveCommentsFrom(RepositoryIssue repositoryIssue, Date since) {
-        String organisation = repositoryIssue.getRepository().getOwner().getUsername();
-        String repository = repositoryIssue.getRepository().getName();
-        int issueNumber = repositoryIssue.getIssue().getNumber();
-        return issueService
-                .getCommentsFor(organisation, repository, issueNumber, since)
-                .compose(ReviewCommentsTransformer.newInstance(
-                        repositoryIssue,
-                        () -> pullRequestService.getReviewCommentsForPullRequestFor(
-                                organisation,
-                                repository,
-                                issueNumber,
-                                since
-                        )
-                ))
+        return Observable
+                .merge(
+                        retrieveCommentsFromIssue(repositoryIssue, since),
+                        retrieveCommentsFromPullRequestReview(repositoryIssue, since)
+                )
                 .map(comment -> RepositoryIssueEventComment.newInstance(repositoryIssue, comment))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
                 .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.immediate());
+    }
+
+    private Observable<GithubComment> retrieveCommentsFromIssue(RepositoryIssue repositoryIssue, Date since) {
+        String organisation = repositoryIssue.getRepository().getOwner().getUsername();
+        String repository = repositoryIssue.getRepository().getName();
+        int issueNumber = repositoryIssue.getIssue().getNumber();
+        return issueService
+                .getCommentsFor(organisation, repository, issueNumber, since)
+                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject));
+    }
+
+    private Observable<GithubComment> retrieveCommentsFromPullRequestReview(RepositoryIssue repositoryIssue, Date since) {
+        if (!repositoryIssue.getIssue().isPullRequest()) {
+            return Observable.empty();
+        }
+        String organisation = repositoryIssue.getRepository().getOwner().getUsername();
+        String repository = repositoryIssue.getRepository().getName();
+        int issueNumber = repositoryIssue.getIssue().getNumber();
+        return pullRequestService
+                .getReviewCommentsForPullRequestFor(organisation, repository, issueNumber, since)
+                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject));
     }
 
     public Observable<RepositoryIssueEvent> retrieveEventsFrom(RepositoryIssue repositoryIssue, Date since) {
@@ -132,6 +155,7 @@ public class IssuesServiceClient {
                         repositoryIssue.getIssue().getNumber(),
                         since
                 )
+                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
                 .filter(this::shouldStoreEvent)
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
@@ -140,7 +164,7 @@ public class IssuesServiceClient {
                 .observeOn(Schedulers.immediate());
     }
 
-    private boolean shouldStoreEvent(Event event) {
+    private boolean shouldStoreEvent(GithubEvent event) {
         return EVENT_TYPES_TO_BE_STORED.contains(event.getType());
     }
 

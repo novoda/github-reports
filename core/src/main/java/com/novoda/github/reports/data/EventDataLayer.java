@@ -1,7 +1,7 @@
 package com.novoda.github.reports.data;
 
-import com.novoda.github.reports.data.model.DatabaseEvent;
+import com.novoda.github.reports.data.model.Event;
 
-public interface EventDataLayer extends DataLayer<DatabaseEvent> {
+public interface EventDataLayer extends DataLayer<Event> {
 
 }

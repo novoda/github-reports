@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.rx;
+package com.novoda.github.reports.batch.retry;
 
 import java.util.concurrent.TimeUnit;
 
@@ -8,7 +8,7 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-class RateLimitResetTimerSubject {
+public class RateLimitResetTimerSubject {
 
     private final Scheduler scheduler;
     private final PublishSubject<Long> timeSubject;

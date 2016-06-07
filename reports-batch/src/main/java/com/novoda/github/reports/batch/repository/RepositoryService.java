@@ -4,6 +4,6 @@ import rx.Observable;
 
 interface RepositoryService {
 
-    Observable<Repository> getRepositoriesFor(String organisation);
+    Observable<GithubRepository> getRepositoriesFor(String organisation);
 
 }

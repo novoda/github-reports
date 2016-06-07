@@ -4,7 +4,7 @@ import com.novoda.github.reports.batch.issue.IssuesServiceClient;
 import com.novoda.github.reports.batch.issue.RepositoryIssue;
 import com.novoda.github.reports.batch.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.batch.repository.RepositoriesServiceClient;
-import com.novoda.github.reports.batch.repository.Repository;
+import com.novoda.github.reports.batch.repository.GithubRepository;
 
 import java.util.Collections;
 import java.util.Date;
@@ -71,10 +71,10 @@ class DebugClient {
     }
 
     static void retrieveIssues(String organisation, Long repoId, String repoName) {
-        Repository repo = new Repository();
+        GithubRepository repo = new GithubRepository();
         repo.setName(repoName);
         repo.setId(repoId);
-        User owner = new User();
+        GithubUser owner = new GithubUser();
         owner.setUsername(organisation);
         repo.setOwner(owner);
         Observable.from(Collections.singletonList(repo))
@@ -99,10 +99,10 @@ class DebugClient {
     }
 
     static void retrieveIssuesAndEvents(String organisation, Long repoId, String repoName) {
-        Repository repo = new Repository();
+        GithubRepository repo = new GithubRepository();
         repo.setName(repoName);
         repo.setId(repoId);
-        User owner = new User();
+        GithubUser owner = new GithubUser();
         owner.setUsername(organisation);
         repo.setOwner(owner);
         Observable.from(Collections.singletonList(repo))
@@ -128,12 +128,12 @@ class DebugClient {
                 });
     }
 
-    private static Observable.Transformer<? super String, ? extends Repository> retrieveRepositoriesFromOrganizations() {
+    private static Observable.Transformer<? super String, ? extends GithubRepository> retrieveRepositoriesFromOrganizations() {
         return organizationObservable ->
                 organizationObservable.flatMap(repositoriesServiceClient::retrieveRepositoriesFrom);
     }
 
-    private static Observable.Transformer<? super Repository, ? extends RepositoryIssue> retrieveIssuesFromRepositories(Date since) {
+    private static Observable.Transformer<? super GithubRepository, ? extends RepositoryIssue> retrieveIssuesFromRepositories(Date since) {
         return repositoryObservable ->
                 repositoryObservable.flatMap(repository -> issueServiceClient.retrieveIssuesFrom(repository, since));
     }

@@ -1,6 +1,6 @@
 package com.novoda.github.reports.batch.network;
 
-import com.novoda.github.reports.batch.repository.Repository;
+import com.novoda.github.reports.batch.repository.GithubRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,17 +32,17 @@ public class RateLimitDelayTransformerTest {
     @Mock
     RateLimitResetRepository mockRateLimitResetRepository;
 
-    private TestSubscriber<Response<List<Repository>>> testSubscriber;
+    private TestSubscriber<Response<List<GithubRepository>>> testSubscriber;
 
     private TestScheduler testScheduler;
 
-    private PublishSubject<Response<List<Repository>>> publishSubject;
+    private PublishSubject<Response<List<GithubRepository>>> publishSubject;
 
-    private Observable<Response<List<Repository>>> observable;
+    private Observable<Response<List<GithubRepository>>> observable;
 
     private SystemClock systemClock;
 
-    private RateLimitDelayTransformer<Repository> rateLimitDelayTransformer;
+    private RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer;
 
     @Before
     public void setUp() throws Exception {
@@ -89,13 +89,13 @@ public class RateLimitDelayTransformerTest {
         when(mockRateLimitRemainingCounter.get()).thenReturn(0);
         when(mockRateLimitResetRepository.getNextResetTime()).thenReturn(ANY_RESET_TIMESTAMP);
 
-        Observable<Response<List<Repository>>> delayed = rateLimitDelayTransformer.call(observable);
+        Observable<Response<List<GithubRepository>>> delayed = rateLimitDelayTransformer.call(observable);
         delayed.subscribe(testSubscriber);
 
         long delayMillis = ANY_RESET_TIMESTAMP - systemClock.currentTimeMillis();
         testScheduler.advanceTimeBy(delayMillis, TimeUnit.MILLISECONDS);
 
-        Response<List<Repository>> response = Response.success(new ArrayList<>());
+        Response<List<GithubRepository>> response = Response.success(new ArrayList<>());
         publishSubject.onNext(response);
 
         testSubscriber.assertValue(response);
@@ -106,7 +106,7 @@ public class RateLimitDelayTransformerTest {
         when(mockRateLimitRemainingCounter.get()).thenReturn(0);
         when(mockRateLimitResetRepository.getNextResetTime()).thenReturn(ANY_RESET_TIMESTAMP);
 
-        Observable<Response<List<Repository>>> delayed = rateLimitDelayTransformer.call(observable);
+        Observable<Response<List<GithubRepository>>> delayed = rateLimitDelayTransformer.call(observable);
         delayed.subscribe(testSubscriber);
 
         testSubscriber.assertNoValues();

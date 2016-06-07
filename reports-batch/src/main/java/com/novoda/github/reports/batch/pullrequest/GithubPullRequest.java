@@ -1,5 +1,5 @@
 package com.novoda.github.reports.batch.pullrequest;
 
-public class PullRequest {
+public class GithubPullRequest {
     // used only to understand if an issue is a PR
 }

@@ -2,7 +2,7 @@ package com.novoda.github.reports.batch;
 
 import com.google.gson.annotations.SerializedName;
 
-public class User {
+public class GithubUser {
 
     private long id;
 
