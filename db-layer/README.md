@@ -9,13 +9,13 @@ This module implements the data layer accessors defined in the `core` module to 
 
 ### Configuration
 
-To configure the database, you need to have, in the root project directory, a `database.credentials` file with the following properties defined:
+To configure the database you need to have a `database.credentials` file in the root project directory, with the following properties defined:
 
 * `DB_USER`, username for the database instance
 * `DB_PASSWORD`, password for the database instance
 * `DB_CONNECTION_STRING`, JDBS connection string to the database instance
 
-For an example, see the [`database.credentials.sample` file](../database.credentials.sample)
+For an example, see the [`database.credentials.sample` file](../database.credentials.sample);
 
 ### Usage
 
@@ -29,7 +29,7 @@ DbRepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
 ```
 
 **NOTE**: Please note that, even though `DbConnectionManager` returns reusable pooled connections, you still need to close it after you finish using
-it for your transactions.
+it for your transactions (not necessary if you just use the available data layer classes).
 
 ### Build
 

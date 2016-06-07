@@ -9,8 +9,8 @@ _CLI to mine data from your Github organization._
 
 ### Configuration
 
-To configure the program, you need to put both a `database.credentials` (see [`db-layer` docs](../db-layer/README.md)) and a `github.credentials` file
-in the root project directory.
+To configure the program, you need to put both a `database.credentials` (see [`db-layer` docs](../db-layer/README.md#configuration)) and a
+`github.credentials` file in the root project directory.
 
 The `github.credentials` file must contain the `GITHUB_OAUTH_TOKEN` property, which you can generate on your Github organization profile.
 For an example, see the [`github.credentials.sample` file](../github.credentials.sample).
