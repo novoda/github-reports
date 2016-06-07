@@ -49,7 +49,7 @@ class OkHttpClientFactory implements HttpClientFactory {
                 okHttpClientBuilder,
                 cacheFactory,
                 cacheStatsRepository,
-                (Interceptor[]) Stream.concat(Arrays.stream(extraInterceptors), Arrays.stream(defaultInterceptors)).toArray()
+                Stream.concat(Arrays.stream(extraInterceptors), Arrays.stream(defaultInterceptors)).toArray(Interceptor[]::new)
         );
     }
 
