@@ -18,7 +18,7 @@ public class BatchOptions {
         if (organisation != null && !organisation.isEmpty()) {
             return organisation.get(0);
         }
-        return null;
+        throw new IllegalArgumentException("You need to specify the organisation at the very least.");
     }
 
     public Date getFrom() {
