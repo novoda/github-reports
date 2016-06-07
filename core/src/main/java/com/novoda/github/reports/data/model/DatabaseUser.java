@@ -3,10 +3,10 @@ package com.novoda.github.reports.data.model;
 import com.google.auto.value.AutoValue;
 
 @AutoValue
-public abstract class User {
+public abstract class DatabaseUser {
 
-    public static User create(Long id, String username) {
-        return new AutoValue_User(id, username);
+    public static DatabaseUser create(Long id, String username) {
+        return new AutoValue_DatabaseUser(id, username);
     }
 
     public abstract Long id();

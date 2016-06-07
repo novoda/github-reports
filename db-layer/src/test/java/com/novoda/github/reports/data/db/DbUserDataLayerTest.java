@@ -1,7 +1,7 @@
 package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.DataLayerException;
-import com.novoda.github.reports.data.model.User;
+import com.novoda.github.reports.data.model.DatabaseUser;
 import com.novoda.github.reports.data.model.UserStats;
 
 import java.math.BigInteger;
@@ -147,10 +147,10 @@ public class DbUserDataLayerTest {
 
     @Test
     public void givenNewUser_whenUpdateOrInsertUser_thenReturnGivenUser() throws SQLException {
-        User expectedUser = User.create(ANY_USER_ID, ANY_USER_NAME);
+        DatabaseUser expectedUser = DatabaseUser.create(ANY_USER_ID, ANY_USER_NAME);
         whenUpdateOrInsertUserAffectsRows(1);
 
-        User actualUser = null;
+        DatabaseUser actualUser = null;
         try {
             actualUser = dataLayer.updateOrInsert(expectedUser);
         } catch (DataLayerException e) {
@@ -162,18 +162,18 @@ public class DbUserDataLayerTest {
 
     @Test
     public void givenInvalidDatabase_whenUpdateOrInsertUser_thenThrowDataLayerException() throws SQLException, DataLayerException {
-        User timRigginsUser = User.create(ANY_USER_ID, ANY_USER_NAME);
-        whenUpdateOrInsertUserAffectsRows(2);
+        DatabaseUser timRigginsUser = DatabaseUser.create(ANY_USER_ID, ANY_USER_NAME);
+        whenUpdateOrInsertUserAffectsRows(3);
 
         thrown.expect(DataLayerException.class);
-        thrown.expectMessage(Matchers.contains("More than"));
+        thrown.expectMessage(Matchers.contains("Unhandled"));
         dataLayer.updateOrInsert(timRigginsUser);
     }
 
     @Test
     public void givenValidUser_whenUpdateOrInsertUser_thenThrowDataLayerException() throws SQLException, DataLayerException {
-        User timRigginsUser = User.create(ANY_USER_ID, ANY_USER_NAME);
-        whenUpdateOrInsertUserAffectsRows(0);
+        DatabaseUser timRigginsUser = DatabaseUser.create(ANY_USER_ID, ANY_USER_NAME);
+        whenUpdateOrInsertUserAffectsRows(-1);
 
         thrown.expect(DataLayerException.class);
         thrown.expectMessage(Matchers.contains("Could not"));

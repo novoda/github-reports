@@ -4,7 +4,7 @@ import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.db.tables.records.RepositoryRecord;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
-import com.novoda.github.reports.data.model.Repository;
+import com.novoda.github.reports.data.model.DatabaseRepository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,7 +22,7 @@ import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
 import static com.novoda.github.reports.data.db.Tables.REPOSITORY;
 
-public class DbRepoDataLayer extends DbDataLayer<Repository, RepositoryRecord> implements RepoDataLayer {
+public class DbRepoDataLayer extends DbDataLayer<DatabaseRepository, RepositoryRecord> implements RepoDataLayer {
 
     public static DbRepoDataLayer newInstance(ConnectionManager connectionManager) {
         return new DbRepoDataLayer(connectionManager);
@@ -33,7 +33,7 @@ public class DbRepoDataLayer extends DbDataLayer<Repository, RepositoryRecord> i
     }
 
     @Override
-    InsertOnDuplicateSetMoreStep<RepositoryRecord> buildUpdateOrInsertListQuery(DSLContext create, Repository element) {
+    InsertOnDuplicateSetMoreStep<RepositoryRecord> buildUpdateOrInsertListQuery(DSLContext create, DatabaseRepository element) {
         Byte isPrivate = boolToByte(element.isPrivate());
         return create.insertInto(REPOSITORY, REPOSITORY._ID, REPOSITORY.NAME, REPOSITORY.PRIVATE)
                 .values(element.id(), element.name(), isPrivate)
