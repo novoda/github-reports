@@ -7,10 +7,10 @@ import java.util.Date;
 abstract class RangeOptions implements Options {
 
     @Parameter(names = "--from", description = "Start of range", converter = ISO8601DateConverter.class)
-    protected Date from;
+    private Date from;
 
     @Parameter(names = "--to", description = "End of range", converter = ISO8601DateConverter.class)
-    protected Date to;
+    private Date to;
 
     public Date getFrom() {
         return from;
