@@ -2,19 +2,19 @@ package com.novoda.github.reports.batch.persistence.converter;
 
 import com.novoda.github.reports.batch.issue.Issue;
 import com.novoda.github.reports.batch.issue.RepositoryIssue;
-import com.novoda.github.reports.data.model.User;
+import com.novoda.github.reports.data.model.DatabaseUser;
 
-public class UserConverter implements Converter<RepositoryIssue, User> {
+public class UserConverter implements Converter<RepositoryIssue, DatabaseUser> {
 
-    public static Converter<RepositoryIssue, User> newInstance() {
+    public static Converter<RepositoryIssue, DatabaseUser> newInstance() {
         return new UserConverter();
     }
 
     @Override
-    public User convertFrom(RepositoryIssue repositoryIssue) {
+    public DatabaseUser convertFrom(RepositoryIssue repositoryIssue) {
         Issue issue = repositoryIssue.getIssue();
         com.novoda.github.reports.batch.User user = issue.getUser();
-        return User.create(user.getId(), user.getUsername());
+        return DatabaseUser.create(user.getId(), user.getUsername());
     }
 
 }

@@ -6,12 +6,12 @@ import java.util.regex.Pattern;
 
 import retrofit2.Response;
 
-public class NextPageExtractor {
+class NextPageExtractor {
 
     private static final String LINK_HEADER_KEY = "Link";
     private static final String PAGE_REGEX = "[\\?|&]+page=(\\d+)[&\\w+=\\d+]*>; rel=\"next\"";
 
-    public Optional<Integer> getNextPageFrom(Response response) {
+    Optional<Integer> getNextPageFrom(Response response) {
         String linkHeader = response.headers().get(LINK_HEADER_KEY);
         if (linkHeader == null) {
             return Optional.empty();

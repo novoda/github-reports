@@ -1,6 +1,7 @@
 package com.novoda.github.reports.batch.persistence;
 
 import com.novoda.github.reports.batch.persistence.converter.Converter;
+import com.novoda.github.reports.batch.persistence.converter.ConverterException;
 import com.novoda.github.reports.data.DataLayer;
 import com.novoda.github.reports.data.DataLayerException;
 
@@ -38,7 +39,7 @@ class PersistOperator<T, R> implements Observable.Operator<List<T>, List<T>> {
                 try {
                     dataLayer.updateOrInsert(converter.convertListFrom(elements));
                     subscriber.onNext(elements);
-                } catch (DataLayerException e) {
+                } catch (ConverterException | DataLayerException e) {
                     subscriber.onError(e);
                 }
             }

@@ -38,11 +38,6 @@ public class RepositoryIssueEventComment extends RepositoryIssueEvent {
     }
 
     @Override
-    public boolean isComment() {
-        return true;
-    }
-
-    @Override
     public String toString() {
         return comment.toString();
     }
