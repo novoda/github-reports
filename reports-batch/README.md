@@ -22,9 +22,9 @@ For an example, see the [`github.credentials.sample` file](../github.credentials
 To use `reports-batch` , simply run:
 
 ```shell
-$ reports-batch your-organization-name --since 2016-01-01
+$ reports-batch your-organization-name --from 2016-01-01
 ```
 
-The `since` parameter is optional and can be specified as an ISO-8601 date/time string.
+The `from` parameter is optional and can be specified as an ISO-8601 date/time string.
 
 The program may temporarily halt if the Github API calls reach a predefined rate limit, resuming on its own after said limit gets reset.
