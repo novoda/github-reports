@@ -1,7 +1,7 @@
 package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.DataLayerException;
-import com.novoda.github.reports.data.model.DatabaseRepository;
+import com.novoda.github.reports.data.model.Repository;
 
 import java.sql.SQLException;
 
@@ -35,10 +35,10 @@ public class DbRepoDataLayerTest {
 
     @Test
     public void givenNewRepo_whenUpdateOrInsertRepo_thenReturnGivenRepo() throws SQLException {
-        DatabaseRepository expectedRepo = DatabaseRepository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
+        Repository expectedRepo = Repository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
         whenUpdateOrInsertRepoAffectsRows(1);
 
-        DatabaseRepository actualRepo = null;
+        Repository actualRepo = null;
         try {
             actualRepo = dataLayer.updateOrInsert(expectedRepo);
         } catch (DataLayerException e) {
@@ -50,7 +50,7 @@ public class DbRepoDataLayerTest {
 
     @Test
     public void givenInvalidDatabase_whenUpdateOrInsertRepo_thenThrowDataLayerException() throws SQLException, DataLayerException {
-        DatabaseRepository awesomeRepo = DatabaseRepository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
+        Repository awesomeRepo = Repository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
         whenUpdateOrInsertRepoAffectsRows(3);
 
         thrown.expect(DataLayerException.class);
@@ -60,7 +60,7 @@ public class DbRepoDataLayerTest {
 
     @Test
     public void givenValidRepo_whenUpdateOrInsertRepo_thenThrowDataLayerException() throws SQLException, DataLayerException {
-        DatabaseRepository awesomeRepo = DatabaseRepository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
+        Repository awesomeRepo = Repository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
         whenUpdateOrInsertRepoAffectsRows(-1);
 
         thrown.expect(DataLayerException.class);
