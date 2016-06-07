@@ -13,6 +13,9 @@ import com.novoda.github.reports.batch.persistence.converter.UserConverter;
 import com.novoda.github.reports.batch.pullrequest.GithubPullRequestService;
 import com.novoda.github.reports.batch.pullrequest.PullRequestService;
 import com.novoda.github.reports.batch.repository.Repository;
+import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubject;
+import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubjectContainer;
+import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.UserDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
@@ -51,6 +54,8 @@ public class IssuesServiceClient {
     private final Converter<RepositoryIssueEvent, DatabaseUser> eventUserConverter;
     private final Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter;
 
+    private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
+
     public static IssuesServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
         PullRequestService pullRequestService = GithubPullRequestService.newInstance();
@@ -63,6 +68,8 @@ public class IssuesServiceClient {
         Converter<RepositoryIssueEvent, DatabaseUser> userEventConverter = EventUserConverter.newInstance();
         Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter = EventConverter.newInstance();
 
+        RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
+
         return new IssuesServiceClient(
                 issueService,
                 pullRequestService,
@@ -71,7 +78,8 @@ public class IssuesServiceClient {
                 userDataLayer,
                 userConverter,
                 userEventConverter,
-                eventConverter
+                eventConverter,
+                rateLimitResetTimerSubject
         );
     }
 
@@ -82,7 +90,8 @@ public class IssuesServiceClient {
                                 UserDataLayer userDataLayer,
                                 Converter<RepositoryIssue, DatabaseUser> userConverter,
                                 Converter<RepositoryIssueEvent, DatabaseUser> eventUserConverter,
-                                Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter) {
+                                Converter<RepositoryIssueEvent, DatabaseEvent> eventConverter,
+                                RateLimitResetTimerSubject rateLimitResetTimerSubject) {
         this.issueService = issueService;
         this.pullRequestService = pullRequestService;
         this.eventDataLayer = eventDataLayer;
@@ -91,10 +100,12 @@ public class IssuesServiceClient {
         this.userConverter = userConverter;
         this.eventUserConverter = eventUserConverter;
         this.eventConverter = eventConverter;
+        this.rateLimitResetTimerSubject = rateLimitResetTimerSubject;
     }
 
     public Observable<RepositoryIssue> retrieveIssuesFrom(Repository repository, Date since) {
         return issueService.getIssuesFor(repository.getOwner().getUsername(), repository.getName(), since)
+                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
                 .map(issue -> RepositoryIssue.newInstance(repository, issue))
                 .compose(PersistUserTransformer.newInstance(userDataLayer, userConverter))
                 .compose(PersistIssueTransformer.newInstance(eventDataLayer, issueConverter))
@@ -103,25 +114,37 @@ public class IssuesServiceClient {
     }
 
     public Observable<RepositoryIssueEvent> retrieveCommentsFrom(RepositoryIssue repositoryIssue, Date since) {
-        String organisation = repositoryIssue.getRepository().getOwner().getUsername();
-        String repository = repositoryIssue.getRepository().getName();
-        int issueNumber = repositoryIssue.getIssue().getNumber();
-        return issueService
-                .getCommentsFor(organisation, repository, issueNumber, since)
-                .compose(ReviewCommentsTransformer.newInstance(
-                        repositoryIssue,
-                        () -> pullRequestService.getReviewCommentsForPullRequestFor(
-                                organisation,
-                                repository,
-                                issueNumber,
-                                since
-                        )
-                ))
+        return Observable
+                .merge(
+                        retrieveCommentsFromIssue(repositoryIssue, since),
+                        retrieveCommentsFromPullRequestReview(repositoryIssue, since)
+                )
                 .map(comment -> RepositoryIssueEventComment.newInstance(repositoryIssue, comment))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
                 .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.immediate());
+    }
+
+    private Observable<Comment> retrieveCommentsFromIssue(RepositoryIssue repositoryIssue, Date since) {
+        String organisation = repositoryIssue.getRepository().getOwner().getUsername();
+        String repository = repositoryIssue.getRepository().getName();
+        int issueNumber = repositoryIssue.getIssue().getNumber();
+        return issueService
+                .getCommentsFor(organisation, repository, issueNumber, since)
+                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject));
+    }
+
+    private Observable<Comment> retrieveCommentsFromPullRequestReview(RepositoryIssue repositoryIssue, Date since) {
+        if (!repositoryIssue.getIssue().isPullRequest()) {
+            return Observable.empty();
+        }
+        String organisation = repositoryIssue.getRepository().getOwner().getUsername();
+        String repository = repositoryIssue.getRepository().getName();
+        int issueNumber = repositoryIssue.getIssue().getNumber();
+        return pullRequestService
+                .getReviewCommentsForPullRequestFor(organisation, repository, issueNumber, since)
+                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject));
     }
 
     public Observable<RepositoryIssueEvent> retrieveEventsFrom(RepositoryIssue repositoryIssue, Date since) {
@@ -132,6 +155,7 @@ public class IssuesServiceClient {
                         repositoryIssue.getIssue().getNumber(),
                         since
                 )
+                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
                 .filter(this::shouldStoreEvent)
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
