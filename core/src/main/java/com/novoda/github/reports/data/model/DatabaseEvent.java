@@ -5,10 +5,10 @@ import com.google.auto.value.AutoValue;
 import java.util.Date;
 
 @AutoValue
-public abstract class Event {
+public abstract class DatabaseEvent {
 
-    public static Event create(Long id, Long repositoryId, Long authorUserId, Long ownerUserId, EventType eventType, Date date) {
-        return new AutoValue_Event(id, repositoryId, authorUserId, ownerUserId, eventType, date);
+    public static DatabaseEvent create(Long id, Long repositoryId, Long authorUserId, Long ownerUserId, EventType eventType, Date date) {
+        return new AutoValue_DatabaseEvent(id, repositoryId, authorUserId, ownerUserId, eventType, date);
     }
 
     public abstract Long id();

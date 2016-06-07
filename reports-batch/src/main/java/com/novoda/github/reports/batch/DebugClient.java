@@ -14,6 +14,8 @@ import rx.Subscriber;
 
 class DebugClient {
 
+    private static final Date NO_SINCE_DATE = null;
+
     private static final IssuesServiceClient issueServiceClient = IssuesServiceClient.newInstance();
     private static final RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
 
@@ -104,8 +106,8 @@ class DebugClient {
         owner.setUsername(organisation);
         repo.setOwner(owner);
         Observable.from(Collections.singletonList(repo))
-                .compose(retrieveIssuesFromRepositories(null))
-                .compose(retrieveEventsFromIssues(null))
+                .compose(retrieveIssuesFromRepositories(NO_SINCE_DATE))
+                .compose(retrieveEventsFromIssues(NO_SINCE_DATE))
                 .toBlocking()
                 .subscribe(new Subscriber<RepositoryIssueEvent>() {
                     @Override
@@ -138,10 +140,13 @@ class DebugClient {
 
     private static Observable.Transformer<? super RepositoryIssue, ? extends RepositoryIssueEvent> retrieveEventsFromIssues(Date since) {
         return repositoryIssueObservable -> {
+
             Observable<RepositoryIssueEvent> comments = repositoryIssueObservable
                     .flatMap(repositoryIssue -> issueServiceClient.retrieveCommentsFrom(repositoryIssue, since));
+
             Observable<RepositoryIssueEvent> events = repositoryIssueObservable
                     .flatMap(repositoryIssue -> issueServiceClient.retrieveEventsFrom(repositoryIssue, since));
+
             return Observable.merge(comments, events);
         };
     }

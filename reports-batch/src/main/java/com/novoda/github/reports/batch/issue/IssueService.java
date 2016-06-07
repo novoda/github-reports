@@ -6,16 +6,16 @@ import rx.Observable;
 
 interface IssueService {
 
-    Observable<Issue> getPagedIssuesFor(String organisation, String repository);
+    Observable<Issue> getIssuesFor(String organisation, String repository);
 
-    Observable<Issue> getPagedIssuesFor(String organisation, String repository, Date since);
+    Observable<Issue> getIssuesFor(String organisation, String repository, Date since);
 
-    Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber);
+    Observable<Event> getEventsFor(String organisation, String repository, Integer issueNumber);
 
-    Observable<Event> getPagedEventsFor(String organisation, String repository, Integer issueNumber, Date since);
+    Observable<Event> getEventsFor(String organisation, String repository, Integer issueNumber, Date since);
 
-    Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber);
+    Observable<Comment> getCommentsFor(String organisation, String repository, Integer issueNumber);
 
-    Observable<Comment> getPagedCommentsFor(String organisation, String repository, Integer issueNumber, Date since);
+    Observable<Comment> getCommentsFor(String organisation, String repository, Integer issueNumber, Date since);
 
 }
