@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 import static com.novoda.github.reports.batch.issue.GithubEvent.Type.*;
 
@@ -108,9 +107,7 @@ public class IssuesServiceClient {
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
                 .map(issue -> RepositoryIssue.newInstance(repository, issue))
                 .compose(PersistUserTransformer.newInstance(userDataLayer, userConverter))
-                .compose(PersistIssueTransformer.newInstance(eventDataLayer, issueConverter))
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.immediate());
+                .compose(PersistIssueTransformer.newInstance(eventDataLayer, issueConverter));
     }
 
     public Observable<RepositoryIssueEvent> retrieveCommentsFrom(RepositoryIssue repositoryIssue, Date since) {
@@ -121,9 +118,7 @@ public class IssuesServiceClient {
                 )
                 .map(comment -> RepositoryIssueEventComment.newInstance(repositoryIssue, comment))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
-                .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter))
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.immediate());
+                .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter));
     }
 
     private Observable<GithubComment> retrieveCommentsFromIssue(RepositoryIssue repositoryIssue, Date since) {
@@ -163,9 +158,7 @@ public class IssuesServiceClient {
                 .filter(this::shouldStoreEvent)
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
-                .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter))
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.immediate());
+                .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter));
     }
 
     private boolean shouldStoreEvent(GithubEvent event) {
