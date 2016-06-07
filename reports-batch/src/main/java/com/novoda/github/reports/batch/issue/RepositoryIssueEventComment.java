@@ -39,6 +39,8 @@ public class RepositoryIssueEventComment extends RepositoryIssueEvent {
 
     @Override
     public String toString() {
-        return comment.toString();
+        return comment.toString() +
+                " on issue " + getIssue().toString() +
+                " for repository " + getRepository().getName();
     }
 }
