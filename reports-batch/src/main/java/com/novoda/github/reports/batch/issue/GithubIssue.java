@@ -50,6 +50,10 @@ public class GithubIssue {
         return user;
     }
 
+    public Long getUserId() {
+        return user.getId();
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
