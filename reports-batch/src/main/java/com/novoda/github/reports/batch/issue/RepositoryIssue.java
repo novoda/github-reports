@@ -39,4 +39,8 @@ public class RepositoryIssue {
     int getIssueNumber() {
         return issue.getNumber();
     }
+
+    Long getUserId() {
+        return issue.getUserId();
+    }
 }
