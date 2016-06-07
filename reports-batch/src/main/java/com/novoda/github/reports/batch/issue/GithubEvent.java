@@ -1,15 +1,15 @@
 package com.novoda.github.reports.batch.issue;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.batch.User;
+import com.novoda.github.reports.batch.GithubUser;
 
 import java.util.Date;
 
-public class Event {
+public class GithubEvent {
 
     private long id;
 
-    private User actor;
+    private GithubUser actor;
 
     @SerializedName("event")
     private Type type;
@@ -25,7 +25,7 @@ public class Event {
         return id;
     }
 
-    User getActor() {
+    GithubUser getActor() {
         return actor;
     }
 

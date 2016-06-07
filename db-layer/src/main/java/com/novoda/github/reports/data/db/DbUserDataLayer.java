@@ -3,7 +3,7 @@ package com.novoda.github.reports.data.db;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.UserDataLayer;
 import com.novoda.github.reports.data.db.tables.records.UserRecord;
-import com.novoda.github.reports.data.model.DatabaseUser;
+import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.data.model.EventStats;
 import com.novoda.github.reports.data.model.UserStats;
 import com.novoda.github.reports.util.StringHelper;
@@ -24,7 +24,7 @@ import org.jooq.Select;
 import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.Tables.*;
 
-public class DbUserDataLayer extends DbDataLayer<DatabaseUser, UserRecord> implements UserDataLayer {
+public class DbUserDataLayer extends DbDataLayer<User, UserRecord> implements UserDataLayer {
 
     private static final Condition USER_AUTHOR_ON_CONDITION = EVENT.AUTHOR_USER_ID.eq(USER._ID);
     private static final Condition USER_OWNER_ON_CONDITION = EVENT.OWNER_USER_ID.eq(USER._ID);
@@ -38,7 +38,7 @@ public class DbUserDataLayer extends DbDataLayer<DatabaseUser, UserRecord> imple
     }
 
     @Override
-    InsertOnDuplicateSetMoreStep<UserRecord> buildUpdateOrInsertListQuery(DSLContext create, DatabaseUser element) {
+    InsertOnDuplicateSetMoreStep<UserRecord> buildUpdateOrInsertListQuery(DSLContext create, User element) {
         return create.insertInto(USER, USER._ID, USER.USERNAME)
                 .values(element.id(), element.username())
                 .onDuplicateKeyUpdate()

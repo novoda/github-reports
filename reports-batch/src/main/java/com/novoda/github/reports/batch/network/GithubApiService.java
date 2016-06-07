@@ -1,9 +1,9 @@
 package com.novoda.github.reports.batch.network;
 
-import com.novoda.github.reports.batch.issue.Comment;
-import com.novoda.github.reports.batch.issue.Event;
-import com.novoda.github.reports.batch.issue.Issue;
-import com.novoda.github.reports.batch.repository.Repository;
+import com.novoda.github.reports.batch.issue.GithubComment;
+import com.novoda.github.reports.batch.issue.GithubEvent;
+import com.novoda.github.reports.batch.issue.GithubIssue;
+import com.novoda.github.reports.batch.repository.GithubRepository;
 import com.novoda.github.reports.batch.timeline.TimelineEvent;
 
 import java.util.List;
@@ -17,24 +17,24 @@ import rx.Observable;
 public interface GithubApiService {
 
     @GET("/orgs/{org}/repos")
-    Observable<Response<List<Repository>>> getRepositoriesResponseForPage(
+    Observable<Response<List<GithubRepository>>> getRepositoriesResponseForPage(
             @Path("org") String organisation,
             @Query("page") Integer page,
             @Query("per_page") Integer perPageCount
     );
 
     @GET("/repos/{org}/{repo}/issues")
-    Observable<Response<List<Issue>>> getIssuesResponseForPage(
+    Observable<Response<List<GithubIssue>>> getIssuesResponseForPage(
             @Path("org") String organisation,
             @Path("repo") String repo,
-            @Query("state") Issue.State state,
+            @Query("state") GithubIssue.State state,
             @Query("since") String since, // ISO8601: YYYY-MM-DDTHH:MM:SSZ
             @Query("page") Integer page,
             @Query("per_page") Integer perPageCount
     );
 
     @GET("/repos/{org}/{repo}/issues/{issue_number}/events")
-    Observable<Response<List<Event>>> getEventsResponseForIssueAndPage(
+    Observable<Response<List<GithubEvent>>> getEventsResponseForIssueAndPage(
             @Path("org") String organisation,
             @Path("repo") String repo,
             @Path("issue_number") Integer issueNumber,
@@ -43,7 +43,7 @@ public interface GithubApiService {
     );
 
     @GET("/repos/{org}/{repo}/issues/{issue_number}/comments")
-    Observable<Response<List<Comment>>> getCommentsResponseForIssueAndPage(
+    Observable<Response<List<GithubComment>>> getCommentsResponseForIssueAndPage(
             @Path("org") String organisation,
             @Path("repo") String repo,
             @Path("issue_number") Integer issueNumber,
@@ -53,7 +53,7 @@ public interface GithubApiService {
     );
 
     @GET("/repos/{org}/{repo}/pulls/{number}/comments")
-    Observable<Response<List<Comment>>> getReviewCommentsResponseForPullRequestAndPage(
+    Observable<Response<List<GithubComment>>> getReviewCommentsResponseForPullRequestAndPage(
             @Path("org") String organisation,
             @Path("repo") String repo,
             @Path("number") Integer pullRequestNumber,

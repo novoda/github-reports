@@ -1,9 +1,9 @@
 package com.novoda.github.reports.batch.repository;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.batch.User;
+import com.novoda.github.reports.batch.GithubUser;
 
-public class Repository {
+public class GithubRepository {
 
     private Long id;
 
@@ -18,7 +18,7 @@ public class Repository {
     @SerializedName("forked")
     private boolean forkedRepo;
 
-    private User owner;
+    private GithubUser owner;
 
     @SerializedName("open_issues_count")
     private int openIssues;
@@ -46,7 +46,7 @@ public class Repository {
         return forkedRepo;
     }
 
-    public User getOwner() {
+    public GithubUser getOwner() {
         return owner;
     }
 
@@ -66,7 +66,7 @@ public class Repository {
         this.name = name;
     }
 
-    public void setOwner(User owner) {
+    public void setOwner(GithubUser owner) {
         this.owner = owner;
     }
 
