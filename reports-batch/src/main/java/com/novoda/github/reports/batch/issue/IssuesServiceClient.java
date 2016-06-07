@@ -136,7 +136,7 @@ public class IssuesServiceClient {
     }
 
     private Observable<GithubComment> retrieveCommentsFromPullRequestReview(RepositoryIssue repositoryIssue, Date since) {
-        if (!repositoryIssue.getIssue().isPullRequest()) {
+        if (isNotPullRequest(repositoryIssue)) {
             return Observable.empty();
         }
         String organisation = repositoryIssue.getRepository().getOwner().getUsername();
@@ -145,6 +145,10 @@ public class IssuesServiceClient {
         return pullRequestService
                 .getReviewCommentsForPullRequestFor(organisation, repository, issueNumber, since)
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject));
+    }
+
+    private boolean isNotPullRequest(RepositoryIssue repositoryIssue) {
+        return !repositoryIssue.getIssue().isPullRequest();
     }
 
     public Observable<RepositoryIssueEvent> retrieveEventsFrom(RepositoryIssue repositoryIssue, Date since) {
