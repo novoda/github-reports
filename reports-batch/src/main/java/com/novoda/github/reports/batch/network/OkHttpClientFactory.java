@@ -40,6 +40,7 @@ class OkHttpClientFactory implements HttpClientFactory {
 
         Interceptor defaultInterceptors[] = new Interceptor[] {
                 new OAuthTokenInterceptor(token),
+                RateLimitHandlerInterceptor.newInstance(),
                 RateLimitCountInterceptor.newInstance(),
                 RateLimitResetInterceptor.newInstance(),
                 CustomMediaTypeInterceptor.newInstanceForTimelineApi()
