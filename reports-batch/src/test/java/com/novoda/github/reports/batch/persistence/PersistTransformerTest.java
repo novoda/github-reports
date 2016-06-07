@@ -5,9 +5,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -19,13 +17,11 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PersistTransformerTest {
 
+    private static final int ANY_BUFFER_SIZE = 10;
+
     @Mock
     PersistOperator<Object, Object> operator;
 
-    @Spy
-    PersistBuffer buffer = PersistBuffer.newInstance(10);
-
-    @InjectMocks
     PersistTransformer<Object, Object> transformer;
 
     private TestSubscriber<Object> testSubscriber;
@@ -40,6 +36,7 @@ public class PersistTransformerTest {
     public void setUp() throws Exception {
         initMocks(this);
 
+        transformer = new PersistTransformer<>(operator, ANY_BUFFER_SIZE);
         testSubscriber = TestSubscriber.create();
     }
 

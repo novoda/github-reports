@@ -15,7 +15,6 @@ public class Main {
         RateLimitRemainingCounter remainingCounter = RateLimitRemainingCounterContainer.getInstance();
         RateLimitResetRepository resetRepository = RateLimitRemainingResetRepositoryContainer.getInstance();
 
-        // DebugClient.retrieveRepositoriesAndIssues("novoda", null);
         DebugClient.retrieveIssuesAndEvents("novoda", 25308952L, "github-reports");
 
         System.out.println("x Remaining number of requests: " + remainingCounter.get());
