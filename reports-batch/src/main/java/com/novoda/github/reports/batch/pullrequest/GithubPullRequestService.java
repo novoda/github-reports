@@ -54,11 +54,13 @@ public class GithubPullRequestService implements PullRequestService {
 
         return githubApiService.getReviewCommentsResponseForPullRequestAndPage(organisation, repository, pullRequestNumber, since, page, pageCount)
                 .compose(commentRateLimitDelayTransformer)
-                .compose(PagedTransformer.newInstance(nextPage -> getPagedReviewCommentsForPullRequestFor(organisation,
-                                                                                                          repository,
-                                                                                                          pullRequestNumber,
-                                                                                                          since,
-                                                                                                          nextPage,
-                                                                                                          pageCount)));
+                .compose(PagedTransformer.newInstance(nextPage -> getPagedReviewCommentsForPullRequestFor(
+                        organisation,
+                        repository,
+                        pullRequestNumber,
+                        since,
+                        nextPage,
+                        pageCount
+                )));
     }
 }
