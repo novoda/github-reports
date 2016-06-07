@@ -2,6 +2,7 @@ package com.novoda.github.reports.batch.issue;
 
 import com.google.gson.annotations.SerializedName;
 import com.novoda.github.reports.batch.User;
+import com.novoda.github.reports.batch.pullrequest.PullRequest;
 
 import java.util.Date;
 

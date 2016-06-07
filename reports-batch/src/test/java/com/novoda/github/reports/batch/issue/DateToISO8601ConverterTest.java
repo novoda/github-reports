@@ -1,5 +1,7 @@
 package com.novoda.github.reports.batch.issue;
 
+import com.novoda.github.reports.batch.network.DateToISO8601Converter;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;

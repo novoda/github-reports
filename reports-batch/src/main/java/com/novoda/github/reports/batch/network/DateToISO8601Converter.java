@@ -1,13 +1,13 @@
-package com.novoda.github.reports.batch.issue;
+package com.novoda.github.reports.batch.network;
 
 import java.util.Date;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-class DateToISO8601Converter {
+public class DateToISO8601Converter {
 
-    String toISO8601NoMillisOrNull(Date date) {
+    public String toISO8601NoMillisOrNull(Date date) {
         if (date == null) {
             return null;
         }

@@ -1,7 +1,7 @@
 package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.DataLayerException;
-import com.novoda.github.reports.data.model.Event;
+import com.novoda.github.reports.data.model.DatabaseEvent;
 import com.novoda.github.reports.data.model.EventType;
 
 import java.sql.SQLException;
@@ -42,10 +42,10 @@ public class DbEventDataLayerTest {
 
     @Test
     public void givenNewEvent_whenUpdateOrInsertEvent_thenReturnGivenEvent() throws SQLException {
-        Event expectedEvent = Event.create(ANY_EVENT_ID, ANY_EVENT_REPO_ID, ANY_EVENT_AUTHOR_ID, ANY_EVENT_OWNER_ID, ANY_EVENT_TYPE, ANY_EVENT_DATE);
+        DatabaseEvent expectedEvent = DatabaseEvent.create(ANY_EVENT_ID, ANY_EVENT_REPO_ID, ANY_EVENT_AUTHOR_ID, ANY_EVENT_OWNER_ID, ANY_EVENT_TYPE, ANY_EVENT_DATE);
         whenUpdateOrInsertEventAffectsRows(1);
 
-        Event actualEvent = null;
+        DatabaseEvent actualEvent = null;
         try {
             actualEvent = dataLayer.updateOrInsert(expectedEvent);
         } catch (DataLayerException e) {
@@ -57,7 +57,7 @@ public class DbEventDataLayerTest {
 
     @Test
     public void givenInvalidDatabase_whenUpdateOrInsertEvent_thenThrowDataLayerException() throws SQLException, DataLayerException {
-        Event awesomeEvent = Event.create(ANY_EVENT_ID, ANY_EVENT_REPO_ID, ANY_EVENT_AUTHOR_ID, ANY_EVENT_OWNER_ID, ANY_EVENT_TYPE, ANY_EVENT_DATE);
+        DatabaseEvent awesomeEvent = DatabaseEvent.create(ANY_EVENT_ID, ANY_EVENT_REPO_ID, ANY_EVENT_AUTHOR_ID, ANY_EVENT_OWNER_ID, ANY_EVENT_TYPE, ANY_EVENT_DATE);
         whenUpdateOrInsertEventAffectsRows(3);
 
         thrown.expect(DataLayerException.class);
@@ -67,7 +67,7 @@ public class DbEventDataLayerTest {
 
     @Test
     public void givenValidEvent_whenUpdateOrInsertEvent_thenThrowDataLayerException() throws SQLException, DataLayerException {
-        Event awesomeEvent = Event.create(ANY_EVENT_ID, ANY_EVENT_REPO_ID, ANY_EVENT_AUTHOR_ID, ANY_EVENT_OWNER_ID, ANY_EVENT_TYPE, ANY_EVENT_DATE);
+        DatabaseEvent awesomeEvent = DatabaseEvent.create(ANY_EVENT_ID, ANY_EVENT_REPO_ID, ANY_EVENT_AUTHOR_ID, ANY_EVENT_OWNER_ID, ANY_EVENT_TYPE, ANY_EVENT_DATE);
         whenUpdateOrInsertEventAffectsRows(-1);
 
         thrown.expect(DataLayerException.class);
