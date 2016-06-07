@@ -25,9 +25,9 @@ public class EventConverter implements Converter<RepositoryIssueEvent, Event> {
 
         return Event.create(
                 repositoryIssueEvent.getEventId(),
-                repositoryIssueEvent.getRepository().getId(),
-                repositoryIssueEvent.getUser().getId(),
-                repositoryIssueEvent.getIssue().getUser().getId(),
+                repositoryIssueEvent.getRepositoryId(),
+                repositoryIssueEvent.getAuthorUserId(),
+                repositoryIssueEvent.getOwnerUserId(),
                 eventType,
                 repositoryIssueEvent.getDate()
         );

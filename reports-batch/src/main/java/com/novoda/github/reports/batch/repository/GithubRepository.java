@@ -50,6 +50,10 @@ public class GithubRepository {
         return owner;
     }
 
+    public String getOwnerUsername() {
+        return owner.getUsername();
+    }
+
     public int getOpenIssues() {
         return openIssues;
     }

@@ -1,7 +1,7 @@
 package com.novoda.github.reports.batch.repository;
 
 import com.novoda.github.reports.batch.network.GithubApiService;
-import com.novoda.github.reports.batch.network.GithubServiceFactory;
+import com.novoda.github.reports.batch.network.GithubServiceContainer;
 import com.novoda.github.reports.batch.network.PagedTransformer;
 import com.novoda.github.reports.batch.network.RateLimitDelayTransformer;
 
@@ -19,9 +19,9 @@ class GithubRepositoriesService implements RepositoryService {
     private final RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer;
 
     static GithubRepositoriesService newInstance() {
-        GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
+        GithubApiService githubApiService = GithubServiceContainer.getGithubService();
         RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
-        return new GithubRepositoriesService(githubServiceFactory.createService(), rateLimitDelayTransformer);
+        return new GithubRepositoriesService(githubApiService, rateLimitDelayTransformer);
     }
 
     private GithubRepositoriesService(GithubApiService githubApiService, RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer) {
