@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.observers.TestSubscriber;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -42,7 +42,7 @@ public class PersistTransformerTest {
 
     @Test
     public void givenAnyObservable_whenCompose_thenDoNotAlterValues() {
-        when(operator.call(Matchers.any())).thenAnswer(invocation -> createFlowSubscriber(invocation.getArgument(0)));
+        when(operator.call(any())).thenAnswer(invocation -> createFlowSubscriber(invocation.getArgument(0)));
 
         ANY_OBSERVABLE.compose(transformer).subscribe(testSubscriber);
 
@@ -71,7 +71,7 @@ public class PersistTransformerTest {
 
     @Test
     public void givenInvalidObservableForTransformer_whenCompose_thenEmitError() {
-        when(operator.call(Matchers.any())).thenAnswer(invocation -> createErroringSubscriber(invocation.getArgument(0)));
+        when(operator.call(any())).thenAnswer(invocation -> createErroringSubscriber(invocation.getArgument(0)));
 
         ANY_OBSERVABLE.compose(transformer).subscribe(testSubscriber);
 

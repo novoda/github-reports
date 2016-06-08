@@ -2,7 +2,6 @@ package com.novoda.github.reports.service.network;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 
@@ -12,6 +11,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -59,7 +59,7 @@ public class RateLimitResetInterceptorTest {
     public void whenTheRequestIsIntercepted_thenTheTimestampIsStored() throws Exception {
         interceptor.intercept(mockChain);
 
-        verify(mockLimitRepository).setNextResetTime(Matchers.anyLong());
+        verify(mockLimitRepository).setNextResetTime(anyLong());
     }
 
     @Test

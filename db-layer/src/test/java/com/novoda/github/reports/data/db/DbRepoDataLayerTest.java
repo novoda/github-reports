@@ -10,11 +10,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Matchers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.when;
 
 public class DbRepoDataLayerTest {
@@ -54,7 +54,7 @@ public class DbRepoDataLayerTest {
         whenUpdateOrInsertRepoAffectsRows(3);
 
         thrown.expect(DataLayerException.class);
-        thrown.expectMessage(Matchers.contains("Unhandled"));
+        thrown.expectMessage(contains("Unhandled"));
         dataLayer.updateOrInsert(awesomeRepo);
     }
 
@@ -64,7 +64,7 @@ public class DbRepoDataLayerTest {
         whenUpdateOrInsertRepoAffectsRows(-1);
 
         thrown.expect(DataLayerException.class);
-        thrown.expectMessage(Matchers.contains("Could not"));
+        thrown.expectMessage(contains("Could not"));
         dataLayer.updateOrInsert(awesomeRepo);
     }
 
