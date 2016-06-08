@@ -12,5 +12,7 @@ The project is made of the following modules (you can click on each project to a
 * [`service`](service/README.md) contains the components to query the Github API and persist the retrieved elements on the database
 * [`reports-batch-local`](reports-batch-local/README.md) contains a CLI to query the Github APIs from your machine and store retrieved data on the
 database
+* [`aws`](aws/README.md) contains the components to be deployed on Amazon AWS
+* [`reports-batch-aws`](reports-batch-aws/README.md) contains a CLI to query the Github APIs from Amazon AWS and store retrieved data on the database
 * [`reports-stats`](reports-stats/README.md) contains a CLI to query for statistics on data available on the database
 
