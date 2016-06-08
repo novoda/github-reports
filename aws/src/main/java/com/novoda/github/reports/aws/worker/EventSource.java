@@ -1,0 +1,7 @@
+package com.novoda.github.reports.aws.worker;
+
+public interface EventSource {
+
+    Configuration getConfiguration();
+
+}
