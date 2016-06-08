@@ -33,3 +33,11 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.0.53-beta'
 }
+
+jar {
+    manifest {
+        attributes("Class-Path": ".")
+    }
+    exclude '*.credentials'
+    exclude '*.credentials.sample'
+}
