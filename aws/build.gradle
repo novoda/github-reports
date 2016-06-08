@@ -9,6 +9,10 @@ repositories {
 dependencies {
     compile project(':service')
 
+    compile 'com.amazonaws:aws-java-sdk-sqs:1.11.7'
+    compile 'com.amazonaws:aws-java-sdk-lambda:1.11.7'
+    compile 'com.amazonaws:aws-java-sdk-events:1.11.7'
+
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.0.53-beta'
 }
