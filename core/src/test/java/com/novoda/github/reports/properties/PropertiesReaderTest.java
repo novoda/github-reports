@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 
 public class PropertiesReaderTest {
 
-    private static final String PROPERTY_FILE_PATH = PropertiesReaderTest.class.getClassLoader().getResource("test.properties").getFile();
+    private static final String PROPERTY_FILE_PATH = "test.properties";
     private static final String PROPERTY_TEST_NAME = "test";
     private static final String PROPERTY_TEST_VALUE = "property";
     private static final String PROPERTY_EMPTY_NAME = "empty";

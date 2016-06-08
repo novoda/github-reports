@@ -1,6 +1,5 @@
 package com.novoda.github.reports.properties;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +26,7 @@ public class PropertiesReader {
     }
 
     private void initProperties() {
-        this.properties = new Properties();
+        properties = new Properties();
         try {
             InputStream inputStream = getInputStream(fileName);
             loadInputStream(inputStream);
@@ -38,7 +37,11 @@ public class PropertiesReader {
     }
 
     private InputStream getInputStream(String fileName) throws FileNotFoundException {
-        return new FileInputStream(fileName);
+        InputStream inputStream = PropertiesReader.class.getClassLoader().getResourceAsStream(fileName);
+        if (inputStream == null) {
+            throw new FileNotFoundException(String.format("Could not read the file \"%s\" in the resources folder.", fileName));
+        }
+        return inputStream;
     }
 
     private void loadInputStream(InputStream inputStream) throws IOException {
