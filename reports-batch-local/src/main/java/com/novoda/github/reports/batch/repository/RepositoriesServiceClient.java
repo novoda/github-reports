@@ -1,0 +1,53 @@
+package com.novoda.github.reports.batch.repository;
+
+import com.novoda.github.reports.service.persistence.ConnectionManagerContainer;
+import com.novoda.github.reports.service.persistence.PersistRepositoryTransformer;
+import com.novoda.github.reports.service.persistence.converter.Converter;
+import com.novoda.github.reports.service.persistence.converter.RepositoryConverter;
+import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubject;
+import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubjectContainer;
+import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
+import com.novoda.github.reports.data.RepoDataLayer;
+import com.novoda.github.reports.data.db.ConnectionManager;
+import com.novoda.github.reports.data.db.DbRepoDataLayer;
+import com.novoda.github.reports.data.model.Repository;
+import com.novoda.github.reports.service.repository.GithubRepositoriesService;
+import com.novoda.github.reports.service.repository.GithubRepository;
+import com.novoda.github.reports.service.repository.RepositoryService;
+
+import rx.Observable;
+
+public class RepositoriesServiceClient {
+
+    private final RepositoryService repositoryService;
+    private final RepoDataLayer repoDataLayer;
+    private final Converter<GithubRepository, Repository> converter;
+
+    private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
+
+    public static RepositoriesServiceClient newInstance() {
+        GithubRepositoriesService repositoriesService = GithubRepositoriesService.newInstance();
+        ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
+        RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
+        Converter<GithubRepository, Repository> converter = RepositoryConverter.newInstance();
+        RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
+        return new RepositoriesServiceClient(repositoriesService, repoDataLayer, converter, rateLimitResetTimerSubject);
+    }
+
+    private RepositoriesServiceClient(GithubRepositoriesService repositoryService,
+                                      RepoDataLayer repoDataLayer,
+                                      Converter<GithubRepository, Repository> converter,
+                                      RateLimitResetTimerSubject rateLimitResetTimerSubject) {
+        this.repositoryService = repositoryService;
+        this.repoDataLayer = repoDataLayer;
+        this.converter = converter;
+        this.rateLimitResetTimerSubject = rateLimitResetTimerSubject;
+    }
+
+    public Observable<GithubRepository> retrieveRepositoriesFrom(String organisation) {
+        return repositoryService.getRepositoriesFor(organisation)
+                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
+                .compose(PersistRepositoryTransformer.newInstance(repoDataLayer, converter));
+    }
+
+}

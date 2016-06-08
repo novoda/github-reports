@@ -1,7 +1,7 @@
 package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
-import com.novoda.github.reports.properties.PropertiesReader;
+import com.novoda.github.reports.service.properties.PropertiesReader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
