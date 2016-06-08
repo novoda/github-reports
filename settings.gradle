@@ -1,5 +1,6 @@
 include ':core'
 include ':db-layer'
-include ':reports-batch'
+include ':service'
+include ':reports-batch-local'
 include ':reports-stats'
 
