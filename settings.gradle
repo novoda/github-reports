@@ -2,5 +2,6 @@ include ':core'
 include ':db-layer'
 include ':service'
 include ':reports-batch-local'
+include ':aws'
+include ':reports-batch-aws'
 include ':reports-stats'
-
