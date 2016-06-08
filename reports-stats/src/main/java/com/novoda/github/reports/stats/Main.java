@@ -1,6 +1,7 @@
 package com.novoda.github.reports.stats;
 
 import com.beust.jcommander.JCommander;
+import com.novoda.github.reports.data.db.LogHelper;
 import com.novoda.github.reports.stats.command.ProjectOptions;
 import com.novoda.github.reports.stats.command.RepoOptions;
 import com.novoda.github.reports.stats.command.UserOptions;
@@ -15,6 +16,10 @@ import com.novoda.github.reports.stats.handler.RepoCommandHandler;
 import com.novoda.github.reports.stats.handler.UserCommandHandler;
 
 public class Main {
+
+    static {
+        LogHelper.turnOffJooqAd();
+    }
 
     private static final String COMMAND_USER = "user";
     private static final String COMMAND_REPO = "repo";

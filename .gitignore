@@ -6,4 +6,5 @@
 *.credentials
 */build/
 out/
+classes/
 .cache/
