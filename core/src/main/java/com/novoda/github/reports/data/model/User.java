@@ -5,11 +5,11 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class User {
 
-    public static User create(Integer id, String username) {
+    public static User create(Long id, String username) {
         return new AutoValue_User(id, username);
     }
 
-    public abstract Integer id();
+    public abstract Long id();
 
     public abstract String username();
 

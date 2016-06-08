@@ -22,29 +22,23 @@ import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
 import static com.novoda.github.reports.data.db.Tables.REPOSITORY;
 
-public class DbRepoDataLayer implements RepoDataLayer {
-
-    private final ConnectionManager connectionManager;
+public class DbRepoDataLayer extends DbDataLayer<Repository, RepositoryRecord> implements RepoDataLayer {
 
     public static DbRepoDataLayer newInstance(ConnectionManager connectionManager) {
         return new DbRepoDataLayer(connectionManager);
     }
 
     private DbRepoDataLayer(ConnectionManager connectionManager) {
-        this.connectionManager = connectionManager;
+        super(connectionManager);
     }
 
     @Override
-    public Repository updateOrInsert(Repository repository) throws DataLayerException {
-        return DatabaseHelper.updateOrInsert(this::updateOrInsert, connectionManager, repository);
-    }
-
-    private InsertOnDuplicateSetMoreStep<RepositoryRecord> updateOrInsert(DSLContext create, Repository repository) {
-        Byte isPrivate = boolToByte(repository.isPrivate());
+    InsertOnDuplicateSetMoreStep<RepositoryRecord> buildUpdateOrInsertListQuery(DSLContext create, Repository element) {
+        Byte isPrivate = boolToByte(element.isPrivate());
         return create.insertInto(REPOSITORY, REPOSITORY._ID, REPOSITORY.NAME, REPOSITORY.PRIVATE)
-                .values(repository.id(), repository.name(), isPrivate)
+                .values(element.id(), element.name(), isPrivate)
                 .onDuplicateKeyUpdate()
-                .set(REPOSITORY.NAME, repository.name())
+                .set(REPOSITORY.NAME, element.name())
                 .set(REPOSITORY.PRIVATE, isPrivate);
     }
 
@@ -55,8 +49,8 @@ public class DbRepoDataLayer implements RepoDataLayer {
         Result<Record1<Integer>> peopleResult;
 
         try {
-            connection = connectionManager.getNewConnection();
-            DSLContext create = connectionManager.getNewDSLContext(connection);
+            connection = getNewConnection();
+            DSLContext create = getNewDSLContext(connection);
 
             Condition betweenCondition = DatabaseHelper.conditionalBetween(EVENT.DATE, from, to);
             Condition repoCondition = REPOSITORY.NAME.equalIgnoreCase(repo);
@@ -66,7 +60,7 @@ public class DbRepoDataLayer implements RepoDataLayer {
         } catch (SQLException e) {
             throw new DataLayerException(e);
         } finally {
-            connectionManager.attemptCloseConnection(connection);
+            attemptCloseConnection(connection);
         }
 
         return DatabaseHelper.recordsToProjectRepoStats(eventsResult, peopleResult, repo);

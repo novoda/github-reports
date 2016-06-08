@@ -1,15 +1,15 @@
 package com.novoda.github.reports.batch.issue;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.batch.User;
+import com.novoda.github.reports.batch.GithubUser;
 
 import java.util.Date;
 
-public class Event {
+public class GithubEvent {
 
     private long id;
 
-    private User actor;
+    private GithubUser actor;
 
     @SerializedName("event")
     private Type type;
@@ -17,18 +17,33 @@ public class Event {
     @SerializedName("created_at")
     private Date createdAt;
 
-    @SerializedName("updated_at")
-    private Date updatedAt;
+    Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    GithubUser getActor() {
+        return actor;
+    }
+
+    Type getType() {
+        return type;
+    }
 
     @Override
     public String toString() {
         return String.format("%s [%d] @ %s by %s", type, id, createdAt, actor.getUsername());
     }
 
-    private enum Type {
+    public enum Type {
 
         @SerializedName("assigned")
         ASSIGNED("assigned"),
+        @SerializedName("commented")
+        COMMENTED("commented"),
         @SerializedName("closed")
         CLOSED("closed"),
         @SerializedName("assigned")

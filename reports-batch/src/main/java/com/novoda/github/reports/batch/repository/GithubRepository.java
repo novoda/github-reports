@@ -1,11 +1,11 @@
 package com.novoda.github.reports.batch.repository;
 
 import com.google.gson.annotations.SerializedName;
-import com.novoda.github.reports.batch.User;
+import com.novoda.github.reports.batch.GithubUser;
 
-public class Repository {
+public class GithubRepository {
 
-    private String id;
+    private Long id;
 
     private String name;
 
@@ -18,7 +18,7 @@ public class Repository {
     @SerializedName("forked")
     private boolean forkedRepo;
 
-    private User owner;
+    private GithubUser owner;
 
     @SerializedName("open_issues_count")
     private int openIssues;
@@ -26,7 +26,7 @@ public class Repository {
     @SerializedName("has_issues")
     private boolean issuesPresent;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -46,8 +46,12 @@ public class Repository {
         return forkedRepo;
     }
 
-    public User getOwner() {
+    public GithubUser getOwner() {
         return owner;
+    }
+
+    public String getOwnerUsername() {
+        return owner.getUsername();
     }
 
     public int getOpenIssues() {
@@ -56,6 +60,18 @@ public class Repository {
 
     public boolean issuesPresent() {
         return issuesPresent;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setOwner(GithubUser owner) {
+        this.owner = owner;
     }
 
     @Override

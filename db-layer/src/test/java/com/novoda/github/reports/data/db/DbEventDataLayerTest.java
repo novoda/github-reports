@@ -22,11 +22,11 @@ import static org.mockito.Mockito.when;
 
 public class DbEventDataLayerTest {
 
-    private static final int ANY_EVENT_ID = 1337;
-    private static final Integer ANY_EVENT_REPO_ID = 1;
-    private static final Integer ANY_EVENT_AUTHOR_ID = 2;
-    private static final Integer ANY_EVENT_OWNER_ID = 3;
-    private static final EventType ANY_EVENT_TYPE = EventType.ISSUE_COMMENT_ADD;
+    private static final Long ANY_EVENT_ID = 1337L;
+    private static final Long ANY_EVENT_REPO_ID = 1L;
+    private static final Long ANY_EVENT_AUTHOR_ID = 2L;
+    private static final Long ANY_EVENT_OWNER_ID = 3L;
+    private static final EventType ANY_EVENT_TYPE = EventType.ISSUE_COMMENT;
     private static final Date ANY_EVENT_DATE = new GregorianCalendar(2016, 4, 26, 18, 20).getTime();
     private DbEventDataLayer dataLayer;
     private MockConnectionManager mockConnectionManager;
@@ -58,17 +58,17 @@ public class DbEventDataLayerTest {
     @Test
     public void givenInvalidDatabase_whenUpdateOrInsertEvent_thenThrowDataLayerException() throws SQLException, DataLayerException {
         Event awesomeEvent = Event.create(ANY_EVENT_ID, ANY_EVENT_REPO_ID, ANY_EVENT_AUTHOR_ID, ANY_EVENT_OWNER_ID, ANY_EVENT_TYPE, ANY_EVENT_DATE);
-        whenUpdateOrInsertEventAffectsRows(2);
+        whenUpdateOrInsertEventAffectsRows(3);
 
         thrown.expect(DataLayerException.class);
-        thrown.expectMessage(Matchers.contains("More than"));
+        thrown.expectMessage(Matchers.contains("Unhandled"));
         dataLayer.updateOrInsert(awesomeEvent);
     }
 
     @Test
     public void givenValidEvent_whenUpdateOrInsertEvent_thenThrowDataLayerException() throws SQLException, DataLayerException {
         Event awesomeEvent = Event.create(ANY_EVENT_ID, ANY_EVENT_REPO_ID, ANY_EVENT_AUTHOR_ID, ANY_EVENT_OWNER_ID, ANY_EVENT_TYPE, ANY_EVENT_DATE);
-        whenUpdateOrInsertEventAffectsRows(0);
+        whenUpdateOrInsertEventAffectsRows(-1);
 
         thrown.expect(DataLayerException.class);
         thrown.expectMessage(Matchers.contains("Could not"));

@@ -13,8 +13,7 @@ class RateLimitCountInterceptor implements Interceptor {
     private RateLimitRemainingCounter rateLimitRemainingCounter;
 
     public static RateLimitCountInterceptor newInstance() {
-        // FIXME/TODO this counter should be passed in or should be a singleton
-        RateLimitRemainingCounter rateLimitRemainingCounter = GithubRateLimitRemainingCounter.newInstance();
+        RateLimitRemainingCounter rateLimitRemainingCounter = RateLimitRemainingCounterContainer.getInstance();
         return new RateLimitCountInterceptor(rateLimitRemainingCounter);
     }
 
@@ -28,7 +27,8 @@ class RateLimitCountInterceptor implements Interceptor {
         Response response = chain.proceed(request);
 
         String countAsString = response.headers().get(REMAINING_RATE_LIMIT_HEADER);
-        rateLimitRemainingCounter.set(Integer.valueOf(countAsString));
+        Integer remainingCount = Integer.valueOf(countAsString);
+        rateLimitRemainingCounter.set(remainingCount);
 
         return response;
     }
