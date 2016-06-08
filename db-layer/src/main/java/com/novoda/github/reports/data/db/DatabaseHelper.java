@@ -7,8 +7,6 @@ import com.novoda.github.reports.data.model.ProjectRepoStats;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jooq.Condition;
 import org.jooq.Field;
@@ -115,9 +113,5 @@ class DatabaseHelper {
 
     static Byte boolToByte(boolean value) {
         return value ? TRUE_BYTE : FALSE_BYTE;
-    }
-
-    static void turnOffJooqAd() {
-        Logger.getLogger("org.jooq.Constants").setLevel(Level.WARNING);
     }
 }

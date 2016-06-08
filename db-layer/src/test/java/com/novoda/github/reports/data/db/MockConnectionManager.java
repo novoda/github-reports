@@ -13,10 +13,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 class MockConnectionManager implements ConnectionManager {
 
-    static {
-        DatabaseHelper.turnOffJooqAd();
-    }
-
     @Mock
     MockDataProvider mockDataProvider;
 
