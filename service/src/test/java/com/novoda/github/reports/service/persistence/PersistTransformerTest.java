@@ -7,12 +7,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.observers.TestSubscriber;
+
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PersistTransformerTest {
 
@@ -33,7 +34,7 @@ public class PersistTransformerTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        initMocks(this);
 
         transformer = new PersistTransformer<>(operator, ANY_BUFFER_SIZE);
         testSubscriber = TestSubscriber.create();
@@ -41,7 +42,7 @@ public class PersistTransformerTest {
 
     @Test
     public void givenAnyObservable_whenCompose_thenDoNotAlterValues() {
-        Mockito.when(operator.call(Matchers.any())).thenAnswer(invocation -> createFlowSubscriber(invocation.getArgument(0)));
+        when(operator.call(Matchers.any())).thenAnswer(invocation -> createFlowSubscriber(invocation.getArgument(0)));
 
         ANY_OBSERVABLE.compose(transformer).subscribe(testSubscriber);
 
@@ -70,7 +71,7 @@ public class PersistTransformerTest {
 
     @Test
     public void givenInvalidObservableForTransformer_whenCompose_thenEmitError() {
-        Mockito.when(operator.call(Matchers.any())).thenAnswer(invocation -> createErroringSubscriber(invocation.getArgument(0)));
+        when(operator.call(Matchers.any())).thenAnswer(invocation -> createErroringSubscriber(invocation.getArgument(0)));
 
         ANY_OBSERVABLE.compose(transformer).subscribe(testSubscriber);
 
