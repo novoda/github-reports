@@ -12,14 +12,16 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.internal.verification.VerificationModeFactory;
 
 import rx.Observable;
 import rx.observers.TestSubscriber;
+
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PersistOperatorTest {
 
@@ -44,7 +46,7 @@ public class PersistOperatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        initMocks(this);
     }
 
     @Test
@@ -53,7 +55,7 @@ public class PersistOperatorTest {
                 .lift(operator)
                 .subscribe();
 
-        Mockito.verify(converter, VerificationModeFactory.times(3)).convertListFrom(anyListOfModelObject());
+        verify(converter, VerificationModeFactory.times(3)).convertListFrom(anyListOfModelObject());
     }
 
     @Test
@@ -62,7 +64,7 @@ public class PersistOperatorTest {
                 .lift(operator)
                 .subscribe();
 
-        Mockito.verify(dataLayer, VerificationModeFactory.times(3)).updateOrInsert(anyListOfModelObject());
+        verify(dataLayer, VerificationModeFactory.times(3)).updateOrInsert(anyListOfModelObject());
     }
 
     @Test
@@ -89,7 +91,7 @@ public class PersistOperatorTest {
 
     @Test
     public void givenAnyObservableAndFailingPersist_whenLift_thenEmitError() throws DataLayerException {
-        Mockito.when(dataLayer.updateOrInsert(anyListOfModelObject())).thenThrow(DataLayerException.class);
+        when(dataLayer.updateOrInsert(anyListOfModelObject())).thenThrow(DataLayerException.class);
 
         TestSubscriber<List<Object>> testSubscriber = new TestSubscriber<>();
         ANY_OBSERVABLE
@@ -101,7 +103,7 @@ public class PersistOperatorTest {
     }
 
     private static List<Object> anyListOfModelObject() {
-        return Matchers.anyListOf(Object.class);
+        return anyListOf(Object.class);
     }
 
 }

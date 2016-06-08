@@ -10,14 +10,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import retrofit2.Response;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class RateLimitDelayTransformerTest {
 
@@ -44,7 +46,7 @@ public class RateLimitDelayTransformerTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        initMocks(this);
 
         testSubscriber = new TestSubscriber<>();
         testScheduler = new TestScheduler();
@@ -64,7 +66,7 @@ public class RateLimitDelayTransformerTest {
 
     @Test
     public void givenRateLimitHasNotBeenExhausted_whenTransforming_thenNoDelayHappens() {
-        Mockito.when(mockRateLimitRemainingCounter.get()).thenReturn(ANY_POSITIVE_REMAINING_RATE_LIMIT);
+        when(mockRateLimitRemainingCounter.get()).thenReturn(ANY_POSITIVE_REMAINING_RATE_LIMIT);
 
         Observable actual = rateLimitDelayTransformer.call(observable);
 
@@ -73,19 +75,19 @@ public class RateLimitDelayTransformerTest {
 
     @Test
     public void givenRateLimitHasBeenExhausted_whenTransforming_thenTheLimitsAreChecked() {
-        Mockito.when(mockRateLimitRemainingCounter.get()).thenReturn(0);
-        Mockito.when(mockRateLimitResetRepository.getNextResetTime()).thenReturn(ANY_RESET_TIMESTAMP);
+        when(mockRateLimitRemainingCounter.get()).thenReturn(0);
+        when(mockRateLimitResetRepository.getNextResetTime()).thenReturn(ANY_RESET_TIMESTAMP);
 
         rateLimitDelayTransformer.call(observable);
 
-        Mockito.verify(mockRateLimitRemainingCounter).get();
-        Mockito.verify(mockRateLimitResetRepository).getNextResetTime();
+        verify(mockRateLimitRemainingCounter).get();
+        verify(mockRateLimitResetRepository).getNextResetTime();
     }
 
     @Test
     public void givenRateLimitHasBeenExhaustedAndDelayGoesBy_whenTransforming_thenGetAnItem() {
-        Mockito.when(mockRateLimitRemainingCounter.get()).thenReturn(0);
-        Mockito.when(mockRateLimitResetRepository.getNextResetTime()).thenReturn(ANY_RESET_TIMESTAMP);
+        when(mockRateLimitRemainingCounter.get()).thenReturn(0);
+        when(mockRateLimitResetRepository.getNextResetTime()).thenReturn(ANY_RESET_TIMESTAMP);
 
         Observable<Response<List<GithubRepository>>> delayed = rateLimitDelayTransformer.call(observable);
         delayed.subscribe(testSubscriber);
@@ -101,8 +103,8 @@ public class RateLimitDelayTransformerTest {
 
     @Test
     public void givenRateLimitHasBeenExhaustedAndNotEnoughTimeGoesBy_whenTransforming_thenGetAnItem() {
-        Mockito.when(mockRateLimitRemainingCounter.get()).thenReturn(0);
-        Mockito.when(mockRateLimitResetRepository.getNextResetTime()).thenReturn(ANY_RESET_TIMESTAMP);
+        when(mockRateLimitRemainingCounter.get()).thenReturn(0);
+        when(mockRateLimitResetRepository.getNextResetTime()).thenReturn(ANY_RESET_TIMESTAMP);
 
         Observable<Response<List<GithubRepository>>> delayed = rateLimitDelayTransformer.call(observable);
         delayed.subscribe(testSubscriber);

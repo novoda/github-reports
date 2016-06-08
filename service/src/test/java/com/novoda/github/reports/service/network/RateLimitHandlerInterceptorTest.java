@@ -2,15 +2,12 @@ package com.novoda.github.reports.service.network;
 
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import okhttp3.Interceptor;
 import okhttp3.Protocol;
@@ -18,6 +15,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static org.hamcrest.CoreMatchers.isA;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class RateLimitHandlerInterceptorTest {
 
@@ -49,9 +49,9 @@ public class RateLimitHandlerInterceptorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        initMocks(this);
 
-        Mockito.when(mockChain.request()).thenReturn(ANY_REQUEST);
+        when(mockChain.request()).thenReturn(ANY_REQUEST);
 
         ANY_SUCCESSFUL_RESPONSE = buildAnyResponseWithCode(200);
         ANY_RATE_LIMIT_RESPONSE = buildAnyResponseWithCode(403);
@@ -68,18 +68,18 @@ public class RateLimitHandlerInterceptorTest {
 
     @Test
     public void givenSuccessfulCall_whenIntercept_thenReturnResponse() throws IOException {
-        Mockito.when(mockChain.proceed(ANY_REQUEST)).thenReturn(ANY_SUCCESSFUL_RESPONSE);
-        Mockito.when(mockRateLimitRemainingCounter.get()).thenReturn(VALID_COUNTER);
+        when(mockChain.proceed(ANY_REQUEST)).thenReturn(ANY_SUCCESSFUL_RESPONSE);
+        when(mockRateLimitRemainingCounter.get()).thenReturn(VALID_COUNTER);
 
         Response response = interceptor.intercept(mockChain);
 
-        Assert.assertEquals(ANY_SUCCESSFUL_RESPONSE, response);
+        assertEquals(ANY_SUCCESSFUL_RESPONSE, response);
     }
 
     @Test
     public void givenRateLimitCallAndZeroCounter_whenIntercept_thenThrowIoException() throws IOException {
-        Mockito.when(mockChain.proceed(ANY_REQUEST)).thenReturn(ANY_RATE_LIMIT_RESPONSE);
-        Mockito.when(mockRateLimitRemainingCounter.get()).thenReturn(ZERO_COUNTER);
+        when(mockChain.proceed(ANY_REQUEST)).thenReturn(ANY_RATE_LIMIT_RESPONSE);
+        when(mockRateLimitRemainingCounter.get()).thenReturn(ZERO_COUNTER);
 
         thrown.expect(IOException.class);
         thrown.expectCause(isA(RateLimitEncounteredException.class));
@@ -89,22 +89,22 @@ public class RateLimitHandlerInterceptorTest {
 
     @Test
     public void givenRateLimitCallAndValidCounter_whenIntercept_thenDoNotThrowIoException() throws IOException {
-        Mockito.when(mockChain.proceed(ANY_REQUEST)).thenReturn(ANY_RATE_LIMIT_RESPONSE);
-        Mockito.when(mockRateLimitRemainingCounter.get()).thenReturn(VALID_COUNTER);
+        when(mockChain.proceed(ANY_REQUEST)).thenReturn(ANY_RATE_LIMIT_RESPONSE);
+        when(mockRateLimitRemainingCounter.get()).thenReturn(VALID_COUNTER);
 
         Response response = interceptor.intercept(mockChain);
 
-        Assert.assertEquals(ANY_RATE_LIMIT_RESPONSE, response);
+        assertEquals(ANY_RATE_LIMIT_RESPONSE, response);
     }
 
     @Test
     public void givenErroringCall_whenIntercept_thenDoNotHandle() throws IOException {
-        Mockito.when(mockChain.proceed(ANY_REQUEST)).thenReturn(ANY_OTHER_ERROR_RESPONSE);
-        Mockito.when(mockRateLimitRemainingCounter.get()).thenReturn(VALID_COUNTER);
+        when(mockChain.proceed(ANY_REQUEST)).thenReturn(ANY_OTHER_ERROR_RESPONSE);
+        when(mockRateLimitRemainingCounter.get()).thenReturn(VALID_COUNTER);
 
         Response response = interceptor.intercept(mockChain);
 
-        Assert.assertEquals(ANY_OTHER_ERROR_RESPONSE, response);
+        assertEquals(ANY_OTHER_ERROR_RESPONSE, response);
     }
 
 }
