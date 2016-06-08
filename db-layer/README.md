@@ -13,9 +13,14 @@ To configure the database you need to have a `database.credentials` file in the 
 
 * `DB_USER`, username for the database instance
 * `DB_PASSWORD`, password for the database instance
-* `DB_CONNECTION_STRING`, JDBS connection string to the database instance
+* `DB_CONNECTION_STRING`, JDBC connection string to the database instance
 
-For an example, see the [`database.credentials.sample` file](../database.credentials.sample);
+This file is used to generate the database access code.
+
+Any other project referencing `db-layer` **MUST** put the same file in the resources or classloader accessible folder, so that it can be read at
+runtime and be used to connect to the database instance.
+
+For an example, see the [`database.credentials.sample` file](../database.credentials.sample).
 
 ### Usage
 

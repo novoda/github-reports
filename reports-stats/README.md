@@ -9,8 +9,14 @@ _CLI to extract statistics from your Github data._
 
 ### Configuration
 
-To configure the program, you need to put a `database.credentials` (see [`db-layer` docs](../db-layer/README.md#configuration)) file in the root
-project directory.
+To configure the database instance you want to connect to, put a `database.credentials` file in the resources or classloader accessible folder, with
+the following properties defined:
+
+* `DB_USER`, username for the database instance
+* `DB_PASSWORD`, password for the database instance
+* `DB_CONNECTION_STRING`, JDBC connection string to the database instance
+
+For an example, see the [`database.credentials.sample` file](src/main/resources/database.credentials.sample).
 
 ### Usage
 
