@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -17,6 +16,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -70,7 +70,7 @@ public class RateLimitDelayTransformerTest {
 
         Observable actual = rateLimitDelayTransformer.call(observable);
 
-        Assert.assertEquals(observable, actual);
+        assertEquals(observable, actual);
     }
 
     @Test
