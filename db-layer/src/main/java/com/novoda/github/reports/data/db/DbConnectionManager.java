@@ -20,10 +20,6 @@ import org.jooq.impl.DSL;
 
 public class DbConnectionManager implements ConnectionManager {
 
-    static {
-        DatabaseHelper.turnOffJooqAd();
-    }
-
     private static final String DATABASE_CREDENTIALS_FILENAME = "database.credentials";
     private final DatabaseCredentialsReader databaseCredentialsReader;
     private DataSource dataSource;

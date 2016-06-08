@@ -7,6 +7,7 @@ import com.novoda.github.reports.batch.network.RateLimitRemainingCounter;
 import com.novoda.github.reports.batch.network.RateLimitRemainingCounterContainer;
 import com.novoda.github.reports.batch.network.RateLimitRemainingResetRepositoryContainer;
 import com.novoda.github.reports.batch.network.RateLimitResetRepository;
+import com.novoda.github.reports.data.db.LogHelper;
 
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
@@ -15,6 +16,10 @@ import rx.Observable;
 import rx.Subscription;
 
 public class Main {
+
+    static {
+        LogHelper.turnOffJooqAd();
+    }
 
     private void execute(String[] args) {
         BatchOptions options = new BatchOptions();
