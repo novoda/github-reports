@@ -5,7 +5,7 @@ _CLI to mine data from your Github organization._
 
 -------------
 
-`reports-batch` is a CLI program to fetch and store relevant data about your Github organization.
+`reports-batch-local` is a CLI program to fetch and store relevant data about your Github organization.
 
 ### Configuration
 
@@ -29,12 +29,10 @@ For an example, see the [`github.credentials.sample` file](src/main/resources/gi
 
 ### Usage
 
-**Note:** the CLI isn't parametrized yet, but this is how you will be using it.
-
 To use `reports-batch` , simply run:
 
 ```shell
-$ reports-batch your-organization-name --from 2016-01-01
+$ reports-batch-local your-organization-name --from 2016-01-01
 ```
 
 The `from` parameter is optional and can be specified as an ISO-8601 date/time string.
