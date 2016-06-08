@@ -9,11 +9,23 @@ _CLI to mine data from your Github organization._
 
 ### Configuration
 
-To configure the program, you need to put both a `database.credentials` (see [`db-layer` docs](../db-layer/README.md#configuration)) and a
-`github.credentials` file in the root project directory.
+#### Database
 
-The `github.credentials` file must contain the `GITHUB_OAUTH_TOKEN` property, which you can generate on your Github organization profile.
-For an example, see the [`github.credentials.sample` file](../github.credentials.sample).
+To configure the database instance you want to connect to, put a `database.credentials` file in the resources or classloader accessible folder, with
+the following properties defined:
+
+* `DB_USER`, username for the database instance
+* `DB_PASSWORD`, password for the database instance
+* `DB_CONNECTION_STRING`, JDBC connection string to the database instance
+
+For an example, see the [`database.credentials.sample` file](src/main/resources/database.credentials.sample).
+
+#### Github
+
+To be able to use the Github API, you must put a `github.credentials` file in the resources or classloader accessible folder, with the
+`GITHUB_OAUTH_TOKEN` property set to an API key that you can generate on your Github organization profile.
+
+For an example, see the [`github.credentials.sample` file](src/main/resources/github.credentials.sample).
 
 ### Usage
 
