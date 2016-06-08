@@ -7,17 +7,17 @@ import java.util.Date;
 @AutoValue
 public abstract class Event {
 
-    public static Event create(Integer id, Integer repositoryId, Integer authorUserId, Integer ownerUserId, EventType eventType, Date date) {
+    public static Event create(Long id, Long repositoryId, Long authorUserId, Long ownerUserId, EventType eventType, Date date) {
         return new AutoValue_Event(id, repositoryId, authorUserId, ownerUserId, eventType, date);
     }
 
-    public abstract Integer id();
+    public abstract Long id();
 
-    public abstract Integer repositoryId();
+    public abstract Long repositoryId();
 
-    public abstract Integer authorUserId();
+    public abstract Long authorUserId();
 
-    public abstract Integer ownerUserId();
+    public abstract Long ownerUserId();
 
     public abstract EventType eventType();
 

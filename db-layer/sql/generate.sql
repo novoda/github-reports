@@ -17,30 +17,25 @@ CREATE TABLE `event_type` (
 --
 -- Dumping data for table `event_type`
 --
-INSERT INTO `event_type` VALUES (301, 'branch_delete');
-INSERT INTO `event_type` VALUES (300, 'commit');
-INSERT INTO `event_type` VALUES (102, 'issue_add_comment');
-INSERT INTO `event_type` VALUES (105, 'issue_add_label');
-INSERT INTO `event_type` VALUES (101, 'issue_close');
-INSERT INTO `event_type` VALUES (103, 'issue_edit_comment');
 INSERT INTO `event_type` VALUES (100, 'issue_open');
-INSERT INTO `event_type` VALUES (104, 'issue_remove_comment');
-INSERT INTO `event_type` VALUES (106, 'issue_remove_label');
-INSERT INTO `event_type` VALUES (202, 'pr_add_comment');
-INSERT INTO `event_type` VALUES (205, 'pr_add_label');
-INSERT INTO `event_type` VALUES (201, 'pr_close');
-INSERT INTO `event_type` VALUES (203, 'pr_edit_comment');
-INSERT INTO `event_type` VALUES (207, 'pr_merge');
+INSERT INTO `event_type` VALUES (101, 'issue_close');
+INSERT INTO `event_type` VALUES (102, 'issue_comment');
+INSERT INTO `event_type` VALUES (103, 'issue_label_add');
+INSERT INTO `event_type` VALUES (104, 'issue_label_remove');
 INSERT INTO `event_type` VALUES (200, 'pr_open');
-INSERT INTO `event_type` VALUES (204, 'pr_remove_comment');
-INSERT INTO `event_type` VALUES (206, 'pr_remove_label');
+INSERT INTO `event_type` VALUES (201, 'pr_close');
+INSERT INTO `event_type` VALUES (202, 'pr_comment');
+INSERT INTO `event_type` VALUES (203, 'pr_label_add');
+INSERT INTO `event_type` VALUES (204, 'pr_label_remove');
+INSERT INTO `event_type` VALUES (205, 'pr_merge');
+INSERT INTO `event_type` VALUES (300, 'branch_delete');
 
 --
 -- Table structure for table `project`
 --
 DROP TABLE IF EXISTS `project`;
 CREATE TABLE `project` (
-  `_id`  INT(11)     NOT NULL AUTO_INCREMENT,
+  `_id`  BIGINT(11)     NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`_id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
@@ -51,7 +46,7 @@ CREATE TABLE `project` (
 --
 DROP TABLE IF EXISTS `repository`;
 CREATE TABLE `repository` (
-  `_id`     INT(11)      NOT NULL,
+  `_id`     BIGINT(11)      NOT NULL,
   `name`    VARCHAR(255) NOT NULL,
   `private` TINYINT(1)   NOT NULL,
   PRIMARY KEY (`_id`)
@@ -62,9 +57,9 @@ CREATE TABLE `repository` (
 --
 DROP TABLE IF EXISTS `project_repository`;
 CREATE TABLE `project_repository` (
-  `_id`           INT(11) NOT NULL AUTO_INCREMENT,
-  `project_id`    INT(11) NOT NULL,
-  `repository_id` INT(11) NOT NULL,
+  `_id`           BIGINT(11) NOT NULL AUTO_INCREMENT,
+  `project_id`    BIGINT(11) NOT NULL,
+  `repository_id` BIGINT(11) NOT NULL,
   PRIMARY KEY (`_id`),
   KEY `project_id_INDEX` (`project_id`),
   KEY `repository_id_INDEX` (`repository_id`),
@@ -81,7 +76,7 @@ CREATE TABLE `project_repository` (
 --
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
-  `_id`      INT(11)     NOT NULL,
+  `_id`      BIGINT(11)     NOT NULL,
   `username` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`_id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
@@ -92,10 +87,10 @@ CREATE TABLE `user` (
 --
 DROP TABLE IF EXISTS `event`;
 CREATE TABLE `event` (
-  `_id`            INT(11)   NOT NULL,
-  `repository_id`  INT(11)   NOT NULL,
-  `author_user_id` INT(11)   NOT NULL,
-  `owner_user_id`  INT(11)   NOT NULL,
+  `_id`            BIGINT(11)   NOT NULL,
+  `repository_id`  BIGINT(11)   NOT NULL,
+  `author_user_id` BIGINT(11)   NOT NULL,
+  `owner_user_id`  BIGINT(11)   NOT NULL,
   `event_type_id`  INT(11)   NOT NULL,
   `date`           TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`_id`),

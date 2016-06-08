@@ -18,7 +18,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 public class DbRepoDataLayerTest {
-    private static final int ANY_REPOSITORY_ID = 1337;
+    private static final Long ANY_REPOSITORY_ID = 1337L;
     private static final String ANY_REPOSITORY_NAME = "awesome-stuff";
     private static final boolean ANY_REPOSITORY_PRIVATE = false;
     private DbRepoDataLayer dataLayer;
@@ -51,17 +51,17 @@ public class DbRepoDataLayerTest {
     @Test
     public void givenInvalidDatabase_whenUpdateOrInsertRepo_thenThrowDataLayerException() throws SQLException, DataLayerException {
         Repository awesomeRepo = Repository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
-        whenUpdateOrInsertRepoAffectsRows(2);
+        whenUpdateOrInsertRepoAffectsRows(3);
 
         thrown.expect(DataLayerException.class);
-        thrown.expectMessage(Matchers.contains("More than"));
+        thrown.expectMessage(Matchers.contains("Unhandled"));
         dataLayer.updateOrInsert(awesomeRepo);
     }
 
     @Test
     public void givenValidRepo_whenUpdateOrInsertRepo_thenThrowDataLayerException() throws SQLException, DataLayerException {
         Repository awesomeRepo = Repository.create(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_REPOSITORY_PRIVATE);
-        whenUpdateOrInsertRepoAffectsRows(0);
+        whenUpdateOrInsertRepoAffectsRows(-1);
 
         thrown.expect(DataLayerException.class);
         thrown.expectMessage(Matchers.contains("Could not"));

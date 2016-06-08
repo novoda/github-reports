@@ -1,8 +1,9 @@
 package com.novoda.github.reports.batch.repository;
 
-import com.novoda.github.reports.batch.network.PagedTransformer;
 import com.novoda.github.reports.batch.network.GithubApiService;
-import com.novoda.github.reports.batch.network.GithubServiceFactory;
+import com.novoda.github.reports.batch.network.GithubServiceContainer;
+import com.novoda.github.reports.batch.network.PagedTransformer;
+import com.novoda.github.reports.batch.network.RateLimitDelayTransformer;
 
 import java.util.List;
 
@@ -12,28 +13,31 @@ import rx.Observable;
 class GithubRepositoriesService implements RepositoryService {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
+    private static final int FIRST_PAGE = 1;
 
     private final GithubApiService githubApiService;
+    private final RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer;
 
     static GithubRepositoriesService newInstance() {
-        GithubServiceFactory githubServiceFactory = GithubServiceFactory.newInstance();
-        return new GithubRepositoriesService(githubServiceFactory.createService());
+        GithubApiService githubApiService = GithubServiceContainer.getGithubService();
+        RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
+        return new GithubRepositoriesService(githubApiService, rateLimitDelayTransformer);
     }
 
-    private GithubRepositoriesService(GithubApiService githubApiService) {
+    private GithubRepositoriesService(GithubApiService githubApiService, RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer) {
         this.githubApiService = githubApiService;
+        this.rateLimitDelayTransformer = rateLimitDelayTransformer;
     }
 
     @Override
-    public Observable<Repository> getPagedRepositoriesFor(String organisation) {
-        return getPagedRepositoriesFor(organisation, 1, DEFAULT_PER_PAGE_COUNT)
+    public Observable<GithubRepository> getRepositoriesFor(String organisation) {
+        return getPagedRepositoriesFor(organisation, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
-    private Observable<Response<List<Repository>>> getPagedRepositoriesFor(String org, Integer page, Integer pageCount) {
-        return githubApiService
-                .getRepositoriesResponseForPage(org, page, pageCount)
-                .compose(PagedTransformer.newInstance(nextPage -> getPagedRepositoriesFor(org, nextPage, pageCount)));
+    private Observable<Response<List<GithubRepository>>> getPagedRepositoriesFor(String organisation, Integer page, Integer pageCount) {
+        return githubApiService.getRepositoriesResponseForPage(organisation, page, pageCount)
+                .compose(rateLimitDelayTransformer)
+                .compose(PagedTransformer.newInstance(nextPage -> getPagedRepositoriesFor(organisation, nextPage, pageCount)));
     }
-
 }
