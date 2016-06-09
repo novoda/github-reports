@@ -1,6 +1,6 @@
 package com.novoda.github.reports.aws.worker;
 
-public interface WorkerHandlerServiceClient {
+public interface WorkerHandlerService {
 
     WorkerHandler getWorkerHandler();
 

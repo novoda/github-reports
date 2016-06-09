@@ -1,6 +1,6 @@
 package com.novoda.github.reports.aws.notifier;
 
-public interface NotifierServiceClient {
+public interface NotifierService {
 
     Notifier getNotifier();
 
