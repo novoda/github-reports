@@ -1,6 +1,8 @@
-package com.novoda.github.reports.aws.worker;
+package com.novoda.github.reports.aws.configuration;
 
 public interface Configuration {
+
+    String getQueueName();
 
     DatabaseConfiguration getDatabaseConfiguration();
 

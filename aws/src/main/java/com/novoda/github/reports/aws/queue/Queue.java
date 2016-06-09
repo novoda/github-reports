@@ -1,10 +1,14 @@
 package com.novoda.github.reports.aws.queue;
 
-public interface Queue<T extends QueueMessage> {
+import java.util.List;
 
-    T getItem();
+public interface Queue {
 
-    T removeItem();
+    QueueMessage getItem();
+
+    List<QueueMessage> addItems(List<QueueMessage> queueMessages);
+
+    QueueMessage removeItem(QueueMessage queueMessage);
 
     boolean isEmpty();
 

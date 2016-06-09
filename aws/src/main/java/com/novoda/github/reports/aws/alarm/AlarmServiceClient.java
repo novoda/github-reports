@@ -1,9 +1,13 @@
 package com.novoda.github.reports.aws.alarm;
 
-public interface AlarmServiceClient<T> {
+import com.novoda.github.reports.aws.configuration.Configuration;
 
-    Alarm<T> postAlarm(Alarm<T> alarm);
+public interface AlarmServiceClient {
 
-    Alarm<T> removeAlarm(Alarm<T> alarm);
+    Alarm createAlarm(Configuration configuration, long minutes);
+
+    Alarm postAlarm(Alarm alarm);
+
+    Alarm removeAlarm(Alarm alarm);
 
 }
