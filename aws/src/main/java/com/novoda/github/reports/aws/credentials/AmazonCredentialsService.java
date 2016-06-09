@@ -7,7 +7,6 @@ import com.novoda.github.reports.properties.PropertiesReader;
 
 public class AmazonCredentialsService {
 
-    private final PropertiesReader propertiesReader;
     private final AWSCredentialsProviderChain credentialsProviderChain;
 
     public static AmazonCredentialsService newInstance(PropertiesReader propertiesReader) {
@@ -15,7 +14,6 @@ public class AmazonCredentialsService {
     }
 
     private AmazonCredentialsService(PropertiesReader propertiesReader) {
-        this.propertiesReader = propertiesReader;
         this.credentialsProviderChain = new AWSCredentialsProviderChain(
                 new EnvironmentVariableCredentialsProvider(),
                 PropertiesAWSCredentialsProvider.newInstance(propertiesReader)
