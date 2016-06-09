@@ -39,7 +39,7 @@ public class GithubPullRequestService implements PullRequestService {
     }
 
     @Override
-    public Observable<GithubComment> getReviewCommentsForPullRequestFor(String organisation, String repository, Integer pullRequestNumber, Date since) {
+    public Observable<GithubComment> getPullRequestReviewCommentsFor(String organisation, String repository, Integer pullRequestNumber, Date since) {
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return getPagedReviewCommentsForPullRequestFor(organisation, repository, pullRequestNumber, date, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
