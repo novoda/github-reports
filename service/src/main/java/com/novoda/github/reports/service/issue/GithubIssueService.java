@@ -17,6 +17,8 @@ public class GithubIssueService implements IssueService {
 
     private final GithubApiService githubApiService;
 
+    // TODO @RUI drop this, as atm it's pretty much a 1-2-1 mapping to the api service
+
     public static IssueService newInstance() {
         GithubApiService githubApiService = GithubServiceContainer.getGithubService();
         return new GithubIssueService(githubApiService);
