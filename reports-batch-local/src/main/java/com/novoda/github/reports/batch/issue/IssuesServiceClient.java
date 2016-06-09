@@ -1,6 +1,24 @@
 package com.novoda.github.reports.batch.issue;
 
+import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubject;
+import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubjectContainer;
+import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
+import com.novoda.github.reports.data.EventDataLayer;
+import com.novoda.github.reports.data.UserDataLayer;
+import com.novoda.github.reports.data.db.ConnectionManager;
+import com.novoda.github.reports.data.db.DbEventDataLayer;
+import com.novoda.github.reports.data.db.DbUserDataLayer;
+import com.novoda.github.reports.data.model.Event;
+import com.novoda.github.reports.data.model.User;
+import com.novoda.github.reports.service.issue.GithubComment;
+import com.novoda.github.reports.service.issue.GithubEvent;
 import com.novoda.github.reports.service.issue.GithubIssue;
+import com.novoda.github.reports.service.issue.GithubIssueService;
+import com.novoda.github.reports.service.issue.IssueService;
+import com.novoda.github.reports.service.issue.RepositoryIssue;
+import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
+import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
+import com.novoda.github.reports.service.issue.RepositoryIssueEventEvent;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.network.PagedTransformer;
 import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
@@ -14,27 +32,8 @@ import com.novoda.github.reports.service.persistence.converter.Converter;
 import com.novoda.github.reports.service.persistence.converter.EventConverter;
 import com.novoda.github.reports.service.persistence.converter.IssueConverter;
 import com.novoda.github.reports.service.persistence.converter.UserConverter;
-import com.novoda.github.reports.service.pullrequest.GithubPullRequestService;
-import com.novoda.github.reports.service.pullrequest.PullRequestService;
+import com.novoda.github.reports.service.pullrequest.PullRequestServiceClient;
 import com.novoda.github.reports.service.repository.GithubRepository;
-import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubject;
-import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubjectContainer;
-import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
-import com.novoda.github.reports.data.EventDataLayer;
-import com.novoda.github.reports.data.UserDataLayer;
-import com.novoda.github.reports.data.db.ConnectionManager;
-import com.novoda.github.reports.data.db.DbEventDataLayer;
-import com.novoda.github.reports.data.db.DbUserDataLayer;
-import com.novoda.github.reports.data.model.Event;
-import com.novoda.github.reports.data.model.User;
-import com.novoda.github.reports.service.issue.GithubComment;
-import com.novoda.github.reports.service.issue.GithubEvent;
-import com.novoda.github.reports.service.issue.GithubIssueService;
-import com.novoda.github.reports.service.issue.IssueService;
-import com.novoda.github.reports.service.issue.RepositoryIssue;
-import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
-import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
-import com.novoda.github.reports.service.issue.RepositoryIssueEventEvent;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -64,7 +63,7 @@ public class IssuesServiceClient {
     ));
 
     private final IssueService issueService;
-    private final PullRequestService pullRequestService;
+    private final PullRequestServiceClient pullRequestServiceClient;
     private final DateToISO8601Converter dateConverter;
 
     private final RateLimitDelayTransformer<GithubIssue> issueRateLimitDelayTransformer;
@@ -87,7 +86,7 @@ public class IssuesServiceClient {
         RateLimitDelayTransformer<GithubEvent> eventRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
         RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
 
-        PullRequestService pullRequestService = GithubPullRequestService.newInstance();
+        PullRequestServiceClient pullRequestServiceClient = PullRequestServiceClient.newInstance();
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
 
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
@@ -100,7 +99,7 @@ public class IssuesServiceClient {
         RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
 
         return new IssuesServiceClient(issueService,
-                                       pullRequestService,
+                                       pullRequestServiceClient,
                                        dateConverter,
                                        issueRateLimitDelayTransformer,
                                        eventRateLimitDelayTransformer,
@@ -119,7 +118,7 @@ public class IssuesServiceClient {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     private IssuesServiceClient(IssueService issueService,
-                               PullRequestService pullRequestService,
+                               PullRequestServiceClient pullRequestServiceClient,
                                DateToISO8601Converter dateConverter,
                                RateLimitDelayTransformer<GithubIssue> issueRateLimitDelayTransformer,
                                RateLimitDelayTransformer<GithubEvent> eventRateLimitDelayTransformer,
@@ -133,7 +132,7 @@ public class IssuesServiceClient {
                                Converter<RepositoryIssueEvent, Event> eventConverter) {
 
         this.issueService = issueService;
-        this.pullRequestService = pullRequestService;
+        this.pullRequestServiceClient = pullRequestServiceClient;
         this.dateConverter = dateConverter;
         this.issueRateLimitDelayTransformer = issueRateLimitDelayTransformer;
         this.eventRateLimitDelayTransformer = eventRateLimitDelayTransformer;
@@ -247,7 +246,7 @@ public class IssuesServiceClient {
         String organisation = repositoryIssue.getOwnerUsername();
         String repository = repositoryIssue.getRepositoryName();
         int issueNumber = repositoryIssue.getIssueNumber();
-        return pullRequestService
+        return pullRequestServiceClient
                 .getPullRequestReviewCommentsFor(organisation, repository, issueNumber, since)
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject));
     }
