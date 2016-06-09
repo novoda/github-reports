@@ -1,8 +1,8 @@
 package com.novoda.github.reports.aws.notifier;
 
-import com.novoda.github.reports.aws.worker.NotifierConfiguration;
+import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
 
-interface Notifier {
+public interface Notifier {
 
     void notifyCompletion(NotifierConfiguration configuration);
 

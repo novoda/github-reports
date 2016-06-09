@@ -4,8 +4,8 @@ import com.novoda.github.reports.service.network.RateLimitEncounteredException;
 import com.novoda.github.reports.service.network.RateLimitResetRepository;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.time.Instant;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
@@ -28,6 +28,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class RetryWhenTokenResetsTest {
 
     private final static long ANY_TIME_MILLIS = 10000;
+    private final static Date ANY_DATE = new Date();
 
     @Mock
     RateLimitResetRepository rateLimitResetRepository;
@@ -71,7 +72,7 @@ public class RetryWhenTokenResetsTest {
     }
 
     private Observable<Integer> givenAlwaysErroringObservable() {
-        return Observable.error(givenRateLimitException());
+        return Observable.error(givenRateLimitException(ANY_DATE));
     }
 
     @Test
@@ -95,7 +96,7 @@ public class RetryWhenTokenResetsTest {
             subscriber.onNext(2);
             subscriber.onNext(3);
             if (!errored[0]) {
-                subscriber.onError(givenRateLimitException());
+                subscriber.onError(givenRateLimitException(ANY_DATE));
                 errored[0] = true;
             } else {
                 subscriber.onNext(4);
@@ -104,8 +105,8 @@ public class RetryWhenTokenResetsTest {
         });
     }
 
-    private IOException givenRateLimitException() {
-        return new IOException(new RateLimitEncounteredException("Banana"));
+    private IOException givenRateLimitException(Date resetDate) {
+        return new IOException(new RateLimitEncounteredException("Banana", resetDate));
     }
 
     private Observable<Integer> whenComposeWithRetryMechanismAndSubscribe(Observable<Integer> observable) {
