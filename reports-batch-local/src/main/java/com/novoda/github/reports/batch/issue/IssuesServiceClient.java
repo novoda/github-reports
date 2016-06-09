@@ -248,7 +248,7 @@ public class IssuesServiceClient {
         String repository = repositoryIssue.getRepositoryName();
         int issueNumber = repositoryIssue.getIssueNumber();
         return pullRequestService
-                .getReviewCommentsForPullRequestFor(organisation, repository, issueNumber, since)
+                .getPullRequestReviewCommentsFor(organisation, repository, issueNumber, since)
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject));
     }
 

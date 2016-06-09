@@ -8,6 +8,6 @@ import rx.Observable;
 
 public interface PullRequestService {
 
-    Observable<GithubComment> getReviewCommentsForPullRequestFor(String organisation, String repository, Integer pullRequestNumber, Date since);
+    Observable<GithubComment> getPullRequestReviewCommentsFor(String organisation, String repository, Integer pullRequestNumber, Date since);
 
 }
