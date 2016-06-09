@@ -1,4 +1,4 @@
-package com.novoda.github.reports.service.properties;
+package com.novoda.github.reports.properties;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

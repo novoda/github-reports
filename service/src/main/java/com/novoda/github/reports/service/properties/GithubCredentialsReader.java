@@ -1,5 +1,7 @@
 package com.novoda.github.reports.service.properties;
 
+import com.novoda.github.reports.properties.PropertiesReader;
+
 public class GithubCredentialsReader {
 
     private static final String TOKEN_KEY = "GITHUB_OAUTH_TOKEN";
