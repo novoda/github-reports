@@ -37,13 +37,3 @@ The main components of this module are:
 * `GithubIssueService` that retrieves repositories for an organisation
 * `GithubPullRequestService` that retrieves diff comments for pull requests
 * all the transformers in the `persistence` package that provide a way to pipe the persistence mechanism in a RxJava pipeline
-
-### Build
-
-The project uses jOOQ as a dynamic query building library. If you decide to swap out MySQL in favour of another DBMS, simply change the jOOQ
-configuration in [`build.gradle`](build.gradle).
-
-The SQL generation file is stored in [`sql/generate.sql`](sql/generate.sql).
-Successful migration files should be put in the same folder for consistency.
-
-When changing the database schema, you need to re-generate the Java models: to do so, simply run the Gradle task `generateReportsJooqSchemaSource`.
