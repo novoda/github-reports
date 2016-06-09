@@ -1,14 +1,14 @@
 package com.novoda.github.reports.aws.worker;
 
 import com.novoda.github.reports.aws.alarm.Alarm;
-import com.novoda.github.reports.aws.alarm.AlarmServiceClient;
+import com.novoda.github.reports.aws.alarm.AlarmService;
 import com.novoda.github.reports.aws.configuration.Configuration;
 import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
 import com.novoda.github.reports.aws.notifier.Notifier;
-import com.novoda.github.reports.aws.notifier.NotifierServiceClient;
+import com.novoda.github.reports.aws.notifier.NotifierService;
 import com.novoda.github.reports.aws.queue.Queue;
 import com.novoda.github.reports.aws.queue.QueueMessage;
-import com.novoda.github.reports.aws.queue.QueueServiceClient;
+import com.novoda.github.reports.aws.queue.QueueService;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
 
 import java.time.Instant;
@@ -18,36 +18,36 @@ import java.util.List;
 
 public class BatchWorker implements Worker {
 
-    private final WorkerServiceClient workerServiceClient;
-    private final AlarmServiceClient alarmServiceClient;
-    private final QueueServiceClient queueServiceClient;
-    private final NotifierServiceClient notifierServiceClient;
-    private final WorkerHandlerServiceClient workerHandlerServiceClient;
+    private final WorkerService workerService;
+    private final AlarmService alarmService;
+    private final QueueService queueService;
+    private final NotifierService notifierService;
+    private final WorkerHandlerService workerHandlerService;
 
-    public static BatchWorker newInstance(WorkerServiceClient workerServiceClient,
-                                          AlarmServiceClient alarmServiceClient,
-                                          QueueServiceClient queueServiceClient,
-                                          NotifierServiceClient notifierServiceClient,
-                                          WorkerHandlerServiceClient workerHandlerServiceClient) {
-        return new BatchWorker(workerServiceClient, alarmServiceClient, queueServiceClient, notifierServiceClient, workerHandlerServiceClient);
+    public static BatchWorker newInstance(WorkerService workerService,
+                                          AlarmService alarmService,
+                                          QueueService queueService,
+                                          NotifierService notifierService,
+                                          WorkerHandlerService workerHandlerService) {
+        return new BatchWorker(workerService, alarmService, queueService, notifierService, workerHandlerService);
     }
 
-    private BatchWorker(WorkerServiceClient workerServiceClient,
-                        AlarmServiceClient alarmServiceClient,
-                        QueueServiceClient queueServiceClient,
-                        NotifierServiceClient notifierServiceClient,
-                        WorkerHandlerServiceClient workerHandlerServiceClient) {
-        this.workerServiceClient = workerServiceClient;
-        this.alarmServiceClient = alarmServiceClient;
-        this.queueServiceClient = queueServiceClient;
-        this.notifierServiceClient = notifierServiceClient;
-        this.workerHandlerServiceClient = workerHandlerServiceClient;
+    private BatchWorker(WorkerService workerService,
+                        AlarmService alarmService,
+                        QueueService queueService,
+                        NotifierService notifierService,
+                        WorkerHandlerService workerHandlerService) {
+        this.workerService = workerService;
+        this.alarmService = alarmService;
+        this.queueService = queueService;
+        this.notifierService = notifierService;
+        this.workerHandlerService = workerHandlerService;
     }
 
     @Override
     public void doWork(EventSource eventSource) {
         if (eventSource instanceof Alarm) {
-            alarmServiceClient.removeAlarm((Alarm) eventSource);
+            alarmService.removeAlarm((Alarm) eventSource);
         }
 
         Queue queue = getQueue(eventSource);
@@ -59,7 +59,7 @@ public class BatchWorker implements Worker {
         List<QueueMessage> newMessages = Collections.emptyList();
 
         try {
-            WorkerHandler workerHandler = workerHandlerServiceClient.getWorkerHandler();
+            WorkerHandler workerHandler = workerHandlerService.getWorkerHandler();
             newMessages = workerHandler.handleQueueMessage(eventSource.getConfiguration(), queueMessage);
         } catch (RateLimitEncounteredException e) {
             rescheduleForLater(eventSource.getConfiguration(), differenceInMinutesFromNow(e.getResetDate()));
@@ -77,13 +77,13 @@ public class BatchWorker implements Worker {
 
     @Override
     public void rescheduleImmediately(Configuration configuration) {
-        workerServiceClient.startWorker(configuration);
+        workerService.startWorker(configuration);
     }
 
     @Override
     public void rescheduleForLater(Configuration configuration, long minutes) {
-        Alarm alarm = alarmServiceClient.createAlarm(configuration, minutes);
-        alarmServiceClient.postAlarm(alarm);
+        Alarm alarm = alarmService.createAlarm(configuration, minutes);
+        alarmService.postAlarm(alarm);
     }
 
     private void notifyCompletion(EventSource eventSource) {
@@ -95,7 +95,7 @@ public class BatchWorker implements Worker {
     private Queue getQueue(EventSource eventSource) {
         Configuration configuration = eventSource.getConfiguration();
         String queueName = configuration.getQueueName();
-        return queueServiceClient.getQueue(queueName);
+        return queueService.getQueue(queueName);
     }
 
     private long differenceInMinutesFromNow(Date date) {
@@ -111,7 +111,7 @@ public class BatchWorker implements Worker {
     }
 
     private Notifier getNotifier() {
-        return notifierServiceClient.getNotifier();
+        return notifierService.getNotifier();
     }
 
     private NotifierConfiguration getNotifierConfiguration(EventSource eventSource) {
