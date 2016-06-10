@@ -14,7 +14,8 @@ import java.util.List;
 
 public class AmazonQueue implements Queue<AmazonQueueMessage> {
 
-    private static final Integer MAX_NUMBER_MESSAGES = 0;
+    private static final Integer MAX_NUMBER_MESSAGES = 1;
+    private static final Integer DEFAULT_VISIBILITY_TIMEOUT = 0;
 
     private final AmazonSQSClient amazonSQSClient;
     private final String queueUrl;
@@ -35,7 +36,8 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
     public AmazonQueueMessage getItem() throws EmptyQueueException, MessageConverterException {
         ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest()
                 .withQueueUrl(queueUrl)
-                .withMaxNumberOfMessages(MAX_NUMBER_MESSAGES);
+                .withMaxNumberOfMessages(MAX_NUMBER_MESSAGES)
+                .withVisibilityTimeout(DEFAULT_VISIBILITY_TIMEOUT);
         List<Message> messages = amazonSQSClient.receiveMessage(receiveMessageRequest).getMessages();
         if (messages.isEmpty()) {
             throw new EmptyQueueException("The queue \"" + queueUrl + "\" is empty.");
