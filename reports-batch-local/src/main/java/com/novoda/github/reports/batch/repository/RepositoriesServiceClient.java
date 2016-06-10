@@ -1,5 +1,7 @@
 package com.novoda.github.reports.batch.repository;
 
+import com.novoda.github.reports.service.network.PagedTransformer;
+import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
 import com.novoda.github.reports.service.persistence.ConnectionManagerContainer;
 import com.novoda.github.reports.service.persistence.PersistRepositoryTransformer;
 import com.novoda.github.reports.service.persistence.converter.Converter;
@@ -15,13 +17,21 @@ import com.novoda.github.reports.service.repository.GithubRepositoriesService;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.service.repository.RepositoryService;
 
+import java.util.List;
+
+import retrofit2.Response;
 import rx.Observable;
 
 public class RepositoriesServiceClient {
 
+    private static final int DEFAULT_PER_PAGE_COUNT = 100;
+    private static final int FIRST_PAGE = 1;
+
     private final RepositoryService repositoryService;
     private final RepoDataLayer repoDataLayer;
     private final Converter<GithubRepository, Repository> converter;
+
+    private final RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer;
 
     private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
 
@@ -31,23 +41,33 @@ public class RepositoriesServiceClient {
         RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
         Converter<GithubRepository, Repository> converter = RepositoryConverter.newInstance();
         RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
-        return new RepositoriesServiceClient(repositoriesService, repoDataLayer, converter, rateLimitResetTimerSubject);
+        RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
+        return new RepositoriesServiceClient(repositoriesService, repoDataLayer, converter, rateLimitResetTimerSubject, rateLimitDelayTransformer);
     }
 
     private RepositoriesServiceClient(GithubRepositoriesService repositoryService,
                                       RepoDataLayer repoDataLayer,
                                       Converter<GithubRepository, Repository> converter,
-                                      RateLimitResetTimerSubject rateLimitResetTimerSubject) {
+                                      RateLimitResetTimerSubject rateLimitResetTimerSubject,
+                                      RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer) {
         this.repositoryService = repositoryService;
         this.repoDataLayer = repoDataLayer;
         this.converter = converter;
         this.rateLimitResetTimerSubject = rateLimitResetTimerSubject;
+        this.rateLimitDelayTransformer = rateLimitDelayTransformer;
     }
 
     public Observable<GithubRepository> retrieveRepositoriesFrom(String organisation) {
-        return repositoryService.getRepositoriesFor(organisation)
+        return getPagedRepositoriesFor(organisation, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
+                .flatMapIterable(Response::body)
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
                 .compose(PersistRepositoryTransformer.newInstance(repoDataLayer, converter));
+    }
+
+    private Observable<Response<List<GithubRepository>>> getPagedRepositoriesFor(String organisation, Integer page, Integer pageCount) {
+        return repositoryService.getRepositoriesFor(organisation, page, pageCount)
+                .compose(rateLimitDelayTransformer)
+                .compose(PagedTransformer.newInstance(nextPage -> getPagedRepositoriesFor(organisation, nextPage, pageCount)));
     }
 
 }

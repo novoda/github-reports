@@ -1,5 +1,7 @@
 package com.novoda.github.reports.batch;
 
+import com.novoda.github.reports.batch.issue.CommentsServiceClient;
+import com.novoda.github.reports.batch.issue.EventsServiceClient;
 import com.novoda.github.reports.batch.issue.IssuesServiceClient;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
@@ -15,6 +17,8 @@ class BatchClient {
 
     private static final IssuesServiceClient issueServiceClient = IssuesServiceClient.newInstance();
     private static final RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
+    private static final CommentsServiceClient commentsServiceClient = CommentsServiceClient.newInstance();
+    private static final EventsServiceClient eventServiceClient = EventsServiceClient.newInstance();
 
     private BatchClient() {
         // non-instantiable
@@ -41,10 +45,10 @@ class BatchClient {
         return repositoryIssueObservable -> {
 
             Observable<RepositoryIssueEvent> comments = repositoryIssueObservable
-                    .flatMap(repositoryIssue -> issueServiceClient.retrieveCommentsFrom(repositoryIssue, since));
+                    .flatMap(repositoryIssue -> commentsServiceClient.retrieveCommentsFrom(repositoryIssue, since));
 
             Observable<RepositoryIssueEvent> events = repositoryIssueObservable
-                    .flatMap(repositoryIssue -> issueServiceClient.retrieveEventsFrom(repositoryIssue, since));
+                    .flatMap(repositoryIssue -> eventServiceClient.retrieveEventsFrom(repositoryIssue, since));
 
             return Observable.merge(comments, events);
         };
