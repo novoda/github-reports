@@ -1,9 +1,10 @@
-package com.novoda.github.reports.service.pullrequest;
+package com.novoda.github.reports.batch.pullrequest;
 
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.network.PagedTransformer;
 import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
+import com.novoda.github.reports.service.pullrequest.GithubPullRequestService;
 
 import java.util.Date;
 import java.util.List;

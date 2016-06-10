@@ -9,7 +9,7 @@ import java.util.List;
 import retrofit2.Response;
 import rx.Observable;
 
-class GithubPullRequestService implements PullRequestService {
+public class GithubPullRequestService implements PullRequestService {
 
     private final GithubApiService githubApiService;
 
