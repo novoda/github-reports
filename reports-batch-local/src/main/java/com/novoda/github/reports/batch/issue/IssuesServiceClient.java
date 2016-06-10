@@ -64,22 +64,21 @@ public class IssuesServiceClient {
 
         return new IssuesServiceClient(issueService,
                                        dateConverter,
-                                       issueRateLimitDelayTransformer,
-                                       rateLimitResetTimerSubject,
                                        eventDataLayer,
-                                       issueConverter,
                                        userDataLayer,
-                                       userConverter);
+                                       userConverter,
+                                       issueConverter,
+                                       rateLimitResetTimerSubject,
+                                       issueRateLimitDelayTransformer
+        );
     }
 
     private IssuesServiceClient(IssueService issueService,
                                 DateToISO8601Converter dateConverter,
-                                RateLimitDelayTransformer<GithubIssue> issueRateLimitDelayTransformer,
-                                RateLimitResetTimerSubject rateLimitResetTimerSubject,
                                 EventDataLayer eventDataLayer,
-                                Converter<RepositoryIssue, Event> issueConverter,
                                 UserDataLayer userDataLayer,
-                                Converter<RepositoryIssue, User> userConverter) {
+                                Converter<RepositoryIssue, User> userConverter,
+                                Converter<RepositoryIssue, Event> issueConverter, RateLimitResetTimerSubject rateLimitResetTimerSubject, RateLimitDelayTransformer<GithubIssue> issueRateLimitDelayTransformer) {
 
         this.issueService = issueService;
         this.dateConverter = dateConverter;
