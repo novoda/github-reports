@@ -34,17 +34,22 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
 
     @Override
     public AmazonQueueMessage getItem() throws EmptyQueueException, MessageConverterException {
-        ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest()
-                .withQueueUrl(queueUrl)
-                .withMaxNumberOfMessages(MAX_NUMBER_MESSAGES)
-                .withVisibilityTimeout(DEFAULT_VISIBILITY_TIMEOUT);
+        ReceiveMessageRequest receiveMessageRequest = getReceiveMessageRequest(queueUrl);
         List<Message> messages = amazonSQSClient.receiveMessage(receiveMessageRequest).getMessages();
+
         if (messages.isEmpty()) {
             throw new EmptyQueueException("The queue \"" + queueUrl + "\" is empty.");
         }
 
         Message message = messages.get(0);
         return amazonQueueMessageConverter.fromMessage(message);
+    }
+
+    private ReceiveMessageRequest getReceiveMessageRequest(String queueUrl) {
+        return new ReceiveMessageRequest()
+                .withQueueUrl(queueUrl)
+                .withMaxNumberOfMessages(MAX_NUMBER_MESSAGES)
+                .withVisibilityTimeout(DEFAULT_VISIBILITY_TIMEOUT);
     }
 
     @Override
@@ -57,11 +62,9 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
             sendMessageBatchRequestEntries.add(entry);
         }
 
-        SendMessageBatchRequest sendMessageBatchRequest = new SendMessageBatchRequest()
-                .withQueueUrl(queueUrl)
-                .withEntries(sendMessageBatchRequestEntries);
-
+        SendMessageBatchRequest sendMessageBatchRequest = getSendMessageBatchRequest(sendMessageBatchRequestEntries);
         SendMessageBatchResult sendMessageBatchResult = amazonSQSClient.sendMessageBatch(sendMessageBatchRequest);
+
         if (!sendMessageBatchResult.getFailed().isEmpty()) {
             throw new QueueOperationFailedException("Add items");
         }
@@ -74,6 +77,12 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
         return new SendMessageBatchRequestEntry()
                 .withId(Integer.toString(id))
                 .withMessageBody(message.getBody());
+    }
+
+    private SendMessageBatchRequest getSendMessageBatchRequest(List<SendMessageBatchRequestEntry> entries) {
+        return new SendMessageBatchRequest()
+                .withQueueUrl(queueUrl)
+                .withEntries(entries);
     }
 
     @Override
