@@ -18,7 +18,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
-class CommonWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker {
+class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker {
 
     private final WorkerService workerService;
     private final AlarmService alarmService;
@@ -26,11 +26,11 @@ class CommonWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker
     private final NotifierService notifierService;
     private final WorkerHandlerService<M> workerHandlerService;
 
-    CommonWorker(WorkerService workerService,
-                 AlarmService alarmService,
-                 QueueService<Q> queueService,
-                 NotifierService notifierService,
-                 WorkerHandlerService<M> workerHandlerService) {
+    BasicWorker(WorkerService workerService,
+                AlarmService alarmService,
+                QueueService<Q> queueService,
+                NotifierService notifierService,
+                WorkerHandlerService<M> workerHandlerService) {
         this.workerService = workerService;
         this.alarmService = alarmService;
         this.queueService = queueService;
