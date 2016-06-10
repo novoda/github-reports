@@ -6,37 +6,31 @@ import com.novoda.github.reports.aws.configuration.Configuration;
 import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
 import com.novoda.github.reports.aws.notifier.Notifier;
 import com.novoda.github.reports.aws.notifier.NotifierService;
+import com.novoda.github.reports.aws.queue.EmptyQueueException;
+import com.novoda.github.reports.aws.queue.MessageConverterException;
 import com.novoda.github.reports.aws.queue.Queue;
 import com.novoda.github.reports.aws.queue.QueueMessage;
+import com.novoda.github.reports.aws.queue.QueueOperationFailedException;
 import com.novoda.github.reports.aws.queue.QueueService;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class BatchWorker implements Worker {
+class CommonWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker {
 
     private final WorkerService workerService;
     private final AlarmService alarmService;
-    private final QueueService queueService;
+    private final QueueService<Q> queueService;
     private final NotifierService notifierService;
-    private final WorkerHandlerService workerHandlerService;
+    private final WorkerHandlerService<M> workerHandlerService;
 
-    public static BatchWorker newInstance(WorkerService workerService,
-                                          AlarmService alarmService,
-                                          QueueService queueService,
-                                          NotifierService notifierService,
-                                          WorkerHandlerService workerHandlerService) {
-        return new BatchWorker(workerService, alarmService, queueService, notifierService, workerHandlerService);
-    }
-
-    private BatchWorker(WorkerService workerService,
-                        AlarmService alarmService,
-                        QueueService queueService,
-                        NotifierService notifierService,
-                        WorkerHandlerService workerHandlerService) {
+    CommonWorker(WorkerService workerService,
+                 AlarmService alarmService,
+                 QueueService<Q> queueService,
+                 NotifierService notifierService,
+                 WorkerHandlerService<M> workerHandlerService) {
         this.workerService = workerService;
         this.alarmService = alarmService;
         this.queueService = queueService;
@@ -50,17 +44,20 @@ public class BatchWorker implements Worker {
             alarmService.removeAlarm((Alarm) eventSource);
         }
 
-        Queue queue = getQueue(eventSource);
-        if (queue.isEmpty()) {
-            notifyCompletion(eventSource);
-        }
-
-        QueueMessage queueMessage = queue.getItem();
-        List<QueueMessage> newMessages = Collections.emptyList();
+        Q queue = getQueue(eventSource);
 
         try {
-            WorkerHandler workerHandler = workerHandlerService.getWorkerHandler();
-            newMessages = workerHandler.handleQueueMessage(eventSource.getConfiguration(), queueMessage);
+            M queueMessage = queue.getItem();
+
+            WorkerHandler<M> workerHandler = workerHandlerService.getWorkerHandler();
+            List<M> newMessages = workerHandler.handleQueueMessage(eventSource.getConfiguration(), queueMessage);
+
+            queue.removeItem(queueMessage);
+            queue.addItems(newMessages);
+        } catch (EmptyQueueException emptyQueue) {
+            notifyCompletion(eventSource);
+        } catch (MessageConverterException | QueueOperationFailedException e) {
+            notifyError(eventSource, e);
         } catch (RateLimitEncounteredException e) {
             rescheduleForLater(eventSource.getConfiguration(), differenceInMinutesFromNow(e.getResetDate()));
             return;
@@ -68,9 +65,6 @@ public class BatchWorker implements Worker {
             queue.purgeQueue();
             notifyError(eventSource, e);
         }
-
-        queue.removeItem(queueMessage);
-        queue.addItems(newMessages);
 
         rescheduleImmediately(eventSource.getConfiguration());
     }
@@ -92,7 +86,7 @@ public class BatchWorker implements Worker {
         notifier.notifyCompletion(notifierConfiguration);
     }
 
-    private Queue getQueue(EventSource eventSource) {
+    private Q getQueue(EventSource eventSource) {
         Configuration configuration = eventSource.getConfiguration();
         String queueName = configuration.getQueueName();
         return queueService.getQueue(queueName);
@@ -105,6 +99,8 @@ public class BatchWorker implements Worker {
     }
 
     private void notifyError(EventSource eventSource, Exception exception) {
+        exception.printStackTrace();
+
         Notifier notifier = getNotifier();
         NotifierConfiguration notifierConfiguration = getNotifierConfiguration(eventSource);
         notifier.notifyError(notifierConfiguration, exception);
