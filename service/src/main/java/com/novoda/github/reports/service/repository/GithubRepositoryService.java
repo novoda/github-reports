@@ -8,16 +8,16 @@ import java.util.List;
 import retrofit2.Response;
 import rx.Observable;
 
-public class GithubRepositoriesService implements RepositoryService {
+public class GithubRepositoryService implements RepositoryService {
 
     private final GithubApiService githubApiService;
 
-    public static GithubRepositoriesService newInstance() {
+    public static GithubRepositoryService newInstance() {
         GithubApiService githubApiService = GithubServiceContainer.getGithubService();
-        return new GithubRepositoriesService(githubApiService);
+        return new GithubRepositoryService(githubApiService);
     }
 
-    private GithubRepositoriesService(GithubApiService githubApiService) {
+    private GithubRepositoryService(GithubApiService githubApiService) {
         this.githubApiService = githubApiService;
     }
 
