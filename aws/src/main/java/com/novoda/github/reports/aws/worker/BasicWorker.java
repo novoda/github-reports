@@ -99,7 +99,7 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
     private long differenceInMinutesFromNow(Date date) {
         Instant dateInstant = Instant.ofEpochMilli(date.getTime());
         long nowInstant = Instant.now().toEpochMilli();
-        return dateInstant.minusMillis(nowInstant).getEpochSecond();
+        return Math.max(dateInstant.minusMillis(nowInstant).getEpochSecond(), 0L);
     }
 
     private void notifyError(EventSource eventSource, Exception exception) {
