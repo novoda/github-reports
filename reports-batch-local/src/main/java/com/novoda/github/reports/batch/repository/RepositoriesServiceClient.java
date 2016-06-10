@@ -36,7 +36,7 @@ public class RepositoriesServiceClient {
     private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
 
     public static RepositoriesServiceClient newInstance() {
-        GithubRepositoryService repositoriesService = GithubRepositoryService.newInstance();
+        GithubRepositoryService repositoriesService = GithubRepositoryService.newCachingInstance();
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
         RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
         Converter<GithubRepository, Repository> converter = RepositoryConverter.newInstance();
