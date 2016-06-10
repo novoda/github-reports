@@ -4,6 +4,8 @@ import com.google.auto.value.AutoValue;
 
 import java.util.Date;
 
+import org.jetbrains.annotations.Nullable;
+
 @AutoValue
 public abstract class AmazonGetEventsQueueMessage implements AmazonQueueMessage, GetCommentsQueueMessage {
 
@@ -11,7 +13,7 @@ public abstract class AmazonGetEventsQueueMessage implements AmazonQueueMessage,
                                                      Long page,
                                                      String receiptHandle,
                                                      String organisation,
-                                                     Date since,
+                                                     @Nullable Date since,
                                                      Long repositoryId,
                                                      String repositoryName,
                                                      Long issueNumber) {
