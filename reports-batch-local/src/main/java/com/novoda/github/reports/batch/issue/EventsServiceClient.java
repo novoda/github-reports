@@ -74,21 +74,17 @@ public class EventsServiceClient {
         RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
 
         return new EventsServiceClient(issueService,
-                                       eventRateLimitDelayTransformer,
-                                       rateLimitResetTimerSubject,
-                                       eventDataLayer,
-                                       userDataLayer,
-                                       eventUserConverter,
-                                       eventConverter);
+                                       eventDataLayer, userDataLayer, eventUserConverter, eventConverter, rateLimitResetTimerSubject, eventRateLimitDelayTransformer
+        );
     }
 
     private EventsServiceClient(IssueService issueService,
-                                RateLimitDelayTransformer<GithubEvent> eventRateLimitDelayTransformer,
-                                RateLimitResetTimerSubject rateLimitResetTimerSubject,
                                 EventDataLayer eventDataLayer,
                                 UserDataLayer userDataLayer,
                                 Converter<RepositoryIssueEvent, User> eventUserConverter,
-                                Converter<RepositoryIssueEvent, Event> eventConverter) {
+                                Converter<RepositoryIssueEvent, Event> eventConverter,
+                                RateLimitResetTimerSubject rateLimitResetTimerSubject,
+                                RateLimitDelayTransformer<GithubEvent> eventRateLimitDelayTransformer) {
 
         this.issueService = issueService;
         this.eventRateLimitDelayTransformer = eventRateLimitDelayTransformer;
