@@ -1,72 +1,52 @@
 package com.novoda.github.reports.service.network;
 
-import com.novoda.github.reports.service.properties.GithubCredentialsReader;
-import com.novoda.github.reports.service.properties.PropertiesReader;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
 import okhttp3.Cache;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 class OkHttpClientFactory implements HttpClientFactory {
 
     private static final String GITHUB_PROPERTIES_FILENAME = "github.credentials";
 
     private final OkHttpClient.Builder okHttpClientBuilder;
-    private final List<Interceptor> interceptors = new ArrayList<>();
+    private final Interceptors interceptors;
     private final CacheFactory cacheFactory;
     private final CacheStatsRepository cacheStatsRepository;
 
     static OkHttpClientFactory newInstance(CacheStatsRepository cacheStatsRepository) {
-        return newInstance(cacheStatsRepository, new Interceptor[] {});
+        Interceptors interceptors = Interceptors.defaultInterceptors();
+        return newInstance(cacheStatsRepository, interceptors);
     }
 
     static OkHttpClientFactory newDebugInstance(CacheStatsRepository cacheStatsRepository) {
-        Interceptor loggingInterceptor = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
-        return newInstance(cacheStatsRepository, loggingInterceptor);
+        Interceptors interceptors = Interceptors.defaultInterceptors().withDebugInterceptor();
+        return newInstance(cacheStatsRepository, interceptors);
     }
 
-    private static OkHttpClientFactory newInstance(CacheStatsRepository cacheStatsRepository, Interceptor... extraInterceptors) {
+    private static OkHttpClientFactory newInstance(CacheStatsRepository cacheStatsRepository, Interceptors interceptors) {
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
         CacheFactory cacheFactory = FileCacheFactory.newInstance();
-        PropertiesReader propertiesReader = PropertiesReader.newInstance(GITHUB_PROPERTIES_FILENAME);
-        GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance(propertiesReader);
-        String token = githubCredentialsReader.getAuthToken();
-
-        Interceptor defaultInterceptors[] = new Interceptor[] {
-                new OAuthTokenInterceptor(token),
-                RateLimitHandlerInterceptor.newInstance(),
-                RateLimitCountInterceptor.newInstance(),
-                RateLimitResetInterceptor.newInstance(),
-                CustomMediaTypeInterceptor.newInstanceForTimelineApi()
-        };
 
         return new OkHttpClientFactory(
                 okHttpClientBuilder,
                 cacheFactory,
                 cacheStatsRepository,
-                Stream.concat(Arrays.stream(extraInterceptors), Arrays.stream(defaultInterceptors)).toArray(Interceptor[]::new)
+                interceptors
         );
     }
 
     private OkHttpClientFactory(OkHttpClient.Builder okHttpClientBuilder,
                                 CacheFactory cacheFactory,
                                 CacheStatsRepository cacheStatsRepository,
-                                Interceptor... interceptors) {
+                                Interceptors interceptors) {
         this.okHttpClientBuilder = okHttpClientBuilder;
         this.cacheFactory = cacheFactory;
         this.cacheStatsRepository = cacheStatsRepository;
-        this.interceptors.addAll(Arrays.asList(interceptors));
+        this.interceptors = interceptors;
     }
 
     @Override
     public OkHttpClient createClient() {
-        interceptors.forEach(okHttpClientBuilder::addInterceptor);
+        interceptors.stream().forEach(okHttpClientBuilder::addInterceptor);
         return okHttpClientBuilder
                 .cache(getCache())
                 .build();
