@@ -50,7 +50,7 @@ public class CommentsServiceClient {
     private final RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer;
 
     public static CommentsServiceClient newInstance() {
-        IssueService issueService = GithubIssueService.newInstance();
+        IssueService issueService = GithubIssueService.newCachingInstance();
         ReviewCommentsServiceClient reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance();
 
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();

@@ -22,7 +22,7 @@ public class PullRequestServiceClient {
     private final RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer;
 
     public static PullRequestServiceClient newInstance() {
-        GithubPullRequestService githubPullRequestService = GithubPullRequestService.newInstance();
+        GithubPullRequestService githubPullRequestService = GithubPullRequestService.newCachingInstance();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
         return new PullRequestServiceClient(githubPullRequestService, dateConverter, commentRateLimitDelayTransformer);

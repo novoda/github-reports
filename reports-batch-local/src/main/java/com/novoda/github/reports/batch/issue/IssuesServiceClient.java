@@ -49,7 +49,7 @@ public class IssuesServiceClient {
     private final Converter<RepositoryIssue, User> userConverter;
 
     public static IssuesServiceClient newInstance() {
-        IssueService issueService = GithubIssueService.newInstance();
+        IssueService issueService = GithubIssueService.newCachingInstance();
 
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         RateLimitDelayTransformer<GithubIssue> issueRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
