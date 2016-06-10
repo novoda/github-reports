@@ -1,59 +1,42 @@
 package com.novoda.github.reports.service.network;
 
-import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 
 class OkHttpClientFactory implements HttpClientFactory {
 
-    private final OkHttpClient.Builder okHttpClientBuilder;
-    private final Interceptors interceptors;
-    private final CacheFactory cacheFactory;
-    private final CacheStatsRepository cacheStatsRepository;
+    private final OkHttpClientBuilder okHttpClientBuilder;
 
-    static OkHttpClientFactory newInstance(CacheStatsRepository cacheStatsRepository) {
+    public static OkHttpClientFactory newInstance() {
+        OkHttpClientBuilder okHttpClientBuilder = OkHttpClientBuilder.newInstance();
         Interceptors interceptors = Interceptors.defaultInterceptors();
-        return newInstance(cacheStatsRepository, interceptors);
+
+        okHttpClientBuilder
+                .interceptors(interceptors);
+
+        return new OkHttpClientFactory(okHttpClientBuilder);
     }
 
-    static OkHttpClientFactory newDebugInstance(CacheStatsRepository cacheStatsRepository) {
-        Interceptors interceptors = Interceptors.defaultInterceptors().withDebugInterceptor();
-        return newInstance(cacheStatsRepository, interceptors);
-    }
-
-    private static OkHttpClientFactory newInstance(CacheStatsRepository cacheStatsRepository, Interceptors interceptors) {
-        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
+    public static OkHttpClientFactory newCachingInstance() {
+        OkHttpClientBuilder okHttpClientBuilder = OkHttpClientBuilder.newInstance();
+        Interceptors interceptors = Interceptors.defaultInterceptors();
         CacheFactory cacheFactory = FileCacheFactory.newInstance();
+        CacheStatsRepository cacheStatsRepository = CacheStatsContainer.getCacheStatsRepository();
 
-        return new OkHttpClientFactory(
-                okHttpClientBuilder,
-                cacheFactory,
-                cacheStatsRepository,
-                interceptors
-        );
+        okHttpClientBuilder
+                .interceptors(interceptors)
+                .cache(cacheFactory.createCache())
+                .cacheStats(cacheStatsRepository);
+
+        return new OkHttpClientFactory(okHttpClientBuilder);
     }
 
-    private OkHttpClientFactory(OkHttpClient.Builder okHttpClientBuilder,
-                                CacheFactory cacheFactory,
-                                CacheStatsRepository cacheStatsRepository,
-                                Interceptors interceptors) {
+    private OkHttpClientFactory(OkHttpClientBuilder okHttpClientBuilder) {
         this.okHttpClientBuilder = okHttpClientBuilder;
-        this.cacheFactory = cacheFactory;
-        this.cacheStatsRepository = cacheStatsRepository;
-        this.interceptors = interceptors;
     }
 
     @Override
     public OkHttpClient createClient() {
-        interceptors.stream().forEach(okHttpClientBuilder::addInterceptor);
-        return okHttpClientBuilder
-                .cache(getCache())
-                .build();
-    }
-
-    private Cache getCache() {
-        Cache cache = cacheFactory.createCache();
-        cacheStatsRepository.setCache(cache);
-        return cache;
+        return okHttpClientBuilder.build();
     }
 
 }
