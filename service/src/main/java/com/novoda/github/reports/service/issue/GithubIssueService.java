@@ -10,14 +10,9 @@ import rx.Observable;
 
 public class GithubIssueService implements IssueService {
 
-    private static final int DEFAULT_PER_PAGE_COUNT = 100;
-    private static final int FIRST_PAGE = 1;
     private static final GithubIssue.State DEFAULT_STATE = GithubIssue.State.ALL;
-    private static final String NO_SINCE_DATE = null;
 
     private final GithubApiService githubApiService;
-
-    // TODO @RUI drop this, as atm it's pretty much a 1-2-1 mapping to the api service
 
     public static IssueService newInstance() {
         GithubApiService githubApiService = GithubServiceContainer.getGithubService();
@@ -29,13 +24,14 @@ public class GithubIssueService implements IssueService {
     }
 
     @Override
-    public Observable<Response<List<GithubIssue>>> getIssuesFor(String organisation, String repository, GithubIssue.State state, String date, int page, int pageCount) {
-        return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, date, page, pageCount);
-    }
+    public Observable<Response<List<GithubIssue>>> getIssuesFor(String organisation,
+                                                                String repository,
+                                                                GithubIssue.State state,
+                                                                String date,
+                                                                int page,
+                                                                int pageCount) {
 
-    @Override
-    public Observable<Response<List<GithubIssue>>> getIssuesFor(String organisation, String repository) {
-        return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, NO_SINCE_DATE, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT);
+        return githubApiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, date, page, pageCount);
     }
 
     @Override
@@ -47,26 +43,10 @@ public class GithubIssueService implements IssueService {
     public Observable<Response<List<GithubComment>>> getCommentsFor(String organisation,
                                                                     String repository,
                                                                     int issueNumber,
-                                                                    int page,
-                                                                    int pageCount) {
-
-        return githubApiService.getCommentsResponseForIssueAndPage(
-                organisation,
-                repository,
-                issueNumber,
-                NO_SINCE_DATE,
-                page,
-                pageCount
-        );
-    }
-
-    @Override
-    public Observable<Response<List<GithubComment>>> getCommentsFor(String organisation,
-                                                                    String repository,
-                                                                    int issueNumber,
                                                                     String since,
                                                                     int page,
                                                                     int pageCount) {
+
         return githubApiService.getCommentsResponseForIssueAndPage(
                 organisation,
                 repository,

@@ -7,8 +7,6 @@ import rx.Observable;
 
 public interface IssueService {
 
-    Observable<Response<List<GithubIssue>>> getIssuesFor(String organisation, String repository);
-
     Observable<Response<List<GithubIssue>>> getIssuesFor(String organisation,
                                                          String repository,
                                                          GithubIssue.State state,
@@ -17,8 +15,6 @@ public interface IssueService {
                                                          int pageCount);
 
     Observable<Response<List<GithubEvent>>> getEventsFor(String organisation, String repository, int issueNumber, int page, int pageCount);
-
-    Observable<Response<List<GithubComment>>> getCommentsFor(String organisation, String repository, int issueNumber, int page, int pageCount);
 
     Observable<Response<List<GithubComment>>> getCommentsFor(String organisation,
                                                              String repository,
