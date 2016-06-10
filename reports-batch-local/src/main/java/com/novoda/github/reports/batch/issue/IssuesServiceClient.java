@@ -78,7 +78,9 @@ public class IssuesServiceClient {
                                 EventDataLayer eventDataLayer,
                                 UserDataLayer userDataLayer,
                                 Converter<RepositoryIssue, User> userConverter,
-                                Converter<RepositoryIssue, Event> issueConverter, RateLimitResetTimerSubject rateLimitResetTimerSubject, RateLimitDelayTransformer<GithubIssue> issueRateLimitDelayTransformer) {
+                                Converter<RepositoryIssue, Event> issueConverter,
+                                RateLimitResetTimerSubject rateLimitResetTimerSubject,
+                                RateLimitDelayTransformer<GithubIssue> issueRateLimitDelayTransformer) {
 
         this.issueService = issueService;
         this.dateConverter = dateConverter;
