@@ -9,8 +9,8 @@ import com.amazonaws.services.sqs.model.SendMessageBatchRequest;
 import com.amazonaws.services.sqs.model.SendMessageBatchRequestEntry;
 import com.amazonaws.services.sqs.model.SendMessageBatchResult;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AmazonQueue implements Queue<AmazonQueueMessage> {
 
@@ -47,9 +47,14 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
 
     @Override
     public List<AmazonQueueMessage> addItems(List<AmazonQueueMessage> queueMessages) throws QueueOperationFailedException {
-        List<SendMessageBatchRequestEntry> sendMessageBatchRequestEntries = queueMessages.stream()
-                .map(this::getSendMessageRequestEntry)
-                .collect(Collectors.toList());
+        int size = queueMessages.size();
+        List<SendMessageBatchRequestEntry> sendMessageBatchRequestEntries = new ArrayList<>(size);
+
+        for (int i = 0; i < queueMessages.size(); i++) {
+            SendMessageBatchRequestEntry entry = getSendMessageRequestEntry(queueMessages.get(i), i);
+            sendMessageBatchRequestEntries.add(entry);
+        }
+
         SendMessageBatchRequest sendMessageBatchRequest = new SendMessageBatchRequest()
                 .withQueueUrl(queueUrl)
                 .withEntries(sendMessageBatchRequestEntries);
@@ -62,9 +67,10 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
         return queueMessages;
     }
 
-    private SendMessageBatchRequestEntry getSendMessageRequestEntry(AmazonQueueMessage queueMessage) {
+    private SendMessageBatchRequestEntry getSendMessageRequestEntry(AmazonQueueMessage queueMessage, int id) {
         Message message = amazonQueueMessageConverter.toMessage(queueMessage);
         return new SendMessageBatchRequestEntry()
+                .withId(Integer.toString(id))
                 .withMessageBody(message.getBody());
     }
 
