@@ -98,10 +98,8 @@ public class CommentsServiceClient {
     }
 
     public Observable<RepositoryIssueEvent> retrieveCommentsFrom(RepositoryIssue repositoryIssue, Date since) {
-        return Observable.merge(
-                retrieveCommentsFromIssue(repositoryIssue, since),
-                retrieveReviewCommentsFromPullRequest(repositoryIssue, since)
-        )
+        return Observable.merge(retrieveCommentsFromIssue(repositoryIssue, since),
+                                retrieveReviewCommentsFromPullRequest(repositoryIssue, since))
                 .map(comment -> RepositoryIssueEventComment.newInstance(repositoryIssue, comment))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
                 .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter));
