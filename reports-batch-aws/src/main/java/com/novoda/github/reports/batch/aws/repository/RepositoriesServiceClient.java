@@ -7,18 +7,18 @@ import com.novoda.github.reports.service.repository.RepositoryService;
 import retrofit2.Response;
 import rx.Observable;
 
-public class RepositoryServiceClient {
+public class RepositoriesServiceClient {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
 
     private final RepositoryService repositoryService;
 
-    public static RepositoryServiceClient newInstance() {
+    public static RepositoriesServiceClient newInstance() {
         RepositoryService repositoriesService = GithubRepositoryService.newCachingInstance();
-        return new RepositoryServiceClient(repositoriesService);
+        return new RepositoriesServiceClient(repositoriesService);
     }
 
-    private RepositoryServiceClient(RepositoryService repositoryService) {
+    private RepositoriesServiceClient(RepositoryService repositoryService) {
         this.repositoryService = repositoryService;
     }
 
