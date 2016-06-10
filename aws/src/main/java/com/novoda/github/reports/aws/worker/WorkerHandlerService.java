@@ -1,7 +1,9 @@
 package com.novoda.github.reports.aws.worker;
 
-public interface WorkerHandlerService {
+import com.novoda.github.reports.aws.queue.QueueMessage;
 
-    WorkerHandler getWorkerHandler();
+public interface WorkerHandlerService<M extends QueueMessage> {
+
+    WorkerHandler<M> getWorkerHandler();
 
 }

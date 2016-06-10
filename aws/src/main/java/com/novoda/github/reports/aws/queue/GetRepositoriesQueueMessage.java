@@ -4,8 +4,8 @@ import java.util.Date;
 
 public interface GetRepositoriesQueueMessage extends QueueMessage {
 
-    String getOrganisation();
+    String organisationName();
 
-    Date getSince();
+    Date since();
 
 }
