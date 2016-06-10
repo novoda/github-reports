@@ -1,6 +1,5 @@
 package com.novoda.github.reports.batch.issue;
 
-import com.novoda.github.reports.batch.pullrequest.PullRequestServiceClient;
 import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubject;
 import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubjectContainer;
 import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
@@ -39,7 +38,7 @@ public class CommentsServiceClient {
     private static final int FIRST_PAGE = 1;
 
     private final IssueService issueService;
-    private final PullRequestServiceClient pullRequestServiceClient;
+    private final ReviewCommentsServiceClient reviewCommentsServiceClient;
     private final DateToISO8601Converter dateConverter;
 
     private final EventDataLayer eventDataLayer;
@@ -52,7 +51,7 @@ public class CommentsServiceClient {
 
     public static CommentsServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
-        PullRequestServiceClient pullRequestServiceClient = PullRequestServiceClient.newInstance();
+        ReviewCommentsServiceClient reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance();
 
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
 
@@ -66,7 +65,7 @@ public class CommentsServiceClient {
         RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
 
         return new CommentsServiceClient(issueService,
-                                         pullRequestServiceClient,
+                                         reviewCommentsServiceClient,
                                          dateConverter,
                                          eventDataLayer,
                                          userDataLayer,
@@ -77,7 +76,7 @@ public class CommentsServiceClient {
     }
 
     private CommentsServiceClient(IssueService issueService,
-                                  PullRequestServiceClient pullRequestServiceClient,
+                                  ReviewCommentsServiceClient reviewCommentsServiceClient,
                                   DateToISO8601Converter dateConverter,
                                   EventDataLayer eventDataLayer,
                                   UserDataLayer userDataLayer,
@@ -87,7 +86,7 @@ public class CommentsServiceClient {
                                   RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer) {
 
         this.issueService = issueService;
-        this.pullRequestServiceClient = pullRequestServiceClient;
+        this.reviewCommentsServiceClient = reviewCommentsServiceClient;
         this.dateConverter = dateConverter;
         this.eventDataLayer = eventDataLayer;
         this.userDataLayer = userDataLayer;
@@ -99,7 +98,7 @@ public class CommentsServiceClient {
 
     public Observable<RepositoryIssueEvent> retrieveCommentsFrom(RepositoryIssue repositoryIssue, Date since) {
         return Observable.merge(retrieveCommentsFromIssue(repositoryIssue, since),
-                                retrieveReviewCommentsFromPullRequest(repositoryIssue, since))
+                                reviewCommentsServiceClient.retrieveReviewCommentsFromPullRequest(repositoryIssue, since))
                 .map(comment -> RepositoryIssueEventComment.newInstance(repositoryIssue, comment))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
                 .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter));
@@ -132,22 +131,6 @@ public class CommentsServiceClient {
                         nextPage,
                         pageCount
                 )));
-    }
-
-    private Observable<GithubComment> retrieveReviewCommentsFromPullRequest(RepositoryIssue repositoryIssue, Date since) {
-        if (isNotPullRequest(repositoryIssue)) {
-            return Observable.empty();
-        }
-        String organisation = repositoryIssue.getOwnerUsername();
-        String repository = repositoryIssue.getRepositoryName();
-        int issueNumber = repositoryIssue.getIssueNumber();
-        return pullRequestServiceClient
-                .getPullRequestReviewCommentsFor(organisation, repository, issueNumber, since)
-                .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject));
-    }
-
-    private boolean isNotPullRequest(RepositoryIssue repositoryIssue) {
-        return !repositoryIssue.isPullRequest();
     }
 
 }
