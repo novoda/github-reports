@@ -14,7 +14,7 @@ public class RepositoriesServiceClient {
     private final RepositoryService repositoryService;
 
     public static RepositoriesServiceClient newInstance() {
-        RepositoryService repositoriesService = GithubRepositoryService.newCachingInstance();
+        RepositoryService repositoriesService = GithubRepositoryService.newInstance();
         return new RepositoriesServiceClient(repositoriesService);
     }
 
