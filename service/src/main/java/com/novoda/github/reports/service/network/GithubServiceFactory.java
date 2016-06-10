@@ -15,6 +15,15 @@ class GithubServiceFactory {
 
     public static GithubServiceFactory newInstance() {
         HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance();
+        return newInstance(httpClientFactory);
+    }
+
+    public static GithubServiceFactory newCachingInstance() {
+        HttpClientFactory httpClientFactory = OkHttpClientFactory.newCachingInstance();
+        return newInstance(httpClientFactory);
+    }
+
+    private static GithubServiceFactory newInstance(HttpClientFactory httpClientFactory) {
         OkHttpClient okHttpClient = httpClientFactory.createClient();
         GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create();
         RxJavaCallAdapterFactory rxJavaCallAdapterFactory = RxJavaCallAdapterFactory.create();
