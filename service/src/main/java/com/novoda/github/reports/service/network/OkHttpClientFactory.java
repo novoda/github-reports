@@ -17,17 +17,15 @@ class OkHttpClientFactory implements HttpClientFactory {
     }
 
     public static OkHttpClientFactory newCachingInstance() {
-        OkHttpClientBuilder okHttpClientBuilder = OkHttpClientBuilder.newInstance();
-        Interceptors interceptors = Interceptors.defaultInterceptors();
+        OkHttpClientFactory okHttpClientFactory = newInstance();
         CacheFactory cacheFactory = FileCacheFactory.newInstance();
         CacheStatsRepository cacheStatsRepository = CacheStatsContainer.getCacheStatsRepository();
 
-        okHttpClientBuilder
-                .interceptors(interceptors)
+        okHttpClientFactory.okHttpClientBuilder
                 .cache(cacheFactory.createCache())
                 .cacheStats(cacheStatsRepository);
 
-        return new OkHttpClientFactory(okHttpClientBuilder);
+        return okHttpClientFactory;
     }
 
     private OkHttpClientFactory(OkHttpClientBuilder okHttpClientBuilder) {
