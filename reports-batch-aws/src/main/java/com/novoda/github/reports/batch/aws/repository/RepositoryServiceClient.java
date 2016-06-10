@@ -1,6 +1,6 @@
 package com.novoda.github.reports.batch.aws.repository;
 
-import com.novoda.github.reports.service.repository.GithubRepositoriesService;
+import com.novoda.github.reports.service.repository.GithubRepositoryService;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.service.repository.RepositoryService;
 
@@ -14,7 +14,7 @@ public class RepositoryServiceClient {
     private final RepositoryService repositoryService;
 
     public static RepositoryServiceClient newInstance() {
-        RepositoryService repositoriesService = GithubRepositoriesService.newInstance();
+        RepositoryService repositoriesService = GithubRepositoryService.newInstance();
         return new RepositoryServiceClient(repositoriesService);
     }
 

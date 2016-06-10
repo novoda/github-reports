@@ -13,7 +13,7 @@ import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbRepoDataLayer;
 import com.novoda.github.reports.data.model.Repository;
-import com.novoda.github.reports.service.repository.GithubRepositoriesService;
+import com.novoda.github.reports.service.repository.GithubRepositoryService;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.service.repository.RepositoryService;
 
@@ -36,7 +36,7 @@ public class RepositoriesServiceClient {
     private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
 
     public static RepositoriesServiceClient newInstance() {
-        GithubRepositoriesService repositoriesService = GithubRepositoriesService.newInstance();
+        GithubRepositoryService repositoriesService = GithubRepositoryService.newInstance();
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
         RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
         Converter<GithubRepository, Repository> converter = RepositoryConverter.newInstance();
@@ -45,7 +45,7 @@ public class RepositoriesServiceClient {
         return new RepositoriesServiceClient(repositoriesService, repoDataLayer, converter, rateLimitResetTimerSubject, rateLimitDelayTransformer);
     }
 
-    private RepositoriesServiceClient(GithubRepositoriesService repositoryService,
+    private RepositoriesServiceClient(GithubRepositoryService repositoryService,
                                       RepoDataLayer repoDataLayer,
                                       Converter<GithubRepository, Repository> converter,
                                       RateLimitResetTimerSubject rateLimitResetTimerSubject,
