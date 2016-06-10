@@ -18,7 +18,7 @@ public class PullRequestServiceClient {
     private final DateToISO8601Converter dateConverter;
 
     public static PullRequestServiceClient newInstance() {
-        PullRequestService pullRequestService = GithubPullRequestService.newCachingInstance();
+        PullRequestService pullRequestService = GithubPullRequestService.newInstance();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         return new PullRequestServiceClient(pullRequestService, dateConverter);
     }
