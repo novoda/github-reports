@@ -42,5 +42,5 @@ class ReviewCommentsServiceClient {
     private boolean isNotPullRequest(RepositoryIssue repositoryIssue) {
         return !repositoryIssue.isPullRequest();
     }
-    
+
 }
