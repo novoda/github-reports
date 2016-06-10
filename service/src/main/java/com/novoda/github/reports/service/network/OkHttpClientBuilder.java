@@ -14,7 +14,7 @@ class OkHttpClientBuilder {
         return new OkHttpClientBuilder(new OkHttpClient.Builder());
     }
 
-    OkHttpClientBuilder(OkHttpClient.Builder okHttpClientBuilder) {
+    private OkHttpClientBuilder(OkHttpClient.Builder okHttpClientBuilder) {
         this.okHttpClientBuilder = okHttpClientBuilder;
     }
 
