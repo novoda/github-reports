@@ -48,14 +48,16 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
 
         try {
             M queueMessage = queue.getItem();
-
             WorkerHandler<M> workerHandler = workerHandlerService.getWorkerHandler();
+
             List<M> newMessages = workerHandler.handleQueueMessage(eventSource.getConfiguration(), queueMessage);
 
             queue.removeItem(queueMessage);
             queue.addItems(newMessages);
         } catch (EmptyQueueException emptyQueue) {
             notifyCompletion(eventSource);
+            queueService.removeQueue(queue);
+            return;
         } catch (MessageConverterException | QueueOperationFailedException e) {
             notifyError(eventSource, e);
         } catch (RateLimitEncounteredException e) {
