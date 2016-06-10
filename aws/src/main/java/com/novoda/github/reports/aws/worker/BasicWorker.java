@@ -65,7 +65,9 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
             return;
         } catch (Exception e) {
             queue.purgeQueue();
+            queueService.removeQueue(queue);
             notifyError(eventSource, e);
+            return;
         }
 
         rescheduleImmediately(eventSource.getConfiguration());
