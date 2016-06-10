@@ -32,7 +32,7 @@ import com.novoda.github.reports.service.persistence.converter.Converter;
 import com.novoda.github.reports.service.persistence.converter.EventConverter;
 import com.novoda.github.reports.service.persistence.converter.IssueConverter;
 import com.novoda.github.reports.service.persistence.converter.UserConverter;
-import com.novoda.github.reports.service.pullrequest.PullRequestServiceClient;
+import com.novoda.github.reports.batch.pullrequest.PullRequestServiceClient;
 import com.novoda.github.reports.service.repository.GithubRepository;
 
 import java.util.Arrays;
