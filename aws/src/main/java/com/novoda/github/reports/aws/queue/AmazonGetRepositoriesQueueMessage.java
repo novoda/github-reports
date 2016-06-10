@@ -4,6 +4,8 @@ import com.google.auto.value.AutoValue;
 
 import java.util.Date;
 
+import org.jetbrains.annotations.Nullable;
+
 @AutoValue
 public abstract class AmazonGetRepositoriesQueueMessage implements AmazonQueueMessage, GetRepositoriesQueueMessage {
 
@@ -11,7 +13,7 @@ public abstract class AmazonGetRepositoriesQueueMessage implements AmazonQueueMe
                                                            Long page,
                                                            String receiptHandle,
                                                            String organisationName,
-                                                           Date since) {
+                                                           @Nullable Date since) {
 
         return new AutoValue_AmazonGetRepositoriesQueueMessage(
                 terminal,
