@@ -7,7 +7,7 @@ import java.util.List;
 import retrofit2.Response;
 import rx.Observable;
 
-interface PullRequestService {
+public interface PullRequestService {
 
     Observable<Response<List<GithubComment>>> getPullRequestReviewCommentsFor(String organisation,
                                                                               String repository,
