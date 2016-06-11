@@ -20,7 +20,7 @@ public class CommentsServiceClient {
 
     public static CommentsServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
-                DateToISO8601Converter dateConverter = new DateToISO8601Converter();
+        DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         return new CommentsServiceClient(issueService, dateConverter);
     }
 
