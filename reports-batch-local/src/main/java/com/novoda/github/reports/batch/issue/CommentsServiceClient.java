@@ -3,13 +3,6 @@ package com.novoda.github.reports.batch.issue;
 import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubject;
 import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubjectContainer;
 import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
-import com.novoda.github.reports.data.EventDataLayer;
-import com.novoda.github.reports.data.UserDataLayer;
-import com.novoda.github.reports.data.db.ConnectionManager;
-import com.novoda.github.reports.data.db.DbEventDataLayer;
-import com.novoda.github.reports.data.db.DbUserDataLayer;
-import com.novoda.github.reports.data.model.Event;
-import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssueService;
 import com.novoda.github.reports.service.issue.IssueService;
@@ -19,12 +12,7 @@ import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.network.PagedTransformer;
 import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
-import com.novoda.github.reports.service.persistence.ConnectionManagerContainer;
-import com.novoda.github.reports.service.persistence.EventUserConverter;
-import com.novoda.github.reports.service.persistence.PersistEventTransformer;
-import com.novoda.github.reports.service.persistence.PersistEventUserTransformer;
-import com.novoda.github.reports.service.persistence.converter.Converter;
-import com.novoda.github.reports.service.persistence.converter.EventConverter;
+import com.novoda.github.reports.service.persistence.EventPersister;
 
 import java.util.Date;
 import java.util.List;
@@ -40,13 +28,9 @@ public class CommentsServiceClient {
     private final IssueService issueService;
     private final ReviewCommentsServiceClient reviewCommentsServiceClient;
     private final DateToISO8601Converter dateConverter;
+    private final EventPersister eventPersister;
 
-    private final EventDataLayer eventDataLayer;
-    private final UserDataLayer userDataLayer;
-    private final Converter<RepositoryIssueEvent, User> eventUserConverter;
-    private final Converter<RepositoryIssueEvent, Event> eventConverter;
     private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
-
     private final RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer;
 
     public static CommentsServiceClient newInstance() {
@@ -55,12 +39,7 @@ public class CommentsServiceClient {
 
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
 
-        // TODO @RUI use EventPersister
-        ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
-        EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
-        UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
-        Converter<RepositoryIssueEvent, User> eventUserConverter = EventUserConverter.newInstance();
-        Converter<RepositoryIssueEvent, Event> eventConverter = EventConverter.newInstance();
+        EventPersister eventPersister = EventPersister.newInstance();
 
         RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
         RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
@@ -68,10 +47,7 @@ public class CommentsServiceClient {
         return new CommentsServiceClient(issueService,
                                          reviewCommentsServiceClient,
                                          dateConverter,
-                                         eventDataLayer,
-                                         userDataLayer,
-                                         eventUserConverter,
-                                         eventConverter,
+                                         eventPersister,
                                          rateLimitResetTimerSubject,
                                          commentRateLimitDelayTransformer);
     }
@@ -79,20 +55,14 @@ public class CommentsServiceClient {
     private CommentsServiceClient(IssueService issueService,
                                   ReviewCommentsServiceClient reviewCommentsServiceClient,
                                   DateToISO8601Converter dateConverter,
-                                  EventDataLayer eventDataLayer,
-                                  UserDataLayer userDataLayer,
-                                  Converter<RepositoryIssueEvent, User> eventUserConverter,
-                                  Converter<RepositoryIssueEvent, Event> eventConverter,
+                                  EventPersister eventPersister,
                                   RateLimitResetTimerSubject rateLimitResetTimerSubject,
                                   RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer) {
 
         this.issueService = issueService;
         this.reviewCommentsServiceClient = reviewCommentsServiceClient;
         this.dateConverter = dateConverter;
-        this.eventDataLayer = eventDataLayer;
-        this.userDataLayer = userDataLayer;
-        this.eventUserConverter = eventUserConverter;
-        this.eventConverter = eventConverter;
+        this.eventPersister = eventPersister;
         this.rateLimitResetTimerSubject = rateLimitResetTimerSubject;
         this.commentRateLimitDelayTransformer = commentRateLimitDelayTransformer;
     }
@@ -101,8 +71,7 @@ public class CommentsServiceClient {
         return Observable.merge(retrieveCommentsFromIssue(repositoryIssue, since),
                                 reviewCommentsServiceClient.retrieveReviewCommentsFromPullRequest(repositoryIssue, since))
                 .map(comment -> new RepositoryIssueEventComment(repositoryIssue, comment))
-                .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
-                .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter));
+                .compose(eventPersister);
     }
 
     private Observable<GithubComment> retrieveCommentsFromIssue(RepositoryIssue repositoryIssue, Date since) {
