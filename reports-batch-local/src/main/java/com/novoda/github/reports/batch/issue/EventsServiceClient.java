@@ -11,7 +11,7 @@ import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventEvent;
 import com.novoda.github.reports.service.network.PagedTransformer;
 import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
-import com.novoda.github.reports.service.persistence.EventsPersister;
+import com.novoda.github.reports.service.persistence.EventPersister;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -43,23 +43,23 @@ public class EventsServiceClient {
     private final RateLimitDelayTransformer<GithubEvent> eventRateLimitDelayTransformer;
     private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
 
-    private final EventsPersister eventsPersister;
+    private final EventPersister eventPersister;
 
     public static EventsServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newCachingInstance();
-        EventsPersister eventsPersister = EventsPersister.newInstance();
+        EventPersister eventPersister = EventPersister.newInstance();
         RateLimitDelayTransformer<GithubEvent> eventRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
         RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
-        return new EventsServiceClient(issueService, eventsPersister, rateLimitResetTimerSubject, eventRateLimitDelayTransformer);
+        return new EventsServiceClient(issueService, eventPersister, rateLimitResetTimerSubject, eventRateLimitDelayTransformer);
     }
 
     private EventsServiceClient(IssueService issueService,
-                                EventsPersister eventsPersister,
+                                EventPersister eventPersister,
                                 RateLimitResetTimerSubject rateLimitResetTimerSubject,
                                 RateLimitDelayTransformer<GithubEvent> eventRateLimitDelayTransformer) {
 
         this.issueService = issueService;
-        this.eventsPersister = eventsPersister;
+        this.eventPersister = eventPersister;
         this.eventRateLimitDelayTransformer = eventRateLimitDelayTransformer;
         this.rateLimitResetTimerSubject = rateLimitResetTimerSubject;
     }
@@ -75,7 +75,7 @@ public class EventsServiceClient {
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
                 .filter(this::shouldStoreEvent)
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
-                .compose(eventsPersister);
+                .compose(eventPersister);
     }
 
     private Observable<Response<List<GithubEvent>>> getPagedEventsFor(String organisation,

@@ -5,7 +5,7 @@ import com.novoda.github.reports.service.issue.IssueService;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventEvent;
-import com.novoda.github.reports.service.persistence.EventsPersister;
+import com.novoda.github.reports.service.persistence.EventPersister;
 
 import java.util.Date;
 
@@ -17,17 +17,17 @@ public class EventsServiceClient {
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
 
     private final IssueService issueService;
-    private final EventsPersister eventsPersister;
+    private final EventPersister eventPersister;
 
     public static EventsServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
-        EventsPersister eventsPersister = EventsPersister.newInstance();
-        return new EventsServiceClient(issueService, eventsPersister);
+        EventPersister eventPersister = EventPersister.newInstance();
+        return new EventsServiceClient(issueService, eventPersister);
     }
 
-    public EventsServiceClient(IssueService issueService, EventsPersister eventsPersister) {
+    public EventsServiceClient(IssueService issueService, EventPersister eventPersister) {
         this.issueService = issueService;
-        this.eventsPersister = eventsPersister;
+        this.eventPersister = eventPersister;
     }
 
     public Observable<RepositoryIssueEvent> retrieveEventsFrom(RepositoryIssue repositoryIssue, Date since, int page) {
@@ -38,7 +38,7 @@ public class EventsServiceClient {
                 .flatMapIterable(Response::body)
                 .filter(event -> since == null || event.getCreatedAt().after(since))
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
-                .compose(eventsPersister);
+                .compose(eventPersister);
     }
 
 }

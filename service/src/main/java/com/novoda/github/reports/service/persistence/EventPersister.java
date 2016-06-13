@@ -13,26 +13,26 @@ import com.novoda.github.reports.service.persistence.converter.EventConverter;
 
 import rx.Observable;
 
-public class EventsPersister implements Persister<RepositoryIssueEvent> {
+public class EventPersister implements Persister<RepositoryIssueEvent> {
 
     private final EventDataLayer eventDataLayer;
     private final UserDataLayer userDataLayer;
     private final Converter<RepositoryIssueEvent, User> eventUserConverter;
     private final Converter<RepositoryIssueEvent, Event> eventConverter;
 
-    public static EventsPersister newInstance() {
+    public static EventPersister newInstance() {
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssueEvent, User> eventUserConverter = EventUserConverter.newInstance();
         Converter<RepositoryIssueEvent, Event> eventConverter = EventConverter.newInstance();
-        return new EventsPersister(eventDataLayer, userDataLayer, eventUserConverter, eventConverter);
+        return new EventPersister(eventDataLayer, userDataLayer, eventUserConverter, eventConverter);
     }
 
-    EventsPersister(EventDataLayer eventDataLayer,
-                    UserDataLayer userDataLayer,
-                    Converter<RepositoryIssueEvent, User> eventUserConverter,
-                    Converter<RepositoryIssueEvent, Event> eventConverter) {
+    EventPersister(EventDataLayer eventDataLayer,
+                   UserDataLayer userDataLayer,
+                   Converter<RepositoryIssueEvent, User> eventUserConverter,
+                   Converter<RepositoryIssueEvent, Event> eventConverter) {
 
         this.eventDataLayer = eventDataLayer;
         this.userDataLayer = userDataLayer;
