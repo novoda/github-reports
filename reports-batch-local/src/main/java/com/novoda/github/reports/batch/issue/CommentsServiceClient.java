@@ -85,10 +85,10 @@ public class CommentsServiceClient {
 
     private Observable<Response<List<GithubComment>>> getPagedCommentsFor(String organisation,
                                                                           String repository,
-                                                                          Integer issueNumber,
+                                                                          int issueNumber,
                                                                           Date since,
-                                                                          Integer page,
-                                                                          Integer pageCount) {
+                                                                          int page,
+                                                                          int pageCount) {
 
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return issueService.getCommentsFor(organisation, repository, issueNumber, date, page, pageCount)
