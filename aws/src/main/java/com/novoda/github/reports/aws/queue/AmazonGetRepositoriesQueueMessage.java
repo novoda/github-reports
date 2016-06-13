@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 @AutoValue
 public abstract class AmazonGetRepositoriesQueueMessage implements AmazonQueueMessage, GetRepositoriesQueueMessage {
 
-    public static AmazonGetRepositoriesQueueMessage create(boolean terminal,
+    public static AmazonGetRepositoriesQueueMessage create(Boolean terminal,
                                                            Long page,
                                                            String receiptHandle,
                                                            String organisationName,

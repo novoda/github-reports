@@ -8,6 +8,6 @@ public interface GetRepositoriesQueueMessage extends QueueMessage {
 
     String organisationName();
 
-    @Nullable Date since();
+    @Nullable Date sinceOrNull();
 
 }

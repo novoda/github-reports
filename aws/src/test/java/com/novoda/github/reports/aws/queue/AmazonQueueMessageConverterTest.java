@@ -158,10 +158,10 @@ public class AmazonQueueMessageConverterTest {
 
         AmazonRawQueueMessage expected = AmazonRawQueueMessage.create(
                 AmazonRawQueueMessage.Type.REPOSITORIES,
-                AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE.page(),
-                AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE.localTerminal(),
-                AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE.since(),
                 AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE.organisationName(),
+                AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE.sinceOrNull(),
+                AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE.localTerminal(),
+                AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE.page(),
                 null,
                 null,
                 null
@@ -176,10 +176,10 @@ public class AmazonQueueMessageConverterTest {
 
         AmazonRawQueueMessage expected = AmazonRawQueueMessage.create(
                 AmazonRawQueueMessage.Type.ISSUES,
-                AMAZON_GET_ISSUES_QUEUE_MESSAGE.page(),
-                AMAZON_GET_ISSUES_QUEUE_MESSAGE.localTerminal(),
-                AMAZON_GET_ISSUES_QUEUE_MESSAGE.since(),
                 AMAZON_GET_ISSUES_QUEUE_MESSAGE.organisationName(),
+                AMAZON_GET_ISSUES_QUEUE_MESSAGE.sinceOrNull(),
+                AMAZON_GET_ISSUES_QUEUE_MESSAGE.localTerminal(),
+                AMAZON_GET_ISSUES_QUEUE_MESSAGE.page(),
                 AMAZON_GET_ISSUES_QUEUE_MESSAGE.repositoryName(),
                 AMAZON_GET_ISSUES_QUEUE_MESSAGE.repositoryId(),
                 null
@@ -194,10 +194,10 @@ public class AmazonQueueMessageConverterTest {
 
         AmazonRawQueueMessage expected = AmazonRawQueueMessage.create(
                 AmazonRawQueueMessage.Type.COMMENTS,
-                AMAZON_GET_COMMENTS_QUEUE_MESSAGE.page(),
-                AMAZON_GET_COMMENTS_QUEUE_MESSAGE.localTerminal(),
-                AMAZON_GET_COMMENTS_QUEUE_MESSAGE.since(),
                 AMAZON_GET_COMMENTS_QUEUE_MESSAGE.organisationName(),
+                AMAZON_GET_COMMENTS_QUEUE_MESSAGE.sinceOrNull(),
+                AMAZON_GET_COMMENTS_QUEUE_MESSAGE.localTerminal(),
+                AMAZON_GET_COMMENTS_QUEUE_MESSAGE.page(),
                 AMAZON_GET_COMMENTS_QUEUE_MESSAGE.repositoryName(),
                 AMAZON_GET_COMMENTS_QUEUE_MESSAGE.repositoryId(),
                 AMAZON_GET_COMMENTS_QUEUE_MESSAGE.issueNumber()
@@ -212,10 +212,10 @@ public class AmazonQueueMessageConverterTest {
 
         AmazonRawQueueMessage expected = AmazonRawQueueMessage.create(
                 AmazonRawQueueMessage.Type.EVENTS,
-                AMAZON_GET_EVENTS_QUEUE_MESSAGE.page(),
-                AMAZON_GET_EVENTS_QUEUE_MESSAGE.localTerminal(),
-                AMAZON_GET_EVENTS_QUEUE_MESSAGE.since(),
                 AMAZON_GET_EVENTS_QUEUE_MESSAGE.organisationName(),
+                AMAZON_GET_EVENTS_QUEUE_MESSAGE.sinceOrNull(),
+                AMAZON_GET_EVENTS_QUEUE_MESSAGE.localTerminal(),
+                AMAZON_GET_EVENTS_QUEUE_MESSAGE.page(),
                 AMAZON_GET_EVENTS_QUEUE_MESSAGE.repositoryName(),
                 AMAZON_GET_EVENTS_QUEUE_MESSAGE.repositoryId(),
                 AMAZON_GET_EVENTS_QUEUE_MESSAGE.issueNumber()
@@ -230,10 +230,10 @@ public class AmazonQueueMessageConverterTest {
 
         AmazonRawQueueMessage expected = AmazonRawQueueMessage.create(
                 AmazonRawQueueMessage.Type.REVIEW_COMMENTS,
-                AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.page(),
-                AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.localTerminal(),
-                AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.since(),
                 AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.organisationName(),
+                AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.sinceOrNull(),
+                AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.localTerminal(),
+                AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.page(),
                 AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.repositoryName(),
                 AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.repositoryId(),
                 AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.issueNumber()
