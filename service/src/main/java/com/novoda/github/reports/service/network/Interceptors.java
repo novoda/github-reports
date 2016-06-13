@@ -16,7 +16,7 @@ class Interceptors {
 
     private List<Interceptor> interceptors;
 
-    public static Interceptors defaultInterceptors() {
+    static Interceptors defaultInterceptors() {
         PropertiesReader propertiesReader = PropertiesReader.newInstance(GITHUB_PROPERTIES_FILENAME);
         GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance(propertiesReader);
         String token = githubCredentialsReader.getAuthToken();
@@ -28,11 +28,11 @@ class Interceptors {
                 .withCustomMediaTypeInterceptor();
     }
 
-    Interceptors(List<Interceptor> interceptors) {
+    private Interceptors(List<Interceptor> interceptors) {
         this.interceptors = interceptors;
     }
 
-    public Interceptors() {
+    private Interceptors() {
         this(new ArrayList<>());
     }
 
