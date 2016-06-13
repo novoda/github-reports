@@ -58,7 +58,7 @@ public class IssuesServiceClient {
         return getPagedIssuesFor(repository.getOwnerUsername(), repository.getName(), since, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body)
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
-                .map(issue -> RepositoryIssue.newInstance(repository, issue))
+                .map(issue -> new RepositoryIssue(repository, issue))
                 .compose(issuePersister);
     }
 
