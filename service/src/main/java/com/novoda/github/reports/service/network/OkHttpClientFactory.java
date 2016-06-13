@@ -11,7 +11,7 @@ class OkHttpClientFactory implements HttpClientFactory {
         Interceptors interceptors = Interceptors.defaultInterceptors();
 
         okHttpClientBuilder
-                .interceptors(interceptors);
+                .withInterceptors(interceptors);
 
         return new OkHttpClientFactory(okHttpClientBuilder);
     }
@@ -22,8 +22,8 @@ class OkHttpClientFactory implements HttpClientFactory {
         CacheStatsRepository cacheStatsRepository = CacheStatsContainer.getCacheStatsRepository();
 
         okHttpClientFactory.okHttpClientBuilder
-                .cache(cacheFactory.createCache())
-                .cacheStats(cacheStatsRepository);
+                .withCache(cacheFactory.createCache())
+                .withCacheStats(cacheStatsRepository);
 
         return okHttpClientFactory;
     }
