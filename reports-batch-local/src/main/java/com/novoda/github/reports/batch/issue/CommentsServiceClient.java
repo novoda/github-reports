@@ -55,6 +55,7 @@ public class CommentsServiceClient {
 
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
 
+        // TODO @RUI use EventPersister
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
