@@ -96,13 +96,15 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenIncompatibleMessageInQueue_whenDoWork_thenNotifyConversionErrorAndReschedule() throws EmptyQueueException, MessageConverterException {
+    public void givenIncompatibleMessageInQueue_whenDoWork_thenNotifyConversionErrorAndDoNotReschedule()
+            throws EmptyQueueException, MessageConverterException {
+
         givenInvalidMessagesQueue();
 
         worker.doWork(eventSource);
 
         verifyErrorNotified(MessageConverterException.class);
-        verifyRescheduleImmediately();
+        verifyNoRescheduleImmediately();
     }
 
     @Test
