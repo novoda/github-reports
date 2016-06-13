@@ -61,7 +61,7 @@ public class EventsServiceClient {
     private final Converter<RepositoryIssueEvent, Event> eventConverter;
 
     public static EventsServiceClient newInstance() {
-        IssueService issueService = GithubIssueService.newInstance();
+        IssueService issueService = GithubIssueService.newCachingInstance();
 
         RateLimitDelayTransformer<GithubEvent> eventRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
 
