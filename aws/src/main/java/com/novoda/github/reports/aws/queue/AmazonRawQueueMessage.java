@@ -46,6 +46,7 @@ public class AmazonRawQueueMessage {
                                   String repositoryName,
                                   Long repositoryId,
                                   Long issueNumber) {
+
         this.type = type;
         this.page = page;
         this.isTerminal = isTerminal;
