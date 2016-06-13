@@ -48,46 +48,20 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
 
         try {
             M queueMessage = queue.getItem();
-            WorkerHandler<M> workerHandler = workerHandlerService.getWorkerHandler();
-
-            List<M> newMessages = workerHandler.handleQueueMessage(eventSource.getConfiguration(), queueMessage);
-
-            queue.removeItem(queueMessage);
-            queue.addItems(newMessages);
+            List<M> newMessages = handleQueueMessage(eventSource, queueMessage);
+            updateQueue(queue, queueMessage, newMessages);
+            rescheduleImmediately(eventSource.getConfiguration());
         } catch (EmptyQueueException emptyQueue) {
-            notifyCompletion(eventSource);
-            queueService.removeQueue(queue);
-            return;
-        } catch (MessageConverterException | QueueOperationFailedException e) {
-            notifyError(eventSource, e);
+            handleEmptyQueueException(eventSource, queue);
+        } catch (MessageConverterException e) {
+            handleMessageConverterException(eventSource, e);
         } catch (RateLimitEncounteredException e) {
-            rescheduleForLater(eventSource.getConfiguration(), differenceInMinutesFromNow(e.getResetDate()));
-            return;
+            handleRateLimitEncounteredException(eventSource, e);
+        } catch (QueueOperationFailedException e) {
+            handleQueueOperationFailedException(eventSource, e);
         } catch (Exception e) {
-            queue.purgeQueue();
-            queueService.removeQueue(queue);
-            notifyError(eventSource, e);
-            return;
+            handleAnyOtherException(eventSource, queue, e);
         }
-
-        rescheduleImmediately(eventSource.getConfiguration());
-    }
-
-    @Override
-    public void rescheduleImmediately(Configuration configuration) {
-        workerService.startWorker(configuration);
-    }
-
-    @Override
-    public void rescheduleForLater(Configuration configuration, long minutes) {
-        Alarm alarm = alarmService.createAlarm(configuration, minutes);
-        alarmService.postAlarm(alarm);
-    }
-
-    private void notifyCompletion(EventSource eventSource) {
-        Notifier notifier = getNotifier();
-        NotifierConfiguration notifierConfiguration = getNotifierConfiguration(eventSource);
-        notifier.notifyCompletion(notifierConfiguration);
     }
 
     private Q getQueue(EventSource eventSource) {
@@ -96,10 +70,61 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
         return queueService.getQueue(queueName);
     }
 
+    private List<M> handleQueueMessage(EventSource eventSource, M queueMessage) throws Exception, RateLimitEncounteredException {
+        WorkerHandler<M> workerHandler = workerHandlerService.getWorkerHandler();
+        return workerHandler.handleQueueMessage(eventSource.getConfiguration(), queueMessage);
+    }
+
+    private void updateQueue(Q queue, M queueMessage, List<M> newMessages) throws QueueOperationFailedException {
+        queue.removeItem(queueMessage);
+        queue.addItems(newMessages);
+    }
+
+    private void handleEmptyQueueException(EventSource eventSource, Q queue) {
+        notifyCompletion(eventSource);
+        queueService.removeQueue(queue);
+    }
+
+    private void notifyCompletion(EventSource eventSource) {
+        Notifier notifier = getNotifier();
+        NotifierConfiguration notifierConfiguration = getNotifierConfiguration(eventSource);
+        notifier.notifyCompletion(notifierConfiguration);
+    }
+
+    private void handleMessageConverterException(EventSource eventSource, MessageConverterException e) {
+        notifyError(eventSource, e);
+    }
+
+    private void handleRateLimitEncounteredException(EventSource eventSource, RateLimitEncounteredException e) {
+        rescheduleForLater(eventSource.getConfiguration(), differenceInMinutesFromNow(e.getResetDate()));
+    }
+
     private long differenceInMinutesFromNow(Date date) {
         Instant dateInstant = Instant.ofEpochMilli(date.getTime());
         long nowInstant = Instant.now().toEpochMilli();
         return Math.max(dateInstant.minusMillis(nowInstant).getEpochSecond(), 0L);
+    }
+
+    @Override
+    public void rescheduleForLater(Configuration configuration, long minutes) {
+        Alarm alarm = alarmService.createAlarm(configuration, minutes);
+        alarmService.postAlarm(alarm);
+    }
+
+    private void handleQueueOperationFailedException(EventSource eventSource, QueueOperationFailedException e) {
+        notifyError(eventSource, e);
+        rescheduleImmediately(eventSource.getConfiguration());
+    }
+
+    @Override
+    public void rescheduleImmediately(Configuration configuration) {
+        workerService.startWorker(configuration);
+    }
+
+    private void handleAnyOtherException(EventSource eventSource, Q queue, Exception e) {
+        queue.purgeQueue();
+        queueService.removeQueue(queue);
+        notifyError(eventSource, e);
     }
 
     private void notifyError(EventSource eventSource, Exception exception) {
