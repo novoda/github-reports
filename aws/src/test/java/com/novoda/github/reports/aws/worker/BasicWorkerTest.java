@@ -28,12 +28,13 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class BasicWorkerTest {
 
     private static final String ANY_QUEUE_NAME = "some_queue";
+    private static final String ANY_WORKER_DESCRIPTOR = "some_lambda_reference";
 
     @Mock
     private WorkerService workerService;
 
     @Mock
-    private AlarmService alarmService;
+    private AlarmService<Alarm, Configuration<NotifierConfiguration>> alarmService;
 
     @Mock
     private QueueService<Queue<QueueMessage>> queueService;
@@ -45,10 +46,10 @@ public class BasicWorkerTest {
     private WorkerHandlerService workerHandlerService;
 
     @InjectMocks
-    private BasicWorker worker;
+    private BasicWorker<Alarm, QueueMessage, Queue<QueueMessage>, Configuration<NotifierConfiguration>> worker;
 
     @Mock
-    private EventSource eventSource;
+    private EventSource<Configuration<NotifierConfiguration>> eventSource;
 
     @Mock
     private Notifier notifier;
@@ -84,12 +85,14 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenEmptyQueue_whenDoWork_thenNotifyCompletionAndDeleteQueueAndDoNotReschedule() throws EmptyQueueException, MessageConverterException {
+    public void givenEmptyQueue_whenDoWork_thenNotifyCompletionAndDeleteQueueAndDoNotReschedule()
+            throws EmptyQueueException, MessageConverterException {
+
         Queue<QueueMessage> queue = givenEmptyQueue();
 
         worker.doWork(eventSource);
 
-        verify(notifier).notifyCompletion(eventSource.getConfiguration().getNotifierConfiguration());
+        verify(notifier).notifyCompletion(eventSource.getConfiguration().notifierConfiguration());
         verify(queueService).removeQueue(queue);
         verifyNoErrorNotified();
         verifyNoRescheduleImmediately();
@@ -123,16 +126,19 @@ public class BasicWorkerTest {
         Date nextResetDate = new Date(nextResetInstant.toEpochMilli());
         RateLimitEncounteredException rateLimitEncounteredException = new RateLimitEncounteredException("YOLO", nextResetDate);
         when(workerHandler.handleQueueMessage(any(Configuration.class), any(QueueMessage.class))).thenThrow(rateLimitEncounteredException);
+        when(workerService.getWorkerName()).thenReturn(ANY_WORKER_DESCRIPTOR);
 
         worker.doWork(eventSource);
 
-        verify(alarmService).createAlarm(any(Configuration.class), anyLong());
+        verify(alarmService).createAlarm(eq(eventSource.getConfiguration()), anyLong(), eq(ANY_WORKER_DESCRIPTOR));
         verify(alarmService).postAlarm(any(Alarm.class));
         verifyNoErrorNotified();
     }
 
     @Test
-    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenPurgeDeleteQueueAndNotifyErrorAndDoNotReschedule() throws Exception, RateLimitEncounteredException {
+    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenPurgeDeleteQueueAndNotifyErrorAndDoNotReschedule()
+            throws Exception, RateLimitEncounteredException {
+
         Queue<QueueMessage> queue = givenAnyQueue();
         when(workerHandler.handleQueueMessage(any(Configuration.class), any(QueueMessage.class))).thenThrow(Exception.class);
 
@@ -185,8 +191,8 @@ public class BasicWorkerTest {
     }
 
     private Queue<QueueMessage> givenQueue(Queue<QueueMessage> queue) {
-        Configuration mockConfig = mock(Configuration.class);
-        when(mockConfig.getQueueName()).thenReturn(ANY_QUEUE_NAME);
+        Configuration<NotifierConfiguration> mockConfig = mock(DefaultConfiguration.class);
+        when(mockConfig.jobName()).thenReturn(ANY_QUEUE_NAME);
         when(eventSource.getConfiguration()).thenReturn(mockConfig);
         when(queueService.getQueue(ANY_QUEUE_NAME)).thenReturn(queue);
         return queue;
