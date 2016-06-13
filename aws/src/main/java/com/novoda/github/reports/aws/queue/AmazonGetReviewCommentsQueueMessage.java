@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 @AutoValue
 public abstract class AmazonGetReviewCommentsQueueMessage implements AmazonQueueMessage, GetCommentsQueueMessage {
 
-    public static AmazonGetReviewCommentsQueueMessage create(boolean terminal,
+    public static AmazonGetReviewCommentsQueueMessage create(Boolean terminal,
                                                              Long page,
                                                              String receiptHandle,
                                                              String organisation,
