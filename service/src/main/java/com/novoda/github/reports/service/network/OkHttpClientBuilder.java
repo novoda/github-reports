@@ -18,17 +18,17 @@ class OkHttpClientBuilder {
         this.okHttpClientBuilder = okHttpClientBuilder;
     }
 
-    OkHttpClientBuilder cache(Cache cache) {
+    OkHttpClientBuilder withCache(Cache cache) {
         this.cache = cache;
         return this;
     }
 
-    OkHttpClientBuilder interceptors(Interceptors interceptors) {
+    OkHttpClientBuilder withInterceptors(Interceptors interceptors) {
         this.interceptors = interceptors;
         return this;
     }
 
-    OkHttpClientBuilder cacheStats(CacheStatsRepository cacheStatsRepository) {
+    OkHttpClientBuilder withCacheStats(CacheStatsRepository cacheStatsRepository) {
         this.cacheStatsRepository = cacheStatsRepository;
         return this;
     }
