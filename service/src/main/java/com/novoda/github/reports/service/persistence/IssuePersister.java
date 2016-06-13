@@ -16,35 +16,29 @@ import rx.Observable;
 
 public class IssuePersister implements Persister<RepositoryIssue> {
 
-    private final EventDataLayer eventDataLayer;
-    private final Converter<RepositoryIssue, Event> issueConverter;
-    private final UserDataLayer userDataLayer;
-    private final Converter<RepositoryIssue, User> userConverter;
+    private final PersistUserTransformer persistUserTransformer;
+    private final PersistIssueTransformer persistIssueTransformer;
 
     public static IssuePersister newInstance() {
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
-        EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
-        Converter<RepositoryIssue, Event> issueConverter = IssueConverter.newInstance();
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssue, User> userConverter = UserConverter.newInstance();
-        return new IssuePersister(eventDataLayer, issueConverter, userDataLayer, userConverter);
+        EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
+        Converter<RepositoryIssue, Event> issueConverter = IssueConverter.newInstance();
+        PersistUserTransformer persistUserTransformer = PersistUserTransformer.newInstance(userDataLayer, userConverter);
+        PersistIssueTransformer persistIssueTransformer = PersistIssueTransformer.newInstance(eventDataLayer, issueConverter);
+        return new IssuePersister(persistUserTransformer, persistIssueTransformer);
     }
 
-    IssuePersister(EventDataLayer eventDataLayer,
-                   Converter<RepositoryIssue, Event> issueConverter,
-                   UserDataLayer userDataLayer,
-                   Converter<RepositoryIssue, User> userConverter) {
-
-        this.eventDataLayer = eventDataLayer;
-        this.issueConverter = issueConverter;
-        this.userDataLayer = userDataLayer;
-        this.userConverter = userConverter;
+    IssuePersister(PersistUserTransformer persistUserTransformer, PersistIssueTransformer persistIssueTransformer) {
+        this.persistUserTransformer = persistUserTransformer;
+        this.persistIssueTransformer = persistIssueTransformer;
     }
 
     @Override
     public Observable<RepositoryIssue> call(Observable<RepositoryIssue> observable) {
         return observable
-                .compose(PersistUserTransformer.newInstance(userDataLayer, userConverter))
-                .compose(PersistIssueTransformer.newInstance(eventDataLayer, issueConverter));
+                .compose(persistUserTransformer)
+                .compose(persistIssueTransformer);
     }
 }
