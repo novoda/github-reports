@@ -36,6 +36,20 @@ To be able to use the Github API, you must put a `github.credentials` file in th
 
 For an example, see the [`github.credentials.sample` file](src/main/resources/github.credentials.sample).
 
+#### Email
+
+In order to notify the completion and erroring of jobs, you must put a `email.credentials` file in the resources or classloader accessible folder,
+with the following properties defined:
+
+* `EMAIL_HOST`, the SMTP server host
+* `EMAIL_PORT`, the SMTP server port
+* `EMAIL_USE_SSL`, whether to use SSL or not (`true` if you want to use SSL, any different value otherwise)
+* `EMAIL_FROM`, the email you want to send notifications from
+* `EMAIL_USERNAME`, the username for the sender email
+* `EMAIL_PASSWORD`, the password for the sender email
+
+For an example, see the [`email.credentials.sample` file](src/main/resources/email.credentials.sample).
+
 ### Usage
 
 To use `reports-batch-aws` , simply run:
