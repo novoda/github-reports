@@ -18,16 +18,21 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
-class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker {
+class BasicWorker<
+        A extends Alarm,
+        M extends QueueMessage,
+        Q extends Queue<M>,
+        C extends Configuration<NotifierConfiguration>>
+        implements Worker<C> {
 
     private final WorkerService workerService;
-    private final AlarmService alarmService;
+    private final AlarmService<A, C> alarmService;
     private final QueueService<Q> queueService;
     private final NotifierService notifierService;
     private final WorkerHandlerService<M> workerHandlerService;
 
     BasicWorker(WorkerService workerService,
-                AlarmService alarmService,
+                AlarmService<A, C> alarmService,
                 QueueService<Q> queueService,
                 NotifierService notifierService,
                 WorkerHandlerService<M> workerHandlerService) {
@@ -39,9 +44,9 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
     }
 
     @Override
-    public void doWork(EventSource eventSource) {
+    public void doWork(EventSource<C> eventSource) {
         if (eventSource instanceof Alarm) {
-            alarmService.removeAlarm((Alarm) eventSource);
+            alarmService.removeAlarm((A) eventSource);
         }
 
         Q queue = getQueue(eventSource);
@@ -66,7 +71,7 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
 
     private Q getQueue(EventSource eventSource) {
         Configuration configuration = eventSource.getConfiguration();
-        String queueName = configuration.getQueueName();
+        String queueName = configuration.jobName();
         return queueService.getQueue(queueName);
     }
 
@@ -95,7 +100,7 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
         notifyError(eventSource, e);
     }
 
-    private void handleRateLimitEncounteredException(EventSource eventSource, RateLimitEncounteredException e) {
+    private void handleRateLimitEncounteredException(EventSource<C> eventSource, RateLimitEncounteredException e) {
         rescheduleForLater(eventSource.getConfiguration(), differenceInMinutesFromNow(e.getResetDate()));
     }
 
@@ -106,8 +111,9 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
     }
 
     @Override
-    public void rescheduleForLater(Configuration configuration, long minutes) {
-        Alarm alarm = alarmService.createAlarm(configuration, minutes);
+    public void rescheduleForLater(C configuration, long minutes) {
+        String workerName = workerService.getWorkerName();
+        A alarm = alarmService.createAlarm(configuration, minutes, workerName);
         alarmService.postAlarm(alarm);
     }
 
@@ -140,6 +146,6 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
     }
 
     private NotifierConfiguration getNotifierConfiguration(EventSource eventSource) {
-        return eventSource.getConfiguration().getNotifierConfiguration();
+        return eventSource.getConfiguration().notifierConfiguration();
     }
 }

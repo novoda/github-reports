@@ -1,13 +1,13 @@
 package com.novoda.github.reports.aws.configuration;
 
-public interface Configuration {
+public interface Configuration<N extends NotifierConfiguration> {
 
-    String getQueueName();
+    String jobName();
 
-    DatabaseConfiguration getDatabaseConfiguration();
+    DatabaseConfiguration databaseConfiguration();
 
-    GithubConfiguration getGithubConfiguration();
+    GithubConfiguration githubConfiguration();
 
-    NotifierConfiguration getNotifierConfiguration();
+    N notifierConfiguration();
 
 }
