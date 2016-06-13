@@ -21,12 +21,15 @@ public class IssuePersister implements Persister<RepositoryIssue> {
 
     public static IssuePersister newInstance() {
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
+
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssue, User> userConverter = UserConverter.newInstance();
+        PersistUserTransformer persistUserTransformer = PersistUserTransformer.newInstance(userDataLayer, userConverter);
+
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssue, Event> issueConverter = IssueConverter.newInstance();
-        PersistUserTransformer persistUserTransformer = PersistUserTransformer.newInstance(userDataLayer, userConverter);
         PersistIssueTransformer persistIssueTransformer = PersistIssueTransformer.newInstance(eventDataLayer, issueConverter);
+        
         return new IssuePersister(persistUserTransformer, persistIssueTransformer);
     }
 
