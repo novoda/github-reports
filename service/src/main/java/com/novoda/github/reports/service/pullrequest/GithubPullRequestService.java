@@ -2,6 +2,7 @@ package com.novoda.github.reports.service.pullrequest;
 
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.network.GithubApiService;
+import com.novoda.github.reports.service.network.GithubCachingServiceContainer;
 import com.novoda.github.reports.service.network.GithubServiceContainer;
 
 import java.util.List;
@@ -15,6 +16,11 @@ public class GithubPullRequestService implements PullRequestService {
 
     public static GithubPullRequestService newInstance() {
         GithubApiService githubApiService = GithubServiceContainer.getGithubService();
+        return new GithubPullRequestService(githubApiService);
+    }
+
+    public static GithubPullRequestService newCachingInstance() {
+        GithubApiService githubApiService = GithubCachingServiceContainer.getGithubService();
         return new GithubPullRequestService(githubApiService);
     }
 
