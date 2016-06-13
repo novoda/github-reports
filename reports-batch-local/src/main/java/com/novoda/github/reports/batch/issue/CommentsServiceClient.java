@@ -31,6 +31,7 @@ import java.util.List;
 
 import retrofit2.Response;
 import rx.Observable;
+import rx.functions.Func1;
 
 public class CommentsServiceClient {
 
@@ -99,7 +100,15 @@ public class CommentsServiceClient {
     public Observable<RepositoryIssueEvent> retrieveCommentsFrom(RepositoryIssue repositoryIssue, Date since) {
         return Observable.merge(retrieveCommentsFromIssue(repositoryIssue, since),
                                 reviewCommentsServiceClient.retrieveReviewCommentsFromPullRequest(repositoryIssue, since))
-                .map(comment -> RepositoryIssueEventComment.newInstance(repositoryIssue, comment))
+
+                .map(new Func1<GithubComment, GithubComment>() {
+                    @Override
+                    public GithubComment call(GithubComment githubComment) {
+                        return null;
+                    }
+                })
+
+                .map(comment -> new RepositoryIssueEventComment(repositoryIssue, comment))
                 .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
                 .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter));
     }
