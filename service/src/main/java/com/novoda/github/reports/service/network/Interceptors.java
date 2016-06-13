@@ -1,7 +1,6 @@
 package com.novoda.github.reports.service.network;
 
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
-import com.novoda.github.reports.service.properties.PropertiesReader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +11,10 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 class Interceptors {
 
-    private static final String GITHUB_PROPERTIES_FILENAME = "github.credentials";
-
     private List<Interceptor> interceptors;
 
     static Interceptors defaultInterceptors() {
-        PropertiesReader propertiesReader = PropertiesReader.newInstance(GITHUB_PROPERTIES_FILENAME);
-        GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance(propertiesReader);
+        GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance();
         String token = githubCredentialsReader.getAuthToken();
         return new Interceptors()
                 .withOAuthTokenInterceptor(token)
