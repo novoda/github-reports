@@ -10,14 +10,14 @@ import retrofit2.Response;
 
 import static org.junit.Assert.assertEquals;
 
-public class NextPageExtractorTest {
+public class PageExtractorTest {
 
     private static final int ANY_NEXT_PAGE = 88;
     private static final String ANY_LINK_WITH_NEXT_PAGE = "<https://api.github.com/search/code?page=" + ANY_NEXT_PAGE + ">; rel=\"next\"";
     private static final String ANY_LINK_WITH_NEXT_PAGE_AND_PER_PAGE =
-            "<https://api.github.com/organizations/74874/repos?page=" + ANY_NEXT_PAGE +"&per_page=100>; rel=\"next\"";
+            "<https://api.github.com/organizations/74874/repos?page=" + ANY_NEXT_PAGE + "&per_page=100>; rel=\"next\"";
     private static final String ANY_LINK_WITH_NEXT_PAGE_AND_OTHERS =
-            "<https://api.github.com/organizations/74874/repos?state=all&page=" + ANY_NEXT_PAGE +"&creator=takecare&per_page=100>; rel=\"next\"";
+            "<https://api.github.com/organizations/74874/repos?state=all&page=" + ANY_NEXT_PAGE + "&creator=takecare&per_page=100>; rel=\"next\"";
     private static final String ANY_LINK_WITHOUT_NEXT_PAGE = "<https://api.github.com/search/code?page=34>; rel=\"last\"";
 
     private static final String ANY_BODY = "corpo";
@@ -32,18 +32,18 @@ public class NextPageExtractorTest {
             .build();
 
     private Response<String> response;
-    private NextPageExtractor nextPageExtractor;
+    private PageExtractor pageExtractor;
 
     @Before
     public void setUp() throws Exception {
-        nextPageExtractor = new NextPageExtractor();
+        pageExtractor = new PageExtractor();
     }
 
     @Test
     public void givenResponseWithoutTheLinkHeader_whenGettingTheNextPage_thenReturnsAnEmptyResult() throws Exception {
         response = Response.success(ANY_BODY, ANY_HEADERS_WITHOUT_LINK);
 
-        Optional<Integer> actual = nextPageExtractor.getNextPageFrom(response);
+        Optional<Integer> actual = pageExtractor.getPage("next", response);
 
         assertEquals(Optional.empty(), actual);
     }
@@ -52,7 +52,7 @@ public class NextPageExtractorTest {
     public void givenResponseWithoutTheNextPageLink_whenGettingTheNextPage_thenReturnsAnEmptyResult() throws Exception {
         response = Response.success(ANY_BODY, ANY_HEADERS_WITHOUT_NEXT_PAGE);
 
-        Optional<Integer> actual = nextPageExtractor.getNextPageFrom(response);
+        Optional<Integer> actual = pageExtractor.getPage("next", response);
 
         assertEquals(Optional.empty(), actual);
     }
@@ -61,7 +61,7 @@ public class NextPageExtractorTest {
     public void givenResponseWithTheNextPageLink_whenGettingTheNextPage_thenReturnsTheNextPage() throws Exception {
         response = Response.success(ANY_BODY, ANY_HEADERS_WITH_NEXT_PAGE);
 
-        Optional<Integer> actual = nextPageExtractor.getNextPageFrom(response);
+        Optional<Integer> actual = pageExtractor.getPage("next", response);
 
         assertEquals(Optional.of(ANY_NEXT_PAGE), actual);
     }
@@ -70,7 +70,7 @@ public class NextPageExtractorTest {
     public void givenResponseWithTheNextPageLinkAndPerPageCount_whenGettingTheNextPage_thenReturnsTheNextPage() throws Exception {
         response = Response.success(ANY_BODY, ANY_HEADERS_WITH_NEXT_PAGE_AND_PER_PAGE);
 
-        Optional<Integer> actual = nextPageExtractor.getNextPageFrom(response);
+        Optional<Integer> actual = pageExtractor.getPage("next", response);
 
         assertEquals(Optional.of(ANY_NEXT_PAGE), actual);
     }
@@ -79,7 +79,7 @@ public class NextPageExtractorTest {
     public void givenResponseWithTheNextPageLinkAndOtherQueries_whenGettingTheNextPage_thenReturnsTheNextPage() throws Exception {
         response = Response.success(ANY_BODY, ANY_HEADERS_WITH_NEXT_PAGE_AND_OTHERS);
 
-        Optional<Integer> actual = nextPageExtractor.getNextPageFrom(response);
+        Optional<Integer> actual = pageExtractor.getPage("next", response);
 
         assertEquals(Optional.of(ANY_NEXT_PAGE), actual);
     }
