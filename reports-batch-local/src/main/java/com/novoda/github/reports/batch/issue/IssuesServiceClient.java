@@ -65,8 +65,8 @@ public class IssuesServiceClient {
     private Observable<Response<List<GithubIssue>>> getPagedIssuesFor(String organisation,
                                                                       String repository,
                                                                       Date since,
-                                                                      Integer page,
-                                                                      Integer pageCount) {
+                                                                      int page,
+                                                                      int pageCount) {
 
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return issueService.getIssuesFor(organisation, repository, DEFAULT_STATE, date, page, pageCount)
