@@ -15,35 +15,32 @@ import rx.Observable;
 
 public class EventPersister implements Persister<RepositoryIssueEvent> {
 
-    private final UserDataLayer userDataLayer;
-    private final Converter<RepositoryIssueEvent, User> eventUserConverter;
-    private final EventDataLayer eventDataLayer;
-    private final Converter<RepositoryIssueEvent, Event> eventConverter;
+    private final PersistEventUserTransformer persistEventUserTransformer;
+    private final PersistEventTransformer persistEventTransformer;
 
     public static EventPersister newInstance() {
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
-        EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
+
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssueEvent, User> eventUserConverter = EventUserConverter.newInstance();
+        PersistEventUserTransformer persistEventUserTransformer = PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter);
+
+        EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssueEvent, Event> eventConverter = EventConverter.newInstance();
-        return new EventPersister(userDataLayer, eventUserConverter, eventDataLayer, eventConverter);
+        PersistEventTransformer persistEventTransformer = PersistEventTransformer.newInstance(eventDataLayer, eventConverter);
+
+        return new EventPersister(persistEventUserTransformer, persistEventTransformer);
     }
 
-    EventPersister(UserDataLayer userDataLayer,
-                   Converter<RepositoryIssueEvent, User> eventUserConverter,
-                   EventDataLayer eventDataLayer,
-                   Converter<RepositoryIssueEvent, Event> eventConverter) {
-
-        this.eventDataLayer = eventDataLayer;
-        this.userDataLayer = userDataLayer;
-        this.eventUserConverter = eventUserConverter;
-        this.eventConverter = eventConverter;
+    EventPersister(PersistEventUserTransformer persistEventUserTransformer, PersistEventTransformer persistEventTransformer) {
+        this.persistEventUserTransformer = persistEventUserTransformer;
+        this.persistEventTransformer = persistEventTransformer;
     }
 
     @Override
     public Observable<RepositoryIssueEvent> call(Observable<RepositoryIssueEvent> observable) {
         return observable
-                .compose(PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter))
-                .compose(PersistEventTransformer.newInstance(eventDataLayer, eventConverter));
+                .compose(persistEventUserTransformer)
+                .compose(persistEventTransformer);
     }
 }
