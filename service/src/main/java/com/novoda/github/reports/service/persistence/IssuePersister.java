@@ -29,7 +29,7 @@ public class IssuePersister implements Persister<RepositoryIssue> {
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssue, Event> issueConverter = IssueConverter.newInstance();
         PersistIssueTransformer persistIssueTransformer = PersistIssueTransformer.newInstance(eventDataLayer, issueConverter);
-        
+
         return new IssuePersister(persistUserTransformer, persistIssueTransformer);
     }
 
