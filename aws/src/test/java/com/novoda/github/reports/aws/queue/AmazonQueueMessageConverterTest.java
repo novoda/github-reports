@@ -153,6 +153,7 @@ public class AmazonQueueMessageConverterTest {
 
     @Test
     public void givenGetRepositoriesMessage_whenToMessage_thenReturnRepositoriesMessage() throws IOException {
+
         AmazonRawQueueMessage actual = converter.toRawMessage(AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE);
 
         AmazonRawQueueMessage expected = AmazonRawQueueMessage.create(
@@ -170,6 +171,7 @@ public class AmazonQueueMessageConverterTest {
 
     @Test
     public void givenGetIssuesMessage_whenToMessage_thenReturnIssuesMessage() throws IOException {
+
         AmazonRawQueueMessage actual = converter.toRawMessage(AMAZON_GET_ISSUES_QUEUE_MESSAGE);
 
         AmazonRawQueueMessage expected = AmazonRawQueueMessage.create(
@@ -187,6 +189,7 @@ public class AmazonQueueMessageConverterTest {
 
     @Test
     public void givenGetCommentsMessage_whenToMessage_thenReturnCommentsMessage() throws IOException {
+
         AmazonRawQueueMessage actual = converter.toRawMessage(AMAZON_GET_COMMENTS_QUEUE_MESSAGE);
 
         AmazonRawQueueMessage expected = AmazonRawQueueMessage.create(
@@ -204,6 +207,7 @@ public class AmazonQueueMessageConverterTest {
 
     @Test
     public void givenGetEventsMessage_whenToMessage_thenReturnEventsMessage() throws IOException {
+
         AmazonRawQueueMessage actual = converter.toRawMessage(AMAZON_GET_EVENTS_QUEUE_MESSAGE);
 
         AmazonRawQueueMessage expected = AmazonRawQueueMessage.create(
@@ -221,6 +225,7 @@ public class AmazonQueueMessageConverterTest {
 
     @Test
     public void givenGetReviewCommentsMessage_whenToMessage_thenReturnReviewCommentsMessage() throws IOException {
+
         AmazonRawQueueMessage actual = converter.toRawMessage(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE);
 
         AmazonRawQueueMessage expected = AmazonRawQueueMessage.create(
