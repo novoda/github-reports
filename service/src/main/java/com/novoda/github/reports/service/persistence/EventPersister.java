@@ -15,9 +15,9 @@ import rx.Observable;
 
 public class EventPersister implements Persister<RepositoryIssueEvent> {
 
-    private final EventDataLayer eventDataLayer;
     private final UserDataLayer userDataLayer;
     private final Converter<RepositoryIssueEvent, User> eventUserConverter;
+    private final EventDataLayer eventDataLayer;
     private final Converter<RepositoryIssueEvent, Event> eventConverter;
 
     public static EventPersister newInstance() {
@@ -26,12 +26,12 @@ public class EventPersister implements Persister<RepositoryIssueEvent> {
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssueEvent, User> eventUserConverter = EventUserConverter.newInstance();
         Converter<RepositoryIssueEvent, Event> eventConverter = EventConverter.newInstance();
-        return new EventPersister(eventDataLayer, userDataLayer, eventUserConverter, eventConverter);
+        return new EventPersister(userDataLayer, eventUserConverter, eventDataLayer, eventConverter);
     }
 
-    EventPersister(EventDataLayer eventDataLayer,
-                   UserDataLayer userDataLayer,
+    EventPersister(UserDataLayer userDataLayer,
                    Converter<RepositoryIssueEvent, User> eventUserConverter,
+                   EventDataLayer eventDataLayer,
                    Converter<RepositoryIssueEvent, Event> eventConverter) {
 
         this.eventDataLayer = eventDataLayer;
