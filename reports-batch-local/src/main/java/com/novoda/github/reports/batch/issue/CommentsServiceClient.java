@@ -67,7 +67,7 @@ public class CommentsServiceClient {
         this.commentRateLimitDelayTransformer = commentRateLimitDelayTransformer;
     }
 
-    public Observable<RepositoryIssueEvent> retrieveCommentsFrom(RepositoryIssue repositoryIssue, Date since) {
+    public Observable<RepositoryIssueEvent> retrieveCommentsAsEventsFrom(RepositoryIssue repositoryIssue, Date since) {
         return Observable.merge(retrieveCommentsFromIssue(repositoryIssue, since),
                                 reviewCommentsServiceClient.retrieveReviewCommentsFromPullRequest(repositoryIssue, since))
                 .map(comment -> new RepositoryIssueEventComment(repositoryIssue, comment))
