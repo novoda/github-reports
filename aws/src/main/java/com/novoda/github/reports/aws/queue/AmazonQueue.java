@@ -65,7 +65,7 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
         SendMessageBatchRequest sendMessageBatchRequest = getSendMessageBatchRequest(sendMessageBatchRequestEntries);
         SendMessageBatchResult sendMessageBatchResult = amazonSQSClient.sendMessageBatch(sendMessageBatchRequest);
 
-        if (!sendMessageBatchResult.getFailed().isEmpty()) {
+        if (hasBatchOperationFailed(sendMessageBatchResult)) {
             throw new QueueOperationFailedException("Add items");
         }
 
@@ -83,6 +83,10 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
         return new SendMessageBatchRequest()
                 .withQueueUrl(queueUrl)
                 .withEntries(entries);
+    }
+
+    private boolean hasBatchOperationFailed(SendMessageBatchResult sendMessageBatchResult) {
+        return !sendMessageBatchResult.getFailed().isEmpty();
     }
 
     @Override
