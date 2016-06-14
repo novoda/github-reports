@@ -1,0 +1,13 @@
+version 'unspecified'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':reports-batch-aws')
+}
