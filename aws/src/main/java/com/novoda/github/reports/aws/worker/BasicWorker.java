@@ -1,6 +1,7 @@
 package com.novoda.github.reports.aws.worker;
 
 import com.novoda.github.reports.aws.alarm.Alarm;
+import com.novoda.github.reports.aws.alarm.AlarmOperationFailedException;
 import com.novoda.github.reports.aws.alarm.AlarmService;
 import com.novoda.github.reports.aws.configuration.Configuration;
 import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
@@ -44,7 +45,7 @@ class BasicWorker<
     }
 
     @Override
-    public void doWork(EventSource<C> eventSource) {
+    public void doWork(EventSource<C> eventSource) throws WorkerOperationFailedException {
         if (eventSource instanceof Alarm) {
             alarmService.removeAlarm((A) eventSource);
         }
@@ -100,7 +101,9 @@ class BasicWorker<
         notifyError(eventSource, e);
     }
 
-    private void handleRateLimitEncounteredException(EventSource<C> eventSource, RateLimitEncounteredException e) {
+    private void handleRateLimitEncounteredException(EventSource<C> eventSource, RateLimitEncounteredException e)
+            throws WorkerOperationFailedException {
+
         rescheduleForLater(eventSource.getConfiguration(), differenceInMinutesFromNow(e.getResetDate()));
     }
 
@@ -111,10 +114,14 @@ class BasicWorker<
     }
 
     @Override
-    public void rescheduleForLater(C configuration, long minutes) {
+    public void rescheduleForLater(C configuration, long minutes) throws WorkerOperationFailedException {
         String workerName = workerService.getWorkerName();
         A alarm = alarmService.createAlarm(configuration, minutes, workerName);
-        alarmService.postAlarm(alarm);
+        try {
+            alarmService.postAlarm(alarm);
+        } catch (AlarmOperationFailedException e) {
+            throw new WorkerOperationFailedException("rescheduleForLater", e);
+        }
     }
 
     private void handleQueueOperationFailedException(EventSource eventSource, QueueOperationFailedException e) {

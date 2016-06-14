@@ -5,10 +5,10 @@ import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
 
 public interface Worker<C extends Configuration<NotifierConfiguration>> {
 
-    void doWork(EventSource<C> eventSource);
+    void doWork(EventSource<C> eventSource) throws WorkerOperationFailedException;
 
     void rescheduleImmediately(C configuration);
 
-    void rescheduleForLater(C configuration, long minutes);
+    void rescheduleForLater(C configuration, long minutes) throws WorkerOperationFailedException;
 
 }

@@ -1,6 +1,7 @@
 package com.novoda.github.reports.aws.worker;
 
 import com.novoda.github.reports.aws.alarm.Alarm;
+import com.novoda.github.reports.aws.alarm.AlarmOperationFailedException;
 import com.novoda.github.reports.aws.alarm.AlarmService;
 import com.novoda.github.reports.aws.configuration.Configuration;
 import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
@@ -66,7 +67,7 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenStartedFromAlarm_whenDoWork_thenRemoveAlarm() throws EmptyQueueException, MessageConverterException {
+    public void givenStartedFromAlarm_whenDoWork_thenRemoveAlarm() throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
         eventSource = mock(Alarm.class);
         givenAnyQueue();
 
@@ -76,7 +77,7 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenStartedFromNonAlarm_whenDoWork_thenDoNotRemoveAlarm() throws EmptyQueueException, MessageConverterException {
+    public void givenStartedFromNonAlarm_whenDoWork_thenDoNotRemoveAlarm() throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
         givenAnyQueue();
 
         worker.doWork(eventSource);
@@ -86,7 +87,7 @@ public class BasicWorkerTest {
 
     @Test
     public void givenEmptyQueue_whenDoWork_thenNotifyCompletionAndDeleteQueueAndDoNotReschedule()
-            throws EmptyQueueException, MessageConverterException {
+            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
 
         Queue<QueueMessage> queue = givenEmptyQueue();
 
@@ -100,7 +101,7 @@ public class BasicWorkerTest {
 
     @Test
     public void givenIncompatibleMessageInQueue_whenDoWork_thenNotifyConversionErrorAndDoNotReschedule()
-            throws EmptyQueueException, MessageConverterException {
+            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
 
         givenInvalidMessagesQueue();
 
@@ -120,7 +121,7 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenValidQueueAndOutOfGithubToken_whenDoWork_thenRescheduleForLater() throws Exception, RateLimitEncounteredException {
+    public void givenValidQueueAndOutOfGithubToken_whenDoWork_thenRescheduleForLater() throws Exception, RateLimitEncounteredException, AlarmOperationFailedException {
         givenAnyQueue();
         Instant nextResetInstant = Instant.now().plusSeconds(600);
         Date nextResetDate = new Date(nextResetInstant.toEpochMilli());
@@ -152,7 +153,7 @@ public class BasicWorkerTest {
 
     @Test
     public void givenFailingQueueAddItems_whenDoWork_thenNotifyErrorAndReschedule()
-            throws EmptyQueueException, MessageConverterException, QueueOperationFailedException {
+            throws EmptyQueueException, MessageConverterException, QueueOperationFailedException, WorkerOperationFailedException {
 
         Queue<QueueMessage> queue = givenAnyQueue();
         when(queue.addItems(anyListOf(QueueMessage.class))).thenThrow(QueueOperationFailedException.class);
@@ -163,7 +164,7 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenAnyQueue_whenDoWork_thenRescheduleImmediately() throws EmptyQueueException, MessageConverterException {
+    public void givenAnyQueue_whenDoWork_thenRescheduleImmediately() throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
         givenAnyQueue();
 
         worker.doWork(eventSource);

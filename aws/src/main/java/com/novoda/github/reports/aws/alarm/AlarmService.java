@@ -7,7 +7,7 @@ public interface AlarmService<A extends Alarm, C extends Configuration<? extends
 
     A createAlarm(C configuration, long minutes, String workerDescriptor);
 
-    A postAlarm(A alarm);
+    A postAlarm(A alarm) throws AlarmOperationFailedException;
 
     A removeAlarm(A alarm);
 
