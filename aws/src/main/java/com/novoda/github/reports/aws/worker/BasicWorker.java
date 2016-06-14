@@ -1,0 +1,145 @@
+package com.novoda.github.reports.aws.worker;
+
+import com.novoda.github.reports.aws.alarm.Alarm;
+import com.novoda.github.reports.aws.alarm.AlarmService;
+import com.novoda.github.reports.aws.configuration.Configuration;
+import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
+import com.novoda.github.reports.aws.notifier.Notifier;
+import com.novoda.github.reports.aws.notifier.NotifierService;
+import com.novoda.github.reports.aws.queue.EmptyQueueException;
+import com.novoda.github.reports.aws.queue.MessageConverterException;
+import com.novoda.github.reports.aws.queue.Queue;
+import com.novoda.github.reports.aws.queue.QueueMessage;
+import com.novoda.github.reports.aws.queue.QueueOperationFailedException;
+import com.novoda.github.reports.aws.queue.QueueService;
+import com.novoda.github.reports.service.network.RateLimitEncounteredException;
+
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+
+class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker {
+
+    private final WorkerService workerService;
+    private final AlarmService alarmService;
+    private final QueueService<Q> queueService;
+    private final NotifierService notifierService;
+    private final WorkerHandlerService<M> workerHandlerService;
+
+    BasicWorker(WorkerService workerService,
+                AlarmService alarmService,
+                QueueService<Q> queueService,
+                NotifierService notifierService,
+                WorkerHandlerService<M> workerHandlerService) {
+        this.workerService = workerService;
+        this.alarmService = alarmService;
+        this.queueService = queueService;
+        this.notifierService = notifierService;
+        this.workerHandlerService = workerHandlerService;
+    }
+
+    @Override
+    public void doWork(EventSource eventSource) {
+        if (eventSource instanceof Alarm) {
+            alarmService.removeAlarm((Alarm) eventSource);
+        }
+
+        Q queue = getQueue(eventSource);
+
+        try {
+            M queueMessage = queue.getItem();
+            List<M> newMessages = handleQueueMessage(eventSource, queueMessage);
+            updateQueue(queue, queueMessage, newMessages);
+            rescheduleImmediately(eventSource.getConfiguration());
+        } catch (EmptyQueueException emptyQueue) {
+            handleEmptyQueueException(eventSource, queue);
+        } catch (MessageConverterException e) {
+            handleMessageConverterException(eventSource, e);
+        } catch (RateLimitEncounteredException e) {
+            handleRateLimitEncounteredException(eventSource, e);
+        } catch (QueueOperationFailedException e) {
+            handleQueueOperationFailedException(eventSource, e);
+        } catch (Exception e) {
+            handleAnyOtherException(eventSource, queue, e);
+        }
+    }
+
+    private Q getQueue(EventSource eventSource) {
+        Configuration configuration = eventSource.getConfiguration();
+        String queueName = configuration.getQueueName();
+        return queueService.getQueue(queueName);
+    }
+
+    private List<M> handleQueueMessage(EventSource eventSource, M queueMessage) throws Exception, RateLimitEncounteredException {
+        WorkerHandler<M> workerHandler = workerHandlerService.getWorkerHandler();
+        return workerHandler.handleQueueMessage(eventSource.getConfiguration(), queueMessage);
+    }
+
+    private void updateQueue(Q queue, M queueMessage, List<M> newMessages) throws QueueOperationFailedException {
+        queue.removeItem(queueMessage);
+        queue.addItems(newMessages);
+    }
+
+    private void handleEmptyQueueException(EventSource eventSource, Q queue) {
+        notifyCompletion(eventSource);
+        queueService.removeQueue(queue);
+    }
+
+    private void notifyCompletion(EventSource eventSource) {
+        Notifier notifier = getNotifier();
+        NotifierConfiguration notifierConfiguration = getNotifierConfiguration(eventSource);
+        notifier.notifyCompletion(notifierConfiguration);
+    }
+
+    private void handleMessageConverterException(EventSource eventSource, MessageConverterException e) {
+        notifyError(eventSource, e);
+    }
+
+    private void handleRateLimitEncounteredException(EventSource eventSource, RateLimitEncounteredException e) {
+        rescheduleForLater(eventSource.getConfiguration(), differenceInMinutesFromNow(e.getResetDate()));
+    }
+
+    private long differenceInMinutesFromNow(Date date) {
+        Instant dateInstant = Instant.ofEpochMilli(date.getTime());
+        long nowInstant = Instant.now().toEpochMilli();
+        return Math.max(dateInstant.minusMillis(nowInstant).getEpochSecond(), 0L);
+    }
+
+    @Override
+    public void rescheduleForLater(Configuration configuration, long minutes) {
+        Alarm alarm = alarmService.createAlarm(configuration, minutes);
+        alarmService.postAlarm(alarm);
+    }
+
+    private void handleQueueOperationFailedException(EventSource eventSource, QueueOperationFailedException e) {
+        notifyError(eventSource, e);
+        rescheduleImmediately(eventSource.getConfiguration());
+    }
+
+    @Override
+    public void rescheduleImmediately(Configuration configuration) {
+        workerService.startWorker(configuration);
+    }
+
+    private void handleAnyOtherException(EventSource eventSource, Q queue, Exception e) {
+        queue.purgeQueue();
+        queueService.removeQueue(queue);
+        notifyError(eventSource, e);
+    }
+
+    private void notifyError(EventSource eventSource, Exception exception) {
+        exception.printStackTrace();
+
+        Notifier notifier = getNotifier();
+        NotifierConfiguration notifierConfiguration = getNotifierConfiguration(eventSource);
+        notifier.notifyError(notifierConfiguration, exception);
+    }
+
+    private Notifier getNotifier() {
+        return notifierService.getNotifier();
+    }
+
+    private NotifierConfiguration getNotifierConfiguration(EventSource eventSource) {
+        return eventSource.getConfiguration().getNotifierConfiguration();
+    }
+}
