@@ -22,31 +22,41 @@ public class AmazonConfigurationConverter {
     public AmazonConfiguration fromJson(String json) throws ConfigurationConverterException {
         AmazonRawConfiguration amazonRawConfiguration = jsonToAmazonRawConfiguration(json);
 
-        AmazonRawDatabaseConfiguration rawDatabaseConfiguration = amazonRawConfiguration.database();
-        DatabaseConfiguration databaseConfiguration = DatabaseConfiguration.create(
-                rawDatabaseConfiguration.connectionString(),
-                rawDatabaseConfiguration.username(),
-                rawDatabaseConfiguration.password()
-        );
-
-        AmazonRawGithubConfiguration rawGithubConfiguration = amazonRawConfiguration.github();
-        GithubConfiguration githubConfiguration = GithubConfiguration.create(rawGithubConfiguration.token());
-
-        AmazonRawEmailNotifierConfiguration rawEmailNotifierConfiguration = amazonRawConfiguration.email();
-        EmailNotifierConfiguration emailNotifierConfiguration = EmailNotifierConfiguration.create(
-                rawEmailNotifierConfiguration.host(),
-                rawEmailNotifierConfiguration.port(),
-                rawEmailNotifierConfiguration.useSSL(),
-                rawEmailNotifierConfiguration.from(),
-                rawEmailNotifierConfiguration.username(),
-                rawEmailNotifierConfiguration.password()
-        );
+        DatabaseConfiguration databaseConfiguration = toDatabaseConfiguration(amazonRawConfiguration);
+        GithubConfiguration githubConfiguration = toGithubConfiguration(amazonRawConfiguration);
+        EmailNotifierConfiguration emailNotifierConfiguration = toEmailNotifierConfiguration(amazonRawConfiguration);
 
         return AmazonConfiguration.create(
                 amazonRawConfiguration.jobName(),
                 databaseConfiguration,
                 githubConfiguration,
                 emailNotifierConfiguration
+        );
+    }
+
+    private DatabaseConfiguration toDatabaseConfiguration(AmazonRawConfiguration amazonRawConfiguration) {
+        AmazonRawDatabaseConfiguration rawDatabaseConfiguration = amazonRawConfiguration.database();
+        return DatabaseConfiguration.create(
+                rawDatabaseConfiguration.connectionString(),
+                rawDatabaseConfiguration.username(),
+                rawDatabaseConfiguration.password()
+        );
+    }
+
+    private GithubConfiguration toGithubConfiguration(AmazonRawConfiguration amazonRawConfiguration) {
+        AmazonRawGithubConfiguration rawGithubConfiguration = amazonRawConfiguration.github();
+        return GithubConfiguration.create(rawGithubConfiguration.token());
+    }
+
+    private EmailNotifierConfiguration toEmailNotifierConfiguration(AmazonRawConfiguration amazonRawConfiguration) {
+        AmazonRawEmailNotifierConfiguration rawEmailNotifierConfiguration = amazonRawConfiguration.email();
+        return EmailNotifierConfiguration.create(
+                rawEmailNotifierConfiguration.host(),
+                rawEmailNotifierConfiguration.port(),
+                rawEmailNotifierConfiguration.useSSL(),
+                rawEmailNotifierConfiguration.from(),
+                rawEmailNotifierConfiguration.username(),
+                rawEmailNotifierConfiguration.password()
         );
     }
 
@@ -61,27 +71,9 @@ public class AmazonConfigurationConverter {
     public String toJson(AmazonConfiguration configuration) throws ConfigurationConverterException {
         String jobName = configuration.jobName();
 
-        DatabaseConfiguration databaseConfiguration = configuration.databaseConfiguration();
-        AmazonRawDatabaseConfiguration rawDatabaseConfiguration = AmazonRawDatabaseConfiguration.builder()
-                .connectionString(databaseConfiguration.connectionString())
-                .username(databaseConfiguration.username())
-                .password(databaseConfiguration.password())
-                .build();
-
-        GithubConfiguration githubConfiguration = configuration.githubConfiguration();
-        AmazonRawGithubConfiguration githubRawConfiguration = AmazonRawGithubConfiguration.builder()
-                .token(githubConfiguration.token())
-                .build();
-
-        EmailNotifierConfiguration emailNotifierConfiguration = configuration.notifierConfiguration();
-        AmazonRawEmailNotifierConfiguration rawEmailNotifierConfiguration = AmazonRawEmailNotifierConfiguration.builder()
-                .host(emailNotifierConfiguration.host())
-                .port(emailNotifierConfiguration.port())
-                .useSSL(emailNotifierConfiguration.useSSL())
-                .from(emailNotifierConfiguration.from())
-                .username(emailNotifierConfiguration.username())
-                .password(emailNotifierConfiguration.password())
-                .build();
+        AmazonRawDatabaseConfiguration rawDatabaseConfiguration = toRawDatabaseConfiguration(configuration);
+        AmazonRawGithubConfiguration githubRawConfiguration = toRawGithubConfiguration(configuration);
+        AmazonRawEmailNotifierConfiguration rawEmailNotifierConfiguration = toRawEmailNotifierConfiguration(configuration);
 
         AmazonRawConfiguration amazonRawConfiguration = AmazonRawConfiguration.builder()
                 .jobName(jobName)
@@ -91,6 +83,34 @@ public class AmazonConfigurationConverter {
                 .build();
 
         return rawToJsonConfiguration(amazonRawConfiguration);
+    }
+
+    private AmazonRawDatabaseConfiguration toRawDatabaseConfiguration(AmazonConfiguration configuration) {
+        DatabaseConfiguration databaseConfiguration = configuration.databaseConfiguration();
+        return AmazonRawDatabaseConfiguration.builder()
+                .connectionString(databaseConfiguration.connectionString())
+                .username(databaseConfiguration.username())
+                .password(databaseConfiguration.password())
+                .build();
+    }
+
+    private AmazonRawGithubConfiguration toRawGithubConfiguration(AmazonConfiguration configuration) {
+        GithubConfiguration githubConfiguration = configuration.githubConfiguration();
+        return AmazonRawGithubConfiguration.builder()
+                .token(githubConfiguration.token())
+                .build();
+    }
+
+    private AmazonRawEmailNotifierConfiguration toRawEmailNotifierConfiguration(AmazonConfiguration configuration) {
+        EmailNotifierConfiguration emailNotifierConfiguration = configuration.notifierConfiguration();
+        return AmazonRawEmailNotifierConfiguration.builder()
+                .host(emailNotifierConfiguration.host())
+                .port(emailNotifierConfiguration.port())
+                .useSSL(emailNotifierConfiguration.useSSL())
+                .from(emailNotifierConfiguration.from())
+                .username(emailNotifierConfiguration.username())
+                .password(emailNotifierConfiguration.password())
+                .build();
     }
 
     private String rawToJsonConfiguration(AmazonRawConfiguration amazonRawConfiguration) throws ConfigurationConverterException {
