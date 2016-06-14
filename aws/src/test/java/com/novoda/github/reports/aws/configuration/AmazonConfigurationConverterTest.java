@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -30,13 +32,15 @@ public class AmazonConfigurationConverterTest {
     private static final String ANY_PORT = "1337";
     private static final boolean ANY_USE_SSL = true;
     private static final String ANY_FROM = "sterling@archer.mawp";
+    private static final List<String> ANY_TO = Arrays.asList("francesco@novoda.com", "carl@novoda.com");
     private static final EmailNotifierConfiguration EMAIL_NOTIFIER_CONFIGURATION = EmailNotifierConfiguration.create(
             ANY_HOST,
             ANY_PORT,
             ANY_USE_SSL,
             ANY_FROM,
             ANY_USERNAME,
-            ANY_PASSWORD
+            ANY_PASSWORD,
+            ANY_TO
     );
     private static AmazonConfiguration EXPECTED_CONFIGURATION = AmazonConfiguration.create(
             ANY_JOB_NAME,

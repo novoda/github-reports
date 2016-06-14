@@ -14,6 +14,7 @@
     "useSsl": true,
     "from": "sterling@archer.mawp",
     "username": "sterling",
-    "password": "mawp"
+    "password": "mawp",
+    "to": ["francesco@novoda.com", "carl@novoda.com"]
   }
 }
