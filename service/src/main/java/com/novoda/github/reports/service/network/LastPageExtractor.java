@@ -11,7 +11,7 @@ public class LastPageExtractor {
     private final PageExtractor pageExtractor;
 
     public static LastPageExtractor newInstance() {
-        return new LastPageExtractor(new PageExtractor());
+        return new LastPageExtractor(new PageExtractor(LAST));
     }
 
     private LastPageExtractor(PageExtractor pageExtractor) {
@@ -19,7 +19,7 @@ public class LastPageExtractor {
     }
 
     Optional<Integer> getLastPageFrom(Response response) {
-        return pageExtractor.getPage(LAST, response);
+        return pageExtractor.getPage(response);
     }
 
 }

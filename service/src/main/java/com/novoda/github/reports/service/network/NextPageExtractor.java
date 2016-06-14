@@ -11,15 +11,15 @@ class NextPageExtractor {
     private final PageExtractor pageExtractor;
 
     public static NextPageExtractor newInstance() {
-        return new NextPageExtractor(new PageExtractor());
+        return new NextPageExtractor(new PageExtractor(NEXT));
     }
 
-    private NextPageExtractor(PageExtractor pageExtractor) {
+    NextPageExtractor(PageExtractor pageExtractor) {
         this.pageExtractor = pageExtractor;
     }
 
     Optional<Integer> getNextPageFrom(Response response) {
-        return pageExtractor.getPage(NEXT, response);
+        return pageExtractor.getPage(response);
     }
 
 }
