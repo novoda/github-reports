@@ -27,7 +27,7 @@ class RateLimitCountInterceptor implements Interceptor {
         Response response = chain.proceed(request);
 
         String countAsString = response.headers().get(REMAINING_RATE_LIMIT_HEADER);
-        Integer remainingCount = Integer.valueOf(countAsString);
+        int remainingCount = Integer.valueOf(countAsString);
         rateLimitRemainingCounter.set(remainingCount);
 
         return response;
