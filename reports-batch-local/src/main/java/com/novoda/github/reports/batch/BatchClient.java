@@ -45,7 +45,7 @@ class BatchClient {
         return repositoryIssueObservable -> {
 
             Observable<RepositoryIssueEvent> comments = repositoryIssueObservable
-                    .flatMap(repositoryIssue -> COMMENTS_SERVICE_CLIENT.retrieveCommentsFrom(repositoryIssue, since));
+                    .flatMap(repositoryIssue -> COMMENTS_SERVICE_CLIENT.retrieveCommentsAsEventsFrom(repositoryIssue, since));
 
             Observable<RepositoryIssueEvent> events = repositoryIssueObservable
                     .flatMap(repositoryIssue -> EVENTS_SERVICE_CLIENT.retrieveEventsFrom(repositoryIssue, since));

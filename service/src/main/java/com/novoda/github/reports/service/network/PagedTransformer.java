@@ -35,6 +35,6 @@ public class PagedTransformer<T> implements Observable.Transformer<Response<List
 
     @FunctionalInterface
     public interface PageRecursor<T> {
-        Observable<Response<List<T>>> recurse(Integer nextPage);
+        Observable<Response<List<T>>> recurse(int nextPage);
     }
 }

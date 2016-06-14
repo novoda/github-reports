@@ -30,7 +30,7 @@ public class PullRequestServiceClient {
 
     public Observable<GithubComment> getPullRequestReviewCommentsFor(String organisation,
                                                                      String repository,
-                                                                     Integer pullRequestNumber,
+                                                                     int pullRequestNumber,
                                                                      Date since,
                                                                      int page) {
 
