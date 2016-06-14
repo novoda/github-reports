@@ -4,6 +4,6 @@ import rx.Observable;
 
 public interface TimelineService {
 
-    Observable<TimelineEvent> getTimelineFor(String organisation, String repository, Integer issueNumber);
+    Observable<TimelineEvent> getTimelineFor(String organisation, String repository, int issueNumber);
 
 }

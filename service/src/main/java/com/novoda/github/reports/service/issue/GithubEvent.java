@@ -17,7 +17,7 @@ public class GithubEvent {
     @SerializedName("created_at")
     private Date createdAt;
 
-    Date getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 

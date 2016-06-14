@@ -12,7 +12,7 @@ public class PagedTransformer<T> implements Observable.Transformer<Response<List
     private final PageRecursor<T> recursor;
 
     public static <T> PagedTransformer<T> newInstance(PageRecursor<T> recursor) {
-        NextPageExtractor nextPageExtractor = new NextPageExtractor();
+        NextPageExtractor nextPageExtractor = NextPageExtractor.newInstance();
         return new PagedTransformer<>(nextPageExtractor, recursor);
     }
 
@@ -35,6 +35,6 @@ public class PagedTransformer<T> implements Observable.Transformer<Response<List
 
     @FunctionalInterface
     public interface PageRecursor<T> {
-        Observable<Response<List<T>>> recurse(Integer nextPage);
+        Observable<Response<List<T>>> recurse(int nextPage);
     }
 }
