@@ -14,7 +14,7 @@ public class LastPageExtractor {
         return new LastPageExtractor(new PageExtractor(LAST));
     }
 
-    private LastPageExtractor(PageExtractor pageExtractor) {
+    LastPageExtractor(PageExtractor pageExtractor) {
         this.pageExtractor = pageExtractor;
     }
 
