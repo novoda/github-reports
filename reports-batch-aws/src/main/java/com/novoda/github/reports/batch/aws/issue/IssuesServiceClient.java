@@ -5,7 +5,7 @@ import com.novoda.github.reports.service.issue.GithubIssueService;
 import com.novoda.github.reports.service.issue.IssueService;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
-import com.novoda.github.reports.service.persistence.IssuePersister;
+import com.novoda.github.reports.service.persistence.RepositoryIssuePersistTransformer;
 import com.novoda.github.reports.service.repository.GithubRepository;
 
 import java.util.Date;
@@ -20,19 +20,22 @@ public class IssuesServiceClient {
 
     private final IssueService issueService;
     private final DateToISO8601Converter dateConverter;
-    private final IssuePersister issuePersister;
+    private final RepositoryIssuePersistTransformer repositoryIssuePersistTransformer;
 
     public static IssuesServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
-        IssuePersister issuePersister = IssuePersister.newInstance();
-        return new IssuesServiceClient(issueService, dateConverter, issuePersister);
+        RepositoryIssuePersistTransformer repositoryIssuePersistTransformer = RepositoryIssuePersistTransformer.newInstance();
+        return new IssuesServiceClient(issueService, dateConverter, repositoryIssuePersistTransformer);
     }
 
-    private IssuesServiceClient(IssueService issueService, DateToISO8601Converter dateConverter, IssuePersister issuePersister) {
+    private IssuesServiceClient(IssueService issueService,
+                                DateToISO8601Converter dateConverter,
+                                RepositoryIssuePersistTransformer repositoryIssuePersistTransformer) {
+        
         this.issueService = issueService;
         this.dateConverter = dateConverter;
-        this.issuePersister = issuePersister;
+        this.repositoryIssuePersistTransformer = repositoryIssuePersistTransformer;
     }
 
     public Observable<RepositoryIssue> retrieveIssuesFrom(GithubRepository repository, Date since, int page) {
@@ -42,7 +45,7 @@ public class IssuesServiceClient {
         return issueService.getIssuesFor(organisation, repositoryName, DEFAULT_STATE, date, page, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body)
                 .map(issue -> new RepositoryIssue(repository, issue))
-                .compose(issuePersister);
+                .compose(repositoryIssuePersistTransformer);
     }
 
 }
