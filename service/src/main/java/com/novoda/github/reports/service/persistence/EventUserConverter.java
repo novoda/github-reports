@@ -5,7 +5,7 @@ import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.persistence.converter.Converter;
 import com.novoda.github.reports.data.model.User;
 
-public class EventUserConverter implements Converter<RepositoryIssueEvent, User> {
+class EventUserConverter implements Converter<RepositoryIssueEvent, User> {
 
     public static EventUserConverter newInstance() {
         return new EventUserConverter();

@@ -5,7 +5,7 @@ import com.novoda.github.reports.service.persistence.converter.Converter;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.model.Event;
 
-public class PersistEventTransformer extends PersistTransformer<RepositoryIssueEvent, Event> {
+class PersistEventTransformer extends PersistTransformer<RepositoryIssueEvent, Event> {
 
     private static final int EVENT_BUFFER_SIZE = 100;
 

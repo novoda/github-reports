@@ -37,7 +37,7 @@ public class PullRequestServiceClient {
         this.commentRateLimitDelayTransformer = commentRateLimitDelayTransformer;
     }
 
-    public Observable<GithubComment> getPullRequestReviewCommentsFor(String organisation, String repository, Integer pullRequestNumber, Date since) {
+    public Observable<GithubComment> getPullRequestReviewCommentsFor(String organisation, String repository, int pullRequestNumber, Date since) {
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return getPagedReviewCommentsForPullRequestFor(organisation, repository, pullRequestNumber, date, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
@@ -45,10 +45,10 @@ public class PullRequestServiceClient {
 
     private Observable<Response<List<GithubComment>>> getPagedReviewCommentsForPullRequestFor(String organisation,
                                                                                               String repository,
-                                                                                              Integer pullRequestNumber,
+                                                                                              int pullRequestNumber,
                                                                                               String since,
-                                                                                              Integer page,
-                                                                                              Integer pageCount) {
+                                                                                              int page,
+                                                                                              int pageCount) {
 
         return githubPullRequestService.getPullRequestReviewCommentsFor(organisation, repository, pullRequestNumber, since, page, pageCount)
                 .compose(commentRateLimitDelayTransformer)

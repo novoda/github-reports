@@ -64,7 +64,7 @@ public class RepositoriesServiceClient {
                 .compose(PersistRepositoryTransformer.newInstance(repoDataLayer, converter));
     }
 
-    private Observable<Response<List<GithubRepository>>> getPagedRepositoriesFor(String organisation, Integer page, Integer pageCount) {
+    private Observable<Response<List<GithubRepository>>> getPagedRepositoriesFor(String organisation, int page, int pageCount) {
         return repositoryService.getRepositoriesFor(organisation, page, pageCount)
                 .compose(rateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedRepositoriesFor(organisation, nextPage, pageCount)));
