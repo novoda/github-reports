@@ -87,7 +87,7 @@ public class LastPageExtractorTest {
     }
 
     @Test
-    public void givenResponseWithTheLastPageLinkAndOtherQueries_whenGettingTheNextPage_thenReturnsTheLastPage() throws Exception {
+    public void givenResponseWithTheLastPageLinkAndOtherQueries_whenGettingTheLastPage_thenReturnsTheLastPage() throws Exception {
         response = Response.success(ANY_BODY, ANY_HEADERS_WITH_NEXT_PAGE_AND_OTHER_PARAMS);
 
         Optional<Integer> actual = lastPageExtractor.getLastPageFrom(response);
