@@ -4,7 +4,7 @@ import com.novoda.github.reports.batch.aws.pullrequest.PullRequestServiceClient;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
-import com.novoda.github.reports.service.persistence.EventPersister;
+import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersistTransformer;
 
 import java.util.Date;
 
@@ -13,17 +13,19 @@ import rx.Observable;
 public class ReviewCommentsServiceClient {
 
     private final PullRequestServiceClient pullRequestServiceClient;
-    private final EventPersister eventPersister;
+    private final RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer;
 
     public static ReviewCommentsServiceClient newInstance() {
         PullRequestServiceClient pullRequestServiceClient = PullRequestServiceClient.newInstance();
-        EventPersister eventPersister = EventPersister.newInstance();
-        return new ReviewCommentsServiceClient(pullRequestServiceClient, eventPersister);
+        RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer = RepositoryIssueEventPersistTransformer.newInstance();
+        return new ReviewCommentsServiceClient(pullRequestServiceClient, repositoryIssueEventPersistTransformer);
     }
 
-    private ReviewCommentsServiceClient(PullRequestServiceClient pullRequestServiceClient, EventPersister eventPersister) {
+    private ReviewCommentsServiceClient(PullRequestServiceClient pullRequestServiceClient,
+                                        RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer) {
+
         this.pullRequestServiceClient = pullRequestServiceClient;
-        this.eventPersister = eventPersister;
+        this.repositoryIssueEventPersistTransformer = repositoryIssueEventPersistTransformer;
     }
 
     public Observable<RepositoryIssueEvent> retrieveReviewCommentsFromPullRequest(RepositoryIssue repositoryIssue, Date since, int page) {
@@ -35,7 +37,7 @@ public class ReviewCommentsServiceClient {
         int issueNumber = repositoryIssue.getIssueNumber();
         return pullRequestServiceClient.getPullRequestReviewCommentsFor(organisation, repository, issueNumber, since, page)
                 .map(comment -> new RepositoryIssueEventComment(repositoryIssue, comment))
-                .compose(eventPersister);
+                .compose(repositoryIssueEventPersistTransformer);
     }
 
     private boolean isNotPullRequest(RepositoryIssue repositoryIssue) {

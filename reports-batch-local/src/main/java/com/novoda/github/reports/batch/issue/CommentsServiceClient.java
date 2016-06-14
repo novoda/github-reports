@@ -12,7 +12,7 @@ import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.network.PagedTransformer;
 import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
-import com.novoda.github.reports.service.persistence.EventPersister;
+import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersistTransformer;
 
 import java.util.Date;
 import java.util.List;
@@ -28,7 +28,7 @@ public class CommentsServiceClient {
     private final IssueService issueService;
     private final ReviewCommentsServiceClient reviewCommentsServiceClient;
     private final DateToISO8601Converter dateConverter;
-    private final EventPersister eventPersister;
+    private final RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer;
 
     private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
     private final RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer;
@@ -39,7 +39,7 @@ public class CommentsServiceClient {
 
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
 
-        EventPersister eventPersister = EventPersister.newInstance();
+        RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer = RepositoryIssueEventPersistTransformer.newInstance();
 
         RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
         RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
@@ -47,7 +47,7 @@ public class CommentsServiceClient {
         return new CommentsServiceClient(issueService,
                                          reviewCommentsServiceClient,
                                          dateConverter,
-                                         eventPersister,
+                                         repositoryIssueEventPersistTransformer,
                                          rateLimitResetTimerSubject,
                                          commentRateLimitDelayTransformer);
     }
@@ -55,14 +55,14 @@ public class CommentsServiceClient {
     private CommentsServiceClient(IssueService issueService,
                                   ReviewCommentsServiceClient reviewCommentsServiceClient,
                                   DateToISO8601Converter dateConverter,
-                                  EventPersister eventPersister,
+                                  RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer,
                                   RateLimitResetTimerSubject rateLimitResetTimerSubject,
                                   RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer) {
 
         this.issueService = issueService;
         this.reviewCommentsServiceClient = reviewCommentsServiceClient;
         this.dateConverter = dateConverter;
-        this.eventPersister = eventPersister;
+        this.repositoryIssueEventPersistTransformer = repositoryIssueEventPersistTransformer;
         this.rateLimitResetTimerSubject = rateLimitResetTimerSubject;
         this.commentRateLimitDelayTransformer = commentRateLimitDelayTransformer;
     }
@@ -71,7 +71,7 @@ public class CommentsServiceClient {
         return Observable.merge(retrieveCommentsFromIssue(repositoryIssue, since),
                                 reviewCommentsServiceClient.retrieveReviewCommentsFromPullRequest(repositoryIssue, since))
                 .map(comment -> new RepositoryIssueEventComment(repositoryIssue, comment))
-                .compose(eventPersister);
+                .compose(repositoryIssueEventPersistTransformer);
     }
 
     private Observable<GithubComment> retrieveCommentsFromIssue(RepositoryIssue repositoryIssue, Date since) {
