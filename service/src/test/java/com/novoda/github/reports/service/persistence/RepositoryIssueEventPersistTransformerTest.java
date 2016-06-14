@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class EventPersisterTest {
+public class RepositoryIssueEventPersistTransformerTest {
 
     private static final Observable<RepositoryIssueEvent> ANY_OBSERVABLE = Observable.empty();
 
@@ -22,20 +22,20 @@ public class EventPersisterTest {
     @Mock
     PersistEventTransformer mockPersistEventTransformer;
 
-    private EventPersister eventPersister;
+    private RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer;
 
     @Before
     public void setUp() {
         initMocks(this);
         when(mockPersistEventUserTransformer.call(ANY_OBSERVABLE)).thenReturn(ANY_OBSERVABLE);
         when(mockPersistEventTransformer.call(ANY_OBSERVABLE)).thenReturn(ANY_OBSERVABLE);
-        eventPersister = new EventPersister(mockPersistEventUserTransformer, mockPersistEventTransformer);
+        repositoryIssueEventPersistTransformer = new RepositoryIssueEventPersistTransformer(mockPersistEventUserTransformer, mockPersistEventTransformer);
     }
 
     @Test
     public void givenAnObservable_whenComposing_thenTheEventPersistTransformerIsCalled() {
 
-        eventPersister.call(ANY_OBSERVABLE);
+        repositoryIssueEventPersistTransformer.call(ANY_OBSERVABLE);
 
         verify(mockPersistEventTransformer).call(ANY_OBSERVABLE);
     }
@@ -43,7 +43,7 @@ public class EventPersisterTest {
     @Test
     public void givenAnObservable_whenComposing_thenTheUserPersistTransformerIsCalled() {
 
-        eventPersister.call(ANY_OBSERVABLE);
+        repositoryIssueEventPersistTransformer.call(ANY_OBSERVABLE);
 
         verify(mockPersistEventUserTransformer).call(ANY_OBSERVABLE);
     }

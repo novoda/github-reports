@@ -5,7 +5,7 @@ import com.novoda.github.reports.service.issue.IssueService;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventEvent;
-import com.novoda.github.reports.service.persistence.EventPersister;
+import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersistTransformer;
 
 import java.util.Date;
 
@@ -17,17 +17,17 @@ public class EventsServiceClient {
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
 
     private final IssueService issueService;
-    private final EventPersister eventPersister;
+    private final RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer;
 
     public static EventsServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
-        EventPersister eventPersister = EventPersister.newInstance();
-        return new EventsServiceClient(issueService, eventPersister);
+        RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer = RepositoryIssueEventPersistTransformer.newInstance();
+        return new EventsServiceClient(issueService, repositoryIssueEventPersistTransformer);
     }
 
-    public EventsServiceClient(IssueService issueService, EventPersister eventPersister) {
+    public EventsServiceClient(IssueService issueService, RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer) {
         this.issueService = issueService;
-        this.eventPersister = eventPersister;
+        this.repositoryIssueEventPersistTransformer = repositoryIssueEventPersistTransformer;
     }
 
     public Observable<RepositoryIssueEvent> retrieveEventsFrom(RepositoryIssue repositoryIssue, Date since, int page) {
@@ -38,7 +38,7 @@ public class EventsServiceClient {
                 .flatMapIterable(Response::body)
                 .filter(event -> since == null || event.getCreatedAt().after(since))
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
-                .compose(eventPersister);
+                .compose(repositoryIssueEventPersistTransformer);
     }
 
 }

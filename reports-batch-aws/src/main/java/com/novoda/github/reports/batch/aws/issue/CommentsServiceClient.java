@@ -6,7 +6,7 @@ import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
-import com.novoda.github.reports.service.persistence.EventPersister;
+import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersistTransformer;
 
 import java.util.Date;
 
@@ -19,19 +19,22 @@ public class CommentsServiceClient {
 
     private final IssueService issueService;
     private final DateToISO8601Converter dateConverter;
-    private final EventPersister eventPersister;
+    private final RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer;
 
     public static CommentsServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
-        EventPersister eventPersister = EventPersister.newInstance();
-        return new CommentsServiceClient(issueService, dateConverter, eventPersister);
+        RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer = RepositoryIssueEventPersistTransformer.newInstance();
+        return new CommentsServiceClient(issueService, dateConverter, repositoryIssueEventPersistTransformer);
     }
 
-    public CommentsServiceClient(IssueService issueService, DateToISO8601Converter dateConverter, EventPersister eventPersister) {
+    private CommentsServiceClient(IssueService issueService,
+                                  DateToISO8601Converter dateConverter,
+                                  RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer) {
+
         this.issueService = issueService;
         this.dateConverter = dateConverter;
-        this.eventPersister = eventPersister;
+        this.repositoryIssueEventPersistTransformer = repositoryIssueEventPersistTransformer;
     }
 
     public Observable<RepositoryIssueEvent> retrieveCommentsAsEventsFrom(RepositoryIssue repositoryIssue, Date since, int page) {
@@ -42,7 +45,7 @@ public class CommentsServiceClient {
         return issueService.getCommentsFor(organisation, repository, issueNumber, date, page, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body)
                 .map(comment -> new RepositoryIssueEventComment(repositoryIssue, comment))
-                .compose(eventPersister);
+                .compose(repositoryIssueEventPersistTransformer);
     }
 
 }
