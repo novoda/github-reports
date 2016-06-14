@@ -19,7 +19,7 @@ public class TimelineServiceClient {
         this.timelineService = timelineService;
     }
 
-    public Observable<TimelineEvent> getTimelineFor(String organisation, String repository, Integer issueNumber) {
+    public Observable<TimelineEvent> getTimelineFor(String organisation, String repository, int issueNumber) {
         return timelineService.getTimelineFor(organisation, repository, issueNumber);
     }
 }

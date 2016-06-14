@@ -8,11 +8,7 @@ public class RepositoryIssueEventComment extends RepositoryIssueEvent {
 
     private final GithubComment comment;
 
-    public static RepositoryIssueEvent newInstance(RepositoryIssue repositoryIssue, GithubComment comment) {
-        return new RepositoryIssueEventComment(repositoryIssue, comment);
-    }
-
-    private RepositoryIssueEventComment(RepositoryIssue repositoryIssue, GithubComment comment) {
+    public RepositoryIssueEventComment(RepositoryIssue repositoryIssue, GithubComment comment) {
         super(repositoryIssue);
         this.comment = comment;
     }

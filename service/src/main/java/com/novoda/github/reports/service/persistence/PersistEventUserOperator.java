@@ -5,7 +5,7 @@ import com.novoda.github.reports.service.persistence.converter.Converter;
 import com.novoda.github.reports.data.DataLayer;
 import com.novoda.github.reports.data.model.User;
 
-public class PersistEventUserOperator extends PersistOperator<RepositoryIssueEvent, User> {
+class PersistEventUserOperator extends PersistOperator<RepositoryIssueEvent, User> {
 
     public static PersistEventUserOperator newInstance(DataLayer<User> dataLayer, Converter<RepositoryIssueEvent, User> converter) {
         return new PersistEventUserOperator(dataLayer, converter);

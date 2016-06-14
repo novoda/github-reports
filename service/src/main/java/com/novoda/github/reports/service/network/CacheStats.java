@@ -6,14 +6,12 @@ import java.util.List;
 
 import okhttp3.Cache;
 
-public enum CacheStats implements CacheStatsRepository {
-
-    INSTANCE;
+public class CacheStats implements CacheStatsRepository {
 
     private Cache cache;
 
     CacheStats() {
-        //
+        // no op
     }
 
     @Override

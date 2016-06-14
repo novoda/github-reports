@@ -19,8 +19,8 @@ public interface GithubApiService {
     @GET("/orgs/{org}/repos")
     Observable<Response<List<GithubRepository>>> getRepositoriesResponseForPage(
             @Path("org") String organisation,
-            @Query("page") Integer page,
-            @Query("per_page") Integer perPageCount
+            @Query("page") int page,
+            @Query("per_page") int perPageCount
     );
 
     @GET("/repos/{org}/{repo}/issues")
@@ -29,46 +29,46 @@ public interface GithubApiService {
             @Path("repo") String repo,
             @Query("state") GithubIssue.State state,
             @Query("since") String since, // ISO8601: YYYY-MM-DDTHH:MM:SSZ
-            @Query("page") Integer page,
-            @Query("per_page") Integer perPageCount
+            @Query("page") int page,
+            @Query("per_page") int perPageCount
     );
 
     @GET("/repos/{org}/{repo}/issues/{issue_number}/events")
     Observable<Response<List<GithubEvent>>> getEventsResponseForIssueAndPage(
             @Path("org") String organisation,
             @Path("repo") String repo,
-            @Path("issue_number") Integer issueNumber,
-            @Query("page") Integer page,
-            @Query("per_page") Integer perPageCount
+            @Path("issue_number") int issueNumber,
+            @Query("page") int page,
+            @Query("per_page") int perPageCount
     );
 
     @GET("/repos/{org}/{repo}/issues/{issue_number}/comments")
     Observable<Response<List<GithubComment>>> getCommentsResponseForIssueAndPage(
             @Path("org") String organisation,
             @Path("repo") String repo,
-            @Path("issue_number") Integer issueNumber,
+            @Path("issue_number") int issueNumber,
             @Query("since") String since, // ISO8601: YYYY-MM-DDTHH:MM:SSZ
-            @Query("page") Integer page,
-            @Query("per_page") Integer perPageCount
+            @Query("page") int page,
+            @Query("per_page") int perPageCount
     );
 
     @GET("/repos/{org}/{repo}/pulls/{number}/comments")
     Observable<Response<List<GithubComment>>> getReviewCommentsResponseForPullRequestAndPage(
             @Path("org") String organisation,
             @Path("repo") String repo,
-            @Path("number") Integer pullRequestNumber,
+            @Path("number") int pullRequestNumber,
             @Query("since") String since, // ISO8601: YYYY-MM-DDTHH:MM:SSZ
-            @Query("page") Integer page,
-            @Query("per_page") Integer perPageCount
+            @Query("page") int page,
+            @Query("per_page") int perPageCount
     );
 
     @GET("/repos/{org}/{repo}/issues/{issue_number}/timeline")
     Observable<Response<List<TimelineEvent>>> getTimelineFor(
             @Path("org") String organisation,
             @Path("repo") String repo,
-            @Path("issue_number") Integer issueNumber,
-            @Query("page") Integer page,
-            @Query("per_page") Integer perPageCount
+            @Path("issue_number") int issueNumber,
+            @Query("page") int page,
+            @Query("per_page") int perPageCount
     );
 
 }
