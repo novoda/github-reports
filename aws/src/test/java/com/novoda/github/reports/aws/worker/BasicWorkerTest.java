@@ -1,6 +1,7 @@
 package com.novoda.github.reports.aws.worker;
 
 import com.novoda.github.reports.aws.alarm.Alarm;
+import com.novoda.github.reports.aws.alarm.AlarmOperationFailedException;
 import com.novoda.github.reports.aws.alarm.AlarmService;
 import com.novoda.github.reports.aws.configuration.Configuration;
 import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
@@ -13,6 +14,7 @@ import com.novoda.github.reports.aws.queue.QueueMessage;
 import com.novoda.github.reports.aws.queue.QueueOperationFailedException;
 import com.novoda.github.reports.aws.queue.QueueService;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
+import com.novoda.github.reports.util.SystemClock;
 
 import java.time.Instant;
 import java.util.Date;
@@ -28,12 +30,13 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class BasicWorkerTest {
 
     private static final String ANY_QUEUE_NAME = "some_queue";
+    private static final String ANY_WORKER_DESCRIPTOR = "some_lambda_reference";
 
     @Mock
     private WorkerService workerService;
 
     @Mock
-    private AlarmService alarmService;
+    private AlarmService<Alarm, Configuration<NotifierConfiguration>> alarmService;
 
     @Mock
     private QueueService<Queue<QueueMessage>> queueService;
@@ -44,11 +47,14 @@ public class BasicWorkerTest {
     @Mock
     private WorkerHandlerService workerHandlerService;
 
+    @Mock
+    private SystemClock systemClock;
+
     @InjectMocks
-    private BasicWorker worker;
+    private BasicWorker<Alarm, QueueMessage, Queue<QueueMessage>, Configuration<NotifierConfiguration>> worker;
 
     @Mock
-    private EventSource eventSource;
+    private EventSource<Configuration<NotifierConfiguration>> eventSource;
 
     @Mock
     private Notifier notifier;
@@ -65,7 +71,7 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenStartedFromAlarm_whenDoWork_thenRemoveAlarm() throws EmptyQueueException, MessageConverterException {
+    public void givenStartedFromAlarm_whenDoWork_thenRemoveAlarm() throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
         eventSource = mock(Alarm.class);
         givenAnyQueue();
 
@@ -75,7 +81,7 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenStartedFromNonAlarm_whenDoWork_thenDoNotRemoveAlarm() throws EmptyQueueException, MessageConverterException {
+    public void givenStartedFromNonAlarm_whenDoWork_thenDoNotRemoveAlarm() throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
         givenAnyQueue();
 
         worker.doWork(eventSource);
@@ -84,12 +90,14 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenEmptyQueue_whenDoWork_thenNotifyCompletionAndDeleteQueueAndDoNotReschedule() throws EmptyQueueException, MessageConverterException {
+    public void givenEmptyQueue_whenDoWork_thenNotifyCompletionAndDeleteQueueAndDoNotReschedule()
+            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
+
         Queue<QueueMessage> queue = givenEmptyQueue();
 
         worker.doWork(eventSource);
 
-        verify(notifier).notifyCompletion(eventSource.getConfiguration().getNotifierConfiguration());
+        verify(notifier).notifyCompletion(eventSource.getConfiguration().notifierConfiguration());
         verify(queueService).removeQueue(queue);
         verifyNoErrorNotified();
         verifyNoRescheduleImmediately();
@@ -97,7 +105,7 @@ public class BasicWorkerTest {
 
     @Test
     public void givenIncompatibleMessageInQueue_whenDoWork_thenNotifyConversionErrorAndDoNotReschedule()
-            throws EmptyQueueException, MessageConverterException {
+            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
 
         givenInvalidMessagesQueue();
 
@@ -117,22 +125,25 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenValidQueueAndOutOfGithubToken_whenDoWork_thenRescheduleForLater() throws Exception, RateLimitEncounteredException {
+    public void givenValidQueueAndRateLimitExpired_whenDoWork_thenRescheduleForLater() throws Exception, RateLimitEncounteredException, AlarmOperationFailedException {
         givenAnyQueue();
         Instant nextResetInstant = Instant.now().plusSeconds(600);
         Date nextResetDate = new Date(nextResetInstant.toEpochMilli());
         RateLimitEncounteredException rateLimitEncounteredException = new RateLimitEncounteredException("YOLO", nextResetDate);
         when(workerHandler.handleQueueMessage(any(Configuration.class), any(QueueMessage.class))).thenThrow(rateLimitEncounteredException);
+        when(workerService.getWorkerName()).thenReturn(ANY_WORKER_DESCRIPTOR);
 
         worker.doWork(eventSource);
 
-        verify(alarmService).createAlarm(any(Configuration.class), anyLong());
+        verify(alarmService).createAlarm(eq(eventSource.getConfiguration()), anyLong(), eq(ANY_WORKER_DESCRIPTOR));
         verify(alarmService).postAlarm(any(Alarm.class));
         verifyNoErrorNotified();
     }
 
     @Test
-    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenPurgeDeleteQueueAndNotifyErrorAndDoNotReschedule() throws Exception, RateLimitEncounteredException {
+    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenPurgeDeleteQueueAndNotifyErrorAndDoNotReschedule()
+            throws Exception, RateLimitEncounteredException {
+
         Queue<QueueMessage> queue = givenAnyQueue();
         when(workerHandler.handleQueueMessage(any(Configuration.class), any(QueueMessage.class))).thenThrow(Exception.class);
 
@@ -146,7 +157,7 @@ public class BasicWorkerTest {
 
     @Test
     public void givenFailingQueueAddItems_whenDoWork_thenNotifyErrorAndReschedule()
-            throws EmptyQueueException, MessageConverterException, QueueOperationFailedException {
+            throws EmptyQueueException, MessageConverterException, QueueOperationFailedException, WorkerOperationFailedException {
 
         Queue<QueueMessage> queue = givenAnyQueue();
         when(queue.addItems(anyListOf(QueueMessage.class))).thenThrow(QueueOperationFailedException.class);
@@ -157,7 +168,7 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenAnyQueue_whenDoWork_thenRescheduleImmediately() throws EmptyQueueException, MessageConverterException {
+    public void givenAnyQueue_whenDoWork_thenRescheduleImmediately() throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
         givenAnyQueue();
 
         worker.doWork(eventSource);
@@ -185,8 +196,8 @@ public class BasicWorkerTest {
     }
 
     private Queue<QueueMessage> givenQueue(Queue<QueueMessage> queue) {
-        Configuration mockConfig = mock(Configuration.class);
-        when(mockConfig.getQueueName()).thenReturn(ANY_QUEUE_NAME);
+        Configuration<NotifierConfiguration> mockConfig = mock(DefaultConfiguration.class);
+        when(mockConfig.jobName()).thenReturn(ANY_QUEUE_NAME);
         when(eventSource.getConfiguration()).thenReturn(mockConfig);
         when(queueService.getQueue(ANY_QUEUE_NAME)).thenReturn(queue);
         return queue;
