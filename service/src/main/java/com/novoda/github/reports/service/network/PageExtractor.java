@@ -11,12 +11,18 @@ class PageExtractor {
     private static final String LINK_HEADER_KEY = "Link";
     private static final String PAGE_REGEX = "[\\?|&]+page=(\\d+)[&\\w+=\\d+]*>; rel=\"%s\"";
 
-    Optional<Integer> getPage(String pageKey, Response response) {
+    private String pageRelKey;
+
+    PageExtractor(String pageRelKey) {
+        this.pageRelKey = pageRelKey;
+    }
+
+    Optional<Integer> getPage(Response response) {
         String linkHeader = response.headers().get(LINK_HEADER_KEY);
         if (linkHeader == null) {
             return Optional.empty();
         }
-        return getPageOrEmpty(pageKey, linkHeader);
+        return getPageOrEmpty(pageRelKey, linkHeader);
     }
 
     private Optional<Integer> getPageOrEmpty(String page, String searchTarget) {
