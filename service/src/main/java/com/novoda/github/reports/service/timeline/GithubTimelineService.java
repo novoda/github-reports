@@ -26,16 +26,16 @@ public class GithubTimelineService implements TimelineService {
     }
 
     @Override
-    public Observable<TimelineEvent> getTimelineFor(String organisation, String repository, Integer issueNumber) {
+    public Observable<TimelineEvent> getTimelineFor(String organisation, String repository, int issueNumber) {
         return getTimelineFor(organisation, repository, issueNumber, 1, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
 
     private Observable<Response<List<TimelineEvent>>> getTimelineFor(String organisation,
                                                                      String repository,
-                                                                     Integer issueNumber,
-                                                                     Integer page,
-                                                                     Integer pageCount) {
+                                                                     int issueNumber,
+                                                                     int page,
+                                                                     int pageCount) {
 
         return githubApiService.getTimelineFor(organisation, repository, issueNumber, page, pageCount)
                 .compose(PagedTransformer.newInstance(nextPage -> getTimelineFor(organisation, repository, issueNumber, nextPage, pageCount)));
