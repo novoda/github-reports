@@ -12,6 +12,26 @@ import org.jetbrains.annotations.Nullable;
 @AutoValue
 public abstract class AmazonRawQueueMessage {
 
+    static AmazonRawQueueMessage create(Type type,
+                                        String organisationName,
+                                        @Nullable Date since,
+                                        @Nullable Boolean isTerminal,
+                                        @Nullable Long page,
+                                        @Nullable String repositoryName,
+                                        @Nullable Long repositoryId,
+                                        @Nullable Long issueNumber) {
+
+        return new AutoValue_AmazonRawQueueMessage(type, organisationName, since, isTerminal, page, repositoryName, repositoryId, issueNumber);
+    }
+
+    public static TypeAdapter<AmazonRawQueueMessage> typeAdapter(Gson gson) {
+        return new AutoValue_AmazonRawQueueMessage.GsonTypeAdapter(gson);
+    }
+
+    public static Builder builder() {
+        return new AutoValue_AmazonRawQueueMessage.Builder();
+    }
+
     abstract Type type();
 
     abstract String organisationName();
@@ -33,22 +53,6 @@ public abstract class AmazonRawQueueMessage {
 
     @Nullable
     abstract Long issueNumber();
-
-    static AmazonRawQueueMessage create(Type type,
-                                        String organisationName,
-                                        @Nullable Date since,
-                                        @Nullable Boolean isTerminal,
-                                        @Nullable Long page,
-                                        @Nullable String repositoryName,
-                                        @Nullable Long repositoryId,
-                                        @Nullable Long issueNumber) {
-
-        return new AutoValue_AmazonRawQueueMessage(type, organisationName, since, isTerminal, page, repositoryName, repositoryId, issueNumber);
-    }
-
-    public static TypeAdapter<AmazonRawQueueMessage> typeAdapter(Gson gson) {
-        return new AutoValue_AmazonRawQueueMessage.GsonTypeAdapter(gson);
-    }
 
     public enum Type {
         @SerializedName("repositories")
@@ -78,42 +82,26 @@ public abstract class AmazonRawQueueMessage {
         }
     }
 
-    public AmazonRawQueueMessage withTypeAndRepository(Type type, String repositoryName, Long repositoryId) {
-        return AmazonRawQueueMessage.create(
-                type,
-                organisationName(),
-                since(),
-                isTerminal(),
-                page(),
-                repositoryName,
-                repositoryId,
-                null
-        );
-    }
+    @AutoValue.Builder
+    public abstract static class Builder {
 
-    public AmazonRawQueueMessage withIssueNumber(Long issueNumber) {
-        return AmazonRawQueueMessage.create(
-                type(),
-                organisationName(),
-                since(),
-                isTerminal(),
-                page(),
-                repositoryName(),
-                repositoryId(),
-                issueNumber
-        );
-    }
+        public abstract Builder type(Type type);
 
-    public AmazonRawQueueMessage withType(Type type) {
-        return AmazonRawQueueMessage.create(
-                type,
-                organisationName(),
-                since(),
-                isTerminal(),
-                page(),
-                repositoryName(),
-                repositoryId(),
-                issueNumber()
-        );
+        public abstract Builder organisationName(String organisationName);
+
+        public abstract Builder since(Date since);
+
+        public abstract Builder isTerminal(Boolean isTerminal);
+
+        public abstract Builder page(Long page);
+
+        public abstract Builder repositoryName(String repositoryName);
+
+        public abstract Builder repositoryId(Long repositoryId);
+
+        public abstract Builder issueNumber(Long issueNumber);
+
+        public abstract AmazonRawQueueMessage build();
+
     }
 }
