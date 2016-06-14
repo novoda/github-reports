@@ -11,7 +11,7 @@
   "email": {
     "host": "smtp.google.com",
     "port": "1337",
-    "useSSL": true,
+    "useSsl": true,
     "from": "sterling@archer.mawp",
     "username": "sterling",
     "password": "mawp"

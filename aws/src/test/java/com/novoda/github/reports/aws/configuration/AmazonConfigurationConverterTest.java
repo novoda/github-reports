@@ -66,7 +66,7 @@ public class AmazonConfigurationConverterTest {
 
     @Test
     public void givenJsonWithMissingObject_whenFromJson_thenThrowConfigurationConverterException() throws IOException, ConfigurationConverterException {
-        String json = givenJsonFromResource("all_missing_configuration.json");
+        String json = givenJsonFromResource("configuration_all_missing.json");
 
         expectedException.expect(ConfigurationConverterException.class);
         converter.fromJson(json);
@@ -74,7 +74,7 @@ public class AmazonConfigurationConverterTest {
 
     @Test
     public void givenEmptyJson_whenFromJson_thenThrowConfigurationConverterException() throws IOException, ConfigurationConverterException {
-        String json = givenJsonFromResource("empty_configuration.json");
+        String json = givenJsonFromResource("configuration_empty.json");
 
         expectedException.expect(ConfigurationConverterException.class);
         converter.fromJson(json);
