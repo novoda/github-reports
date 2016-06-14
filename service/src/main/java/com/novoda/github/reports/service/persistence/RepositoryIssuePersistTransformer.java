@@ -14,12 +14,12 @@ import com.novoda.github.reports.service.persistence.converter.UserConverter;
 
 import rx.Observable;
 
-public class IssuePersister implements ComposedPersitTransformer<RepositoryIssue> {
+public class RepositoryIssuePersistTransformer implements ComposedPersitTransformer<RepositoryIssue> {
 
     private final PersistUserTransformer persistUserTransformer;
     private final PersistIssueTransformer persistIssueTransformer;
 
-    public static IssuePersister newInstance() {
+    public static RepositoryIssuePersistTransformer newInstance() {
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
 
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
@@ -30,10 +30,10 @@ public class IssuePersister implements ComposedPersitTransformer<RepositoryIssue
         Converter<RepositoryIssue, Event> issueConverter = IssueConverter.newInstance();
         PersistIssueTransformer persistIssueTransformer = PersistIssueTransformer.newInstance(eventDataLayer, issueConverter);
 
-        return new IssuePersister(persistUserTransformer, persistIssueTransformer);
+        return new RepositoryIssuePersistTransformer(persistUserTransformer, persistIssueTransformer);
     }
 
-    IssuePersister(PersistUserTransformer persistUserTransformer, PersistIssueTransformer persistIssueTransformer) {
+    RepositoryIssuePersistTransformer(PersistUserTransformer persistUserTransformer, PersistIssueTransformer persistIssueTransformer) {
         this.persistUserTransformer = persistUserTransformer;
         this.persistIssueTransformer = persistIssueTransformer;
     }

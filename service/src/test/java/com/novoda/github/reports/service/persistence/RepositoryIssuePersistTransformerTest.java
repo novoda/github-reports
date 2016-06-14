@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class IssuePersisterTest {
+public class RepositoryIssuePersistTransformerTest {
 
     private static final Observable<RepositoryIssue> ANY_OBSERVABLE = Observable.empty();
 
@@ -22,20 +22,20 @@ public class IssuePersisterTest {
     @Mock
     PersistIssueTransformer mockPersistIssueTransformer;
 
-    private IssuePersister issuePersister;
+    private RepositoryIssuePersistTransformer repositoryIssuePersistTransformer;
 
     @Before
     public void setUp() {
         initMocks(this);
         when(mockPersistIssueTransformer.call(ANY_OBSERVABLE)).thenReturn(ANY_OBSERVABLE);
         when(mockPersistUserTransformer.call(ANY_OBSERVABLE)).thenReturn(ANY_OBSERVABLE);
-        issuePersister = new IssuePersister(mockPersistUserTransformer, mockPersistIssueTransformer);
+        repositoryIssuePersistTransformer = new RepositoryIssuePersistTransformer(mockPersistUserTransformer, mockPersistIssueTransformer);
     }
 
     @Test
     public void givenAnObservable_whenComposing_thenTheIssuePersistTransformerIsCalled() {
 
-        issuePersister.call(ANY_OBSERVABLE);
+        repositoryIssuePersistTransformer.call(ANY_OBSERVABLE);
 
         verify(mockPersistIssueTransformer).call(ANY_OBSERVABLE);
     }
@@ -43,7 +43,7 @@ public class IssuePersisterTest {
     @Test
     public void givenAnObservable_whenComposing_thenTheUserPersistTransformerIsCalled() {
 
-        issuePersister.call(ANY_OBSERVABLE);
+        repositoryIssuePersistTransformer.call(ANY_OBSERVABLE);
 
         verify(mockPersistUserTransformer).call(ANY_OBSERVABLE);
     }
