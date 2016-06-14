@@ -1,5 +1,6 @@
 package com.novoda.github.reports.batch.aws.playground;
 
+import com.novoda.github.reports.aws.alarm.AlarmOperationFailedException;
 import com.novoda.github.reports.aws.alarm.AmazonAlarm;
 import com.novoda.github.reports.aws.alarm.AmazonAlarmService;
 import com.novoda.github.reports.aws.configuration.AmazonConfiguration;
@@ -14,7 +15,7 @@ import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 
 public class AlarmPlayground {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws AlarmOperationFailedException {
         PropertiesReader amazonPropertiesReader = PropertiesReader.newInstance("amazon.credentials");
         AmazonCredentialsService amazonCredentialsService = AmazonCredentialsService.newInstance(amazonPropertiesReader);
         AmazonAlarmService amazonAlarmService = AmazonAlarmService.newInstance(amazonCredentialsService);

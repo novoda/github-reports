@@ -10,6 +10,7 @@ import com.amazonaws.services.cloudwatchevents.model.RuleState;
 import com.amazonaws.services.cloudwatchevents.model.Target;
 import com.novoda.github.reports.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.aws.configuration.AmazonConfigurationConverter;
+import com.novoda.github.reports.aws.configuration.ConfigurationConverterException;
 import com.novoda.github.reports.aws.credentials.AmazonCredentialsService;
 
 import java.time.Instant;
@@ -41,9 +42,13 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
     }
 
     @Override
-    public AmazonAlarm postAlarm(AmazonAlarm alarm) {
-        saveRule(alarm);
-        addTargetToRule(alarm);
+    public AmazonAlarm postAlarm(AmazonAlarm alarm) throws AlarmOperationFailedException {
+        try {
+            saveRule(alarm);
+            addTargetToRule(alarm);
+        } catch (Exception e) {
+            throw new AlarmOperationFailedException("postAlarm", e);
+        }
         return alarm;
     }
 
@@ -59,19 +64,19 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
                 .withState(RuleState.ENABLED);
     }
 
-    private void addTargetToRule(AmazonAlarm alarm) {
+    private void addTargetToRule(AmazonAlarm alarm) throws ConfigurationConverterException {
         PutTargetsRequest putTargetsRequest = buildPutTargetsRequest(alarm);
         amazonEventsClient.putTargets(putTargetsRequest);
     }
 
-    private PutTargetsRequest buildPutTargetsRequest(AmazonAlarm alarm) {
+    private PutTargetsRequest buildPutTargetsRequest(AmazonAlarm alarm) throws ConfigurationConverterException {
         Target target = buildTarget(alarm);
         return new PutTargetsRequest()
                 .withRule(getRuleName(alarm))
                 .withTargets(target);
     }
 
-    private Target buildTarget(AmazonAlarm alarm) {
+    private Target buildTarget(AmazonAlarm alarm) throws ConfigurationConverterException {
         return new Target()
                 .withId(getRuleName(alarm))
                 .withArn(alarm.getWorkerName())
