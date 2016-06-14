@@ -130,62 +130,64 @@ class AmazonQueueMessageConverter {
     }
 
     AmazonRawQueueMessage toRawMessage(AmazonQueueMessage message) {
-        AmazonRawQueueMessage rawQueueMessage = null;
+        AmazonRawQueueMessage.Builder rawQueueMessageBuilder = AmazonRawQueueMessage.builder();
 
         if (message instanceof AmazonGetRepositoriesQueueMessage) {
-            rawQueueMessage = toRepositoriesRawMessage((AmazonGetRepositoriesQueueMessage) message);
+            toRepositoriesRawMessage((AmazonGetRepositoriesQueueMessage) message, rawQueueMessageBuilder);
         } else if (message instanceof AmazonGetIssuesQueueMessage) {
-            rawQueueMessage = toGetIssuesRawMessage((AmazonGetIssuesQueueMessage) message);
+            toGetIssuesRawMessage((AmazonGetIssuesQueueMessage) message, rawQueueMessageBuilder);
         } else if (message instanceof AmazonGetCommentsQueueMessage) {
-            rawQueueMessage = toGetCommentsRawMessage((AmazonGetCommentsQueueMessage) message);
+            toGetCommentsRawMessage((AmazonGetCommentsQueueMessage) message, rawQueueMessageBuilder);
         } else if (message instanceof AmazonGetEventsQueueMessage) {
-            rawQueueMessage = toGetEventsRawMessage((AmazonGetEventsQueueMessage) message);
+            toGetEventsRawMessage((AmazonGetEventsQueueMessage) message, rawQueueMessageBuilder);
         } else if (message instanceof AmazonGetReviewCommentsQueueMessage) {
-            rawQueueMessage = toGetReviewCommentsRawMessage((AmazonGetReviewCommentsQueueMessage) message);
+            toGetReviewCommentsRawMessage((AmazonGetReviewCommentsQueueMessage) message, rawQueueMessageBuilder);
         }
 
-        return rawQueueMessage;
+        return rawQueueMessageBuilder.build();
     }
 
-    private AmazonRawQueueMessage toGetCommentsRawMessage(GetCommentsQueueMessage message) {
-        AmazonRawQueueMessage rawQueueMessage = toGetGenericEventsRawMessage(message);
-        return rawQueueMessage.withType(COMMENTS);
+    private void toGetCommentsRawMessage(GetCommentsQueueMessage message,
+                                         AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
+        toGetGenericEventsRawMessage(message, rawQueueMessageBuilder);
+        rawQueueMessageBuilder.type(COMMENTS);
     }
 
-    private AmazonRawQueueMessage toGetEventsRawMessage(GetCommentsQueueMessage message) {
-        AmazonRawQueueMessage rawQueueMessage = toGetGenericEventsRawMessage(message);
-        return rawQueueMessage.withType(EVENTS);
+    private void toGetEventsRawMessage(GetCommentsQueueMessage message,
+                                       AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+        toGetGenericEventsRawMessage(message, rawQueueMessageBuilder);
+        rawQueueMessageBuilder.type(EVENTS);
     }
 
-    private AmazonRawQueueMessage toGetReviewCommentsRawMessage(GetCommentsQueueMessage message) {
-        AmazonRawQueueMessage rawQueueMessage = toGetGenericEventsRawMessage(message);
-        return rawQueueMessage.withType(REVIEW_COMMENTS);
+    private void toGetReviewCommentsRawMessage(GetCommentsQueueMessage message,
+                                               AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+        toGetGenericEventsRawMessage(message, rawQueueMessageBuilder);
+        rawQueueMessageBuilder.type(REVIEW_COMMENTS);
     }
 
-    private AmazonRawQueueMessage toGetGenericEventsRawMessage(GetCommentsQueueMessage message) {
-        AmazonRawQueueMessage rawQueueMessage = toGetIssuesRawMessage(message);
-        return rawQueueMessage.withIssueNumber(message.issueNumber());
+    private void toGetGenericEventsRawMessage(GetCommentsQueueMessage message,
+                                              AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+        toGetIssuesRawMessage(message, rawQueueMessageBuilder);
+        rawQueueMessageBuilder.issueNumber(message.issueNumber());
     }
 
-    private AmazonRawQueueMessage toGetIssuesRawMessage(GetIssuesQueueMessage message) {
-        AmazonRawQueueMessage rawQueueMessage = toRepositoriesRawMessage(message);
-        return rawQueueMessage.withTypeAndRepository(
-                ISSUES,
-                message.repositoryName(),
-                message.repositoryId()
-        );
+    private void toGetIssuesRawMessage(GetIssuesQueueMessage message,
+                                       AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+        toRepositoriesRawMessage(message, rawQueueMessageBuilder);
+        rawQueueMessageBuilder
+                .type(ISSUES)
+                .repositoryName(message.repositoryName())
+                .repositoryId(message.repositoryId());
     }
 
-    private AmazonRawQueueMessage toRepositoriesRawMessage(GetRepositoriesQueueMessage message) {
-        return AmazonRawQueueMessage.create(
-                REPOSITORIES,
-                message.organisationName(),
-                message.sinceOrNull(),
-                message.localTerminal(),
-                message.page(),
-                null,
-                null,
-                null
-        );
+    private void toRepositoriesRawMessage(GetRepositoriesQueueMessage message,
+                                          AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+        rawQueueMessageBuilder
+                .type(REPOSITORIES)
+                .organisationName(message.organisationName())
+                .since(message.sinceOrNull())
+                .isTerminal(message.localTerminal())
+                .page(message.page());
     }
 }
