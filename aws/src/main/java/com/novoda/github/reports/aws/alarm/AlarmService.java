@@ -1,13 +1,14 @@
 package com.novoda.github.reports.aws.alarm;
 
 import com.novoda.github.reports.aws.configuration.Configuration;
+import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
 
-public interface AlarmService {
+public interface AlarmService<A extends Alarm, C extends Configuration<? extends NotifierConfiguration>> {
 
-    Alarm createAlarm(Configuration configuration, long minutes);
+    A createAlarm(C configuration, long minutes, String workerDescriptor);
 
-    Alarm postAlarm(Alarm alarm);
+    A postAlarm(A alarm) throws AlarmOperationFailedException;
 
-    Alarm removeAlarm(Alarm alarm);
+    A removeAlarm(A alarm);
 
 }

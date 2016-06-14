@@ -1,5 +1,7 @@
 package com.novoda.github.reports.service.network;
 
+import com.novoda.github.reports.util.SystemClock;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -18,7 +20,12 @@ public class RateLimitDelayTransformer<T> implements Observable.Transformer<Resp
     public static <T> RateLimitDelayTransformer<T> newInstance() {
         RateLimitRemainingCounter rateLimitRemainingCounter = RateLimitRemainingCounterContainer.getInstance();
         RateLimitResetRepository rateLimitResetRepository = RateLimitRemainingResetRepositoryContainer.getInstance();
-        return new RateLimitDelayTransformer<>(rateLimitRemainingCounter, rateLimitResetRepository, new SystemClock() {}, Schedulers.computation());
+        return new RateLimitDelayTransformer<>(
+                rateLimitRemainingCounter,
+                rateLimitResetRepository,
+                SystemClock.newInstance(),
+                Schedulers.computation()
+        );
     }
 
     RateLimitDelayTransformer(RateLimitRemainingCounter rateLimitRemainingCounter,

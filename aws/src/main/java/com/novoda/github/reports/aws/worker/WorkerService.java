@@ -6,4 +6,6 @@ public interface WorkerService {
 
     void startWorker(Configuration configuration);
 
+    String getWorkerName();
+
 }

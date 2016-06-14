@@ -7,6 +7,8 @@ import java.util.Properties;
 
 public class PropertiesReader {
 
+    private static final String TRUE_VALUE = "true";
+
     private final String fileName;
     private Properties properties;
 
@@ -23,6 +25,11 @@ public class PropertiesReader {
             initProperties();
         }
         return properties.getProperty(key);
+    }
+
+    public boolean readPropertyAsBoolean(String key) {
+        String value = readProperty(key);
+        return TRUE_VALUE.equals(value);
     }
 
     private void initProperties() {
