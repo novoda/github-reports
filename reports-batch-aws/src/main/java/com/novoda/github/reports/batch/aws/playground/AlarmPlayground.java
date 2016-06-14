@@ -24,8 +24,7 @@ public class AlarmPlayground {
         DatabaseCredentialsReader databaseCredentialsReader = DatabaseCredentialsReader.newInstance(databasePropertiesReader);
         DatabaseConfiguration databaseConfiguration = DatabaseConfiguration.create(databaseCredentialsReader);
 
-        PropertiesReader githubPropertiesReader = PropertiesReader.newInstance("github.credentials");
-        GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance(githubPropertiesReader);
+        GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance();
         GithubConfiguration githubConfiguration = GithubConfiguration.create(githubCredentialsReader);
 
         PropertiesReader emailPropertiesReader = PropertiesReader.newInstance("email.credentials");
