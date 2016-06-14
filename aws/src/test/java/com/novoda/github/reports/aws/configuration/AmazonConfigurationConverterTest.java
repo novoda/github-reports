@@ -29,7 +29,7 @@ public class AmazonConfigurationConverterTest {
     private static final String ANY_TOKEN = "welcometothedangerzone";
     private static final GithubConfiguration GITHUB_CONFIGURATION = GithubConfiguration.create(ANY_TOKEN);
     private static final String ANY_HOST = "smtp.google.com";
-    private static final String ANY_PORT = "1337";
+    private static final int ANY_PORT = 1337;
     private static final boolean ANY_USE_SSL = true;
     private static final String ANY_FROM = "sterling@archer.mawp";
     private static final List<String> ANY_TO = Arrays.asList("francesco@novoda.com", "carl@novoda.com");
