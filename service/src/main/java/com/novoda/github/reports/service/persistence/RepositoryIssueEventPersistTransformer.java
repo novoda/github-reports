@@ -13,7 +13,7 @@ import com.novoda.github.reports.service.persistence.converter.EventConverter;
 
 import rx.Observable;
 
-public class RepositoryIssueEventPersistTransformer implements ComposedPersitTransformer<RepositoryIssueEvent> {
+public class RepositoryIssueEventPersistTransformer implements ComposedPersistTransformer<RepositoryIssueEvent> {
 
     private final PersistEventUserTransformer persistEventUserTransformer;
     private final PersistEventTransformer persistEventTransformer;
