@@ -2,6 +2,8 @@ package com.novoda.github.reports.aws.queue;
 
 public interface QueueMessage {
 
-    boolean isLocalTerminal();
+    Boolean localTerminal();
+
+    Long page();
 
 }

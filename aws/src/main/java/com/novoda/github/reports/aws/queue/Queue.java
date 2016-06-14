@@ -2,15 +2,13 @@ package com.novoda.github.reports.aws.queue;
 
 import java.util.List;
 
-public interface Queue {
+public interface Queue<M extends QueueMessage> {
 
-    QueueMessage getItem();
+    M getItem() throws EmptyQueueException, MessageConverterException;
 
-    List<QueueMessage> addItems(List<QueueMessage> queueMessages);
+    List<M> addItems(List<M> queueMessages) throws QueueOperationFailedException;
 
-    QueueMessage removeItem(QueueMessage queueMessage);
-
-    boolean isEmpty();
+    M removeItem(M queueMessage);
 
     void purgeQueue();
 
