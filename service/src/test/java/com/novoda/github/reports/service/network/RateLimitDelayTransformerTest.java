@@ -1,6 +1,7 @@
 package com.novoda.github.reports.service.network;
 
 import com.novoda.github.reports.service.repository.GithubRepository;
+import com.novoda.github.reports.util.SystemClock;
 
 import java.util.ArrayList;
 import java.util.List;

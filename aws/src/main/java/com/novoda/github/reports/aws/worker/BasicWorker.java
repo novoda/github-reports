@@ -14,9 +14,8 @@ import com.novoda.github.reports.aws.queue.QueueMessage;
 import com.novoda.github.reports.aws.queue.QueueOperationFailedException;
 import com.novoda.github.reports.aws.queue.QueueService;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
+import com.novoda.github.reports.util.SystemClock;
 
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 class BasicWorker<
@@ -31,17 +30,33 @@ class BasicWorker<
     private final QueueService<Q> queueService;
     private final NotifierService notifierService;
     private final WorkerHandlerService<M> workerHandlerService;
+    private final SystemClock systemClock;
 
-    BasicWorker(WorkerService workerService,
-                AlarmService<A, C> alarmService,
-                QueueService<Q> queueService,
-                NotifierService notifierService,
-                WorkerHandlerService<M> workerHandlerService) {
+    public static <
+            A extends Alarm,
+            M extends QueueMessage,
+            Q extends Queue<M>,
+            C extends Configuration<NotifierConfiguration>> BasicWorker<A, M, Q, C> newInstance(WorkerService workerService,
+                                                                                                AlarmService<A, C> alarmService,
+                                                                                                QueueService<Q> queueService,
+                                                                                                NotifierService notifierService,
+                                                                                                WorkerHandlerService<M> workerHandlerService) {
+        SystemClock systemClock = SystemClock.newInstance();
+        return new BasicWorker<>(workerService, alarmService, queueService, notifierService, workerHandlerService, systemClock);
+    }
+
+    private BasicWorker(WorkerService workerService,
+                        AlarmService<A, C> alarmService,
+                        QueueService<Q> queueService,
+                        NotifierService notifierService,
+                        WorkerHandlerService<M> workerHandlerService,
+                        SystemClock systemClock) {
         this.workerService = workerService;
         this.alarmService = alarmService;
         this.queueService = queueService;
         this.notifierService = notifierService;
         this.workerHandlerService = workerHandlerService;
+        this.systemClock = systemClock;
     }
 
     @Override
@@ -104,19 +119,13 @@ class BasicWorker<
     private void handleRateLimitEncounteredException(EventSource<C> eventSource, RateLimitEncounteredException e)
             throws WorkerOperationFailedException {
 
-        rescheduleForLater(eventSource.getConfiguration(), differenceInMinutesFromNow(e.getResetDate()));
-    }
-
-    private long differenceInMinutesFromNow(Date date) {
-        Instant dateInstant = Instant.ofEpochMilli(date.getTime());
-        long nowInstant = Instant.now().toEpochMilli();
-        return Math.max(dateInstant.minusMillis(nowInstant).getEpochSecond(), 0L);
+        rescheduleForLater(eventSource.getConfiguration(), systemClock.getDifferenceInMinutesFromNow(e.getResetDate()));
     }
 
     @Override
-    public void rescheduleForLater(C configuration, long minutes) throws WorkerOperationFailedException {
+    public void rescheduleForLater(C configuration, long minutesFromNow) throws WorkerOperationFailedException {
         String workerName = workerService.getWorkerName();
-        A alarm = alarmService.createAlarm(configuration, minutes, workerName);
+        A alarm = alarmService.createAlarm(configuration, minutesFromNow, workerName);
         try {
             alarmService.postAlarm(alarm);
         } catch (AlarmOperationFailedException e) {

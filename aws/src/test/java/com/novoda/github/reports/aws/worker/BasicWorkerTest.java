@@ -14,6 +14,7 @@ import com.novoda.github.reports.aws.queue.QueueMessage;
 import com.novoda.github.reports.aws.queue.QueueOperationFailedException;
 import com.novoda.github.reports.aws.queue.QueueService;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
+import com.novoda.github.reports.util.SystemClock;
 
 import java.time.Instant;
 import java.util.Date;
@@ -45,6 +46,9 @@ public class BasicWorkerTest {
 
     @Mock
     private WorkerHandlerService workerHandlerService;
+
+    @Mock
+    private SystemClock systemClock;
 
     @InjectMocks
     private BasicWorker<Alarm, QueueMessage, Queue<QueueMessage>, Configuration<NotifierConfiguration>> worker;
@@ -121,7 +125,7 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenValidQueueAndOutOfGithubToken_whenDoWork_thenRescheduleForLater() throws Exception, RateLimitEncounteredException, AlarmOperationFailedException {
+    public void givenValidQueueAndRateLimitExpired_whenDoWork_thenRescheduleForLater() throws Exception, RateLimitEncounteredException, AlarmOperationFailedException {
         givenAnyQueue();
         Instant nextResetInstant = Instant.now().plusSeconds(600);
         Date nextResetDate = new Date(nextResetInstant.toEpochMilli());

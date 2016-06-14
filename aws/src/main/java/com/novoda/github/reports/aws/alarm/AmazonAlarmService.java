@@ -12,8 +12,7 @@ import com.novoda.github.reports.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.aws.configuration.AmazonConfigurationConverter;
 import com.novoda.github.reports.aws.configuration.ConfigurationConverterException;
 import com.novoda.github.reports.aws.credentials.AmazonCredentialsService;
-
-import java.time.Instant;
+import com.novoda.github.reports.util.SystemClock;
 
 public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfiguration> {
 
@@ -23,22 +22,32 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
 
     private final AmazonConfigurationConverter amazonConfigurationConverter;
     private final AmazonCloudWatchEventsClient amazonEventsClient;
+    private final SystemClock systemClock;
 
     public static AmazonAlarmService newInstance(AmazonCredentialsService amazonCredentialsService) {
+        AWSCredentials awsCredentials = amazonCredentialsService.getAWSCredentials();
         AmazonConfigurationConverter amazonConfigurationConverter = AmazonConfigurationConverter.newInstance();
-        return new AmazonAlarmService(amazonConfigurationConverter, amazonCredentialsService);
+        AmazonCloudWatchEventsClient amazonEventsClient = new AmazonCloudWatchEventsClient(awsCredentials);
+        SystemClock systemClock = SystemClock.newInstance();
+        return new AmazonAlarmService(amazonConfigurationConverter, amazonEventsClient, systemClock);
     }
 
-    private AmazonAlarmService(AmazonConfigurationConverter amazonConfigurationConverter, AmazonCredentialsService amazonCredentialsService) {
+    private AmazonAlarmService(AmazonConfigurationConverter amazonConfigurationConverter,
+                               AmazonCloudWatchEventsClient amazonEventsClient,
+                               SystemClock systemClock) {
         this.amazonConfigurationConverter = amazonConfigurationConverter;
-        AWSCredentials awsCredentials = amazonCredentialsService.getAWSCredentials();
-        amazonEventsClient = new AmazonCloudWatchEventsClient(awsCredentials);
+        this.amazonEventsClient = amazonEventsClient;
+        this.systemClock = systemClock;
     }
 
     @Override
     public AmazonAlarm createAlarm(AmazonConfiguration configuration, long minutes, String workerName) {
-        String alarmName = configuration.jobName() + ALARM_NAME_SEPARATOR + Instant.now().getEpochSecond();
+        String alarmName = getAlarmName(configuration);
         return AmazonAlarm.newInstance(configuration, minutes, alarmName, workerName);
+    }
+
+    private String getAlarmName(AmazonConfiguration configuration) {
+        return configuration.jobName() + ALARM_NAME_SEPARATOR + systemClock.currentTimeSeconds();
     }
 
     @Override
