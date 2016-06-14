@@ -7,11 +7,7 @@ public class RepositoryIssue {
     private final GithubRepository repository;
     private final GithubIssue issue;
 
-    public static RepositoryIssue newInstance(GithubRepository repository, GithubIssue issue) {
-        return new RepositoryIssue(repository, issue);
-    }
-
-    private RepositoryIssue(GithubRepository repository, GithubIssue issue) {
+    public RepositoryIssue(GithubRepository repository, GithubIssue issue) {
         this.repository = repository;
         this.issue = issue;
     }
