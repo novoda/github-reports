@@ -53,7 +53,7 @@ public class AmazonConfigurationConverter {
         return EmailNotifierConfiguration.create(
                 rawEmailNotifierConfiguration.host(),
                 rawEmailNotifierConfiguration.port(),
-                rawEmailNotifierConfiguration.useSSL(),
+                rawEmailNotifierConfiguration.useSsl(),
                 rawEmailNotifierConfiguration.from(),
                 rawEmailNotifierConfiguration.username(),
                 rawEmailNotifierConfiguration.password()
@@ -106,7 +106,7 @@ public class AmazonConfigurationConverter {
         return AmazonRawEmailNotifierConfiguration.builder()
                 .host(emailNotifierConfiguration.host())
                 .port(emailNotifierConfiguration.port())
-                .useSSL(emailNotifierConfiguration.useSSL())
+                .useSsl(emailNotifierConfiguration.useSsl())
                 .from(emailNotifierConfiguration.from())
                 .username(emailNotifierConfiguration.username())
                 .password(emailNotifierConfiguration.password())

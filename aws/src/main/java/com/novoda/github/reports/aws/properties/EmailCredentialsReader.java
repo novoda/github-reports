@@ -29,7 +29,7 @@ public class EmailCredentialsReader {
         return propertiesReader.readProperty(PORT_KEY);
     }
 
-    public boolean useSSL() {
+    public boolean useSsl() {
         return propertiesReader.readPropertyAsBoolean(USE_SSL_KEY);
     }
 
