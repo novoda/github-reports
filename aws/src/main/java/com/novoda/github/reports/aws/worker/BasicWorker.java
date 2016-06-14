@@ -1,6 +1,7 @@
 package com.novoda.github.reports.aws.worker;
 
 import com.novoda.github.reports.aws.alarm.Alarm;
+import com.novoda.github.reports.aws.alarm.AlarmOperationFailedException;
 import com.novoda.github.reports.aws.alarm.AlarmService;
 import com.novoda.github.reports.aws.configuration.Configuration;
 import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
@@ -13,35 +14,55 @@ import com.novoda.github.reports.aws.queue.QueueMessage;
 import com.novoda.github.reports.aws.queue.QueueOperationFailedException;
 import com.novoda.github.reports.aws.queue.QueueService;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
+import com.novoda.github.reports.util.SystemClock;
 
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
-class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker {
+class BasicWorker<
+        A extends Alarm,
+        M extends QueueMessage,
+        Q extends Queue<M>,
+        C extends Configuration<NotifierConfiguration>>
+        implements Worker<C> {
 
     private final WorkerService workerService;
-    private final AlarmService alarmService;
+    private final AlarmService<A, C> alarmService;
     private final QueueService<Q> queueService;
     private final NotifierService notifierService;
     private final WorkerHandlerService<M> workerHandlerService;
+    private final SystemClock systemClock;
 
-    BasicWorker(WorkerService workerService,
-                AlarmService alarmService,
-                QueueService<Q> queueService,
-                NotifierService notifierService,
-                WorkerHandlerService<M> workerHandlerService) {
+    public static <
+            A extends Alarm,
+            M extends QueueMessage,
+            Q extends Queue<M>,
+            C extends Configuration<NotifierConfiguration>> BasicWorker<A, M, Q, C> newInstance(WorkerService workerService,
+                                                                                                AlarmService<A, C> alarmService,
+                                                                                                QueueService<Q> queueService,
+                                                                                                NotifierService notifierService,
+                                                                                                WorkerHandlerService<M> workerHandlerService) {
+        SystemClock systemClock = SystemClock.newInstance();
+        return new BasicWorker<>(workerService, alarmService, queueService, notifierService, workerHandlerService, systemClock);
+    }
+
+    private BasicWorker(WorkerService workerService,
+                        AlarmService<A, C> alarmService,
+                        QueueService<Q> queueService,
+                        NotifierService notifierService,
+                        WorkerHandlerService<M> workerHandlerService,
+                        SystemClock systemClock) {
         this.workerService = workerService;
         this.alarmService = alarmService;
         this.queueService = queueService;
         this.notifierService = notifierService;
         this.workerHandlerService = workerHandlerService;
+        this.systemClock = systemClock;
     }
 
     @Override
-    public void doWork(EventSource eventSource) {
+    public void doWork(EventSource<C> eventSource) throws WorkerOperationFailedException {
         if (eventSource instanceof Alarm) {
-            alarmService.removeAlarm((Alarm) eventSource);
+            alarmService.removeAlarm((A) eventSource);
         }
 
         Q queue = getQueue(eventSource);
@@ -66,7 +87,7 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
 
     private Q getQueue(EventSource eventSource) {
         Configuration configuration = eventSource.getConfiguration();
-        String queueName = configuration.getQueueName();
+        String queueName = configuration.jobName();
         return queueService.getQueue(queueName);
     }
 
@@ -95,20 +116,21 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
         notifyError(eventSource, e);
     }
 
-    private void handleRateLimitEncounteredException(EventSource eventSource, RateLimitEncounteredException e) {
-        rescheduleForLater(eventSource.getConfiguration(), differenceInMinutesFromNow(e.getResetDate()));
-    }
+    private void handleRateLimitEncounteredException(EventSource<C> eventSource, RateLimitEncounteredException e)
+            throws WorkerOperationFailedException {
 
-    private long differenceInMinutesFromNow(Date date) {
-        Instant dateInstant = Instant.ofEpochMilli(date.getTime());
-        long nowInstant = Instant.now().toEpochMilli();
-        return Math.max(dateInstant.minusMillis(nowInstant).getEpochSecond(), 0L);
+        rescheduleForLater(eventSource.getConfiguration(), systemClock.getDifferenceInMinutesFromNow(e.getResetDate()));
     }
 
     @Override
-    public void rescheduleForLater(Configuration configuration, long minutes) {
-        Alarm alarm = alarmService.createAlarm(configuration, minutes);
-        alarmService.postAlarm(alarm);
+    public void rescheduleForLater(C configuration, long minutesFromNow) throws WorkerOperationFailedException {
+        String workerName = workerService.getWorkerName();
+        A alarm = alarmService.createAlarm(configuration, minutesFromNow, workerName);
+        try {
+            alarmService.postAlarm(alarm);
+        } catch (AlarmOperationFailedException e) {
+            throw new WorkerOperationFailedException("rescheduleForLater", e);
+        }
     }
 
     private void handleQueueOperationFailedException(EventSource eventSource, QueueOperationFailedException e) {
@@ -140,6 +162,6 @@ class BasicWorker<M extends QueueMessage, Q extends Queue<M>> implements Worker 
     }
 
     private NotifierConfiguration getNotifierConfiguration(EventSource eventSource) {
-        return eventSource.getConfiguration().getNotifierConfiguration();
+        return eventSource.getConfiguration().notifierConfiguration();
     }
 }
