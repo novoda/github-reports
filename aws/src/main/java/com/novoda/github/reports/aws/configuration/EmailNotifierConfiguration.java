@@ -9,7 +9,7 @@ import java.util.List;
 public abstract class EmailNotifierConfiguration implements NotifierConfiguration {
 
     public static EmailNotifierConfiguration create(String host,
-                                                    String port,
+                                                    int port,
                                                     boolean useSsl,
                                                     String from,
                                                     String username,
@@ -31,18 +31,18 @@ public abstract class EmailNotifierConfiguration implements NotifierConfiguratio
         );
     }
 
-    abstract String host();
+    public abstract String host();
 
-    abstract String port();
+    public abstract int port();
 
-    abstract boolean useSsl();
+    public abstract boolean useSsl();
 
-    abstract String from();
+    public abstract String from();
 
-    abstract String username();
+    public abstract String username();
 
-    abstract String password();
+    public abstract String password();
 
-    abstract List<String> to();
+    public abstract List<String> to();
 
 }

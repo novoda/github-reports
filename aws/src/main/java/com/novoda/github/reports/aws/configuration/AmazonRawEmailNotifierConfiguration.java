@@ -19,7 +19,7 @@ public abstract class AmazonRawEmailNotifierConfiguration {
 
     abstract String host();
 
-    abstract String port();
+    abstract int port();
 
     abstract boolean useSsl();
 
@@ -36,7 +36,7 @@ public abstract class AmazonRawEmailNotifierConfiguration {
 
         abstract Builder host(String host);
 
-        abstract Builder port(String port);
+        abstract Builder port(int port);
 
         abstract Builder useSsl(boolean useSsl);
 
