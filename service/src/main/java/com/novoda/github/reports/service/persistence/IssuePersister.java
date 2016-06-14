@@ -14,7 +14,7 @@ import com.novoda.github.reports.service.persistence.converter.UserConverter;
 
 import rx.Observable;
 
-public class IssuePersister implements Persister<RepositoryIssue> {
+public class IssuePersister implements ComposedPersitTransformer<RepositoryIssue> {
 
     private final PersistUserTransformer persistUserTransformer;
     private final PersistIssueTransformer persistIssueTransformer;
