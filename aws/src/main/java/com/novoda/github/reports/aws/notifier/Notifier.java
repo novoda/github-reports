@@ -1,11 +1,12 @@
 package com.novoda.github.reports.aws.notifier;
 
+import com.novoda.github.reports.aws.configuration.Configuration;
 import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
 
-public interface Notifier {
+public interface Notifier<N extends NotifierConfiguration, C extends Configuration<N>> {
 
-    void notifyCompletion(NotifierConfiguration configuration);
+    void notifyCompletion(C configuration) throws NotifierOperationFailedException;
 
-    void notifyError(NotifierConfiguration configuration, Exception exception);
+    void notifyError(C configuration, Exception exception) throws NotifierOperationFailedException;
 
 }

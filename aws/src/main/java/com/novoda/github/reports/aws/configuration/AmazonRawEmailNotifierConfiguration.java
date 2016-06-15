@@ -4,6 +4,8 @@ import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 
+import java.util.List;
+
 @AutoValue
 public abstract class AmazonRawEmailNotifierConfiguration {
 
@@ -17,7 +19,7 @@ public abstract class AmazonRawEmailNotifierConfiguration {
 
     abstract String host();
 
-    abstract String port();
+    abstract int port();
 
     abstract boolean useSsl();
 
@@ -27,12 +29,14 @@ public abstract class AmazonRawEmailNotifierConfiguration {
 
     abstract String password();
 
+    abstract List<String> to();
+
     @AutoValue.Builder
     public static abstract class Builder {
 
         abstract Builder host(String host);
 
-        abstract Builder port(String port);
+        abstract Builder port(int port);
 
         abstract Builder useSsl(boolean useSsl);
 
@@ -41,6 +45,8 @@ public abstract class AmazonRawEmailNotifierConfiguration {
         abstract Builder username(String username);
 
         abstract Builder password(String password);
+
+        abstract Builder to(List<String> to);
 
         abstract AmazonRawEmailNotifierConfiguration build();
 

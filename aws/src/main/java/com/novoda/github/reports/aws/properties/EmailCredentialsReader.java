@@ -25,8 +25,8 @@ public class EmailCredentialsReader {
         return propertiesReader.readProperty(HOST_KEY);
     }
 
-    public String getPort() {
-        return propertiesReader.readProperty(PORT_KEY);
+    public int getPort() {
+        return propertiesReader.readPropertyAsInt(PORT_KEY);
     }
 
     public boolean useSsl() {
