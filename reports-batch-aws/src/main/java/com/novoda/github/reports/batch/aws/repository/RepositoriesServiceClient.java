@@ -3,6 +3,7 @@ package com.novoda.github.reports.batch.aws.repository;
 import com.novoda.github.reports.aws.queue.AmazonGetIssuesQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonGetRepositoriesQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
+import com.novoda.github.reports.aws.queue.QueueMessage;
 import com.novoda.github.reports.batch.aws.persistence.PersistOperator;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
@@ -61,7 +62,7 @@ public class RepositoriesServiceClient {
 
     public Observable<AmazonQueueMessage> getRepositoriesFor(AmazonGetRepositoriesQueueMessage message) {
         return repositoryService
-                .getRepositoriesFor(message.organisationName(), Math.toIntExact(message.page()), DEFAULT_PER_PAGE_COUNT)
+                .getRepositoriesFor(message.organisationName(), pageFrom(message), DEFAULT_PER_PAGE_COUNT)
                 .lift(new PersistOperator<>(repoDataLayer, converter))
                 .flatMap(new Func1<Response<List<GithubRepository>>, Observable<AmazonQueueMessage>>() {
                     @Override
@@ -69,18 +70,18 @@ public class RepositoriesServiceClient {
                         List<AmazonQueueMessage> messages = new ArrayList<>();
 
                         if (message.localTerminal()) {
-                            Optional<Integer> nextPage = nextPageExtractor.getNextPageFrom(response);
-                            Optional<Integer> lastPage = lastPageExtractor.getLastPageFrom(response);
+                            Optional<Integer> nextPageOptional = nextPageExtractor.getNextPageFrom(response);
+                            Optional<Integer> lastPageOptional = lastPageExtractor.getLastPageFrom(response);
 
-                            if (nextPage.isPresent()) {
-                                int next = nextPage.get();
-                                int last = lastPage.get();
+                            if (nextPageOptional.isPresent()) {
+                                int nextPage = nextPageOptional.get();
+                                int lastPage = lastPageOptional.get();
 
-                                for (int i = next; i <= last; i++) {
+                                for (int page = nextPage; page <= lastPage; page++) {
                                     messages.add(
                                             AmazonGetRepositoriesQueueMessage.create(
-                                                    i != last,
-                                                    (long) i,
+                                                    page == lastPage,
+                                                    (long) page,
                                                     message.receiptHandle(),
                                                     message.organisationName(),
                                                     message.sinceOrNull()
@@ -90,19 +91,25 @@ public class RepositoriesServiceClient {
                         }
 
                         List<GithubRepository> repositories = response.body();
-                        repositories.forEach(repository -> messages.add(AmazonGetIssuesQueueMessage.create(
-                                true,
-                                1L,
-                                message.receiptHandle(),
-                                message.organisationName(),
-                                message.sinceOrNull(),
-                                repository.getId(),
-                                repository.getName()
-                        )));
+                        repositories.forEach(
+                                repository -> messages.add(
+                                        AmazonGetIssuesQueueMessage.create(
+                                                true,
+                                                1L,
+                                                message.receiptHandle(),
+                                                message.organisationName(),
+                                                message.sinceOrNull(),
+                                                repository.getId(),
+                                                repository.getName()
+                                        )));
 
                         return Observable.from(messages);
                     }
                 });
+    }
+
+    private int pageFrom(QueueMessage message) {
+        return Math.toIntExact(message.page());
     }
 
 }
