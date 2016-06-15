@@ -10,32 +10,32 @@ import java.util.Optional;
 
 import retrofit2.Response;
 import rx.Observable;
+import rx.functions.Func1;
 
 public abstract class NextMessagesTransformer<T, M extends AmazonQueueMessage> implements Observable.Transformer<Response<List<T>>, AmazonQueueMessage> {
 
     private final NextPageExtractor nextPageExtractor;
     private final LastPageExtractor lastPageExtractor;
 
-    private final Response<List<T>> response;
     protected final M currentMessage;
 
-    protected NextMessagesTransformer(NextPageExtractor nextPageExtractor,
-                                      LastPageExtractor lastPageExtractor,
-                                      Response<List<T>> response,
-                                      M currentMessage) {
-
+    protected NextMessagesTransformer(M currentMessage, NextPageExtractor nextPageExtractor, LastPageExtractor lastPageExtractor) {
         this.nextPageExtractor = nextPageExtractor;
         this.lastPageExtractor = lastPageExtractor;
-        this.response = response;
         this.currentMessage = currentMessage;
     }
 
     @Override
     public Observable<AmazonQueueMessage> call(Observable<Response<List<T>>> observable) {
-        List<AmazonQueueMessage> messages = new ArrayList<>();
-        messages.addAll(getNextPagesMessages(response));
-        messages.addAll(getOtherMessages(response));
-        return Observable.from(messages);
+        return observable.flatMap(new Func1<Response<List<T>>, Observable<AmazonQueueMessage>>() {
+            @Override
+            public Observable<AmazonQueueMessage> call(Response<List<T>> response) {
+                List<AmazonQueueMessage> messages = new ArrayList<>();
+                messages.addAll(getNextPagesMessages(response));
+                messages.addAll(getOtherMessages(response));
+                return Observable.from(messages);
+            }
+        });
     }
 
     private List<AmazonQueueMessage> getNextPagesMessages(Response<List<T>> response) {

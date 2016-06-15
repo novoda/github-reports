@@ -7,23 +7,26 @@ import com.novoda.github.reports.service.network.LastPageExtractor;
 import com.novoda.github.reports.service.network.NextPageExtractor;
 import com.novoda.github.reports.service.repository.GithubRepository;
 
-import java.util.List;
+class NextMessagesRepositoryTransformer extends NextMessagesTransformer<GithubRepository, AmazonGetRepositoriesQueueMessage> {
 
-import retrofit2.Response;
+    private static final long FIRST_PAGE = 1L;
+    private static final boolean ALWAYS_TERMINAL_MESSAGE = true;
 
-public class NextMessagesRepositoryTransformer extends NextMessagesTransformer<GithubRepository, AmazonGetRepositoriesQueueMessage> {
+    public static NextMessagesRepositoryTransformer newInstance(AmazonGetRepositoriesQueueMessage message) {
+        NextPageExtractor nextPageExtractor = NextPageExtractor.newInstance();
+        LastPageExtractor lastPageExtractor = LastPageExtractor.newInstance();
+        return new NextMessagesRepositoryTransformer(message, nextPageExtractor, lastPageExtractor);
+    }
 
-    protected NextMessagesRepositoryTransformer(NextPageExtractor nextPageExtractor,
-                                                LastPageExtractor lastPageExtractor,
-                                                Response<List<GithubRepository>> response,
-                                                AmazonGetRepositoriesQueueMessage message) {
+    private NextMessagesRepositoryTransformer(AmazonGetRepositoriesQueueMessage message,
+                                              NextPageExtractor nextPageExtractor,
+                                              LastPageExtractor lastPageExtractor) {
 
-        super(nextPageExtractor, lastPageExtractor, response, message);
+        super(message, nextPageExtractor, lastPageExtractor);
     }
 
     @Override
     protected AmazonGetRepositoriesQueueMessage getNextPageMessage(boolean isTerminalMessage, int nextPage) {
-
         return AmazonGetRepositoriesQueueMessage.create(
                 isTerminalMessage,
                 (long) nextPage,
@@ -36,8 +39,8 @@ public class NextMessagesRepositoryTransformer extends NextMessagesTransformer<G
     @Override
     protected AmazonGetIssuesQueueMessage getOtherMessage(GithubRepository repository) {
         return AmazonGetIssuesQueueMessage.create(
-                true,
-                1L,
+                ALWAYS_TERMINAL_MESSAGE,
+                FIRST_PAGE,
                 currentMessage.receiptHandle(),
                 currentMessage.organisationName(),
                 currentMessage.sinceOrNull(),
