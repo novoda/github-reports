@@ -58,7 +58,6 @@ public class RepositoriesServiceClient {
     public Observable<Response<List<GithubRepository>>> getRepositoriesResponseFor(String organisation, int page) {
         return repositoryService.getRepositoriesFor(organisation, page, DEFAULT_PER_PAGE_COUNT)
                 .lift(new PersistOperator<>(repoDataLayer, converter)); // no need to buffer 'cause we already have a list...
-
     }
 
 }

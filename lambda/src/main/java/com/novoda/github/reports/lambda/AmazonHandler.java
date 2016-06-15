@@ -5,11 +5,14 @@ import com.novoda.github.reports.aws.queue.AmazonGetRepositoriesQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.worker.WorkerHandler;
 import com.novoda.github.reports.batch.aws.repository.RepositoriesServiceClient;
+import com.novoda.github.reports.service.network.LastPageExtractor;
+import com.novoda.github.reports.service.network.NextPageExtractor;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
 import com.novoda.github.reports.service.repository.GithubRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import retrofit2.Response;
 import rx.Subscriber;
@@ -17,6 +20,8 @@ import rx.Subscriber;
 public class AmazonHandler implements WorkerHandler<AmazonQueueMessage> {
 
     private final RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
+    private NextPageExtractor nextPageExtractor;
+    private LastPageExtractor lastPageExtractor;
 
     @Override
     public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage)
@@ -60,8 +65,14 @@ public class AmazonHandler implements WorkerHandler<AmazonQueueMessage> {
 
                     @Override
                     public void onNext(Response<List<GithubRepository>> response) {
-                        // TODO extract next to last pages
 
+                        if (!message.localTerminal()) {
+                            return;
+                        }
+
+                        // TODO extract next to last pages
+                        Optional<Integer> nextPage = nextPageExtractor.getNextPageFrom(response);
+                        Optional<Integer> lastPage = lastPageExtractor.getLastPageFrom(response);
 
 
                         // TODO create new messages for each page and queue them
