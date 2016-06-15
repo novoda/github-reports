@@ -15,16 +15,16 @@ import java.util.List;
 
 import rx.Observable;
 
-public class AmazonHandler implements WorkerHandler<AmazonQueueMessage> {
+public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
     private final RepositoriesServiceClient repositoriesServiceClient;
 
-    public static AmazonHandler newInstance() {
+    public static AmazonWorkerHandler newInstance() {
         RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
-        return new AmazonHandler(repositoriesServiceClient);
+        return new AmazonWorkerHandler(repositoriesServiceClient);
     }
 
-    AmazonHandler(RepositoriesServiceClient repositoriesServiceClient) {
+    AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient) {
         this.repositoriesServiceClient = repositoriesServiceClient;
     }
 
