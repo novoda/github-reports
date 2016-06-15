@@ -29,6 +29,8 @@ import rx.functions.Func1;
 public class RepositoriesServiceClient {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
+    private static final long FIRST_PAGE = 1L;
+    private static final boolean ALWAYS_TERMINAL_MESSAGE = true;
 
     private final RepositoryService repositoryService;
     private final RepoDataLayer repoDataLayer;
@@ -68,44 +70,60 @@ public class RepositoriesServiceClient {
                     @Override
                     public Observable<AmazonQueueMessage> call(Response<List<GithubRepository>> response) {
                         List<AmazonQueueMessage> messages = new ArrayList<>();
-
-                        if (message.localTerminal()) {
-                            Optional<Integer> nextPageOptional = nextPageExtractor.getNextPageFrom(response);
-                            Optional<Integer> lastPageOptional = lastPageExtractor.getLastPageFrom(response);
-
-                            if (nextPageOptional.isPresent()) {
-                                int nextPage = nextPageOptional.get();
-                                int lastPage = lastPageOptional.get();
-
-                                for (int page = nextPage; page <= lastPage; page++) {
-                                    messages.add(
-                                            AmazonGetRepositoriesQueueMessage.create(
-                                                    page == lastPage,
-                                                    (long) page,
-                                                    message.receiptHandle(),
-                                                    message.organisationName(),
-                                                    message.sinceOrNull()
-                                            ));
-                                }
-                            }
-                        }
-
-                        List<GithubRepository> repositories = response.body();
-                        repositories.forEach(
-                                repository -> messages.add(
-                                        AmazonGetIssuesQueueMessage.create(
-                                                true,
-                                                1L,
-                                                message.receiptHandle(),
-                                                message.organisationName(),
-                                                message.sinceOrNull(),
-                                                repository.getId(),
-                                                repository.getName()
-                                        )));
-
+                        messages.addAll(getNextPagesMessages(response, message));
+                        messages.addAll(getIssuesMessages(response, message));
                         return Observable.from(messages);
                     }
                 });
+    }
+
+    private List<AmazonQueueMessage> getNextPagesMessages(Response<List<GithubRepository>> response, AmazonGetRepositoriesQueueMessage message) {
+        List<AmazonQueueMessage> messages = new ArrayList<>();
+
+        if (!message.localTerminal()) {
+            return messages;
+        }
+
+        Optional<Integer> nextPageOptional = nextPageExtractor.getNextPageFrom(response);
+        Optional<Integer> lastPageOptional = lastPageExtractor.getLastPageFrom(response);
+
+        if (nextPageOptional.isPresent()) {
+            int nextPage = nextPageOptional.get();
+            int lastPage = lastPageOptional.get();
+
+            for (int page = nextPage; page <= lastPage; page++) {
+                boolean terminalMessage = page == lastPage;
+                messages.add(
+                        AmazonGetRepositoriesQueueMessage.create(
+                                terminalMessage,
+                                (long) page,
+                                message.receiptHandle(),
+                                message.organisationName(),
+                                message.sinceOrNull()
+                        ));
+            }
+        }
+
+        return messages;
+    }
+
+    private List<AmazonQueueMessage> getIssuesMessages(Response<List<GithubRepository>> response, AmazonGetRepositoriesQueueMessage message) {
+        List<AmazonQueueMessage> messages = new ArrayList<>();
+
+        List<GithubRepository> repositories = response.body();
+        repositories.forEach(
+                repository -> messages.add(
+                        AmazonGetIssuesQueueMessage.create(
+                                ALWAYS_TERMINAL_MESSAGE,
+                                FIRST_PAGE,
+                                message.receiptHandle(),
+                                message.organisationName(),
+                                message.sinceOrNull(),
+                                repository.getId(),
+                                repository.getName()
+                        )));
+
+        return messages;
     }
 
     private int pageFrom(QueueMessage message) {

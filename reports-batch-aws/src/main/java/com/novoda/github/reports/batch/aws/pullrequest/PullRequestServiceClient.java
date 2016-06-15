@@ -1,5 +1,7 @@
 package com.novoda.github.reports.batch.aws.pullrequest;
 
+import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
+import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.pullrequest.GithubPullRequestService;
@@ -37,5 +39,11 @@ public class PullRequestServiceClient {
         String date = dateConverter.toISO8601NoMillisOrNull(since);
         return pullRequestService.getPullRequestReviewCommentsFor(organisation, repository, pullRequestNumber, date, page, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
+    }
+
+    public Observable<AmazonQueueMessage> getPullRequestReviewCommentsFor(AmazonGetReviewCommentsQueueMessage message) {
+//TODO
+        return Observable.empty();
+
     }
 }
