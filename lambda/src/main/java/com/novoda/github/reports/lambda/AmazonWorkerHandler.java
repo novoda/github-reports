@@ -45,7 +45,7 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
         } else if (queueMessage instanceof AmazonGetReviewCommentsQueueMessage) {
             // TODO
         } else {
-            throw new IllegalArgumentException("QueueMessage \"" + queueMessage.getClass().getSimpleName() + "\" not supported.");
+            throw new MessageNotSupportedException(queueMessage);
         }
 
         try {
