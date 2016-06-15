@@ -56,7 +56,8 @@ public class AmazonConfigurationConverter {
                 rawEmailNotifierConfiguration.useSsl(),
                 rawEmailNotifierConfiguration.from(),
                 rawEmailNotifierConfiguration.username(),
-                rawEmailNotifierConfiguration.password()
+                rawEmailNotifierConfiguration.password(),
+                rawEmailNotifierConfiguration.to()
         );
     }
 
@@ -110,6 +111,7 @@ public class AmazonConfigurationConverter {
                 .from(emailNotifierConfiguration.from())
                 .username(emailNotifierConfiguration.username())
                 .password(emailNotifierConfiguration.password())
+                .to(emailNotifierConfiguration.to())
                 .build();
     }
 
