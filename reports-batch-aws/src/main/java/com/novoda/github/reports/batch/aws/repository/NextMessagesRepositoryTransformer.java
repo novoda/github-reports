@@ -37,7 +37,7 @@ class NextMessagesRepositoryTransformer extends NextMessagesTransformer<GithubRe
     }
 
     @Override
-    protected AmazonGetIssuesQueueMessage getOtherMessage(GithubRepository repository) {
+    protected AmazonGetIssuesQueueMessage getDerivedMessage(GithubRepository repository) {
         return AmazonGetIssuesQueueMessage.create(
                 ALWAYS_TERMINAL_MESSAGE,
                 FIRST_PAGE,

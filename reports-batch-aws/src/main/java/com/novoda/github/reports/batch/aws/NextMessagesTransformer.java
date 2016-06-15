@@ -32,7 +32,7 @@ public abstract class NextMessagesTransformer<T, M extends AmazonQueueMessage> i
             public Observable<AmazonQueueMessage> call(Response<List<T>> response) {
                 List<AmazonQueueMessage> messages = new ArrayList<>();
                 messages.addAll(getNextPagesMessages(response));
-                messages.addAll(getOtherMessages(response));
+                messages.addAll(getDerivedMessages(response));
                 return Observable.from(messages);
             }
         });
@@ -63,15 +63,15 @@ public abstract class NextMessagesTransformer<T, M extends AmazonQueueMessage> i
 
     protected abstract M getNextPageMessage(boolean isTerminalMessage, int nextPage);
 
-    private List<AmazonQueueMessage> getOtherMessages(Response<List<T>> response) {
+    private List<AmazonQueueMessage> getDerivedMessages(Response<List<T>> response) {
         List<AmazonQueueMessage> messages = new ArrayList<>();
 
         List<T> items = response.body();
-        items.forEach(item -> messages.add(getOtherMessage(item)));
+        items.forEach(item -> messages.add(getDerivedMessage(item)));
 
         return messages;
     }
 
-    protected abstract AmazonQueueMessage getOtherMessage(T item);
+    protected abstract AmazonQueueMessage getDerivedMessage(T item);
 
 }
