@@ -100,7 +100,8 @@ public class RepositoriesServiceClient {
                                 message.receiptHandle(),
                                 message.organisationName(),
                                 message.sinceOrNull()
-                        ));
+                        )
+                );
             }
         }
 
@@ -121,7 +122,8 @@ public class RepositoriesServiceClient {
                                 message.sinceOrNull(),
                                 repository.getId(),
                                 repository.getName()
-                        )));
+                        )
+                ));
 
         return messages;
     }
