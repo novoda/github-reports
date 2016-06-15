@@ -18,7 +18,7 @@ public class LastPageExtractor {
         this.pageExtractor = pageExtractor;
     }
 
-    Optional<Integer> getLastPageFrom(Response response) {
+    public Optional<Integer> getLastPageFrom(Response response) {
         return pageExtractor.getPage(response);
     }
 
