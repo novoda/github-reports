@@ -12,6 +12,7 @@ import rx.Subscriber;
 import rx.observers.SafeSubscriber;
 
 class PersistOperator<T, R> implements Observable.Operator<List<T>, List<T>> {
+
     private final DataLayer<R> dataLayer;
     private final Converter<T, R> converter;
 
