@@ -29,15 +29,15 @@ public class AmazonHandler implements WorkerHandler<AmazonQueueMessage> {
     public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage)
             throws RateLimitEncounteredException, Exception {
 
-        Observable<AmazonQueueMessage> observableNextMessages = Observable.empty();
+        Observable<AmazonQueueMessage> nextMessagesObservable = Observable.empty();
 
         if (queueMessage instanceof AmazonGetRepositoriesQueueMessage) {
             AmazonGetRepositoriesQueueMessage message = (AmazonGetRepositoriesQueueMessage) queueMessage;
-            observableNextMessages = repositoriesServiceClient.getRepositoriesFor(message);
+            nextMessagesObservable = repositoriesServiceClient.getRepositoriesFor(message);
         }
         // TODO other messages ...
 
-        return observableNextMessages
+        return nextMessagesObservable
                 .collect(ArrayList<AmazonQueueMessage>::new, ArrayList::add)
                 .toBlocking()
                 .single();
