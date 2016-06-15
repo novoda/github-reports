@@ -6,6 +6,6 @@ public interface Notifier {
 
     void notifyCompletion(NotifierConfiguration configuration);
 
-    void notifyError(NotifierConfiguration configuration, Exception exception);
+    void notifyError(NotifierConfiguration configuration, Throwable t);
 
 }
