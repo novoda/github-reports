@@ -6,6 +6,7 @@ import com.novoda.github.reports.aws.alarm.AlarmService;
 import com.novoda.github.reports.aws.configuration.Configuration;
 import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
 import com.novoda.github.reports.aws.notifier.Notifier;
+import com.novoda.github.reports.aws.notifier.NotifierOperationFailedException;
 import com.novoda.github.reports.aws.notifier.NotifierService;
 import com.novoda.github.reports.aws.queue.EmptyQueueException;
 import com.novoda.github.reports.aws.queue.MessageConverterException;
@@ -51,10 +52,10 @@ public class BasicWorkerTest {
     private SystemClock systemClock;
 
     @InjectMocks
-    private BasicWorker<Alarm, QueueMessage, Queue<QueueMessage>, Configuration<NotifierConfiguration>> worker;
+    private BasicWorker<Alarm, QueueMessage, Queue<QueueMessage>, NotifierConfiguration, Configuration<NotifierConfiguration>> worker;
 
     @Mock
-    private EventSource<Configuration<NotifierConfiguration>> eventSource;
+    private EventSource<NotifierConfiguration, Configuration<NotifierConfiguration>> eventSource;
 
     @Mock
     private Notifier notifier;
@@ -91,13 +92,13 @@ public class BasicWorkerTest {
 
     @Test
     public void givenEmptyQueue_whenDoWork_thenNotifyCompletionAndDeleteQueueAndDoNotReschedule()
-            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
+            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException, NotifierOperationFailedException {
 
         Queue<QueueMessage> queue = givenEmptyQueue();
 
         worker.doWork(eventSource);
 
-        verify(notifier).notifyCompletion(eventSource.getConfiguration().notifierConfiguration());
+        verify(notifier).notifyCompletion(eventSource.getConfiguration());
         verify(queueService).removeQueue(queue);
         verifyNoErrorNotified();
         verifyNoRescheduleImmediately();
@@ -105,7 +106,7 @@ public class BasicWorkerTest {
 
     @Test
     public void givenIncompatibleMessageInQueue_whenDoWork_thenNotifyConversionErrorAndDoNotReschedule()
-            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
+            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException, NotifierOperationFailedException {
 
         givenInvalidMessagesQueue();
 
@@ -157,7 +158,7 @@ public class BasicWorkerTest {
 
     @Test
     public void givenFailingQueueAddItems_whenDoWork_thenNotifyErrorAndReschedule()
-            throws EmptyQueueException, MessageConverterException, QueueOperationFailedException, WorkerOperationFailedException {
+            throws EmptyQueueException, MessageConverterException, QueueOperationFailedException, WorkerOperationFailedException, NotifierOperationFailedException {
 
         Queue<QueueMessage> queue = givenAnyQueue();
         when(queue.addItems(anyListOf(QueueMessage.class))).thenThrow(QueueOperationFailedException.class);
@@ -203,16 +204,16 @@ public class BasicWorkerTest {
         return queue;
     }
 
-    private void verifyNoErrorNotified() {
-        verify(notifier, never()).notifyError(any(NotifierConfiguration.class), any(Exception.class));
+    private void verifyNoErrorNotified() throws NotifierOperationFailedException {
+        verify(notifier, never()).notifyError(any(DefaultConfiguration.class), any(Exception.class));
     }
 
     private void verifyNoRescheduleImmediately() {
         verify(workerService, never()).startWorker(eventSource.getConfiguration());
     }
 
-    private <T extends Exception> void verifyErrorNotified(Class<T> exception) {
-        verify(notifier).notifyError(any(NotifierConfiguration.class), any(exception));
+    private <T extends Exception> void verifyErrorNotified(Class<T> exception) throws NotifierOperationFailedException {
+        verify(notifier).notifyError(any(DefaultConfiguration.class), any(exception));
     }
 
     private void verifyRescheduleImmediately() {
