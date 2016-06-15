@@ -5,78 +5,42 @@ import com.novoda.github.reports.aws.queue.AmazonGetRepositoriesQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.worker.WorkerHandler;
 import com.novoda.github.reports.batch.aws.repository.RepositoriesServiceClient;
-import com.novoda.github.reports.service.network.LastPageExtractor;
-import com.novoda.github.reports.service.network.NextPageExtractor;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
-import com.novoda.github.reports.service.repository.GithubRepository;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import retrofit2.Response;
-import rx.Subscriber;
+import rx.Observable;
 
 public class AmazonHandler implements WorkerHandler<AmazonQueueMessage> {
 
-    private final RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
-    private NextPageExtractor nextPageExtractor;
-    private LastPageExtractor lastPageExtractor;
+    private final RepositoriesServiceClient repositoriesServiceClient;
+
+    public static AmazonHandler newInstance() {
+        RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
+        return new AmazonHandler(repositoriesServiceClient);
+    }
+
+    AmazonHandler(RepositoriesServiceClient repositoriesServiceClient) {
+        this.repositoriesServiceClient = repositoriesServiceClient;
+    }
 
     @Override
     public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage)
             throws RateLimitEncounteredException, Exception {
 
-        // if there's no more stuff to do return an empty list
+        Observable<AmazonQueueMessage> observableNextMessages = Observable.empty();
 
         if (queueMessage instanceof AmazonGetRepositoriesQueueMessage) {
             AmazonGetRepositoriesQueueMessage message = (AmazonGetRepositoriesQueueMessage) queueMessage;
+            observableNextMessages = repositoriesServiceClient.getRepositoriesFor(message);
+        }
+        // TODO other messages ...
 
-            // - check if we're the last page, if so issue request and return empty list
-            if (message.localTerminal()) {
-                getRepositories(message);
-                return noNewMessage();
-            }
-
-            // - if we're not the last page issue the request and ... ?
-
-
-        } // ...
-
-        return null;
+        return observableNextMessages
+                .collect(ArrayList<AmazonQueueMessage>::new, ArrayList::add)
+                .toBlocking()
+                .single();
     }
 
-    private List<AmazonQueueMessage> noNewMessage() {
-        return Collections.emptyList();
-    }
-
-    private void getRepositories(AmazonGetRepositoriesQueueMessage message) throws RateLimitEncounteredException, Exception {
-        repositoriesServiceClient.getRepositoriesResponseFor(message.organisationName(), Math.toIntExact(message.page()))
-                .subscribe(new Subscriber<Response<List<GithubRepository>>>() {
-                    @Override
-                    public void onCompleted() {
-                        // TODO
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        // TODO
-                    }
-
-                    @Override
-                    public void onNext(Response<List<GithubRepository>> response) {
-
-                        if (!message.localTerminal()) {
-                            return;
-                        }
-
-                        // TODO extract next to last pages
-                        Optional<Integer> nextPage = nextPageExtractor.getNextPageFrom(response);
-                        Optional<Integer> lastPage = lastPageExtractor.getLastPageFrom(response);
-
-
-                        // TODO create new messages for each page and queue them
-                    }
-                });
-    }
 }
