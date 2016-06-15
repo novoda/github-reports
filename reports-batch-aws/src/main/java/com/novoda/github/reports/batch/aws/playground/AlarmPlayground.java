@@ -13,6 +13,8 @@ import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.properties.PropertiesReader;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 
+import java.util.Arrays;
+
 public class AlarmPlayground {
 
     public static void main(String[] args) throws AlarmOperationFailedException {
@@ -29,7 +31,10 @@ public class AlarmPlayground {
 
         PropertiesReader emailPropertiesReader = PropertiesReader.newInstance("email.credentials");
         EmailCredentialsReader emailCredentialsReader = EmailCredentialsReader.newInstance(emailPropertiesReader);
-        EmailNotifierConfiguration notifierConfiguration = EmailNotifierConfiguration.create(emailCredentialsReader);
+        EmailNotifierConfiguration notifierConfiguration = EmailNotifierConfiguration.create(
+                emailCredentialsReader,
+                Arrays.asList("francesco@novoda.com", "carl@novoda.com")
+        );
 
         AmazonConfiguration amazonConfiguration = AmazonConfiguration.create(
                 "job-banana",

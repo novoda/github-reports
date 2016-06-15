@@ -58,4 +58,9 @@ public class PropertiesReader {
     private void closeInputStream(InputStream inputStream) throws IOException {
         inputStream.close();
     }
+
+    public Integer readPropertyAsInt(String key) {
+        String value = readProperty(key);
+        return Integer.valueOf(value);
+    }
 }

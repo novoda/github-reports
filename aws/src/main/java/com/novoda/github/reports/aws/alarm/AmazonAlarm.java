@@ -1,8 +1,9 @@
 package com.novoda.github.reports.aws.alarm;
 
 import com.novoda.github.reports.aws.configuration.AmazonConfiguration;
+import com.novoda.github.reports.aws.configuration.EmailNotifierConfiguration;
 
-public class AmazonAlarm implements Alarm<AmazonConfiguration> {
+public class AmazonAlarm implements Alarm<EmailNotifierConfiguration, AmazonConfiguration> {
 
     private final AmazonConfiguration configuration;
     private final long minutes;
