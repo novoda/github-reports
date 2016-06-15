@@ -55,7 +55,6 @@ public abstract class NextMessagesTransformer<T, M extends AmazonQueueMessage> i
             for (int page = nextPage; page <= lastPage; page++) {
                 boolean terminalMessage = page == lastPage;
                 messages.add(getNextPageMessage(terminalMessage, nextPage));
-
             }
         }
 
