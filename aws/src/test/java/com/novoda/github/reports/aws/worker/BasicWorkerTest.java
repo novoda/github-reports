@@ -1,7 +1,6 @@
 package com.novoda.github.reports.aws.worker;
 
 import com.novoda.github.reports.aws.alarm.Alarm;
-import com.novoda.github.reports.aws.alarm.AlarmOperationFailedException;
 import com.novoda.github.reports.aws.alarm.AlarmService;
 import com.novoda.github.reports.aws.configuration.Configuration;
 import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
@@ -117,7 +116,7 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenValidQueue_whenDoWork_thenDelegateToHandleQueueMessage() throws Exception, RateLimitEncounteredException {
+    public void givenValidQueue_whenDoWork_thenDelegateToHandleQueueMessage() throws Throwable {
         givenAnyQueue();
 
         worker.doWork(eventSource);
@@ -126,7 +125,7 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenValidQueueAndRateLimitExpired_whenDoWork_thenRescheduleForLater() throws Exception, RateLimitEncounteredException, AlarmOperationFailedException {
+    public void givenValidQueueAndRateLimitExpired_whenDoWork_thenRescheduleForLater() throws Throwable {
         givenAnyQueue();
         Instant nextResetInstant = Instant.now().plusSeconds(600);
         Date nextResetDate = new Date(nextResetInstant.toEpochMilli());
@@ -142,8 +141,7 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenPurgeDeleteQueueAndNotifyErrorAndDoNotReschedule()
-            throws Exception, RateLimitEncounteredException {
+    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenPurgeDeleteQueueAndNotifyErrorAndDoNotReschedule() throws Throwable {
 
         Queue<QueueMessage> queue = givenAnyQueue();
         when(workerHandler.handleQueueMessage(any(Configuration.class), any(QueueMessage.class))).thenThrow(Exception.class);
@@ -158,7 +156,8 @@ public class BasicWorkerTest {
 
     @Test
     public void givenFailingQueueAddItems_whenDoWork_thenNotifyErrorAndReschedule()
-            throws EmptyQueueException, MessageConverterException, QueueOperationFailedException, WorkerOperationFailedException, NotifierOperationFailedException {
+            throws EmptyQueueException, MessageConverterException, QueueOperationFailedException, WorkerOperationFailedException,
+            NotifierOperationFailedException {
 
         Queue<QueueMessage> queue = givenAnyQueue();
         when(queue.addItems(anyListOf(QueueMessage.class))).thenThrow(QueueOperationFailedException.class);
@@ -169,7 +168,9 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenAnyQueue_whenDoWork_thenRescheduleImmediately() throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
+    public void givenAnyQueue_whenDoWork_thenRescheduleImmediately()
+            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
+
         givenAnyQueue();
 
         worker.doWork(eventSource);
