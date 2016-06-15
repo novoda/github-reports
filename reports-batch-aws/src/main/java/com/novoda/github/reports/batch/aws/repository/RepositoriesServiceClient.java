@@ -59,11 +59,6 @@ public class RepositoriesServiceClient {
         this.lastPageExtractor = lastPageExtractor;
     }
 
-    public Observable<Response<List<GithubRepository>>> getRepositoriesResponseFor(String organisation, int page) {
-        return repositoryService.getRepositoriesFor(organisation, page, DEFAULT_PER_PAGE_COUNT)
-                .lift(new PersistOperator<>(repoDataLayer, converter));
-    }
-
     public Observable<AmazonQueueMessage> getRepositoriesFor(AmazonGetRepositoriesQueueMessage message) {
         return repositoryService
                 .getRepositoriesFor(message.organisationName(), Math.toIntExact(message.page()), DEFAULT_PER_PAGE_COUNT)
