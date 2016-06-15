@@ -29,8 +29,7 @@ public class AmazonHandler implements WorkerHandler<AmazonQueueMessage> {
     }
 
     @Override
-    public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage)
-            throws Throwable {
+    public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage) throws Throwable {
 
         Observable<AmazonQueueMessage> nextMessagesObservable = Observable.empty();
 
@@ -38,15 +37,15 @@ public class AmazonHandler implements WorkerHandler<AmazonQueueMessage> {
             AmazonGetRepositoriesQueueMessage message = (AmazonGetRepositoriesQueueMessage) queueMessage;
             nextMessagesObservable = repositoriesServiceClient.getRepositoriesFor(message);
         } else if (queueMessage instanceof AmazonGetIssuesQueueMessage) {
-
+            // TODO
         } else if (queueMessage instanceof AmazonGetEventsQueueMessage) {
-
+            // TODO
         } else if (queueMessage instanceof AmazonGetCommentsQueueMessage) {
-
+            // TODO
         } else if (queueMessage instanceof AmazonGetReviewCommentsQueueMessage) {
-
+            // TODO
         } else {
-            throw new IllegalArgumentException("...");
+            throw new IllegalArgumentException("QueueMessage \"" + queueMessage.getClass().getSimpleName() + "\" not supported.");
         }
 
         try {
