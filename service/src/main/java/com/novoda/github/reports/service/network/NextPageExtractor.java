@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import retrofit2.Response;
 
-class NextPageExtractor {
+public class NextPageExtractor {
 
     private static final String NEXT = "next";
 
@@ -18,7 +18,7 @@ class NextPageExtractor {
         this.pageExtractor = pageExtractor;
     }
 
-    Optional<Integer> getNextPageFrom(Response response) {
+    public Optional<Integer> getNextPageFrom(Response response) {
         return pageExtractor.getPage(response);
     }
 
