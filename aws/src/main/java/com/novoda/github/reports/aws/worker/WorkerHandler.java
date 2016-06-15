@@ -6,7 +6,7 @@ import com.novoda.github.reports.service.network.RateLimitEncounteredException;
 
 import java.util.List;
 
-interface WorkerHandler<M extends QueueMessage> {
+public interface WorkerHandler<M extends QueueMessage> {
 
     List<M> handleQueueMessage(Configuration configuration, M queueMessage) throws RateLimitEncounteredException, Exception;
 
