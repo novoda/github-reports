@@ -1,6 +1,4 @@
 import com.amazonaws.services.lambda.model.Runtime
-import com.amazonaws.auth.AWSCredentials
-import com.amazonaws.auth.AWSCredentialsProvider
 import jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask
 
 buildscript {
@@ -29,31 +27,6 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.0.53-beta'
-}
-
-aws {
-    credentialsProvider = new AWSCredentialsProvider() {
-
-        @Override
-        AWSCredentials getCredentials() {
-            return new AWSCredentials() {
-                @Override
-                String getAWSAccessKeyId() {
-                    return getAmazonAccessKey()
-                }
-
-                @Override
-                String getAWSSecretKey() {
-                    return getAmazonSecretKey()
-                }
-            }
-        }
-
-        @Override
-        void refresh() {
-            // no-op
-        }
-    }
 }
 
 task zip(type: Zip) {
