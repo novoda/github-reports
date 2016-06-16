@@ -13,7 +13,7 @@ class ResponseRepositoryIssuePersistTransformer extends ResponsePersistTransform
         return new ResponseRepositoryIssuePersistTransformer(persistTransformer);
     }
 
-    ResponseRepositoryIssuePersistTransformer(Observable.Transformer<RepositoryIssue, RepositoryIssue> persistTransformer) {
+    private ResponseRepositoryIssuePersistTransformer(Observable.Transformer<RepositoryIssue, RepositoryIssue> persistTransformer) {
         super(persistTransformer);
     }
 
