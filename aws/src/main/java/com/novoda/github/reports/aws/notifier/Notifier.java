@@ -7,6 +7,6 @@ public interface Notifier<N extends NotifierConfiguration, C extends Configurati
 
     void notifyCompletion(C configuration) throws NotifierOperationFailedException;
 
-    void notifyError(C configuration, Exception exception) throws NotifierOperationFailedException;
+    void notifyError(C configuration, Throwable t) throws NotifierOperationFailedException;
 
 }

@@ -38,4 +38,5 @@ public class PullRequestServiceClient {
         return pullRequestService.getPullRequestReviewCommentsFor(organisation, repository, pullRequestNumber, date, page, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body);
     }
+
 }

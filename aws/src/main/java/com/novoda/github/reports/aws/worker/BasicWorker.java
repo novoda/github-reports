@@ -83,8 +83,8 @@ class BasicWorker<
             handleRateLimitEncounteredException(eventSource, e);
         } catch (QueueOperationFailedException e) {
             handleQueueOperationFailedException(eventSource, e);
-        } catch (Exception e) {
-            handleAnyOtherException(eventSource, queue, e);
+        } catch (Throwable t) {
+            handleAnyOtherException(eventSource, queue, t);
         }
     }
 
@@ -94,7 +94,7 @@ class BasicWorker<
         return queueService.getQueue(queueName);
     }
 
-    private List<M> handleQueueMessage(EventSource<N, C> eventSource, M queueMessage) throws Exception, RateLimitEncounteredException {
+    private List<M> handleQueueMessage(EventSource<N, C> eventSource, M queueMessage) throws Throwable {
         WorkerHandler<M> workerHandler = workerHandlerService.getWorkerHandler();
         return workerHandler.handleQueueMessage(eventSource.getConfiguration(), queueMessage);
     }
@@ -150,19 +150,19 @@ class BasicWorker<
         workerService.startWorker(configuration);
     }
 
-    private void handleAnyOtherException(EventSource<N, C> eventSource, Q queue, Exception e) {
+    private void handleAnyOtherException(EventSource<N, C> eventSource, Q queue, Throwable t) {
         queue.purgeQueue();
         queueService.removeQueue(queue);
-        notifyError(eventSource, e);
+        notifyError(eventSource, t);
     }
 
-    private void notifyError(EventSource<N, C> eventSource, Exception exception) {
-        exception.printStackTrace();
+    private void notifyError(EventSource<N, C> eventSource, Throwable t) {
+        t.printStackTrace();
 
         Notifier<N, C> notifier = getNotifier();
         C configuration = eventSource.getConfiguration();
         try {
-            notifier.notifyError(configuration, exception);
+            notifier.notifyError(configuration, t);
         } catch (NotifierOperationFailedException e) {
             e.printStackTrace();
         }

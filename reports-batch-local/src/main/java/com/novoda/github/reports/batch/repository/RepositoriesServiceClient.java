@@ -50,6 +50,7 @@ public class RepositoriesServiceClient {
                                       Converter<GithubRepository, Repository> converter,
                                       RateLimitResetTimerSubject rateLimitResetTimerSubject,
                                       RateLimitDelayTransformer<GithubRepository> rateLimitDelayTransformer) {
+
         this.repositoryService = repositoryService;
         this.repoDataLayer = repoDataLayer;
         this.converter = converter;
