@@ -12,12 +12,6 @@ _Amazon AWS recursive Lambda to fetch Github events._
 As a first step, install the [AWS CLI](https://aws.amazon.com/cli/) and having it [configured with your credentials and region]
 (http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-quick-configuration).
 
-Then, create a `amazon.credentials` file in the root directory of the project (see [`amazon.credentials.sample`](../amazon.credentials.sample)), with
-the following keys:
-
-* `AWS_ACCESS_KEY_ID`, the Amazon AWS access key
-* `AWS_SECRET_ACCESS_KEY`, the Amazon AWS secret key
-
 ### Role creation
 
 Create a new role for your lambda with the following command:
