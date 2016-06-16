@@ -4,6 +4,8 @@ import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 
+import org.jetbrains.annotations.Nullable;
+
 @AutoValue
 public abstract class AmazonRawConfiguration {
 
@@ -17,6 +19,9 @@ public abstract class AmazonRawConfiguration {
 
     abstract String jobName();
 
+    @Nullable
+    abstract String alarmName();
+
     abstract AmazonRawDatabaseConfiguration database();
 
     abstract AmazonRawGithubConfiguration github();
@@ -27,6 +32,8 @@ public abstract class AmazonRawConfiguration {
     public static abstract class Builder {
 
         abstract Builder jobName(String jobName);
+
+        abstract Builder alarmName(@Nullable String alarmName);
 
         abstract Builder database(AmazonRawDatabaseConfiguration database);
 

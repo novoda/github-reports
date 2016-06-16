@@ -24,13 +24,16 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class BasicWorkerTest {
 
-    private static final String ANY_QUEUE_NAME = "some_queue";
+    private static final String ANY_QUEUE_JOB_NAME = "some_queue";
+    private static final String ANY_ALARM_NAME = "some_alarm";
     private static final String ANY_WORKER_DESCRIPTOR = "some_lambda_reference";
+    private static final Boolean HAS_ALARM = true;
 
     @Mock
     private WorkerService workerService;
@@ -54,10 +57,13 @@ public class BasicWorkerTest {
     private BasicWorker<Alarm, QueueMessage, Queue<QueueMessage>, NotifierConfiguration, Configuration<NotifierConfiguration>> worker;
 
     @Mock
-    private EventSource<NotifierConfiguration, Configuration<NotifierConfiguration>> eventSource;
+    private Configuration<NotifierConfiguration> configuration;
 
     @Mock
-    private Notifier notifier;
+    private Alarm alarm;
+
+    @Mock
+    private Notifier<NotifierConfiguration, Configuration<NotifierConfiguration>> notifier;
 
     @Mock
     private WorkerHandler<QueueMessage> workerHandler;
@@ -66,25 +72,34 @@ public class BasicWorkerTest {
     public void setUp() {
         initMocks(this);
 
+        when(configuration.jobName()).thenReturn(ANY_QUEUE_JOB_NAME);
+
+        when(alarm.getName()).thenReturn(ANY_ALARM_NAME);
+
         when(notifierService.getNotifier()).thenReturn(notifier);
         when(workerHandlerService.getWorkerHandler()).thenReturn(workerHandler);
     }
 
     @Test
     public void givenStartedFromAlarm_whenDoWork_thenRemoveAlarm() throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
-        eventSource = mock(Alarm.class);
+        givenStartedFromAlarm();
         givenAnyQueue();
 
-        worker.doWork(eventSource);
+        worker.doWork(configuration);
 
-        verify(alarmService).removeAlarm((Alarm) eventSource);
+        verify(alarmService).removeAlarm(configuration.alarmName());
+    }
+
+    private void givenStartedFromAlarm() {
+        when(configuration.alarmName()).thenReturn(ANY_ALARM_NAME);
+        when(configuration.hasAlarm()).thenReturn(HAS_ALARM);
     }
 
     @Test
     public void givenStartedFromNonAlarm_whenDoWork_thenDoNotRemoveAlarm() throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
         givenAnyQueue();
 
-        worker.doWork(eventSource);
+        worker.doWork(configuration);
 
         verify(alarmService, never()).removeAlarm(any(Alarm.class));
     }
@@ -95,9 +110,9 @@ public class BasicWorkerTest {
 
         Queue<QueueMessage> queue = givenEmptyQueue();
 
-        worker.doWork(eventSource);
+        worker.doWork(configuration);
 
-        verify(notifier).notifyCompletion(eventSource.getConfiguration());
+        verify(notifier).notifyCompletion(configuration);
         verify(queueService).removeQueue(queue);
         verifyNoErrorNotified();
         verifyNoRescheduleImmediately();
@@ -109,7 +124,7 @@ public class BasicWorkerTest {
 
         givenInvalidMessagesQueue();
 
-        worker.doWork(eventSource);
+        worker.doWork(configuration);
 
         verifyErrorNotified(MessageConverterException.class);
         verifyNoRescheduleImmediately();
@@ -119,9 +134,9 @@ public class BasicWorkerTest {
     public void givenValidQueue_whenDoWork_thenDelegateToHandleQueueMessage() throws Throwable {
         givenAnyQueue();
 
-        worker.doWork(eventSource);
+        worker.doWork(configuration);
 
-        verify(workerHandler).handleQueueMessage(any(Configuration.class), any(QueueMessage.class));
+        verify(workerHandler).handleQueueMessage(eq(configuration), any(QueueMessage.class));
     }
 
     @Test
@@ -130,13 +145,14 @@ public class BasicWorkerTest {
         Instant nextResetInstant = Instant.now().plusSeconds(600);
         Date nextResetDate = new Date(nextResetInstant.toEpochMilli());
         RateLimitEncounteredException rateLimitEncounteredException = new RateLimitEncounteredException("YOLO", nextResetDate);
-        when(workerHandler.handleQueueMessage(any(Configuration.class), any(QueueMessage.class))).thenThrow(rateLimitEncounteredException);
+        when(workerHandler.handleQueueMessage(eq(configuration), any(QueueMessage.class))).thenThrow(rateLimitEncounteredException);
         when(workerService.getWorkerName()).thenReturn(ANY_WORKER_DESCRIPTOR);
+        when(alarmService.createNewAlarm(anyLong(), eq(ANY_QUEUE_JOB_NAME), eq(ANY_WORKER_DESCRIPTOR))).thenReturn(alarm);
 
-        worker.doWork(eventSource);
+        worker.doWork(configuration);
 
-        verify(alarmService).createAlarm(eq(eventSource.getConfiguration()), anyLong(), eq(ANY_WORKER_DESCRIPTOR));
-        verify(alarmService).postAlarm(any(Alarm.class));
+        verify(alarmService).createNewAlarm(anyLong(), eq(ANY_QUEUE_JOB_NAME), eq(ANY_WORKER_DESCRIPTOR));
+        verify(alarmService).postAlarm(any(Alarm.class), not(eq(configuration)));
         verifyNoErrorNotified();
     }
 
@@ -144,9 +160,9 @@ public class BasicWorkerTest {
     public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenPurgeDeleteQueueAndNotifyErrorAndDoNotReschedule() throws Throwable {
 
         Queue<QueueMessage> queue = givenAnyQueue();
-        when(workerHandler.handleQueueMessage(any(Configuration.class), any(QueueMessage.class))).thenThrow(Exception.class);
+        when(workerHandler.handleQueueMessage(eq(configuration), any(QueueMessage.class))).thenThrow(Exception.class);
 
-        worker.doWork(eventSource);
+        worker.doWork(configuration);
 
         verify(queue).purgeQueue();
         verify(queueService).removeQueue(queue);
@@ -162,7 +178,7 @@ public class BasicWorkerTest {
         Queue<QueueMessage> queue = givenAnyQueue();
         when(queue.addItems(anyListOf(QueueMessage.class))).thenThrow(QueueOperationFailedException.class);
 
-        worker.doWork(eventSource);
+        worker.doWork(configuration);
 
         verifyErrorNotified(QueueOperationFailedException.class);
     }
@@ -173,7 +189,7 @@ public class BasicWorkerTest {
 
         givenAnyQueue();
 
-        worker.doWork(eventSource);
+        worker.doWork(configuration);
 
         verifyRescheduleImmediately();
     }
@@ -198,10 +214,7 @@ public class BasicWorkerTest {
     }
 
     private Queue<QueueMessage> givenQueue(Queue<QueueMessage> queue) {
-        Configuration<NotifierConfiguration> mockConfig = mock(DefaultConfiguration.class);
-        when(mockConfig.jobName()).thenReturn(ANY_QUEUE_NAME);
-        when(eventSource.getConfiguration()).thenReturn(mockConfig);
-        when(queueService.getQueue(ANY_QUEUE_NAME)).thenReturn(queue);
+        when(queueService.getQueue(ANY_QUEUE_JOB_NAME)).thenReturn(queue);
         return queue;
     }
 
@@ -210,7 +223,7 @@ public class BasicWorkerTest {
     }
 
     private void verifyNoRescheduleImmediately() {
-        verify(workerService, never()).startWorker(eventSource.getConfiguration());
+        verify(workerService, never()).startWorker(configuration);
     }
 
     private <T extends Exception> void verifyErrorNotified(Class<T> exception) throws NotifierOperationFailedException {
@@ -218,7 +231,7 @@ public class BasicWorkerTest {
     }
 
     private void verifyRescheduleImmediately() {
-        verify(workerService).startWorker(eventSource.getConfiguration());
+        verify(workerService).startWorker(not(eq(configuration)));
     }
 
 }

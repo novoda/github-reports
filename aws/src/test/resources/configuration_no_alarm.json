@@ -1,6 +1,5 @@
 {
   "jobName": "some-job",
-  "alarmName": "some-alarm",
   "database": {
     "connectionString": "jdbc:mysql://something-something-danger-zone",
     "username": "sterling",
