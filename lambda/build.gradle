@@ -37,7 +37,7 @@ task zip(type: Zip) {
 
 task uploadLambda(type: AWSLambdaMigrateFunctionTask, dependsOn: zip) {
     functionName = 'github-reports-lambda'
-    role = "arn:aws:iam::${aws.accountId}:role/lambda_basic_execution"
+    role = "arn:aws:iam::${aws.accountId}:role/github-reports-role"
     zipFile = zip.archivePath
     handler = 'com.novoda.github.reports.lambda.Lambda::handle'
     runtime = Runtime.Java8

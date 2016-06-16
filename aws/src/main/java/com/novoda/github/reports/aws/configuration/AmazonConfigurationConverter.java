@@ -76,6 +76,7 @@ public class AmazonConfigurationConverter {
 
     public String toJson(AmazonConfiguration configuration) throws ConfigurationConverterException {
         String jobName = configuration.jobName();
+        String alarmName = configuration.alarmName();
 
         AmazonRawDatabaseConfiguration rawDatabaseConfiguration = toRawDatabaseConfiguration(configuration);
         AmazonRawGithubConfiguration githubRawConfiguration = toRawGithubConfiguration(configuration);
@@ -83,6 +84,7 @@ public class AmazonConfigurationConverter {
 
         AmazonRawConfiguration amazonRawConfiguration = AmazonRawConfiguration.builder()
                 .jobName(jobName)
+                .alarmName(alarmName)
                 .database(rawDatabaseConfiguration)
                 .github(githubRawConfiguration)
                 .email(rawEmailNotifierConfiguration)

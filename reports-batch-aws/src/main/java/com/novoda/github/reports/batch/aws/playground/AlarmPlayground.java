@@ -39,7 +39,7 @@ public class AlarmPlayground {
         AmazonAlarm alarm = amazonAlarmService.createNewAlarm(
                 1,
                 "job-banana",
-                "arn:aws:lambda:us-east-1:953109185106:function:github-reports-test-js"
+                "arn:aws:lambda:us-east-1:953109185106:function:github-reports-lambda"
         );
 
         AmazonConfiguration amazonConfiguration = AmazonConfiguration.create(

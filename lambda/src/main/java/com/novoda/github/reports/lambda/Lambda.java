@@ -48,7 +48,7 @@ public class Lambda {
         log(context, "Handling configuration:");
         log(context, amazonConfiguration.toString());
 
-        worker.doWork(amazonConfiguration);
+        // worker.doWork(amazonConfiguration);
 
         log(context, "Work done.");
     }
