@@ -33,7 +33,7 @@ class EmailNotifier implements Notifier<EmailNotifierConfiguration, AmazonConfig
     }
 
     @Override
-    public void notifyError(AmazonConfiguration configuration, Exception exception) throws NotifierOperationFailedException {
+    public void notifyError(AmazonConfiguration configuration, Throwable throwable) throws NotifierOperationFailedException {
         sendEmail(configuration, ERROR_SUBJECT, ERROR_BODY);
     }
 

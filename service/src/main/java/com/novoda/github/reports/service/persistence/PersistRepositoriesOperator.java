@@ -10,6 +10,7 @@ class PersistRepositoriesOperator extends PersistOperator<GithubRepository, Repo
 
     public static PersistRepositoriesOperator newInstance(RepoDataLayer repoDataLayer,
                                                           Converter<GithubRepository, Repository> converter) {
+
         return new PersistRepositoriesOperator(repoDataLayer, converter);
     }
 
