@@ -1,21 +1,16 @@
 package com.novoda.github.reports.aws.alarm;
 
-import com.novoda.github.reports.aws.configuration.AmazonConfiguration;
-import com.novoda.github.reports.aws.configuration.EmailNotifierConfiguration;
+public class AmazonAlarm implements Alarm {
 
-public class AmazonAlarm implements Alarm<EmailNotifierConfiguration, AmazonConfiguration> {
-
-    private final AmazonConfiguration configuration;
     private final long minutes;
     private final String name;
     private final String workerName;
 
-    static AmazonAlarm newInstance(AmazonConfiguration configuration, long minutes, String alarmName, String workerName) {
-        return new AmazonAlarm(configuration, minutes, alarmName, workerName);
+    public static AmazonAlarm newInstance(long minutes, String alarmName, String workerName) {
+        return new AmazonAlarm(minutes, alarmName, workerName);
     }
 
-    private AmazonAlarm(AmazonConfiguration configuration, long minutes, String alarmName, String workerName) {
-        this.configuration = configuration;
+    private AmazonAlarm(long minutes, String alarmName, String workerName) {
         this.minutes = minutes;
         this.name = alarmName;
         this.workerName = workerName;
@@ -33,10 +28,5 @@ public class AmazonAlarm implements Alarm<EmailNotifierConfiguration, AmazonConf
 
     public String getWorkerName() {
         return workerName;
-    }
-
-    @Override
-    public AmazonConfiguration getConfiguration() {
-        return configuration;
     }
 }

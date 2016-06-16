@@ -36,20 +36,21 @@ public class AlarmPlayground {
                 Arrays.asList("francesco@novoda.com", "carl@novoda.com")
         );
 
+        AmazonAlarm alarm = amazonAlarmService.createNewAlarm(
+                1,
+                "job-banana",
+                "arn:aws:lambda:us-east-1:953109185106:function:github-reports-test-js"
+        );
+
         AmazonConfiguration amazonConfiguration = AmazonConfiguration.create(
                 "job-banana",
+                alarm.getName(),
                 databaseConfiguration,
                 githubConfiguration,
                 notifierConfiguration
         );
 
-        AmazonAlarm alarm = amazonAlarmService.createAlarm(
-                amazonConfiguration,
-                1,
-                "arn:aws:lambda:us-east-1:953109185106:function:github-reports-test-js"
-        );
-
-        amazonAlarmService.postAlarm(alarm);
+        amazonAlarmService.postAlarm(alarm, amazonConfiguration);
     }
 
 }

@@ -5,10 +5,12 @@ import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
 
 public interface AlarmService<A extends Alarm, C extends Configuration<? extends NotifierConfiguration>> {
 
-    A createAlarm(C configuration, long minutes, String workerDescriptor);
+    A createNewAlarm(long minutes, String jobName, String workerDescriptor);
 
-    A postAlarm(A alarm) throws AlarmOperationFailedException;
+    A postAlarm(A alarm, C configuration) throws AlarmOperationFailedException;
 
     A removeAlarm(A alarm);
+
+    String removeAlarm(String alarmName);
 
 }

@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 public class AmazonConfigurationConverter {
 
     private final Gson gson;
@@ -19,7 +22,7 @@ public class AmazonConfigurationConverter {
         this.gson = gson;
     }
 
-    public AmazonConfiguration fromJson(String json) throws ConfigurationConverterException {
+    public AmazonConfiguration fromJson(InputStream json) throws ConfigurationConverterException {
         AmazonRawConfiguration amazonRawConfiguration = jsonToAmazonRawConfiguration(json);
 
         DatabaseConfiguration databaseConfiguration = toDatabaseConfiguration(amazonRawConfiguration);
@@ -28,6 +31,7 @@ public class AmazonConfigurationConverter {
 
         return AmazonConfiguration.create(
                 amazonRawConfiguration.jobName(),
+                amazonRawConfiguration.alarmName(),
                 databaseConfiguration,
                 githubConfiguration,
                 emailNotifierConfiguration
@@ -61,9 +65,10 @@ public class AmazonConfigurationConverter {
         );
     }
 
-    private AmazonRawConfiguration jsonToAmazonRawConfiguration(String json) throws ConfigurationConverterException {
+    private AmazonRawConfiguration jsonToAmazonRawConfiguration(InputStream json) throws ConfigurationConverterException {
         try {
-            return gson.fromJson(json, AmazonRawConfiguration.class);
+            InputStreamReader reader = new InputStreamReader(json);
+            return gson.fromJson(reader, AmazonRawConfiguration.class);
         } catch (Exception e) {
             throw new ConfigurationConverterException(e);
         }
