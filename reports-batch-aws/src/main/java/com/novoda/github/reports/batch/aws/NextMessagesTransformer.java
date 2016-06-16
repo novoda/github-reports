@@ -12,7 +12,8 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Func1;
 
-public abstract class NextMessagesTransformer<T, M extends AmazonQueueMessage> implements Observable.Transformer<Response<List<T>>, AmazonQueueMessage> {
+public abstract class NextMessagesTransformer<T, M extends AmazonQueueMessage>
+        implements Observable.Transformer<Response<List<T>>, AmazonQueueMessage> {
 
     private final NextPageExtractor nextPageExtractor;
     private final LastPageExtractor lastPageExtractor;
