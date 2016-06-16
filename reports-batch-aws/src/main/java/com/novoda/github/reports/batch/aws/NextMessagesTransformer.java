@@ -68,11 +68,11 @@ public abstract class NextMessagesTransformer<T, M extends AmazonQueueMessage>
         List<AmazonQueueMessage> messages = new ArrayList<>();
 
         List<T> items = response.body();
-        items.forEach(item -> messages.add(getDerivedMessage(item)));
+        items.forEach(item -> messages.addAll(getDerivedMessage(item)));
 
         return messages;
     }
 
-    protected abstract AmazonQueueMessage getDerivedMessage(T item);
+    protected abstract List<AmazonQueueMessage> getDerivedMessage(T item);
 
 }

@@ -2,10 +2,14 @@ package com.novoda.github.reports.batch.aws.repository;
 
 import com.novoda.github.reports.aws.queue.AmazonGetIssuesQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonGetRepositoriesQueueMessage;
+import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.aws.NextMessagesTransformer;
 import com.novoda.github.reports.service.network.LastPageExtractor;
 import com.novoda.github.reports.service.network.NextPageExtractor;
 import com.novoda.github.reports.service.repository.GithubRepository;
+
+import java.util.Collections;
+import java.util.List;
 
 class NextMessagesRepositoryTransformer extends NextMessagesTransformer<GithubRepository, AmazonGetRepositoriesQueueMessage> {
 
@@ -37,8 +41,8 @@ class NextMessagesRepositoryTransformer extends NextMessagesTransformer<GithubRe
     }
 
     @Override
-    protected AmazonGetIssuesQueueMessage getDerivedMessage(GithubRepository repository) {
-        return AmazonGetIssuesQueueMessage.create(
+    protected List<AmazonQueueMessage> getDerivedMessage(GithubRepository repository) {
+        return Collections.singletonList(AmazonGetIssuesQueueMessage.create(
                 ALWAYS_TERMINAL_MESSAGE,
                 FIRST_PAGE,
                 currentMessage.receiptHandle(),
@@ -46,6 +50,6 @@ class NextMessagesRepositoryTransformer extends NextMessagesTransformer<GithubRe
                 currentMessage.sinceOrNull(),
                 repository.getId(),
                 repository.getName()
-        );
+        ));
     }
 }
