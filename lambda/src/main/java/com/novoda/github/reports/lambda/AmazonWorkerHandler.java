@@ -49,10 +49,7 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
         }
 
         try {
-            return nextMessagesObservable
-                    .collect(ArrayList<AmazonQueueMessage>::new, ArrayList::add)
-                    .toBlocking()
-                    .first();
+            return collectDerivedMessagesFrom(nextMessagesObservable);
         } catch (RuntimeException exception) {
             Throwable cause = exception.getCause();
             if (cause != null) {
@@ -61,6 +58,13 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             throw exception;
         }
 
+    }
+
+    private ArrayList<AmazonQueueMessage> collectDerivedMessagesFrom(Observable<AmazonQueueMessage> nextMessagesObservable) {
+        return nextMessagesObservable
+                .collect(ArrayList<AmazonQueueMessage>::new, ArrayList::add)
+                .toBlocking()
+                .first();
     }
 
 }
