@@ -37,12 +37,16 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             AmazonGetRepositoriesQueueMessage message = (AmazonGetRepositoriesQueueMessage) queueMessage;
             nextMessagesObservable = repositoriesServiceClient.getRepositoriesFor(message);
         } else if (queueMessage instanceof AmazonGetIssuesQueueMessage) {
+            AmazonGetIssuesQueueMessage message = (AmazonGetIssuesQueueMessage) queueMessage;
             // TODO
         } else if (queueMessage instanceof AmazonGetEventsQueueMessage) {
+            AmazonGetEventsQueueMessage message = (AmazonGetEventsQueueMessage) queueMessage;
             // TODO
         } else if (queueMessage instanceof AmazonGetCommentsQueueMessage) {
+            AmazonGetCommentsQueueMessage message = (AmazonGetCommentsQueueMessage) queueMessage;
             // TODO
         } else if (queueMessage instanceof AmazonGetReviewCommentsQueueMessage) {
+            AmazonGetReviewCommentsQueueMessage message = (AmazonGetReviewCommentsQueueMessage) queueMessage;
             // TODO
         } else {
             throw new MessageNotSupportedException(queueMessage);
