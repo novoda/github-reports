@@ -4,6 +4,7 @@ import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.queue.QueueMessage;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
+import com.novoda.github.reports.service.pullrequest.GithubPullRequestService;
 import com.novoda.github.reports.service.pullrequest.PullRequestService;
 
 import rx.Observable;
@@ -14,7 +15,13 @@ public class ReviewCommentsServiceClient {
 
     private final PullRequestService pullRequestService;
     private final DateToISO8601Converter dateConverter;
-    
+
+    public static ReviewCommentsServiceClient newInstance() {
+        PullRequestService pullRequestService = GithubPullRequestService.newInstance();
+        DateToISO8601Converter dateConverter = new DateToISO8601Converter();
+        return new ReviewCommentsServiceClient(pullRequestService, dateConverter);
+    }
+
     ReviewCommentsServiceClient(PullRequestService pullRequestService, DateToISO8601Converter dateConverter) {
         this.pullRequestService = pullRequestService;
         this.dateConverter = dateConverter;
