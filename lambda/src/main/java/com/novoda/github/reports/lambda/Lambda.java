@@ -48,6 +48,7 @@ public class Lambda {
         log(context, "Handling configuration:");
         log(context, amazonConfiguration.toString());
 
+        // TODO: enable this once all the pieces have been implemented
         // worker.doWork(amazonConfiguration);
 
         log(context, "Work done.");
