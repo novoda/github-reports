@@ -39,8 +39,8 @@ public class ResponseRepositoryIssuePersistTransformerTest {
     public void setUp() {
         initMocks(this);
 
-        RepositoryIssue aRepositoryIssue = new RepositoryIssue(new GithubRepository(1L), new GithubIssue());
-        RepositoryIssue anotherRepositoryIssue = new RepositoryIssue(new GithubRepository(2L), new GithubIssue());
+        RepositoryIssue aRepositoryIssue = new RepositoryIssue(new GithubRepository(1L), new GithubIssue(1);
+        RepositoryIssue anotherRepositoryIssue = new RepositoryIssue(new GithubRepository(2L), new GithubIssue(2));
 
         List<RepositoryIssue> list = Arrays.asList(aRepositoryIssue, anotherRepositoryIssue);
         response = Response.success(list);
