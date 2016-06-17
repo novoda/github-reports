@@ -151,12 +151,8 @@ public class BasicWorker<
 
     @Override
     public void rescheduleImmediately(C configuration) {
-        configuration = withNoAlarmIntoConfiguration(configuration);
+        configuration = configuration.withNoAlarmName();
         workerService.startWorker(configuration);
-    }
-
-    private C withNoAlarmIntoConfiguration(C configuration) {
-        return configuration.withAlarmName(null);
     }
 
     private void handleAnyOtherException(C configuration, Q queue, Throwable t) {

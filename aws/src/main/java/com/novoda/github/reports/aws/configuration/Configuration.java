@@ -18,6 +18,8 @@ public interface Configuration<N extends NotifierConfiguration> {
 
     <C extends Configuration<N>> C withAlarmName(String alarmName);
 
+    <C extends Configuration<N>> C withNoAlarmName();
+
     default boolean hasAlarm() {
         return !StringHelper.isNullOrEmpty(alarmName());
     }
