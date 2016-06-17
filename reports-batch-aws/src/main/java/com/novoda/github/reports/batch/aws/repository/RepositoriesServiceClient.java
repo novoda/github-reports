@@ -43,7 +43,7 @@ public class RepositoriesServiceClient {
         this.converter = converter;
     }
 
-    public Observable<AmazonQueueMessage> getRepositoriesFor(AmazonGetRepositoriesQueueMessage message) {
+    public Observable<AmazonQueueMessage> retrieveRepositoriesFor(AmazonGetRepositoriesQueueMessage message) {
         return repositoryService
                 .getRepositoriesFor(message.organisationName(), pageFrom(message), DEFAULT_PER_PAGE_COUNT)
                 .lift(new PersistOperator<>(repoDataLayer, converter))
