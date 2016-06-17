@@ -15,6 +15,9 @@ import rx.functions.Func1;
 public abstract class NextMessagesTransformer<T, M extends AmazonQueueMessage>
         implements Observable.Transformer<Response<List<T>>, AmazonQueueMessage> {
 
+    protected static final long FIRST_PAGE = 1L;
+    protected static final boolean ALWAYS_TERMINAL_MESSAGE = true;
+
     private final NextPageExtractor nextPageExtractor;
     private final LastPageExtractor lastPageExtractor;
 
