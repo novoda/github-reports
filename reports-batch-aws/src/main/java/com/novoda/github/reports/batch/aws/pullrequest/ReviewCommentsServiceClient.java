@@ -70,7 +70,7 @@ public class ReviewCommentsServiceClient {
                         DEFAULT_PER_PAGE_COUNT
                 )
                         .compose(new TransformToRepositoryIssueEvent(message))
-                //.compose(ResponseRepositoryIssuePersistTransformer.newInstance())
+                        .compose(ResponseRepositoryIssueEventPersistTransformer.newInstance())
                 //.compose(NextMessagesReviewCommentsTransformer.newInstance(message))
                 ;
 
