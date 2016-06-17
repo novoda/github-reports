@@ -64,7 +64,7 @@ public class ReviewCommentsServiceClient {
                         pageFrom(message),
                         DEFAULT_PER_PAGE_COUNT
                 )
-                //        .compose(new TransformToRepositoryIssueEvent())
+                        .compose(new TransformToRepositoryIssueEvent())
                 //.compose(ResponseRepositoryIssuePersistTransformer.newInstance())
                 //.compose(NextMessagesReviewCommentsTransformer.newInstance(message))
                 ;
@@ -80,5 +80,13 @@ public class ReviewCommentsServiceClient {
         return Math.toIntExact(message.issueNumber());
     }
 
+    class TransformToRepositoryIssueEvent implements Observable.Transformer<Response<List<GithubComment>>, Response<List<RepositoryIssueEvent>>> {
+
+        @Override
+        public Observable<Response<List<RepositoryIssueEvent>>> call(Observable<Response<List<GithubComment>>> responseObservable) {
+            // TODO transform to RepositoryIssueEvent transformer
+            return Observable.empty();
+        }
+    }
 
 }
