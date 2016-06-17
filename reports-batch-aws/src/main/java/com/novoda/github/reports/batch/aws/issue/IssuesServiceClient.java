@@ -1,6 +1,7 @@
 package com.novoda.github.reports.batch.aws.issue;
 
 import com.novoda.github.reports.aws.queue.AmazonGetIssuesQueueMessage;
+import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.queue.QueueMessage;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.issue.GithubIssueService;
@@ -35,13 +36,13 @@ public class IssuesServiceClient {
         this.dateConverter = dateConverter;
     }
 
-    public Observable retrieveIssuesFor(AmazonGetIssuesQueueMessage message) {
+    public Observable<AmazonQueueMessage> retrieveIssuesFor(AmazonGetIssuesQueueMessage message) {
         String date = dateConverter.toISO8601NoMillisOrNull(message.sinceOrNull());
         return issueService
                 .getIssuesFor(
                         message.organisationName(),
                         message.repositoryName(),
-                        GithubIssue.State.ALL,
+                        DEFAULT_STATE,
                         date,
                         pageFrom(message),
                         DEFAULT_PER_PAGE_COUNT
