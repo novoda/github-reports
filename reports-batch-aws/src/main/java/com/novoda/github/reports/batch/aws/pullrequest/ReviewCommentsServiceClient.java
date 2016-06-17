@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.aws.issue;
+package com.novoda.github.reports.batch.aws.pullrequest;
 
 import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
