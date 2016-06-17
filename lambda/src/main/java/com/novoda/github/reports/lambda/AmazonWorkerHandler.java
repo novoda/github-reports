@@ -8,6 +8,7 @@ import com.novoda.github.reports.aws.queue.AmazonGetRepositoriesQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.worker.WorkerHandler;
+import com.novoda.github.reports.batch.aws.issue.IssuesServiceClient;
 import com.novoda.github.reports.batch.aws.repository.RepositoriesServiceClient;
 
 import java.util.ArrayList;
@@ -18,14 +19,17 @@ import rx.Observable;
 public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
     private final RepositoriesServiceClient repositoriesServiceClient;
+    private final IssuesServiceClient issuesServiceClient;
 
     public static AmazonWorkerHandler newInstance() {
         RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
-        return new AmazonWorkerHandler(repositoriesServiceClient);
+        IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
+        return new AmazonWorkerHandler(repositoriesServiceClient, issuesServiceClient);
     }
 
-    AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient) {
+    AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient, IssuesServiceClient issuesServiceClient) {
         this.repositoriesServiceClient = repositoriesServiceClient;
+        this.issuesServiceClient = issuesServiceClient;
     }
 
     @Override
@@ -38,7 +42,7 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             nextMessagesObservable = repositoriesServiceClient.getRepositoriesFor(message);
         } else if (queueMessage instanceof AmazonGetIssuesQueueMessage) {
             AmazonGetIssuesQueueMessage message = (AmazonGetIssuesQueueMessage) queueMessage;
-            // TODO
+            nextMessagesObservable = issuesServiceClient.retrieveIssuesFor(message);
         } else if (queueMessage instanceof AmazonGetEventsQueueMessage) {
             AmazonGetEventsQueueMessage message = (AmazonGetEventsQueueMessage) queueMessage;
             // TODO
