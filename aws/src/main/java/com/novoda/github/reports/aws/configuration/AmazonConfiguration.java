@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Nullable;
 @AutoValue
 public abstract class AmazonConfiguration implements Configuration<EmailNotifierConfiguration> {
 
+    private static final String NO_ALARM_NAME = null;
+
     public static AmazonConfiguration create(String jobName,
                                              @Nullable String alarmName,
                                              DatabaseConfiguration databaseConfiguration,
@@ -31,6 +33,11 @@ public abstract class AmazonConfiguration implements Configuration<EmailNotifier
     @Override
     public AmazonConfiguration withAlarmName(String alarmName) {
         return toBuilder().alarmName(alarmName).build();
+    }
+
+    @Override
+    public AmazonConfiguration withNoAlarmName() {
+        return toBuilder().alarmName(NO_ALARM_NAME).build();
     }
 
     abstract Builder toBuilder();
