@@ -1,44 +1,65 @@
 package com.novoda.github.reports.batch.aws.issue;
 
+import com.novoda.github.reports.aws.queue.AmazonGetEventsQueueMessage;
+import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
+import com.novoda.github.reports.aws.queue.QueueMessage;
+import com.novoda.github.reports.service.issue.GithubEvent;
 import com.novoda.github.reports.service.issue.GithubIssueService;
 import com.novoda.github.reports.service.issue.IssueService;
-import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventEvent;
-import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersistTransformer;
 
-import java.util.Date;
-
-import retrofit2.Response;
 import rx.Observable;
+import rx.functions.Func3;
 
 public class EventsServiceClient {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
 
     private final IssueService issueService;
-    private final RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer;
 
     public static EventsServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
-        RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer = RepositoryIssueEventPersistTransformer.newInstance();
-        return new EventsServiceClient(issueService, repositoryIssueEventPersistTransformer);
+        return new EventsServiceClient(issueService);
     }
 
-    public EventsServiceClient(IssueService issueService, RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer) {
+    private EventsServiceClient(IssueService issueService) {
         this.issueService = issueService;
-        this.repositoryIssueEventPersistTransformer = repositoryIssueEventPersistTransformer;
     }
 
-    public Observable<RepositoryIssueEvent> retrieveEventsFrom(RepositoryIssue repositoryIssue, Date since, int page) {
-        String organisation = repositoryIssue.getOwnerUsername();
-        String repositoryName = repositoryIssue.getRepositoryName();
-        int issueNumber = repositoryIssue.getIssueNumber();
-        return issueService.getEventsFor(organisation, repositoryName, issueNumber, page, DEFAULT_PER_PAGE_COUNT)
-                .flatMapIterable(Response::body)
-                .filter(event -> since == null || event.getCreatedAt().after(since))
-                .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
-                .compose(repositoryIssueEventPersistTransformer);
+    public Observable<AmazonQueueMessage> retrieveEventsFrom(AmazonGetEventsQueueMessage message) {
+        return issueService
+                .getEventsFor(
+                        message.organisationName(),
+                        message.repositoryName(),
+                        Math.toIntExact(message.issueNumber()),
+                        pageFrom(message),
+                        DEFAULT_PER_PAGE_COUNT
+                )
+                .compose(TransformToRepositoryIssueEvent.<GithubEvent, RepositoryIssueEvent>newInstance(
+                        message.repositoryId(),
+                        message.issueNumber(),
+                        RepositoryIssueEventEvent::newInstance
+                ))
+                .compose(ResponseRepositoryIssueEventPersistTransformer.newInstance())
+                .compose(NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetEventsQueueMessage()));
+    }
+
+    private Func3<Boolean, Long, AmazonGetEventsQueueMessage, AmazonGetEventsQueueMessage> buildAmazonGetEventsQueueMessage() {
+        return (isTerminal, nextPage, amazonGetCommentsQueueMessage) -> AmazonGetEventsQueueMessage.create(
+                isTerminal,
+                nextPage,
+                amazonGetCommentsQueueMessage.receiptHandle(),
+                amazonGetCommentsQueueMessage.organisationName(),
+                amazonGetCommentsQueueMessage.sinceOrNull(),
+                amazonGetCommentsQueueMessage.repositoryId(),
+                amazonGetCommentsQueueMessage.repositoryName(),
+                amazonGetCommentsQueueMessage.issueNumber()
+        );
+    }
+
+    private int pageFrom(QueueMessage message) {
+        return Math.toIntExact(message.page());
     }
 
 }
