@@ -10,6 +10,7 @@ import java.util.Date;
 import retrofit2.Response;
 import rx.Observable;
 
+@Deprecated
 public class PullRequestServiceClient {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
