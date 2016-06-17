@@ -41,20 +41,20 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
     }
 
     @Override
-    public AmazonAlarm createAlarm(AmazonConfiguration configuration, long minutes, String workerName) {
-        String alarmName = getAlarmName(configuration);
-        return AmazonAlarm.newInstance(configuration, minutes, alarmName, workerName);
+    public AmazonAlarm createNewAlarm(long minutes, String jobName, String workerName) {
+        String alarmName = createNewAlarmName(jobName);
+        return AmazonAlarm.newInstance(minutes, alarmName, workerName);
     }
 
-    private String getAlarmName(AmazonConfiguration configuration) {
-        return configuration.jobName() + ALARM_NAME_SEPARATOR + systemClock.currentTimeSeconds();
+    private String createNewAlarmName(String jobName) {
+        return jobName + ALARM_NAME_SEPARATOR + systemClock.currentTimeSeconds();
     }
 
     @Override
-    public AmazonAlarm postAlarm(AmazonAlarm alarm) throws AlarmOperationFailedException {
+    public AmazonAlarm postAlarm(AmazonAlarm alarm, AmazonConfiguration configuration) throws AlarmOperationFailedException {
         try {
             saveRule(alarm);
-            addTargetToRule(alarm);
+            addTargetToRule(alarm, configuration);
         } catch (Exception e) {
             throw new AlarmOperationFailedException("postAlarm", e);
         }
@@ -73,23 +73,23 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
                 .withState(RuleState.ENABLED);
     }
 
-    private void addTargetToRule(AmazonAlarm alarm) throws ConfigurationConverterException {
-        PutTargetsRequest putTargetsRequest = buildPutTargetsRequest(alarm);
+    private void addTargetToRule(AmazonAlarm alarm, AmazonConfiguration configuration) throws ConfigurationConverterException {
+        PutTargetsRequest putTargetsRequest = buildPutTargetsRequest(alarm, configuration);
         amazonEventsClient.putTargets(putTargetsRequest);
     }
 
-    private PutTargetsRequest buildPutTargetsRequest(AmazonAlarm alarm) throws ConfigurationConverterException {
-        Target target = buildTarget(alarm);
+    private PutTargetsRequest buildPutTargetsRequest(AmazonAlarm alarm, AmazonConfiguration configuration) throws ConfigurationConverterException {
+        Target target = buildTarget(alarm, configuration);
         return new PutTargetsRequest()
                 .withRule(getRuleName(alarm))
                 .withTargets(target);
     }
 
-    private Target buildTarget(AmazonAlarm alarm) throws ConfigurationConverterException {
+    private Target buildTarget(AmazonAlarm alarm, AmazonConfiguration configuration) throws ConfigurationConverterException {
         return new Target()
                 .withId(getRuleName(alarm))
                 .withArn(alarm.getWorkerName())
-                .withInput(amazonConfigurationConverter.toJson(alarm.getConfiguration()));
+                .withInput(amazonConfigurationConverter.toJson(configuration));
     }
 
     private String getScheduleExpressionForMinutes(long minutes) {
@@ -100,30 +100,36 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
 
     @Override
     public AmazonAlarm removeAlarm(AmazonAlarm alarm) {
-        removeTargetFromRule(alarm);
-        removeRule(alarm);
+        String alarmName = alarm.getName();
+        removeAlarm(alarmName);
         return alarm;
     }
 
-    private void removeTargetFromRule(AmazonAlarm alarm) {
-        RemoveTargetsRequest removeTargetsRequest = buildRemoveTargetsRequest(alarm);
+    @Override
+    public String removeAlarm(String alarmName) {
+        removeTargetFromRule(alarmName);
+        removeRule(alarmName);
+        return alarmName;
+    }
+
+    private void removeTargetFromRule(String alarmName) {
+        RemoveTargetsRequest removeTargetsRequest = buildRemoveTargetsRequest(alarmName);
         amazonEventsClient.removeTargets(removeTargetsRequest);
     }
 
-    private RemoveTargetsRequest buildRemoveTargetsRequest(AmazonAlarm alarm) {
-        String ruleName = getRuleName(alarm);
+    private RemoveTargetsRequest buildRemoveTargetsRequest(String alarmName) {
         return new RemoveTargetsRequest()
-                .withIds(ruleName)
-                .withRule(ruleName);
+                .withIds(alarmName)
+                .withRule(alarmName);
     }
 
-    private void removeRule(AmazonAlarm alarm) {
-        DeleteRuleRequest deleteRuleRequest = buildDeleteRuleRequest(alarm);
+    private void removeRule(String alarmName) {
+        DeleteRuleRequest deleteRuleRequest = buildDeleteRuleRequest(alarmName);
         amazonEventsClient.deleteRule(deleteRuleRequest);
     }
 
-    private DeleteRuleRequest buildDeleteRuleRequest(AmazonAlarm alarm) {
-        return new DeleteRuleRequest().withName(getRuleName(alarm));
+    private DeleteRuleRequest buildDeleteRuleRequest(String alarmName) {
+        return new DeleteRuleRequest().withName(alarmName);
     }
 
     private String getRuleName(AmazonAlarm alarm) {

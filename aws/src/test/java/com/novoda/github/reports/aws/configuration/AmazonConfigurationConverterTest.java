@@ -1,12 +1,9 @@
 package com.novoda.github.reports.aws.configuration;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,6 +15,7 @@ import static junit.framework.TestCase.assertEquals;
 public class AmazonConfigurationConverterTest {
 
     private static final String ANY_JOB_NAME = "some-job";
+    private static final String ANY_ALARM_NAME = "some-alarm";
     private static final String ANY_CONN_STRING = "jdbc:mysql://something-something-danger-zone";
     private static final String ANY_USERNAME = "sterling";
     private static final String ANY_PASSWORD = "mawp";
@@ -44,6 +42,7 @@ public class AmazonConfigurationConverterTest {
     );
     private static AmazonConfiguration EXPECTED_CONFIGURATION = AmazonConfiguration.create(
             ANY_JOB_NAME,
+            ANY_ALARM_NAME,
             DATABASE_CONFIGURATION,
             GITHUB_CONFIGURATION,
             EMAIL_NOTIFIER_CONFIGURATION
@@ -61,7 +60,7 @@ public class AmazonConfigurationConverterTest {
 
     @Test
     public void givenValidJson_whenFromJson_thenReturnCorrectObject() throws IOException, ConfigurationConverterException {
-        String json = givenJsonFromResource("configuration.json");
+        InputStream json = givenJsonFromResource("configuration.json");
 
         AmazonConfiguration actual = converter.fromJson(json);
 
@@ -70,7 +69,7 @@ public class AmazonConfigurationConverterTest {
 
     @Test
     public void givenJsonWithMissingObject_whenFromJson_thenThrowConfigurationConverterException() throws IOException, ConfigurationConverterException {
-        String json = givenJsonFromResource("configuration_all_missing.json");
+        InputStream json = givenJsonFromResource("configuration_all_missing.json");
 
         expectedException.expect(ConfigurationConverterException.class);
         converter.fromJson(json);
@@ -78,16 +77,23 @@ public class AmazonConfigurationConverterTest {
 
     @Test
     public void givenEmptyJson_whenFromJson_thenThrowConfigurationConverterException() throws IOException, ConfigurationConverterException {
-        String json = givenJsonFromResource("configuration_empty.json");
+        InputStream json = givenJsonFromResource("configuration_empty.json");
 
         expectedException.expect(ConfigurationConverterException.class);
         converter.fromJson(json);
     }
 
-    private String givenJsonFromResource(String resource) throws IOException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resource);
-        BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream));
-        return buffer.lines().collect(Collectors.joining("\n"));
+    @Test
+    public void givenValidJsonWithNullAlarmName_whenFromJson_thenDoNotThrowConfigurationConverterExceptionAndVerifyHasNoAlarm() throws ConfigurationConverterException, IOException {
+        InputStream json = givenJsonFromResource("configuration_no_alarm.json");
+
+        AmazonConfiguration actual = converter.fromJson(json);
+
+        assertEquals(false, actual.hasAlarm());
+    }
+
+    private InputStream givenJsonFromResource(String resource) throws IOException {
+        return getClass().getClassLoader().getResourceAsStream(resource);
     }
 
 }

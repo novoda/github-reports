@@ -29,6 +29,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class EmailNotifierTest {
 
     private static final String ANY_JOB_NAME = "some-job";
+    private static final String ANY_ALARM_NAME = "some-alarm";
     private static final String ANY_CONN_STRING = "jdbc:mysql://something-something-danger-zone";
     private static final String ANY_USERNAME = "sterling";
     private static final String ANY_PASSWORD = "mawp";
@@ -55,6 +56,7 @@ public class EmailNotifierTest {
     );
     private static AmazonConfiguration AMAZON_CONFIGURATION = AmazonConfiguration.create(
             ANY_JOB_NAME,
+            ANY_ALARM_NAME,
             DATABASE_CONFIGURATION,
             GITHUB_CONFIGURATION,
             EMAIL_NOTIFIER_CONFIGURATION

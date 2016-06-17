@@ -25,6 +25,7 @@ public class EmailNotifierPlayground {
         );
         AmazonConfiguration amazonConfiguration = AmazonConfiguration.create(
                 "My amazing job",
+                "My dummy alarm",
                 DatabaseConfiguration.create("", new Properties()),
                 GithubConfiguration.create(""),
                 notifierConfiguration

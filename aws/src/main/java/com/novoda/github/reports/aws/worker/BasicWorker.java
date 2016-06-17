@@ -19,7 +19,7 @@ import com.novoda.github.reports.util.SystemClock;
 
 import java.util.List;
 
-class BasicWorker<
+public class BasicWorker<
         A extends Alarm,
         M extends QueueMessage,
         Q extends Queue<M>,
@@ -48,12 +48,12 @@ class BasicWorker<
         return new BasicWorker<>(workerService, alarmService, queueService, notifierService, workerHandlerService, systemClock);
     }
 
-    private BasicWorker(WorkerService workerService,
-                        AlarmService<A, C> alarmService,
-                        QueueService<Q> queueService,
-                        NotifierService<N, C> notifierService,
-                        WorkerHandlerService<M> workerHandlerService,
-                        SystemClock systemClock) {
+    protected BasicWorker(WorkerService workerService,
+                          AlarmService<A, C> alarmService,
+                          QueueService<Q> queueService,
+                          NotifierService<N, C> notifierService,
+                          WorkerHandlerService<M> workerHandlerService,
+                          SystemClock systemClock) {
         this.workerService = workerService;
         this.alarmService = alarmService;
         this.queueService = queueService;
@@ -63,40 +63,40 @@ class BasicWorker<
     }
 
     @Override
-    public void doWork(EventSource<N, C> eventSource) throws WorkerOperationFailedException {
-        if (eventSource instanceof Alarm) {
-            alarmService.removeAlarm((A) eventSource);
+    public void doWork(C configuration) throws WorkerOperationFailedException {
+        if (configuration.hasAlarm()) {
+            String alarmName = configuration.alarmName();
+            alarmService.removeAlarm(alarmName);
         }
 
-        Q queue = getQueue(eventSource);
+        Q queue = getQueue(configuration);
 
         try {
             M queueMessage = queue.getItem();
-            List<M> newMessages = handleQueueMessage(eventSource, queueMessage);
+            List<M> newMessages = handleQueueMessage(configuration, queueMessage);
             updateQueue(queue, queueMessage, newMessages);
-            rescheduleImmediately(eventSource.getConfiguration());
+            rescheduleImmediately(configuration);
         } catch (EmptyQueueException emptyQueue) {
-            handleEmptyQueueException(eventSource, queue);
+            handleEmptyQueueException(configuration, queue);
         } catch (MessageConverterException e) {
-            handleMessageConverterException(eventSource, e);
+            handleMessageConverterException(configuration, e);
         } catch (RateLimitEncounteredException e) {
-            handleRateLimitEncounteredException(eventSource, e);
+            handleRateLimitEncounteredException(configuration, e);
         } catch (QueueOperationFailedException e) {
-            handleQueueOperationFailedException(eventSource, e);
+            handleQueueOperationFailedException(configuration, e);
         } catch (Throwable t) {
-            handleAnyOtherException(eventSource, queue, t);
+            handleAnyOtherException(configuration, queue, t);
         }
     }
 
-    private Q getQueue(EventSource<N, C> eventSource) {
-        Configuration configuration = eventSource.getConfiguration();
+    private Q getQueue(C configuration) {
         String queueName = configuration.jobName();
         return queueService.getQueue(queueName);
     }
 
-    private List<M> handleQueueMessage(EventSource<N, C> eventSource, M queueMessage) throws Throwable {
+    private List<M> handleQueueMessage(C configuration, M queueMessage) throws Throwable {
         WorkerHandler<M> workerHandler = workerHandlerService.getWorkerHandler();
-        return workerHandler.handleQueueMessage(eventSource.getConfiguration(), queueMessage);
+        return workerHandler.handleQueueMessage(configuration, queueMessage);
     }
 
     private void updateQueue(Q queue, M queueMessage, List<M> newMessages) throws QueueOperationFailedException {
@@ -104,14 +104,13 @@ class BasicWorker<
         queue.addItems(newMessages);
     }
 
-    private void handleEmptyQueueException(EventSource<N, C> eventSource, Q queue) {
-        notifyCompletion(eventSource);
+    private void handleEmptyQueueException(C configuration, Q queue) {
+        notifyCompletion(configuration);
         queueService.removeQueue(queue);
     }
 
-    private void notifyCompletion(EventSource<N, C> eventSource) {
+    private void notifyCompletion(C configuration) {
         Notifier<N, C> notifier = getNotifier();
-        C configuration = eventSource.getConfiguration();
         try {
             notifier.notifyCompletion(configuration);
         } catch (NotifierOperationFailedException e) {
@@ -119,48 +118,53 @@ class BasicWorker<
         }
     }
 
-    private void handleMessageConverterException(EventSource<N, C> eventSource, MessageConverterException e) {
-        notifyError(eventSource, e);
+    private void handleMessageConverterException(C configuration, MessageConverterException e) {
+        notifyError(configuration, e);
     }
 
-    private void handleRateLimitEncounteredException(EventSource<N, C> eventSource, RateLimitEncounteredException e)
+    private void handleRateLimitEncounteredException(C configuration, RateLimitEncounteredException e)
             throws WorkerOperationFailedException {
 
-        rescheduleForLater(eventSource.getConfiguration(), systemClock.getDifferenceInMinutesFromNow(e.getResetDate()));
+        rescheduleForLater(configuration, systemClock.getDifferenceInMinutesFromNow(e.getResetDate()));
     }
 
     @Override
     public void rescheduleForLater(C configuration, long minutesFromNow) throws WorkerOperationFailedException {
         String workerName = workerService.getWorkerName();
-        A alarm = alarmService.createAlarm(configuration, minutesFromNow, workerName);
+        A alarm = alarmService.createNewAlarm(minutesFromNow, configuration.jobName(), workerName);
+        configuration = withNewAlarmIntoConfiguration(alarm, configuration);
         try {
-            alarmService.postAlarm(alarm);
+            alarmService.postAlarm(alarm, configuration);
         } catch (AlarmOperationFailedException e) {
             throw new WorkerOperationFailedException("rescheduleForLater", e);
         }
     }
 
-    private void handleQueueOperationFailedException(EventSource<N, C> eventSource, QueueOperationFailedException e) {
-        notifyError(eventSource, e);
-        rescheduleImmediately(eventSource.getConfiguration());
+    private C withNewAlarmIntoConfiguration(A alarm, C configuration) {
+        return configuration.withAlarmName(alarm.getName());
+    }
+
+    private void handleQueueOperationFailedException(C configuration, QueueOperationFailedException e) {
+        notifyError(configuration, e);
+        rescheduleImmediately(configuration);
     }
 
     @Override
     public void rescheduleImmediately(C configuration) {
+        configuration = configuration.withNoAlarmName();
         workerService.startWorker(configuration);
     }
 
-    private void handleAnyOtherException(EventSource<N, C> eventSource, Q queue, Throwable t) {
+    private void handleAnyOtherException(C configuration, Q queue, Throwable t) {
         queue.purgeQueue();
         queueService.removeQueue(queue);
-        notifyError(eventSource, t);
+        notifyError(configuration, t);
     }
 
-    private void notifyError(EventSource<N, C> eventSource, Throwable t) {
+    private void notifyError(C configuration, Throwable t) {
         t.printStackTrace();
 
         Notifier<N, C> notifier = getNotifier();
-        C configuration = eventSource.getConfiguration();
         try {
             notifier.notifyError(configuration, t);
         } catch (NotifierOperationFailedException e) {
