@@ -13,9 +13,6 @@ import java.util.List;
 
 class NextMessagesRepositoryTransformer extends NextMessagesTransformer<GithubRepository, AmazonGetRepositoriesQueueMessage> {
 
-    private static final long FIRST_PAGE = 1L;
-    private static final boolean ALWAYS_TERMINAL_MESSAGE = true;
-
     public static NextMessagesRepositoryTransformer newInstance(AmazonGetRepositoriesQueueMessage message) {
         NextPageExtractor nextPageExtractor = NextPageExtractor.newInstance();
         LastPageExtractor lastPageExtractor = LastPageExtractor.newInstance();

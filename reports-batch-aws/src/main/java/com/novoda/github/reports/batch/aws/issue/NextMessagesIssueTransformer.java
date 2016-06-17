@@ -44,8 +44,8 @@ class NextMessagesIssueTransformer extends NextMessagesTransformer<RepositoryIss
 
         if (item.isPullRequest()) {
             derived.add(AmazonGetReviewCommentsQueueMessage.create(
-                    true,
-                    1L,
+                    ALWAYS_TERMINAL_MESSAGE,
+                    FIRST_PAGE,
                     currentMessage.receiptHandle(),
                     currentMessage.organisationName(),
                     currentMessage.sinceOrNull(),
@@ -56,8 +56,8 @@ class NextMessagesIssueTransformer extends NextMessagesTransformer<RepositoryIss
         }
 
         derived.add(AmazonGetCommentsQueueMessage.create(
-                true,
-                1L,
+                ALWAYS_TERMINAL_MESSAGE,
+                FIRST_PAGE,
                 currentMessage.receiptHandle(),
                 currentMessage.organisationName(),
                 currentMessage.sinceOrNull(),
@@ -67,8 +67,8 @@ class NextMessagesIssueTransformer extends NextMessagesTransformer<RepositoryIss
         ));
 
         derived.add(AmazonGetEventsQueueMessage.create(
-                true,
-                1L,
+                ALWAYS_TERMINAL_MESSAGE,
+                FIRST_PAGE,
                 currentMessage.receiptHandle(),
                 currentMessage.organisationName(),
                 currentMessage.sinceOrNull(),
