@@ -21,8 +21,8 @@ public abstract class ResponsePersistTransformer<T> implements Observable.Transf
                 listResponse -> Observable
                         .from(listResponse.body())
                         .compose(persistTransformer)
-                        .collect((Func0<ArrayList<T>>) ArrayList::new, ArrayList::add)
-                        .<Response<List<T>>>map(list -> Response.success(list, listResponse.headers())));
+                        .collect((Func0<List<T>>) ArrayList::new, List::add)
+                        .map(list -> Response.success(list, listResponse.headers())));
     }
 
 }
