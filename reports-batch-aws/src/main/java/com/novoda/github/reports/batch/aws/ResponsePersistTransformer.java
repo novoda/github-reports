@@ -7,7 +7,7 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Func0;
 
-public class ResponsePersistTransformer<T> implements Observable.Transformer<Response<List<T>>, Response<List<T>>> {
+public abstract class ResponsePersistTransformer<T> implements Observable.Transformer<Response<List<T>>, Response<List<T>>> {
 
     private final Observable.Transformer<T, T> persistTransformer;
 
@@ -16,13 +16,13 @@ public class ResponsePersistTransformer<T> implements Observable.Transformer<Res
     }
 
     @Override
-        public Observable<Response<List<T>>> call(Observable<Response<List<T>>> responseObservable) {
-            return responseObservable.flatMap(listResponse -> Observable
-                    .from(listResponse.body())
-                    .compose(persistTransformer)
-                    .collect((Func0<ArrayList<T>>) ArrayList::new, ArrayList::add)
-                    .<Response<List<T>>>map(list -> Response.success(list, listResponse.headers())));
-        }
-
+    public Observable<Response<List<T>>> call(Observable<Response<List<T>>> responseObservable) {
+        return responseObservable.flatMap(
+                listResponse -> Observable
+                        .from(listResponse.body())
+                        .compose(persistTransformer)
+                        .collect((Func0<ArrayList<T>>) ArrayList::new, ArrayList::add)
+                        .<Response<List<T>>>map(list -> Response.success(list, listResponse.headers())));
+    }
 
 }
