@@ -17,7 +17,6 @@ import rx.Observable;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
-import rx.subjects.PublishSubject;
 
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -29,15 +28,9 @@ public class ResponseRepositoryIssuePersistTransformerTest {
     private Response<List<RepositoryIssue>> response;
 
     private TestObserver<Response<List<RepositoryIssue>>> testObserver;
-
     private TestSubscriber<Response<List<RepositoryIssue>>> testSubscriber;
-
     private TestScheduler testScheduler;
 
-    private PublishSubject<RepositoryIssue> persistPublishSubject;
-    private Observable<RepositoryIssue> persistObservable;
-
-    private PublishSubject<Response<List<RepositoryIssue>>> publishSubject;
     private Observable<Response<List<RepositoryIssue>>> observable;
 
     private ResponseRepositoryIssuePersistTransformer responsePersistTransformer;
@@ -55,10 +48,6 @@ public class ResponseRepositoryIssuePersistTransformerTest {
         testScheduler = new TestScheduler();
         testObserver = new TestObserver<>();
         testSubscriber = new TestSubscriber<>(testObserver);
-
-        persistPublishSubject = PublishSubject.create();
-        persistObservable = persistPublishSubject.asObservable();
-
         observable = Observable.from(Collections.singletonList(response));
 
         responsePersistTransformer = new ResponseRepositoryIssuePersistTransformer(mockPersistTransformer);
