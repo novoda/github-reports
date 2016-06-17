@@ -8,6 +8,7 @@ import com.novoda.github.reports.aws.queue.AmazonGetRepositoriesQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.worker.WorkerHandler;
+import com.novoda.github.reports.batch.aws.issue.IssuesServiceClient;
 import com.novoda.github.reports.batch.aws.repository.RepositoriesServiceClient;
 
 import java.util.ArrayList;
@@ -18,14 +19,17 @@ import rx.Observable;
 public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
     private final RepositoriesServiceClient repositoriesServiceClient;
+    private final IssuesServiceClient issuesServiceClient;
 
     public static AmazonWorkerHandler newInstance() {
         RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
-        return new AmazonWorkerHandler(repositoriesServiceClient);
+        IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
+        return new AmazonWorkerHandler(repositoriesServiceClient, issuesServiceClient);
     }
 
-    AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient) {
+    AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient, IssuesServiceClient issuesServiceClient) {
         this.repositoriesServiceClient = repositoriesServiceClient;
+        this.issuesServiceClient = issuesServiceClient;
     }
 
     @Override
@@ -37,22 +41,23 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             AmazonGetRepositoriesQueueMessage message = (AmazonGetRepositoriesQueueMessage) queueMessage;
             nextMessagesObservable = repositoriesServiceClient.getRepositoriesFor(message);
         } else if (queueMessage instanceof AmazonGetIssuesQueueMessage) {
-            // TODO
+            AmazonGetIssuesQueueMessage message = (AmazonGetIssuesQueueMessage) queueMessage;
+            nextMessagesObservable = issuesServiceClient.retrieveIssuesFor(message);
         } else if (queueMessage instanceof AmazonGetEventsQueueMessage) {
+            AmazonGetEventsQueueMessage message = (AmazonGetEventsQueueMessage) queueMessage;
             // TODO
         } else if (queueMessage instanceof AmazonGetCommentsQueueMessage) {
+            AmazonGetCommentsQueueMessage message = (AmazonGetCommentsQueueMessage) queueMessage;
             // TODO
         } else if (queueMessage instanceof AmazonGetReviewCommentsQueueMessage) {
+            AmazonGetReviewCommentsQueueMessage message = (AmazonGetReviewCommentsQueueMessage) queueMessage;
             // TODO
         } else {
             throw new MessageNotSupportedException(queueMessage);
         }
 
         try {
-            return nextMessagesObservable
-                    .collect(ArrayList<AmazonQueueMessage>::new, ArrayList::add)
-                    .toBlocking()
-                    .first();
+            return collectDerivedMessagesFrom(nextMessagesObservable);
         } catch (RuntimeException exception) {
             Throwable cause = exception.getCause();
             if (cause != null) {
@@ -61,6 +66,13 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             throw exception;
         }
 
+    }
+
+    private ArrayList<AmazonQueueMessage> collectDerivedMessagesFrom(Observable<AmazonQueueMessage> nextMessagesObservable) {
+        return nextMessagesObservable
+                .collect(ArrayList<AmazonQueueMessage>::new, ArrayList::add)
+                .toBlocking()
+                .first();
     }
 
 }
