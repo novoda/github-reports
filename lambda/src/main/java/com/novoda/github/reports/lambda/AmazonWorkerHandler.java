@@ -60,7 +60,6 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             // TODO
         } else if (queueMessage instanceof AmazonGetCommentsQueueMessage) {
             AmazonGetCommentsQueueMessage message = (AmazonGetCommentsQueueMessage) queueMessage;
-            RepositoryIssue repositoryIssue = getRepositoryIssue(message);
             nextMessagesObservable = commentsServiceClient.retrieveCommentsAsEventsFrom(message);
         } else if (queueMessage instanceof AmazonGetReviewCommentsQueueMessage) {
             AmazonGetReviewCommentsQueueMessage message = (AmazonGetReviewCommentsQueueMessage) queueMessage;

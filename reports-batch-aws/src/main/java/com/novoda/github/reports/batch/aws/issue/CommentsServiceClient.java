@@ -3,11 +3,17 @@ package com.novoda.github.reports.batch.aws.issue;
 import com.novoda.github.reports.aws.queue.AmazonGetCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.queue.QueueMessage;
+import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssueService;
 import com.novoda.github.reports.service.issue.IssueService;
+import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
+import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 
+import org.jetbrains.annotations.NotNull;
+
 import rx.Observable;
+import rx.functions.Func3;
 
 public class CommentsServiceClient {
 
@@ -39,9 +45,26 @@ public class CommentsServiceClient {
                         pageFrom(message),
                         DEFAULT_PER_PAGE_COUNT
                 )
-                .compose(TransformToRepositoryIssueEventComment.newInstance(message.repositoryId(), message.issueNumber()))
+                .compose(TransformToRepositoryIssueEvent.<GithubComment, RepositoryIssueEvent>newInstance(
+                        message.repositoryId(),
+                        message.issueNumber(),
+                        RepositoryIssueEventComment::new
+                ))
                 .compose(ResponseRepositoryIssueEventPersistTransformer.newInstance())
-                .compose(NextMessagesIssueEventCommentTransformer.newInstance(message));
+                .compose(NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetCommentsQueueMessage()));
+    }
+
+    private @NotNull Func3<Boolean, Long, AmazonGetCommentsQueueMessage, AmazonGetCommentsQueueMessage> buildAmazonGetCommentsQueueMessage() {
+        return (isTerminal, nextPage, amazonGetCommentsQueueMessage) -> AmazonGetCommentsQueueMessage.create(
+                isTerminal,
+                nextPage,
+                amazonGetCommentsQueueMessage.receiptHandle(),
+                amazonGetCommentsQueueMessage.organisationName(),
+                amazonGetCommentsQueueMessage.sinceOrNull(),
+                amazonGetCommentsQueueMessage.repositoryId(),
+                amazonGetCommentsQueueMessage.repositoryName(),
+                amazonGetCommentsQueueMessage.issueNumber()
+        );
     }
 
     private int pageFrom(QueueMessage message) {

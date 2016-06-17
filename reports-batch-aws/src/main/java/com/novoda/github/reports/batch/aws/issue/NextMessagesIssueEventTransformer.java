@@ -9,10 +9,38 @@ import com.novoda.github.reports.service.network.NextPageExtractor;
 import java.util.Collections;
 import java.util.List;
 
-abstract class NextMessagesIssueEventTransformer<M extends AmazonQueueMessage> extends NextMessagesTransformer<RepositoryIssueEvent, M> {
+import rx.functions.Func3;
 
-    NextMessagesIssueEventTransformer(M currentMessage, NextPageExtractor nextPageExtractor, LastPageExtractor lastPageExtractor) {
+class NextMessagesIssueEventTransformer<M extends AmazonQueueMessage> extends NextMessagesTransformer<RepositoryIssueEvent, M> {
+
+    private final Func3<Boolean, Long, M, M> amazonQueueMessageCreator;
+
+    public static <M extends AmazonQueueMessage> NextMessagesTransformer<RepositoryIssueEvent, M> newInstance(
+            M currentMessage,
+            Func3<Boolean, Long, M, M> amazonQueueMessageCreator) {
+
+        NextPageExtractor nextPageExtractor = NextPageExtractor.newInstance();
+        LastPageExtractor lastPageExtractor = LastPageExtractor.newInstance();
+
+        return new NextMessagesIssueEventTransformer<>(currentMessage, nextPageExtractor, lastPageExtractor, amazonQueueMessageCreator);
+    }
+
+    private NextMessagesIssueEventTransformer(M currentMessage,
+                                      NextPageExtractor nextPageExtractor,
+                                      LastPageExtractor lastPageExtractor,
+                                      Func3<Boolean, Long, M, M> amazonQueueMessageCreator) {
+
         super(currentMessage, nextPageExtractor, lastPageExtractor);
+        this.amazonQueueMessageCreator = amazonQueueMessageCreator;
+    }
+
+    @Override
+    protected M getNextPageMessage(boolean isTerminalMessage, int nextPage) {
+        return amazonQueueMessageCreator.call(
+                isTerminalMessage,
+                (long) nextPage,
+                currentMessage
+        );
     }
 
     @Override
