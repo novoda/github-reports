@@ -39,7 +39,7 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
         if (queueMessage instanceof AmazonGetRepositoriesQueueMessage) {
             AmazonGetRepositoriesQueueMessage message = (AmazonGetRepositoriesQueueMessage) queueMessage;
-            nextMessagesObservable = repositoriesServiceClient.getRepositoriesFor(message);
+            nextMessagesObservable = repositoriesServiceClient.retrieveRepositoriesFor(message);
         } else if (queueMessage instanceof AmazonGetIssuesQueueMessage) {
             AmazonGetIssuesQueueMessage message = (AmazonGetIssuesQueueMessage) queueMessage;
             nextMessagesObservable = issuesServiceClient.retrieveIssuesFor(message);
