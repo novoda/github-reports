@@ -5,7 +5,7 @@ import com.novoda.github.reports.aws.configuration.NotifierConfiguration;
 
 public interface Worker<N extends NotifierConfiguration, C extends Configuration<N>> {
 
-    void doWork(EventSource<N, C> eventSource) throws WorkerOperationFailedException;
+    void doWork(C configuration) throws WorkerOperationFailedException;
 
     void rescheduleImmediately(C configuration);
 
