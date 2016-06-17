@@ -1,5 +1,7 @@
 package com.novoda.github.reports.batch.aws.issue;
 
+import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
+import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.aws.pullrequest.PullRequestServiceClient;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
@@ -28,6 +30,7 @@ public class ReviewCommentsServiceClient {
         this.repositoryIssueEventPersistTransformer = repositoryIssueEventPersistTransformer;
     }
 
+    @Deprecated
     public Observable<RepositoryIssueEvent> retrieveReviewCommentsFromPullRequest(RepositoryIssue repositoryIssue, Date since, int page) {
         if (isNotPullRequest(repositoryIssue)) {
             return Observable.empty();
@@ -39,6 +42,12 @@ public class ReviewCommentsServiceClient {
                 .map(comment -> new RepositoryIssueEventComment(repositoryIssue, comment))
                 .compose(repositoryIssueEventPersistTransformer);
     }
+
+    public Observable<AmazonQueueMessage> retrieveReviewCommentsFromPullRequest(AmazonGetReviewCommentsQueueMessage message) {
+        // TODO
+        return Observable.empty();
+    }
+
 
     private boolean isNotPullRequest(RepositoryIssue repositoryIssue) {
         return !repositoryIssue.isPullRequest();
