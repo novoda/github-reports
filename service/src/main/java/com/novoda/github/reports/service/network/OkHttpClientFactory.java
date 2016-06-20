@@ -8,7 +8,7 @@ class OkHttpClientFactory implements HttpClientFactory {
 
     public static OkHttpClientFactory newInstance() {
         OkHttpClientBuilder okHttpClientBuilder = OkHttpClientBuilder.newInstance();
-        Interceptors interceptors = Interceptors.defaultInterceptors();
+        Interceptors interceptors = GithubInterceptors.defaultInterceptors();
 
         okHttpClientBuilder
                 .withInterceptors(interceptors);
