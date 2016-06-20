@@ -3,11 +3,13 @@ package com.novoda.github.reports.batch.aws.pullrequest;
 import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.queue.QueueMessage;
+import com.novoda.github.reports.batch.aws.issue.NextMessagesIssueEventTransformer;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.pullrequest.GithubPullRequestService;
 import com.novoda.github.reports.service.pullrequest.PullRequestService;
 
 import rx.Observable;
+import rx.functions.Func3;
 
 public class ReviewCommentsServiceClient {
 
@@ -22,7 +24,7 @@ public class ReviewCommentsServiceClient {
         return new ReviewCommentsServiceClient(pullRequestService, dateConverter);
     }
 
-    ReviewCommentsServiceClient(PullRequestService pullRequestService, DateToISO8601Converter dateConverter) {
+    private ReviewCommentsServiceClient(PullRequestService pullRequestService, DateToISO8601Converter dateConverter) {
         this.pullRequestService = pullRequestService;
         this.dateConverter = dateConverter;
     }
@@ -37,7 +39,7 @@ public class ReviewCommentsServiceClient {
                                                                   DEFAULT_PER_PAGE_COUNT)
                 .compose(new TransformToRepositoryIssueEvent(message))
                 .compose(ResponseRepositoryIssueEventPersistTransformer.newInstance())
-                .compose(NextMessagesReviewCommentsTransformer.newInstance(message));
+                .compose(NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetReviewCommentsQueueMessage()));
     }
 
     private int pageFrom(QueueMessage message) {
@@ -46,6 +48,19 @@ public class ReviewCommentsServiceClient {
 
     private int issueNumberFrom(AmazonGetReviewCommentsQueueMessage message) {
         return Math.toIntExact(message.issueNumber());
+    }
+
+    private Func3<Boolean, Long, AmazonGetReviewCommentsQueueMessage, AmazonGetReviewCommentsQueueMessage> buildAmazonGetReviewCommentsQueueMessage() {
+        return (isTerminal, nextPage, getReviewCommentsQueueMessage) -> AmazonGetReviewCommentsQueueMessage.create(
+                isTerminal,
+                nextPage,
+                getReviewCommentsQueueMessage.receiptHandle(),
+                getReviewCommentsQueueMessage.organisationName(),
+                getReviewCommentsQueueMessage.sinceOrNull(),
+                getReviewCommentsQueueMessage.repositoryId(),
+                getReviewCommentsQueueMessage.repositoryName(),
+                getReviewCommentsQueueMessage.issueNumber()
+        );
     }
 
 }
