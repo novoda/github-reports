@@ -3,10 +3,8 @@ package com.novoda.github.reports.batch.aws.issue;
 import com.novoda.github.reports.aws.queue.AmazonGetCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.queue.QueueMessage;
-import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssueService;
 import com.novoda.github.reports.service.issue.IssueService;
-import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 
@@ -43,9 +41,9 @@ public class CommentsServiceClient {
                         pageFrom(message),
                         DEFAULT_PER_PAGE_COUNT
                 )
-                .compose(new TransformToRepositoryIssueEvent<GithubComment, RepositoryIssueEvent>(message.repositoryId(),
-                                                                                                  message.issueNumber(),
-                                                                                                  RepositoryIssueEventComment::new
+                .compose(new TransformToRepositoryIssueEvent<>(message.repositoryId(),
+                                                               message.issueNumber(),
+                                                               RepositoryIssueEventComment::new
                 ))
                 .compose(ResponseRepositoryIssueEventPersistTransformer.newInstance())
                 .compose(NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetCommentsQueueMessage()));
