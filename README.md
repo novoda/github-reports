@@ -13,7 +13,7 @@ Base modules allow for behaviour decomposition, each taking care of one specific
 
 * [`core`](core/README.md) contains all the models and main interfaces shared across the project
 * [`db-layer`](db-layer/README.md) implements the persistence layer on a MySQL database
-* [`service`](service/README.md) contains the components to query the Github API and persist the retrieved elements on the database
+* [`github`](gitub/README.md) contains the components to query the Github API and persist the retrieved elements on the database
 
 ### Batch modules
 
@@ -30,4 +30,3 @@ CLIs are the user interfaces and allow to execute all the processes implemented 
 * [`reports-batch`](reports-batch/README.md) contains a CLI to query the Github APIs from your machine or from AWS, and store retrieved data in the
 remote/RDS database
 * [`reports-stats`](reports-stats/README.md) contains a CLI to query for statistics on data available in the remote/RDS database
-
