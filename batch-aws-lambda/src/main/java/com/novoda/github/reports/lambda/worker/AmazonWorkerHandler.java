@@ -1,12 +1,12 @@
 package com.novoda.github.reports.lambda.worker;
 
-import com.novoda.github.reports.batch.configuration.Configuration;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetCommentsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetEventsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetIssuesQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetRepositoriesQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
+import com.novoda.github.reports.batch.configuration.Configuration;
 import com.novoda.github.reports.batch.worker.WorkerHandler;
 import com.novoda.github.reports.lambda.MessageNotSupportedException;
 import com.novoda.github.reports.lambda.issue.CommentsServiceClient;
@@ -34,7 +34,13 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
         EventsServiceClient eventsServiceClient = EventsServiceClient.newInstance();
         CommentsServiceClient commentsServiceClient = CommentsServiceClient.newInstance();
         ReviewCommentsServiceClient reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance();
-        return new AmazonWorkerHandler(repositoriesServiceClient, issuesServiceClient, eventsServiceClient, commentsServiceClient, reviewCommentsServiceClient);
+        return new AmazonWorkerHandler(
+                repositoriesServiceClient,
+                issuesServiceClient,
+                eventsServiceClient,
+                commentsServiceClient,
+                reviewCommentsServiceClient
+        );
     }
 
     private AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient,
