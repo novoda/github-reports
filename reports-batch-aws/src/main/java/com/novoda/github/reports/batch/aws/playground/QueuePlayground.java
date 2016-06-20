@@ -1,14 +1,14 @@
 package com.novoda.github.reports.batch.aws.playground;
 
-import com.novoda.github.reports.aws.credentials.AmazonCredentialsService;
-import com.novoda.github.reports.aws.queue.AmazonGetIssuesQueueMessage;
-import com.novoda.github.reports.aws.queue.AmazonGetRepositoriesQueueMessage;
-import com.novoda.github.reports.aws.queue.AmazonQueue;
-import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
-import com.novoda.github.reports.aws.queue.AmazonQueueService;
-import com.novoda.github.reports.aws.queue.EmptyQueueException;
-import com.novoda.github.reports.aws.queue.MessageConverterException;
-import com.novoda.github.reports.aws.queue.QueueOperationFailedException;
+import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsService;
+import com.novoda.github.reports.batch.aws.queue.AmazonGetIssuesQueueMessage;
+import com.novoda.github.reports.batch.aws.queue.AmazonGetRepositoriesQueueMessage;
+import com.novoda.github.reports.batch.aws.queue.AmazonQueue;
+import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
+import com.novoda.github.reports.batch.aws.queue.AmazonQueueService;
+import com.novoda.github.reports.batch.queue.EmptyQueueException;
+import com.novoda.github.reports.batch.queue.MessageConverterException;
+import com.novoda.github.reports.batch.queue.QueueOperationFailedException;
 import com.novoda.github.reports.properties.PropertiesReader;
 
 import java.time.Instant;
