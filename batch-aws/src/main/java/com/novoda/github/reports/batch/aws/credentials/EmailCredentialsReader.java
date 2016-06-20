@@ -4,6 +4,7 @@ import com.novoda.github.reports.properties.PropertiesReader;
 
 public class EmailCredentialsReader {
 
+    private static final String EMAIL_PROPERTIES_FILENAME = "email.credentials";
     private static final String HOST_KEY = "EMAIL_HOST";
     private static final String PORT_KEY = "EMAIL_PORT";
     private static final String USE_SSL_KEY = "EMAIL_USE_SSL";
@@ -12,6 +13,11 @@ public class EmailCredentialsReader {
     private static final String PASSWORD_KEY = "EMAIL_PASSWORD";
 
     private PropertiesReader propertiesReader;
+
+    public static EmailCredentialsReader newInstance() {
+        PropertiesReader propertiesReader = PropertiesReader.newInstance(EMAIL_PROPERTIES_FILENAME);
+        return new EmailCredentialsReader(propertiesReader);
+    }
 
     public static EmailCredentialsReader newInstance(PropertiesReader propertiesReader) {
         return new EmailCredentialsReader(propertiesReader);

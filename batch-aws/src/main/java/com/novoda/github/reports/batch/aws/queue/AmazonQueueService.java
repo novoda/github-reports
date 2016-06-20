@@ -2,19 +2,19 @@ package com.novoda.github.reports.batch.aws.queue;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.sqs.AmazonSQSClient;
-import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsService;
+import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsReader;
 import com.novoda.github.reports.batch.queue.QueueService;
 
 public class AmazonQueueService implements QueueService<AmazonQueue> {
 
     private final AmazonSQSClient amazonSQSClient;
 
-    public static AmazonQueueService newInstance(AmazonCredentialsService amazonCredentialsService) {
-        return new AmazonQueueService(amazonCredentialsService);
+    public static AmazonQueueService newInstance(AmazonCredentialsReader amazonCredentialsReader) {
+        return new AmazonQueueService(amazonCredentialsReader);
     }
 
-    private AmazonQueueService(AmazonCredentialsService amazonCredentialsService) {
-        AWSCredentials credentials = amazonCredentialsService.getAWSCredentials();
+    private AmazonQueueService(AmazonCredentialsReader amazonCredentialsReader) {
+        AWSCredentials credentials = amazonCredentialsReader.getAWSCredentials();
         this.amazonSQSClient = new AmazonSQSClient(credentials);
     }
 

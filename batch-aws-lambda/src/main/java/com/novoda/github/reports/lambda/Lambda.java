@@ -7,7 +7,7 @@ import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.batch.aws.configuration.AmazonConfigurationConverter;
 import com.novoda.github.reports.batch.aws.configuration.ConfigurationConverterException;
 import com.novoda.github.reports.batch.aws.configuration.EmailNotifierConfiguration;
-import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsService;
+import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsReader;
 import com.novoda.github.reports.batch.aws.notifier.EmailNotifierService;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueue;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
@@ -27,10 +27,10 @@ public class Lambda {
     public Lambda() {
         this.amazonConfigurationConverter = AmazonConfigurationConverter.newInstance();
 
-        AmazonCredentialsService amazonCredentialsService = AmazonCredentialsService.newInstance(null);
-        AmazonWorkerService workerService = AmazonWorkerService.newInstance();
-        AmazonAlarmService alarmService = AmazonAlarmService.newInstance(amazonCredentialsService);
-        AmazonQueueService queueService = AmazonQueueService.newInstance(amazonCredentialsService);
+        AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance(null);
+        AmazonWorkerService workerService = AmazonWorkerService.newInstance(amazonCredentialsReader);
+        AmazonAlarmService alarmService = AmazonAlarmService.newInstance(amazonCredentialsReader);
+        AmazonQueueService queueService = AmazonQueueService.newInstance(amazonCredentialsReader);
         EmailNotifierService notifierService = EmailNotifierService.newInstance();
         AmazonWorkerHandlerService workerHandlerService = AmazonWorkerHandlerService.newInstance();
 
@@ -49,8 +49,7 @@ public class Lambda {
         log(context, "Handling configuration:");
         log(context, amazonConfiguration.toString());
 
-        // TODO: enable this once all the pieces have been implemented
-        // worker.doWork(amazonConfiguration);
+        worker.doWork(amazonConfiguration);
 
         log(context, "Work done.");
     }

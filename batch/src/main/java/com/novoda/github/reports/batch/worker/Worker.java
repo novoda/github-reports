@@ -7,7 +7,7 @@ public interface Worker<N extends NotifierConfiguration, C extends Configuration
 
     void doWork(C configuration) throws WorkerOperationFailedException;
 
-    void rescheduleImmediately(C configuration);
+    void rescheduleImmediately(C configuration) throws WorkerStartException;
 
     void rescheduleForLater(C configuration, long minutes) throws WorkerOperationFailedException;
 
