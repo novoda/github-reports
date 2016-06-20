@@ -1,9 +1,18 @@
+// common module
 include ':core'
+// Database access layer
 include ':db-layer'
+// Github API
 include ':service'
-include ':reports-batch-local'
-include ':aws'
-include ':reports-batch-aws'
-include ':reports-stats'
-include ':lambda'
+// Generic batch behaviour, must be implemented
+include ':batch'
 
+// AWS-only implementations
+include ':batch-aws'
+include ':batch-aws-lambda'
+
+// batch CLI
+include ':reports-batch'
+
+// query CLI
+include ':reports-stats'
