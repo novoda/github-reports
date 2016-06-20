@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.aws;
+package com.novoda.github.reports.lambda.persistence;
 
 import java.util.ArrayList;
 import java.util.List;

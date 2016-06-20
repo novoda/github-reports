@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.aws;
+package com.novoda.github.reports.lambda;
 
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.service.network.LastPageExtractor;

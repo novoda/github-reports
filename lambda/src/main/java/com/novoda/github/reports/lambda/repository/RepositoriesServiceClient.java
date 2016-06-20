@@ -1,9 +1,9 @@
-package com.novoda.github.reports.batch.aws.repository;
+package com.novoda.github.reports.lambda.repository;
 
 import com.novoda.github.reports.aws.queue.AmazonGetRepositoriesQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.queue.QueueMessage;
-import com.novoda.github.reports.batch.aws.persistence.PersistOperator;
+import com.novoda.github.reports.lambda.persistence.PersistOperator;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbRepoDataLayer;

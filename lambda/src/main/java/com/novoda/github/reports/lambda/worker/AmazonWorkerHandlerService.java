@@ -1,4 +1,4 @@
-package com.novoda.github.reports.lambda;
+package com.novoda.github.reports.lambda.worker;
 
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.worker.WorkerHandler;

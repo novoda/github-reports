@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.aws.persistence;
+package com.novoda.github.reports.lambda.persistence;
 
 import com.novoda.github.reports.data.DataLayer;
 import com.novoda.github.reports.data.DataLayerException;

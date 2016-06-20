@@ -1,6 +1,6 @@
-package com.novoda.github.reports.batch.aws.issue;
+package com.novoda.github.reports.lambda.issue;
 
-import com.novoda.github.reports.batch.aws.ResponsePersistTransformer;
+import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersistTransformer;
 

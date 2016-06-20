@@ -1,4 +1,4 @@
-package com.novoda.github.reports.lambda;
+package com.novoda.github.reports.lambda.worker;
 
 import com.novoda.github.reports.aws.configuration.Configuration;
 import com.novoda.github.reports.aws.queue.AmazonGetCommentsQueueMessage;
@@ -8,11 +8,12 @@ import com.novoda.github.reports.aws.queue.AmazonGetRepositoriesQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.worker.WorkerHandler;
-import com.novoda.github.reports.batch.aws.issue.CommentsServiceClient;
-import com.novoda.github.reports.batch.aws.issue.EventsServiceClient;
-import com.novoda.github.reports.batch.aws.issue.IssuesServiceClient;
-import com.novoda.github.reports.batch.aws.pullrequest.ReviewCommentsServiceClient;
-import com.novoda.github.reports.batch.aws.repository.RepositoriesServiceClient;
+import com.novoda.github.reports.lambda.MessageNotSupportedException;
+import com.novoda.github.reports.lambda.issue.CommentsServiceClient;
+import com.novoda.github.reports.lambda.issue.EventsServiceClient;
+import com.novoda.github.reports.lambda.issue.IssuesServiceClient;
+import com.novoda.github.reports.lambda.pullrequest.ReviewCommentsServiceClient;
+import com.novoda.github.reports.lambda.repository.RepositoriesServiceClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
     @Override
     public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage) throws Throwable {
 
-        Observable<AmazonQueueMessage> nextMessagesObservable = Observable.empty();
+        Observable<AmazonQueueMessage> nextMessagesObservable;
 
         if (queueMessage instanceof AmazonGetRepositoriesQueueMessage) {
             AmazonGetRepositoriesQueueMessage message = (AmazonGetRepositoriesQueueMessage) queueMessage;

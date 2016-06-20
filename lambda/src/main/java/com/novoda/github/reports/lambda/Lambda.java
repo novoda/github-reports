@@ -15,6 +15,7 @@ import com.novoda.github.reports.aws.queue.AmazonQueueService;
 import com.novoda.github.reports.aws.worker.AmazonWorkerService;
 import com.novoda.github.reports.aws.worker.BasicWorker;
 import com.novoda.github.reports.aws.worker.WorkerOperationFailedException;
+import com.novoda.github.reports.lambda.worker.AmazonWorkerHandlerService;
 
 import java.io.InputStream;
 
