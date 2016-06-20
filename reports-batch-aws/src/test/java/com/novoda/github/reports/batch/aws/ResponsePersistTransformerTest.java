@@ -40,7 +40,7 @@ public class ResponsePersistTransformerTest {
     public void setUp() {
         initMocks(this);
 
-        when(persistTransformer.call(any())).then(invocation -> invocation.getArgument(0));
+        when(persistTransformer.call(any(Observable.class))).then(invocation -> invocation.getArgument(0));
 
         List<Object> elements = Collections.nCopies(10, new Object());
         response = Response.success(elements, ANY_HEADERS);
@@ -63,7 +63,7 @@ public class ResponsePersistTransformerTest {
 
         whenCompose();
 
-        verify(persistTransformer, VerificationModeFactory.times(1)).call(any());
+        verify(persistTransformer, VerificationModeFactory.only()).call(any());
     }
 
     private void whenCompose() {
