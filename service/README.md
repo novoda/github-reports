@@ -20,16 +20,16 @@ your project, with the following properties defined:
 * `DB_PASSWORD`, password for the database instance
 * `DB_CONNECTION_STRING`, JDBC connection string to the database instance
 
-For an example, see the `reports-batch-local` [`database.credentials.sample` file](../reports-batch-local/src/main/resources/database.credentials.sample).
+For an example, see the `reports-batch` [`database.credentials.sample` file](../reports-batch/src/main/resources/database.credentials.sample).
 
 #### Github
 
 To be able to use the Github API, you must put a `github.credentials` file in the resources or classloader accessible folder, with the
 `GITHUB_OAUTH_TOKEN` property set to an API key that you can generate on your Github organization profile.
 
-For an example, see the `reports-batch-local` [`github.credentials.sample` file](../reports-batch-local/src/main/resources/github.credentials.sample).
+For an example, see the `reports-batch` [`github.credentials.sample` file](../reports-batch/src/main/resources/github.credentials.sample).
 
-### Usage
+### Usage as a library
 
 The main components of this module are:
 
