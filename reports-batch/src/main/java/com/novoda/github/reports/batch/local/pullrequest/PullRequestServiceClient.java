@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.pullrequest;
+package com.novoda.github.reports.batch.local.pullrequest;
 
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
