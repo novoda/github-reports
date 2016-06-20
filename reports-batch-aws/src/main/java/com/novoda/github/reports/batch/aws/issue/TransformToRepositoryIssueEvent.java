@@ -23,6 +23,7 @@ class TransformToRepositoryIssueEvent<T, C extends RepositoryIssueEvent> impleme
             Long repositoryId,
             Long issueNumber,
             Func2<RepositoryIssue, T, C> repositoryIssueEventCreator) {
+
         return new TransformToRepositoryIssueEvent<>(repositoryId, issueNumber, repositoryIssueEventCreator);
     }
 
