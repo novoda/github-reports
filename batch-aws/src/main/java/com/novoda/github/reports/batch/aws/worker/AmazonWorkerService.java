@@ -15,15 +15,15 @@ public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
 
     private static final int SUCCESSFUL_INVOKE_RESULT_CODE = 202;
 
-    private final AmazonCredentialsReader amazonCredentialsReader;
+    private final LambdaPropertiesReader lambdaPropertiesReader;
     private final AWSLambdaClient awsLambdaClient;
 
-    public static AmazonWorkerService newInstance(AmazonCredentialsReader amazonCredentialsReader) {
-        return new AmazonWorkerService(amazonCredentialsReader);
+    public static AmazonWorkerService newInstance(AmazonCredentialsReader amazonCredentialsReader, LambdaPropertiesReader lambdaPropertiesReader) {
+        return new AmazonWorkerService(amazonCredentialsReader, lambdaPropertiesReader);
     }
 
-    private AmazonWorkerService(AmazonCredentialsReader amazonCredentialsReader) {
-        this.amazonCredentialsReader = amazonCredentialsReader;
+    private AmazonWorkerService(AmazonCredentialsReader amazonCredentialsReader, LambdaPropertiesReader lambdaPropertiesReader) {
+        this.lambdaPropertiesReader = lambdaPropertiesReader;
         this.awsLambdaClient = new AWSLambdaClient(amazonCredentialsReader.getAWSCredentials());
     }
 
@@ -54,6 +54,6 @@ public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
 
     @Override
     public String getWorkerName() {
-        return amazonCredentialsReader.getLambdaName();
+        return lambdaPropertiesReader.getLambdaName();
     }
 }
