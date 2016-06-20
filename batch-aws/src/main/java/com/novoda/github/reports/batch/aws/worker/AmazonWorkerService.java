@@ -1,6 +1,7 @@
 package com.novoda.github.reports.batch.aws.worker;
 
 import com.amazonaws.services.lambda.AWSLambdaClient;
+import com.amazonaws.services.lambda.model.InvocationType;
 import com.amazonaws.services.lambda.model.InvokeRequest;
 import com.amazonaws.services.lambda.model.InvokeResult;
 import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
@@ -12,7 +13,7 @@ import com.novoda.github.reports.batch.worker.WorkerStartException;
 
 public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
 
-    private static final int SUCCESSFUL_INVOKE_RESULT_CODE = 200;
+    private static final int SUCCESSFUL_INVOKE_RESULT_CODE = 202;
 
     private final AmazonCredentialsReader amazonCredentialsReader;
     private final AWSLambdaClient awsLambdaClient;
@@ -32,7 +33,8 @@ public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
 
         InvokeRequest invokeRequest = new InvokeRequest()
                 .withFunctionName(getWorkerName())
-                .withPayload(rawConfiguration);
+                .withPayload(rawConfiguration)
+                .withInvocationType(InvocationType.Event);
 
         InvokeResult invokeResult = awsLambdaClient.invoke(invokeRequest);
         if (invokeResult.getStatusCode() != SUCCESSFUL_INVOKE_RESULT_CODE) {
