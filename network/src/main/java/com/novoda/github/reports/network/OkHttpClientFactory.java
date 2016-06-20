@@ -1,14 +1,13 @@
-package com.novoda.github.reports.service.network;
+package com.novoda.github.reports.network;
 
 import okhttp3.OkHttpClient;
 
-class OkHttpClientFactory implements HttpClientFactory {
+public class OkHttpClientFactory implements HttpClientFactory {
 
     private final OkHttpClientBuilder okHttpClientBuilder;
 
-    public static OkHttpClientFactory newInstance() {
+    public static OkHttpClientFactory newInstance(Interceptors interceptors) {
         OkHttpClientBuilder okHttpClientBuilder = OkHttpClientBuilder.newInstance();
-        Interceptors interceptors = GithubInterceptors.defaultInterceptors();
 
         okHttpClientBuilder
                 .withInterceptors(interceptors);
@@ -16,8 +15,8 @@ class OkHttpClientFactory implements HttpClientFactory {
         return new OkHttpClientFactory(okHttpClientBuilder);
     }
 
-    public static OkHttpClientFactory newCachingInstance() {
-        OkHttpClientFactory okHttpClientFactory = newInstance();
+    public static OkHttpClientFactory newCachingInstance(Interceptors interceptors) {
+        OkHttpClientFactory okHttpClientFactory = newInstance(interceptors);
         CacheFactory cacheFactory = FileCacheFactory.newInstance();
         CacheStatsRepository cacheStatsRepository = CacheStatsContainer.getCacheStatsRepository();
 

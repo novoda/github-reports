@@ -1,4 +1,4 @@
-package com.novoda.github.reports.service.network;
+package com.novoda.github.reports.network;
 
 import okhttp3.Cache;
 

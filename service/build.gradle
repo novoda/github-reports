@@ -7,6 +7,7 @@ repositories {
 }
 
 dependencies {
+    compile project(':network')
     compile project(':core')
     compile project(':db-layer')
 
