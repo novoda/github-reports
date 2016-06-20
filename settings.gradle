@@ -3,7 +3,7 @@ include ':core'
 // Database access layer
 include ':db-layer'
 // Github API
-include ':service'
+include ':github'
 // Generic batch behaviour, must be implemented
 include ':batch'
 

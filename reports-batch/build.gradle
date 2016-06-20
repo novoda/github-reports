@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compile project(':service')
+    compile project(':github')
     compile project(':batch-aws')
 
     compile 'com.beust:jcommander:1.48'
