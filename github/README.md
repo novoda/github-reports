@@ -1,7 +1,7 @@
-service
-=======
+github service
+==============
 
-_Service library to retrieve Github organisation data and store them on a database._
+_Github service library to retrieve Github organisation data and store them on a database._
 
 --------
 
@@ -9,7 +9,7 @@ This module provides the components to query the Github API and store the found 
 
 ### Configuration
 
-Any project referencing `service` must configure the database and Github credentials as follows.
+Any project referencing `github` must configure the database and Github credentials as follows.
 
 #### Database
 
@@ -34,6 +34,6 @@ For an example, see the `reports-batch` [`github.credentials.sample` file](../re
 The main components of this module are:
 
 * `GithubRepositoryService` that retrieves issues, comments and events for a Github repo
-* `GithubIssueService` that retrieves repositories for an organisation
+* `GithubIssueService` that retrieves repositories for an organization
 * `GithubPullRequestService` that retrieves diff comments for pull requests
 * all the transformers in the `persistence` package that provide a way to pipe the persistence mechanism in a RxJava pipeline
