@@ -13,24 +13,16 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Func2;
 
-class TransformToRepositoryIssueEvent<T, C extends RepositoryIssueEvent>
+public class TransformToRepositoryIssueEvent<T, C extends RepositoryIssueEvent>
         implements Observable.Transformer<Response<List<T>>, Response<List<RepositoryIssueEvent>>> {
 
     private final Long repositoryId;
     private final Long issueNumber;
     private final Func2<RepositoryIssue, T, C> repositoryIssueEventCreator;
 
-    public static <T, C extends RepositoryIssueEvent> Observable.Transformer<Response<List<T>>, Response<List<RepositoryIssueEvent>>> newInstance(
-            Long repositoryId,
-            Long issueNumber,
-            Func2<RepositoryIssue, T, C> repositoryIssueEventCreator) {
-
-        return new TransformToRepositoryIssueEvent<>(repositoryId, issueNumber, repositoryIssueEventCreator);
-    }
-
-    private TransformToRepositoryIssueEvent(Long issueNumber,
-                                            Long repositoryId,
-                                            Func2<RepositoryIssue, T, C> repositoryIssueEventCreator) {
+    public TransformToRepositoryIssueEvent(Long issueNumber,
+                                           Long repositoryId,
+                                           Func2<RepositoryIssue, T, C> repositoryIssueEventCreator) {
 
         this.issueNumber = issueNumber;
         this.repositoryId = repositoryId;
