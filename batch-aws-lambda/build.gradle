@@ -42,4 +42,5 @@ task uploadLambda(type: AWSLambdaMigrateFunctionTask, dependsOn: zip) {
     zipFile = zip.archivePath
     handler = 'com.novoda.github.reports.lambda.Lambda::handle'
     runtime = Runtime.Java8
+    timeout = 300
 }
