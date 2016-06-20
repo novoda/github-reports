@@ -16,3 +16,6 @@ include ':reports-batch'
 
 // query CLI
 include ':reports-stats'
+
+include ':float'
+include ':network'

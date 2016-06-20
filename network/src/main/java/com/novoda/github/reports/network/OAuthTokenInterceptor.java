@@ -1,4 +1,4 @@
-package com.novoda.github.reports.service.network;
+package com.novoda.github.reports.network;
 
 import java.io.IOException;
 
@@ -6,14 +6,14 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-class OAuthTokenInterceptor implements Interceptor {
+public class OAuthTokenInterceptor implements Interceptor {
 
     private static final String AUTH_TOKEN_HEADER = "Authorization";
 
     private String tokenPrefix;
     private String oAuthToken;
 
-    OAuthTokenInterceptor(String tokenPrefix, String oAuthToken) {
+    public OAuthTokenInterceptor(String tokenPrefix, String oAuthToken) {
         this.tokenPrefix = tokenPrefix;
         this.oAuthToken = oAuthToken;
     }

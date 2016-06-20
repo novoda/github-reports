@@ -1,5 +1,7 @@
 package com.novoda.github.reports.service.network;
 
+import com.novoda.github.reports.network.Interceptors;
+import com.novoda.github.reports.network.OAuthTokenInterceptor;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 
 import okhttp3.logging.HttpLoggingInterceptor;

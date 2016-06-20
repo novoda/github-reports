@@ -1,4 +1,4 @@
-package com.novoda.github.reports.service.network;
+package com.novoda.github.reports.network;
 
 public class CacheStatsContainer {
 

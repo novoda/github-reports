@@ -1,4 +1,4 @@
-package com.novoda.github.reports.service.network;
+package com.novoda.github.reports.network;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,16 +18,16 @@ public abstract class Interceptors {
         this(new ArrayList<>());
     }
 
-    Interceptors with(Interceptor interceptor) {
+    public Interceptors with(Interceptor interceptor) {
         interceptors.add(interceptor);
         return this;
     }
 
-    List<Interceptor> asList() {
+    public List<Interceptor> asList() {
         return interceptors;
     }
 
-    Stream<Interceptor> stream() {
+    public Stream<Interceptor> stream() {
         return interceptors.stream();
     }
 

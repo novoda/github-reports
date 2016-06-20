@@ -1,5 +1,9 @@
 package com.novoda.github.reports.service.network;
 
+import com.novoda.github.reports.network.HttpClientFactory;
+import com.novoda.github.reports.network.Interceptors;
+import com.novoda.github.reports.network.OkHttpClientFactory;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -14,12 +18,14 @@ class GithubServiceFactory {
     private final RxJavaCallAdapterFactory rxJavaCallAdapterFactory;
 
     public static GithubServiceFactory newInstance() {
-        HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance();
+        Interceptors githubInterceptors = GithubInterceptors.defaultInterceptors();
+        HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance(githubInterceptors);
         return newInstance(httpClientFactory);
     }
 
     public static GithubServiceFactory newCachingInstance() {
-        HttpClientFactory httpClientFactory = OkHttpClientFactory.newCachingInstance();
+        Interceptors githubInterceptors = GithubInterceptors.defaultInterceptors();
+        HttpClientFactory httpClientFactory = OkHttpClientFactory.newCachingInstance(githubInterceptors);
         return newInstance(httpClientFactory);
     }
 

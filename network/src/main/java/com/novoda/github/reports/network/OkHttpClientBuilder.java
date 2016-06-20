@@ -1,9 +1,9 @@
-package com.novoda.github.reports.service.network;
+package com.novoda.github.reports.network;
 
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 
-class OkHttpClientBuilder {
+public class OkHttpClientBuilder {
 
     private final OkHttpClient.Builder okHttpClientBuilder;
     private Interceptors interceptors;
