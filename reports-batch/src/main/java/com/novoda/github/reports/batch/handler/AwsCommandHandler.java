@@ -22,7 +22,7 @@ public class AwsCommandHandler implements CommandHandler<AwsBatchOptions> {
 
     private static final Boolean FIRST_TERMINAL = true;
     private static final Long FIRST_PAGE = 1L;
-    private static final String RECEIPT_HANDLE = null;
+    private static final String RECEIPT_HANDLE = "0";
     private static final String NO_ALARM_NAME = null;
 
     private final SystemClock systemClock;
