@@ -2,6 +2,7 @@ package com.novoda.github.reports.batch;
 
 import com.beust.jcommander.JCommander;
 import com.novoda.github.reports.batch.command.BatchOptions;
+import com.novoda.github.reports.batch.local.BatchClient;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.network.RateLimitRemainingCounter;
 import com.novoda.github.reports.service.network.RateLimitRemainingCounterContainer;

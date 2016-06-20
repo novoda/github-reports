@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.repository;
+package com.novoda.github.reports.batch.local.repository;
 
 import com.novoda.github.reports.service.network.PagedTransformer;
 import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
@@ -6,9 +6,9 @@ import com.novoda.github.reports.service.persistence.ConnectionManagerContainer;
 import com.novoda.github.reports.service.persistence.PersistRepositoryTransformer;
 import com.novoda.github.reports.service.persistence.converter.Converter;
 import com.novoda.github.reports.service.persistence.converter.RepositoryConverter;
-import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubject;
-import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubjectContainer;
-import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
+import com.novoda.github.reports.batch.local.retry.RateLimitResetTimerSubject;
+import com.novoda.github.reports.batch.local.retry.RateLimitResetTimerSubjectContainer;
+import com.novoda.github.reports.batch.local.retry.RetryWhenTokenResets;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbRepoDataLayer;
