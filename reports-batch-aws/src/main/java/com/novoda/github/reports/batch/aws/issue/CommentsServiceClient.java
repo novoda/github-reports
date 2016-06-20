@@ -10,8 +10,6 @@ import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 
-import org.jetbrains.annotations.NotNull;
-
 import rx.Observable;
 import rx.functions.Func3;
 
@@ -54,7 +52,7 @@ public class CommentsServiceClient {
                 .compose(NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetCommentsQueueMessage()));
     }
 
-    private @NotNull Func3<Boolean, Long, AmazonGetCommentsQueueMessage, AmazonGetCommentsQueueMessage> buildAmazonGetCommentsQueueMessage() {
+    private Func3<Boolean, Long, AmazonGetCommentsQueueMessage, AmazonGetCommentsQueueMessage> buildAmazonGetCommentsQueueMessage() {
         return (isTerminal, nextPage, amazonGetCommentsQueueMessage) -> AmazonGetCommentsQueueMessage.create(
                 isTerminal,
                 nextPage,
