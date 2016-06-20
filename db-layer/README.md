@@ -1,7 +1,7 @@
 db-layer
 ========
 
-_Data layer to perform operations on a MySQL instance._
+_Data layer library to perform operations on a MySQL instance._
 
 --------
 
@@ -22,7 +22,17 @@ runtime and be used to connect to the database instance.
 
 For an example, see the [`database.credentials.sample` file](../database.credentials.sample).
 
-### Usage
+### Build
+
+The project uses jOOQ as a dynamic query building library. If you decide to swap out MySQL in favour of another DBMS, simply change the jOOQ
+configuration in [`build.gradle`](build.gradle).
+
+The SQL generation file is stored in [`sql/generate.sql`](sql/generate.sql).
+Successful migration files should be put in the same folder for consistency.
+
+When changing the database schema, you need to re-generate the Java models: to do so, simply run the Gradle task `generateReportsJooqSchemaSource`.
+
+### Usage as a library
 
 To use the components of this module, you need to retrieve an instance of `DbConnectionManager`, then use it to retrieve data layers' instances,
 for example:
@@ -35,13 +45,3 @@ DbRepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
 
 **NOTE**: Please note that, even though `DbConnectionManager` returns reusable pooled connections, you still need to close it after you finish using
 it for your transactions (not necessary if you just use the available data layer classes).
-
-### Build
-
-The project uses jOOQ as a dynamic query building library. If you decide to swap out MySQL in favour of another DBMS, simply change the jOOQ
-configuration in [`build.gradle`](build.gradle).
-
-The SQL generation file is stored in [`sql/generate.sql`](sql/generate.sql).
-Successful migration files should be put in the same folder for consistency.
-
-When changing the database schema, you need to re-generate the Java models: to do so, simply run the Gradle task `generateReportsJooqSchemaSource`.
