@@ -9,6 +9,7 @@ import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.worker.WorkerHandler;
 import com.novoda.github.reports.batch.aws.issue.IssuesServiceClient;
+import com.novoda.github.reports.batch.aws.pullrequest.ReviewCommentsServiceClient;
 import com.novoda.github.reports.batch.aws.repository.RepositoriesServiceClient;
 
 import java.util.ArrayList;
@@ -20,16 +21,22 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
     private final RepositoriesServiceClient repositoriesServiceClient;
     private final IssuesServiceClient issuesServiceClient;
+    private final ReviewCommentsServiceClient reviewCommentsServiceClient;
 
     public static AmazonWorkerHandler newInstance() {
         RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
         IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
-        return new AmazonWorkerHandler(repositoriesServiceClient, issuesServiceClient);
+        ReviewCommentsServiceClient reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance();
+        return new AmazonWorkerHandler(repositoriesServiceClient, issuesServiceClient, reviewCommentsServiceClient);
     }
 
-    AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient, IssuesServiceClient issuesServiceClient) {
+    AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient,
+                        IssuesServiceClient issuesServiceClient,
+                        ReviewCommentsServiceClient reviewCommentsServiceClient) {
+
         this.repositoriesServiceClient = repositoriesServiceClient;
         this.issuesServiceClient = issuesServiceClient;
+        this.reviewCommentsServiceClient = reviewCommentsServiceClient;
     }
 
     @Override
@@ -51,7 +58,7 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             // TODO
         } else if (queueMessage instanceof AmazonGetReviewCommentsQueueMessage) {
             AmazonGetReviewCommentsQueueMessage message = (AmazonGetReviewCommentsQueueMessage) queueMessage;
-            // TODO
+            nextMessagesObservable = reviewCommentsServiceClient.retrieveReviewCommentsFromPullRequest(message);
         } else {
             throw new MessageNotSupportedException(queueMessage);
         }
