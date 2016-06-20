@@ -18,9 +18,32 @@ the following properties defined:
 
 For an example, see the [`database.credentials.sample` file](src/main/resources/database.credentials.sample).
 
+### Distribute the application
+
+To build a zip file of the application, run the `distZip` Gradle task: this will generate a zip file in the `build/distributions` directory, in order
+to upload and re-use the CLI without having to rebuild it every time.
+
+**Note**: distribution tasks strip out some files from the resources, so you have to re-configure your application by putting the proper
+`.credentials` files in the `lib` directory (the one containing the JAR files) in the extracted zip structure.
+
+### Debug from IntelliJ IDEA
+
+To debug the application in IDEA, simply put the credential files in the `src/main/resources` directory and create a new Debug configuration:
+
+1. Go to Run -> Edit Configurations...
+2. Click on the + icon and select "Application" as a new configuration
+3. Put the `com.novoda.github.reports.stats.Main` class as the "Main class"
+4. Type **only the program arguments** in the "Program arguments" text field (e.g. `user frapontillo --repo github-reports --project pt
+   --from 2016-01-01 --to 2016-12-31`)
+5. Apply the changes
+6. Run the created configuration
+
 ### Usage
 
 The CLI has 3 commands available, `user`, `repo` and `project`, that return statistics about different objects.
+
+**Note**: the examples in the following sections assume that you're running the applications from the `bin` directory in the distribution folder,
+where you have the `reports-stats` bash file available. If you are running from the IDE, remember that **`reports-stats` is not a program argument**.
 
 #### User statistics
 
