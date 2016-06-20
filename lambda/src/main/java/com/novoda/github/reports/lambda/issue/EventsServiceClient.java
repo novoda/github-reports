@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.aws.issue;
+package com.novoda.github.reports.lambda.issue;
 
 import com.novoda.github.reports.aws.queue.AmazonGetEventsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;

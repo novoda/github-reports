@@ -1,9 +1,9 @@
-package com.novoda.github.reports.batch.aws.repository;
+package com.novoda.github.reports.lambda.repository;
 
 import com.novoda.github.reports.aws.queue.AmazonGetIssuesQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonGetRepositoriesQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
-import com.novoda.github.reports.batch.aws.NextMessagesTransformer;
+import com.novoda.github.reports.lambda.NextMessagesTransformer;
 import com.novoda.github.reports.service.network.LastPageExtractor;
 import com.novoda.github.reports.service.network.NextPageExtractor;
 import com.novoda.github.reports.service.repository.GithubRepository;

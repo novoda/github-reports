@@ -1,4 +1,6 @@
-package com.novoda.github.reports.batch.aws;
+package com.novoda.github.reports.lambda;
+
+import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
 
 import java.util.ArrayList;
 import java.util.Collections;

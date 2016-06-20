@@ -8,7 +8,7 @@ public class MessageNotSupportedException extends Exception {
         super(message);
     }
 
-    MessageNotSupportedException(QueueMessage queueMessage) {
+    public MessageNotSupportedException(QueueMessage queueMessage) {
         super("QueueMessage \"" + queueMessage.getClass().getSimpleName() + "\" not supported.");
     }
 }

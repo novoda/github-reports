@@ -1,11 +1,11 @@
-package com.novoda.github.reports.batch.aws.pullrequest;
+package com.novoda.github.reports.lambda.pullrequest;
 
 import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.queue.QueueMessage;
-import com.novoda.github.reports.batch.aws.issue.NextMessagesIssueEventTransformer;
-import com.novoda.github.reports.batch.aws.issue.ResponseRepositoryIssueEventPersistTransformer;
-import com.novoda.github.reports.batch.aws.issue.TransformToRepositoryIssueEvent;
+import com.novoda.github.reports.lambda.issue.NextMessagesIssueEventTransformer;
+import com.novoda.github.reports.lambda.issue.ResponseRepositoryIssueEventPersistTransformer;
+import com.novoda.github.reports.lambda.issue.TransformToRepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.pullrequest.GithubPullRequestService;
