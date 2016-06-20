@@ -11,7 +11,7 @@ import java.util.List;
 
 import rx.functions.Func3;
 
-class NextMessagesIssueEventTransformer<M extends AmazonQueueMessage> extends NextMessagesTransformer<RepositoryIssueEvent, M> {
+public class NextMessagesIssueEventTransformer<M extends AmazonQueueMessage> extends NextMessagesTransformer<RepositoryIssueEvent, M> {
 
     private final Func3<Boolean, Long, M, M> amazonQueueMessageCreator;
 
@@ -26,9 +26,9 @@ class NextMessagesIssueEventTransformer<M extends AmazonQueueMessage> extends Ne
     }
 
     private NextMessagesIssueEventTransformer(M currentMessage,
-                                      NextPageExtractor nextPageExtractor,
-                                      LastPageExtractor lastPageExtractor,
-                                      Func3<Boolean, Long, M, M> amazonQueueMessageCreator) {
+                                              NextPageExtractor nextPageExtractor,
+                                              LastPageExtractor lastPageExtractor,
+                                              Func3<Boolean, Long, M, M> amazonQueueMessageCreator) {
 
         super(currentMessage, nextPageExtractor, lastPageExtractor);
         this.amazonQueueMessageCreator = amazonQueueMessageCreator;

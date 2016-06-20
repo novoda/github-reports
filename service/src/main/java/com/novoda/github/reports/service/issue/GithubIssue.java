@@ -8,10 +8,6 @@ import java.util.Date;
 
 public class GithubIssue {
 
-    public GithubIssue(int number) {
-        this.number = number;
-    }
-
     private long id;
 
     private int number;
@@ -37,6 +33,10 @@ public class GithubIssue {
 
     @SerializedName("pull_request")
     private GithubPullRequest pullRequest;
+
+    public GithubIssue(int number) {
+        this.number = number;
+    }
 
     public long getId() {
         return id;
