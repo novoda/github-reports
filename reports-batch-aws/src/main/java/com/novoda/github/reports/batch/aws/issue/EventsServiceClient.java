@@ -3,10 +3,8 @@ package com.novoda.github.reports.batch.aws.issue;
 import com.novoda.github.reports.aws.queue.AmazonGetEventsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.queue.QueueMessage;
-import com.novoda.github.reports.service.issue.GithubEvent;
 import com.novoda.github.reports.service.issue.GithubIssueService;
 import com.novoda.github.reports.service.issue.IssueService;
-import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventEvent;
 
 import rx.Observable;
@@ -36,7 +34,7 @@ public class EventsServiceClient {
                         pageFrom(message),
                         DEFAULT_PER_PAGE_COUNT
                 )
-                .compose(TransformToRepositoryIssueEvent.<GithubEvent, RepositoryIssueEvent>newInstance(
+                .compose(new TransformToRepositoryIssueEvent<>(
                         message.repositoryId(),
                         message.issueNumber(),
                         RepositoryIssueEventEvent::newInstance
