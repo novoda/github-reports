@@ -26,6 +26,10 @@ public class GithubRepository {
     @SerializedName("has_issues")
     private boolean issuesPresent;
 
+    public GithubRepository(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

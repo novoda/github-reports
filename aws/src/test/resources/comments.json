@@ -1,0 +1,10 @@
+{
+  "type": "comments",
+  "organisationName": "novoda",
+  "since": "2016-01-01T00:00:00+0000",
+  "page": 1337,
+  "isTerminal": true,
+  "repositoryId": 666,
+  "repositoryName": "yolo",
+  "issueNumber": 42
+}
