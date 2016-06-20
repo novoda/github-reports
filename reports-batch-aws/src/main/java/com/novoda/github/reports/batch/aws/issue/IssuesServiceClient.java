@@ -6,15 +6,8 @@ import com.novoda.github.reports.aws.queue.QueueMessage;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.issue.GithubIssueService;
 import com.novoda.github.reports.service.issue.IssueService;
-import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
-import com.novoda.github.reports.service.repository.GithubRepository;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import okhttp3.Headers;
-import retrofit2.Response;
 import rx.Observable;
 
 public class IssuesServiceClient {
@@ -47,33 +40,13 @@ public class IssuesServiceClient {
                         pageFrom(message),
                         DEFAULT_PER_PAGE_COUNT
                 )
-                .compose(new TransformToRepositoryIssue(message.repositoryId()))
+                .compose(TransformToRepositoryIssue.newInstance(message.repositoryId()))
                 .compose(ResponseRepositoryIssuePersistTransformer.newInstance())
                 .compose(NextMessagesIssueTransformer.newInstance(message));
     }
 
     private int pageFrom(QueueMessage message) {
         return Math.toIntExact(message.page());
-    }
-
-    private class TransformToRepositoryIssue implements Observable.Transformer<Response<List<GithubIssue>>, Response<List<RepositoryIssue>>> {
-        private final Long repositoryId;
-
-        TransformToRepositoryIssue(Long repositoryId) {
-            this.repositoryId = repositoryId;
-        }
-
-        @Override
-        public Observable<Response<List<RepositoryIssue>>> call(Observable<Response<List<GithubIssue>>> responseObservable) {
-            return responseObservable
-                    .map(response -> {
-                        Headers headers = response.headers();
-                        List<RepositoryIssue> body = response.body().stream()
-                                .map(githubIssue -> new RepositoryIssue(new GithubRepository(repositoryId), githubIssue))
-                                .collect(Collectors.toList());
-                        return Response.success(body, headers);
-                    });
-        }
     }
 
 }
