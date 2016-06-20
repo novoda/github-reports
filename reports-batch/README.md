@@ -38,6 +38,9 @@ properties defined:
 
 For an example, see the [`amazon.credentials.sample` file](src/main/resources/amazon.credentials.sample).
 
+You also need to add a `lambda.properties` file in the classloader accessible folder, referencing the name of the AWS Lambda that will handle the
+actual processing in the `AWS_LAMBDA_NAME` property (see [`lambda.properties.sample`](src/main/resources/lambda.properties.sample)).
+
 #### Email (AWS only)
 
 In order to notify the completion and erroring of jobs, you must put a `email.credentials` file in the resources or classloader accessible folder,
