@@ -8,12 +8,18 @@ public class DatabaseCredentialsReader {
 
     public static final String PROPERTY_USERNAME = "user";
     public static final String PROPERTY_PASSWORD = "password";
-
     static final String USER_KEY = "DB_USER";
+
+    private static final String DATABASE_PROPERTIES_FILENAME = "database.credentials";
     static final String PASSWORD_KEY = "DB_PASSWORD";
     static final String CONNECTION_STRING_KEY = "DB_CONNECTION_STRING";
 
     private PropertiesReader propertiesReader;
+
+    public static DatabaseCredentialsReader newInstance() {
+        PropertiesReader propertiesReader = PropertiesReader.newInstance(DATABASE_PROPERTIES_FILENAME);
+        return new DatabaseCredentialsReader(propertiesReader);
+    }
 
     public static DatabaseCredentialsReader newInstance(PropertiesReader propertiesReader) {
         return new DatabaseCredentialsReader(propertiesReader);

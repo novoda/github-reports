@@ -13,14 +13,14 @@ import java.util.Date;
 
 import rx.Observable;
 
-public class BatchClient {
+public class LocalBatchClient {
 
     private static final IssuesServiceClient ISSUE_SERVICE_CLIENT = IssuesServiceClient.newInstance();
     private static final RepositoriesServiceClient REPOSITORY_SERVICE_CLIENT = RepositoriesServiceClient.newInstance();
     private static final CommentsServiceClient COMMENTS_SERVICE_CLIENT = CommentsServiceClient.newInstance();
     private static final EventsServiceClient EVENTS_SERVICE_CLIENT = EventsServiceClient.newInstance();
 
-    private BatchClient() {
+    private LocalBatchClient() {
         // non-instantiable
     }
 

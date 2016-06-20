@@ -11,7 +11,7 @@ import com.amazonaws.services.cloudwatchevents.model.Target;
 import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.batch.aws.configuration.AmazonConfigurationConverter;
 import com.novoda.github.reports.batch.aws.configuration.ConfigurationConverterException;
-import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsService;
+import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsReader;
 import com.novoda.github.reports.batch.alarm.AlarmOperationFailedException;
 import com.novoda.github.reports.batch.alarm.AlarmService;
 import com.novoda.github.reports.util.SystemClock;
@@ -26,8 +26,8 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
     private final AmazonCloudWatchEventsClient amazonEventsClient;
     private final SystemClock systemClock;
 
-    public static AmazonAlarmService newInstance(AmazonCredentialsService amazonCredentialsService) {
-        AWSCredentials awsCredentials = amazonCredentialsService.getAWSCredentials();
+    public static AmazonAlarmService newInstance(AmazonCredentialsReader amazonCredentialsReader) {
+        AWSCredentials awsCredentials = amazonCredentialsReader.getAWSCredentials();
         AmazonConfigurationConverter amazonConfigurationConverter = AmazonConfigurationConverter.newInstance();
         AmazonCloudWatchEventsClient amazonEventsClient = new AmazonCloudWatchEventsClient(awsCredentials);
         SystemClock systemClock = SystemClock.newInstance();
