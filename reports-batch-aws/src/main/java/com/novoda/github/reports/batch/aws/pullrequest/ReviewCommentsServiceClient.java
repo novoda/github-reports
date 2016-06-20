@@ -37,7 +37,7 @@ public class ReviewCommentsServiceClient {
                                                                   date,
                                                                   pageFrom(message),
                                                                   DEFAULT_PER_PAGE_COUNT)
-                .compose(new TransformToRepositoryIssueEvent(message))
+                .compose(new OldTransformToRepositoryIssueEvent(message))
                 .compose(ResponseRepositoryIssueEventPersistTransformer.newInstance())
                 .compose(NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetReviewCommentsQueueMessage()));
     }

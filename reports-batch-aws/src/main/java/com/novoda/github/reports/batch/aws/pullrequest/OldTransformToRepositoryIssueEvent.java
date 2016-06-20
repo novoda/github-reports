@@ -15,12 +15,13 @@ import okhttp3.Headers;
 import retrofit2.Response;
 import rx.Observable;
 
-class TransformToRepositoryIssueEvent implements Observable.Transformer<Response<List<GithubComment>>, Response<List<RepositoryIssueEvent>>> {
+@Deprecated
+class OldTransformToRepositoryIssueEvent implements Observable.Transformer<Response<List<GithubComment>>, Response<List<RepositoryIssueEvent>>> {
 
     private long repositoryId;
     private int issueNumber;
 
-    TransformToRepositoryIssueEvent(AmazonGetReviewCommentsQueueMessage message) {
+    OldTransformToRepositoryIssueEvent(AmazonGetReviewCommentsQueueMessage message) {
         this.repositoryId = message.repositoryId();
         this.issueNumber = Math.toIntExact(message.issueNumber());
     }
