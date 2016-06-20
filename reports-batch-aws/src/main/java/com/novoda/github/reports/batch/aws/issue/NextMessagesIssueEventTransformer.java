@@ -11,7 +11,7 @@ import java.util.List;
 
 import rx.functions.Func3;
 
-class NextMessagesIssueEventTransformer<M extends AmazonQueueMessage> extends NextMessagesTransformer<RepositoryIssueEvent, M> {
+public class NextMessagesIssueEventTransformer<M extends AmazonQueueMessage> extends NextMessagesTransformer<RepositoryIssueEvent, M> {
 
     private final Func3<Boolean, Long, M, M> amazonQueueMessageCreator;
 
