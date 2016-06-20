@@ -4,6 +4,7 @@ import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.queue.QueueMessage;
 import com.novoda.github.reports.batch.aws.issue.NextMessagesIssueEventTransformer;
+import com.novoda.github.reports.batch.aws.issue.ResponseRepositoryIssueEventPersistTransformer;
 import com.novoda.github.reports.batch.aws.issue.TransformToRepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
