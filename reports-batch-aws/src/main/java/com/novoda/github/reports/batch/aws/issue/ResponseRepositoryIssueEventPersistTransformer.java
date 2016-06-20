@@ -6,7 +6,7 @@ import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersist
 
 import rx.Observable;
 
-class ResponseRepositoryIssueEventPersistTransformer extends ResponsePersistTransformer<RepositoryIssueEvent> {
+public class ResponseRepositoryIssueEventPersistTransformer extends ResponsePersistTransformer<RepositoryIssueEvent> {
 
     public static ResponseRepositoryIssueEventPersistTransformer newInstance() {
         RepositoryIssueEventPersistTransformer persistTransformer = RepositoryIssueEventPersistTransformer.newInstance();
