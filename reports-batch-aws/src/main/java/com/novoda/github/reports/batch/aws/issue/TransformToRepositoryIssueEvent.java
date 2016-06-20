@@ -13,7 +13,8 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Func2;
 
-class TransformToRepositoryIssueEvent<T, C extends RepositoryIssueEvent> implements Observable.Transformer<Response<List<T>>, Response<List<RepositoryIssueEvent>>> {
+class TransformToRepositoryIssueEvent<T, C extends RepositoryIssueEvent>
+        implements Observable.Transformer<Response<List<T>>, Response<List<RepositoryIssueEvent>>> {
 
     private final Long repositoryId;
     private final Long issueNumber;

@@ -26,9 +26,9 @@ class NextMessagesIssueEventTransformer<M extends AmazonQueueMessage> extends Ne
     }
 
     private NextMessagesIssueEventTransformer(M currentMessage,
-                                      NextPageExtractor nextPageExtractor,
-                                      LastPageExtractor lastPageExtractor,
-                                      Func3<Boolean, Long, M, M> amazonQueueMessageCreator) {
+                                              NextPageExtractor nextPageExtractor,
+                                              LastPageExtractor lastPageExtractor,
+                                              Func3<Boolean, Long, M, M> amazonQueueMessageCreator) {
 
         super(currentMessage, nextPageExtractor, lastPageExtractor);
         this.amazonQueueMessageCreator = amazonQueueMessageCreator;
