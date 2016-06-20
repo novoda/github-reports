@@ -11,14 +11,9 @@ import com.novoda.github.reports.aws.worker.WorkerHandler;
 import com.novoda.github.reports.batch.aws.issue.CommentsServiceClient;
 import com.novoda.github.reports.batch.aws.issue.IssuesServiceClient;
 import com.novoda.github.reports.batch.aws.repository.RepositoriesServiceClient;
-import com.novoda.github.reports.service.issue.GithubIssue;
-import com.novoda.github.reports.service.issue.RepositoryIssue;
-import com.novoda.github.reports.service.repository.GithubRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
 
 import rx.Observable;
 
@@ -78,13 +73,6 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             throw exception;
         }
 
-    }
-
-    @NotNull
-    private RepositoryIssue getRepositoryIssue(AmazonGetCommentsQueueMessage message) {
-        GithubRepository githubRepository = new GithubRepository(message.repositoryId());
-        GithubIssue githubIssue = new GithubIssue(Math.toIntExact(message.issueNumber()));
-        return new RepositoryIssue(githubRepository, githubIssue);
     }
 
     private ArrayList<AmazonQueueMessage> collectDerivedMessagesFrom(Observable<AmazonQueueMessage> nextMessagesObservable) {
