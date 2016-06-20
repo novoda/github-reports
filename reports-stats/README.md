@@ -27,10 +27,10 @@ The CLI has 3 commands available, `user`, `repo` and `project`, that return stat
 The `user` command returns statistics about a specific user in your organization, and accepts the following parameters:
 
 * the default argument is the username you want to retrieve statistics for
-* `--repo`, the name of the repository to retrieve data from
-* `--project`, the project name to retrieve data from (a project may contain 0 or more repositories)
-* `--from`, the start date of the range to retrieve data from (ISO-8601 compliant)
-* `--to`, the end date of the range to retrieve data from (ISO-8601 compliant)
+* `--repo` (optional), the name of the repository to retrieve data from
+* `--project` (optional), the project name to retrieve data from (a project may contain 0 or more repositories)
+* `--from` (optional), the start date of the range to retrieve data from (ISO-8601 compliant)
+* `--to` (optional), the end date of the range to retrieve data from (ISO-8601 compliant)
 
 The data returned consists of the following information:
 
@@ -62,8 +62,8 @@ Number of repositories worked on: 1
 The `repo` command returns statistics about a specific repository in your organization, and accepts the following parameters:
 
 * the default argument is the username you want to retrieve statistics for
-* `--from`, the start date of the range to retrieve data from (ISO-8601 compliant)
-* `--to`, the end date of the range to retrieve data from (ISO-8601 compliant)
+* `--from` (optional), the start date of the range to retrieve data from (ISO-8601 compliant)
+* `--to` (optional), the end date of the range to retrieve data from (ISO-8601 compliant)
 
 The data returned consists of the following information:
 
@@ -93,8 +93,8 @@ Number of participating users: 13
 The `project` command returns statistics about a specific project in your organization, and accepts the following parameters:
 
 * the default argument is the project you want to retrieve statistics for
-* `--from`, the start date of the range to retrieve data from (ISO-8601 compliant)
-* `--to`, the end date of the range to retrieve data from (ISO-8601 compliant)
+* `--from` (optional), the start date of the range to retrieve data from (ISO-8601 compliant)
+* `--to` (optional), the end date of the range to retrieve data from (ISO-8601 compliant)
 
 The data returned consists of the following information (same as for the repository):
 
