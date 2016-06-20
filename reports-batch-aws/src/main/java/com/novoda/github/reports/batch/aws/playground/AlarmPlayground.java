@@ -1,14 +1,14 @@
 package com.novoda.github.reports.batch.aws.playground;
 
-import com.novoda.github.reports.aws.alarm.AlarmOperationFailedException;
-import com.novoda.github.reports.aws.alarm.AmazonAlarm;
-import com.novoda.github.reports.aws.alarm.AmazonAlarmService;
-import com.novoda.github.reports.aws.configuration.AmazonConfiguration;
-import com.novoda.github.reports.aws.configuration.DatabaseConfiguration;
-import com.novoda.github.reports.aws.configuration.EmailNotifierConfiguration;
-import com.novoda.github.reports.aws.configuration.GithubConfiguration;
-import com.novoda.github.reports.aws.credentials.AmazonCredentialsService;
-import com.novoda.github.reports.aws.properties.EmailCredentialsReader;
+import com.novoda.github.reports.batch.alarm.AlarmOperationFailedException;
+import com.novoda.github.reports.batch.aws.alarm.AmazonAlarm;
+import com.novoda.github.reports.batch.aws.alarm.AmazonAlarmService;
+import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
+import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
+import com.novoda.github.reports.batch.aws.configuration.EmailNotifierConfiguration;
+import com.novoda.github.reports.batch.configuration.GithubConfiguration;
+import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsService;
+import com.novoda.github.reports.batch.aws.credentials.EmailCredentialsReader;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.properties.PropertiesReader;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
