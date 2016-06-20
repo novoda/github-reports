@@ -8,7 +8,7 @@ public class RepositoryIssueEventEvent extends RepositoryIssueEvent {
 
     private final GithubEvent event;
 
-    public static RepositoryIssueEvent newInstance(RepositoryIssue repositoryIssue, GithubEvent event) {
+    public static RepositoryIssueEventEvent newInstance(RepositoryIssue repositoryIssue, GithubEvent event) {
         return new RepositoryIssueEventEvent(repositoryIssue, event);
     }
 

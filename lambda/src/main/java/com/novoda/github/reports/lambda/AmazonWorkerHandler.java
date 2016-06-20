@@ -9,6 +9,7 @@ import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.worker.WorkerHandler;
 import com.novoda.github.reports.batch.aws.issue.CommentsServiceClient;
+import com.novoda.github.reports.batch.aws.issue.EventsServiceClient;
 import com.novoda.github.reports.batch.aws.issue.IssuesServiceClient;
 import com.novoda.github.reports.batch.aws.pullrequest.ReviewCommentsServiceClient;
 import com.novoda.github.reports.batch.aws.repository.RepositoriesServiceClient;
@@ -23,23 +24,27 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
     private final RepositoriesServiceClient repositoriesServiceClient;
     private final IssuesServiceClient issuesServiceClient;
     private final CommentsServiceClient commentsServiceClient;
+    private final EventsServiceClient eventsServiceClient;
     private final ReviewCommentsServiceClient reviewCommentsServiceClient;
 
     public static AmazonWorkerHandler newInstance() {
         RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
         IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
+        EventsServiceClient eventsServiceClient = EventsServiceClient.newInstance();
         CommentsServiceClient commentsServiceClient = CommentsServiceClient.newInstance();
         ReviewCommentsServiceClient reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance();
-        return new AmazonWorkerHandler(repositoriesServiceClient, issuesServiceClient, commentsServiceClient, reviewCommentsServiceClient);
+        return new AmazonWorkerHandler(repositoriesServiceClient, issuesServiceClient, eventsServiceClient, commentsServiceClient, reviewCommentsServiceClient);
     }
 
-    AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient,
-                        IssuesServiceClient issuesServiceClient,
-                        CommentsServiceClient commentsServiceClient,
-                        ReviewCommentsServiceClient reviewCommentsServiceClient) {
+    private AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient,
+                                IssuesServiceClient issuesServiceClient,
+                                EventsServiceClient eventsServiceClient,
+                                CommentsServiceClient commentsServiceClient,
+                                ReviewCommentsServiceClient reviewCommentsServiceClient) {
 
         this.repositoriesServiceClient = repositoriesServiceClient;
         this.issuesServiceClient = issuesServiceClient;
+        this.eventsServiceClient = eventsServiceClient;
         this.commentsServiceClient = commentsServiceClient;
         this.reviewCommentsServiceClient = reviewCommentsServiceClient;
     }
@@ -57,7 +62,7 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             nextMessagesObservable = issuesServiceClient.retrieveIssuesFor(message);
         } else if (queueMessage instanceof AmazonGetEventsQueueMessage) {
             AmazonGetEventsQueueMessage message = (AmazonGetEventsQueueMessage) queueMessage;
-            // TODO
+            nextMessagesObservable = eventsServiceClient.retrieveEventsFrom(message);
         } else if (queueMessage instanceof AmazonGetCommentsQueueMessage) {
             AmazonGetCommentsQueueMessage message = (AmazonGetCommentsQueueMessage) queueMessage;
             nextMessagesObservable = commentsServiceClient.retrieveCommentsAsEventsFrom(message);
