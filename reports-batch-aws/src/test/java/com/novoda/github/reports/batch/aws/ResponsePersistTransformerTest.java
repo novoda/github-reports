@@ -1,5 +1,6 @@
 package com.novoda.github.reports.batch.aws;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,7 +25,6 @@ public class ResponsePersistTransformerTest {
 
     private static final String ANY_HEADER_NAME = "AnyHeaderName";
     private static final String ANY_HEADER_VALUE = "any header value";
-    private static final Headers ANY_HEADERS = Headers.of(ANY_HEADER_NAME, ANY_HEADER_VALUE);
 
     @Mock
     Observable.Transformer<Object, Object> persistTransformer;
@@ -42,15 +42,12 @@ public class ResponsePersistTransformerTest {
 
         when(persistTransformer.call(any(Observable.class))).then(invocation -> invocation.getArgument(0));
 
-        List<Object> elements = Collections.nCopies(10, new Object());
-        response = Response.success(elements, ANY_HEADERS);
-        inputObservable = Observable.just(response);
-
         testSubscriber = TestSubscriber.create();
     }
 
     @Test
-    public void givenResponse_whenCompose_thenHandleOneResponseAndComplete() {
+    public void givenAnyResponse_whenCompose_thenHandleOneResponseAndComplete() {
+        givenAnyResponse();
 
         whenCompose();
 
@@ -58,21 +55,29 @@ public class ResponsePersistTransformerTest {
         testSubscriber.assertValueCount(1);
     }
 
+    private void givenAnyResponse() {
+        response = Response.success(new ArrayList<>());
+        givenInputObservable();
+    }
+
     @Test
     public void givenResponseWith10Elements_whenCompose_thenCallPersistTransformer10Times() {
+        givenResponseWith10Elements();
 
         whenCompose();
 
         verify(persistTransformer, VerificationModeFactory.only()).call(any());
     }
 
-    private void whenCompose() {
-        Observable<Response<List<Object>>> actualObservable = inputObservable.compose(responsePersistTransformer);
-        actualObservable.subscribe(testSubscriber);
+    private void givenResponseWith10Elements() {
+        List<Object> elements = Collections.nCopies(10, new Object());
+        response = Response.success(elements);
+        givenInputObservable();
     }
 
     @Test
     public void givenResponseWithHeaders_whenCompose_thenDoNotModifyHeaders() {
+        givenResponseWithHeaders();
 
         whenCompose();
 
@@ -84,11 +89,27 @@ public class ResponsePersistTransformerTest {
 
     @Test
     public void givenResponseWithHeaders_whenCompose_thenDoNotModifyBody() {
+        givenResponseWithHeaders();
 
         whenCompose();
 
         Response<List<Object>> actual = testSubscriber.getOnNextEvents().get(0);
         assertEquals(response.body(), actual.body());
+    }
+
+    private void givenResponseWithHeaders() {
+        Headers ANY_HEADERS = Headers.of(ANY_HEADER_NAME, ANY_HEADER_VALUE);
+        response = Response.success(new ArrayList<>(), ANY_HEADERS);
+        givenInputObservable();
+    }
+
+    private void givenInputObservable() {
+        inputObservable = Observable.just(response);
+    }
+
+    private void whenCompose() {
+        Observable<Response<List<Object>>> actualObservable = inputObservable.compose(responsePersistTransformer);
+        actualObservable.subscribe(testSubscriber);
     }
 
 }
