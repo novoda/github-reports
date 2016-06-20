@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.aws.command;
+package com.novoda.github.reports.batch.command;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.ISO8601DateConverter;

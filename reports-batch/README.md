@@ -1,22 +1,13 @@
-reports-batch-aws
-=================
+reports-batch
+=============
 
-_CLI to mine data from your Github organization on Amazon AWS._
+_CLI to mine data from your Github organization._
 
 -------------
 
-`reports-batch-aws` is a CLI program to fetch and store relevant data about your Github organization from Amazon AWS using lambdas, SQS and events.
+`reports-batch` is a CLI program to fetch and store relevant data about your Github organization.
 
 ### Configuration
-
-#### Amazon
-
-To be able to use the Amazon AWS, you must put a `amazon.credentials` file in the resources or classloader accessible folder, with the following
-properties defined:
-
-* `AWS_ACCESS_KEY_ID`, access key ID for your IAM user
-* `AWS_SECRET_ACCESS_KEY`, secret access key for your IAM user
-For an example, see the [`amazon.credentials.sample` file](src/main/resources/amazon.credentials.sample).
 
 #### Database
 
@@ -36,7 +27,16 @@ To be able to use the Github API, you must put a `github.credentials` file in th
 
 For an example, see the [`github.credentials.sample` file](src/main/resources/github.credentials.sample).
 
-#### Email
+#### Amazon (AWS only)
+
+To be able to use the Amazon AWS, you must put a `amazon.credentials` file in the resources or classloader accessible folder, with the following
+properties defined:
+
+* `AWS_ACCESS_KEY_ID`, access key ID for your IAM user
+* `AWS_SECRET_ACCESS_KEY`, secret access key for your IAM user
+For an example, see the [`amazon.credentials.sample` file](src/main/resources/amazon.credentials.sample).
+
+#### Email (AWS only)
 
 In order to notify the completion and erroring of jobs, you must put a `email.credentials` file in the resources or classloader accessible folder,
 with the following properties defined:
@@ -48,14 +48,25 @@ with the following properties defined:
 * `EMAIL_USERNAME`, the username for the sender email
 * `EMAIL_PASSWORD`, the password for the sender email
 
-For an example, see the [`email.credentials.sample` file](src/main/resources/email.credentials.sample).
+### Usage (local)
 
-### Usage
-
-To use `reports-batch-aws` , simply run:
+To use `reports-batch`, simply run:
 
 ```shell
-$ reports-batch-aws your-organization-name --from 2016-01-01 --email carl@novoda.com franceso@novoda.com
+$ reports-batch local your-organization-name --from 2016-01-01
+```
+
+The `from` parameter is optional and can be specified as an ISO-8601 date/time string.
+
+The program may temporarily halt if the Github API calls reach a predefined rate limit, resuming on its own after said limit gets reset.
+
+
+### Usage (Amazon AWS)
+
+To use `reports-batch`, simply run:
+
+```shell
+$ reports-batch aws your-organization-name --from 2016-01-01 --email carl@novoda.com franceso@novoda.com
 ```
 
 The `from` parameter is optional and can be specified as an ISO-8601 date/time string.
