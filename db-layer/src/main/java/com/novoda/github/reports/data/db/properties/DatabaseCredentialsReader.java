@@ -1,16 +1,17 @@
 package com.novoda.github.reports.data.db.properties;
 
-import com.novoda.github.reports.service.properties.PropertiesReader;
+import com.novoda.github.reports.properties.PropertiesReader;
 
 import java.util.Properties;
 
 public class DatabaseCredentialsReader {
 
+    public static final String PROPERTY_USERNAME = "user";
+    public static final String PROPERTY_PASSWORD = "password";
+
     static final String USER_KEY = "DB_USER";
     static final String PASSWORD_KEY = "DB_PASSWORD";
     static final String CONNECTION_STRING_KEY = "DB_CONNECTION_STRING";
-    static final String PROPERTY_USERNAME = "user";
-    static final String PROPERTY_PASSWORD = "password";
 
     private PropertiesReader propertiesReader;
 
