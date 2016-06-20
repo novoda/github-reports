@@ -28,6 +28,10 @@ dependencies {
     testCompile 'org.mockito:mockito-core:2.0.53-beta'
 }
 
+jar {
+    exclude '*.properties.sample'
+}
+
 task zip(type: Zip) {
     from compileJava
     from processResources
