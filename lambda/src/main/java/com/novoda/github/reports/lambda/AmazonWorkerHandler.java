@@ -8,6 +8,7 @@ import com.novoda.github.reports.aws.queue.AmazonGetRepositoriesQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.aws.worker.WorkerHandler;
+import com.novoda.github.reports.batch.aws.issue.CommentsServiceClient;
 import com.novoda.github.reports.batch.aws.issue.IssuesServiceClient;
 import com.novoda.github.reports.batch.aws.repository.RepositoriesServiceClient;
 
@@ -20,16 +21,22 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
     private final RepositoriesServiceClient repositoriesServiceClient;
     private final IssuesServiceClient issuesServiceClient;
+    private final CommentsServiceClient commentsServiceClient;
 
     public static AmazonWorkerHandler newInstance() {
         RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
         IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
-        return new AmazonWorkerHandler(repositoriesServiceClient, issuesServiceClient);
+        CommentsServiceClient commentsServiceClient = CommentsServiceClient.newInstance();
+        return new AmazonWorkerHandler(repositoriesServiceClient, issuesServiceClient, commentsServiceClient);
     }
 
-    AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient, IssuesServiceClient issuesServiceClient) {
+    private AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient,
+                                IssuesServiceClient issuesServiceClient,
+                                CommentsServiceClient commentsServiceClient) {
+
         this.repositoriesServiceClient = repositoriesServiceClient;
         this.issuesServiceClient = issuesServiceClient;
+        this.commentsServiceClient = commentsServiceClient;
     }
 
     @Override
@@ -39,7 +46,7 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
         if (queueMessage instanceof AmazonGetRepositoriesQueueMessage) {
             AmazonGetRepositoriesQueueMessage message = (AmazonGetRepositoriesQueueMessage) queueMessage;
-            nextMessagesObservable = repositoriesServiceClient.getRepositoriesFor(message);
+            nextMessagesObservable = repositoriesServiceClient.retrieveRepositoriesFor(message);
         } else if (queueMessage instanceof AmazonGetIssuesQueueMessage) {
             AmazonGetIssuesQueueMessage message = (AmazonGetIssuesQueueMessage) queueMessage;
             nextMessagesObservable = issuesServiceClient.retrieveIssuesFor(message);
@@ -48,7 +55,7 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             // TODO
         } else if (queueMessage instanceof AmazonGetCommentsQueueMessage) {
             AmazonGetCommentsQueueMessage message = (AmazonGetCommentsQueueMessage) queueMessage;
-            // TODO
+            nextMessagesObservable = commentsServiceClient.retrieveCommentsAsEventsFrom(message);
         } else if (queueMessage instanceof AmazonGetReviewCommentsQueueMessage) {
             AmazonGetReviewCommentsQueueMessage message = (AmazonGetReviewCommentsQueueMessage) queueMessage;
             // TODO

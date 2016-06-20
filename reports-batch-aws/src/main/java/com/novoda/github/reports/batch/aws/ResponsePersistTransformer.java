@@ -7,7 +7,7 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Func0;
 
-public abstract class ResponsePersistTransformer<T> implements Observable.Transformer<Response<List<T>>, Response<List<T>>> {
+public class ResponsePersistTransformer<T> implements Observable.Transformer<Response<List<T>>, Response<List<T>>> {
 
     private final Observable.Transformer<T, T> persistTransformer;
 
