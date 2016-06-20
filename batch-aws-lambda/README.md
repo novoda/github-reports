@@ -1,16 +1,19 @@
-lambda
-======
+batch-aws-lambda
+================
 
 _Amazon AWS recursive Lambda to fetch Github events._
 
--------------
+----------------
 
-`lambda` is an Amazon AWS Lambda handler fetch and store relevant data about your Github organization from Amazon AWS using lambdas, SQS and events.
+`batch-aws-lambda` is an Amazon AWS Lambda handler implementation for the `batch` module, that fetches and stores historical data about your Github
+organisation from Amazon AWS using lambdas, SQS and events.
 
 ### Configuration
 
-As a first step, install the [AWS CLI](https://aws.amazon.com/cli/) and having it [configured with your credentials and region]
+As a first step, install the [AWS CLI](https://aws.amazon.com/cli/) and [configure it with your credentials and region]
 (http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-quick-configuration).
+
+Since this module runs on AWS Lambda, you need no configuration/credentials file in the classpath.
 
 ### Role creation
 
