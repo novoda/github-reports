@@ -41,9 +41,10 @@ public class CommentsServiceClient {
                         pageFrom(message),
                         DEFAULT_PER_PAGE_COUNT
                 )
-                .compose(new TransformToRepositoryIssueEvent<>(message.repositoryId(),
-                                                               message.issueNumber(),
-                                                               RepositoryIssueEventComment::new
+                .compose(new TransformToRepositoryIssueEvent<>(
+                        message.repositoryId(),
+                        message.issueNumber(),
+                        RepositoryIssueEventComment::new
                 ))
                 .compose(ResponseRepositoryIssueEventPersistTransformer.newInstance())
                 .compose(NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetCommentsQueueMessage()));
