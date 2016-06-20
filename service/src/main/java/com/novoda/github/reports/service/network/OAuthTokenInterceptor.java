@@ -9,11 +9,12 @@ import okhttp3.Response;
 class OAuthTokenInterceptor implements Interceptor {
 
     private static final String AUTH_TOKEN_HEADER = "Authorization";
-    private static final String AUTH_TOKEN_PREFIX = "token";
 
+    private String tokenPrefix;
     private String oAuthToken;
 
-    OAuthTokenInterceptor(String oAuthToken) {
+    OAuthTokenInterceptor(String tokenPrefix, String oAuthToken) {
+        this.tokenPrefix = tokenPrefix;
         this.oAuthToken = oAuthToken;
     }
 
@@ -26,7 +27,7 @@ class OAuthTokenInterceptor implements Interceptor {
     private Request injectOAuthTokenThrough(Chain chain) {
         Request oldRequest = chain.request();
         return oldRequest.newBuilder()
-                .addHeader(AUTH_TOKEN_HEADER, AUTH_TOKEN_PREFIX + " " + oAuthToken)
+                .addHeader(AUTH_TOKEN_HEADER, tokenPrefix + " " + oAuthToken)
                 .build();
     }
 

@@ -6,6 +6,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 class GithubInterceptors extends Interceptors {
 
+    private static final String GITHUB_AUTH_TOKEN_PREFIX = "token";
+
     static Interceptors defaultInterceptors() {
         GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance();
         String token = githubCredentialsReader.getAuthToken();
@@ -18,7 +20,7 @@ class GithubInterceptors extends Interceptors {
     }
 
     GithubInterceptors withOAuthTokenInterceptor(String token) {
-        return (GithubInterceptors) with(new OAuthTokenInterceptor(token));
+        return (GithubInterceptors) with(new OAuthTokenInterceptor(GITHUB_AUTH_TOKEN_PREFIX, token));
     }
 
     GithubInterceptors withRateLimitHandlerInterceptor() {
