@@ -8,10 +8,6 @@ import java.util.Date;
 
 public class GithubIssue {
 
-    public GithubIssue(int number) {
-        this.number = number;
-    }
-
     private long id;
 
     private int number;
