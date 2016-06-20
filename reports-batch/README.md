@@ -48,7 +48,33 @@ with the following properties defined:
 * `EMAIL_USERNAME`, the username for the sender email
 * `EMAIL_PASSWORD`, the password for the sender email
 
-### Usage (local)
+### Distribute the application
+
+To build a zip file of the application, run the `distZip` Gradle task: this will generate a zip file in the `build/distributions` directory, in order
+to upload and re-use the CLI without having to rebuild it every time.
+
+**Note**: distribution tasks strip out some files from the resources, so you have to re-configure your application by putting the proper
+`.credentials` files in the `lib` directory (the one containing the JAR files) in the extracted zip structure.
+
+### Debug from IntelliJ IDEA
+
+To debug the application in IDEA, simply put the credential files in the `src/main/resources` directory and create a new Debug configuration:
+
+1. Go to Run -> Edit Configurations...
+2. Click on the + icon and select "Application" as a new configuration
+3. Put the `com.novoda.github.reports.batch.Main` class as the "Main class"
+4. Type **only the program arguments** in the "Program arguments" text field (e.g. `novoda --from 2016-01-01`)
+5. Apply the changes
+6. Run the created configuration
+
+### Usage
+
+The CLI has 2 commands available, `local` and `aws`, that execute the batch process locally or on Amazon AWS.
+
+**Note**: the examples in the following sections assume that you're running the applications from the `bin` directory in the distribution folder,
+where you have the `reports-batch` bash file available. If you are running from the IDE, remember that **`reports-batch` is not a program argument**.
+
+#### Local execution
 
 To use `reports-batch`, simply run:
 
@@ -60,8 +86,7 @@ The `from` parameter is optional and can be specified as an ISO-8601 date/time s
 
 The program may temporarily halt if the Github API calls reach a predefined rate limit, resuming on its own after said limit gets reset.
 
-
-### Usage (Amazon AWS)
+#### Execution on Amazon AWS
 
 To use `reports-batch`, simply run:
 
