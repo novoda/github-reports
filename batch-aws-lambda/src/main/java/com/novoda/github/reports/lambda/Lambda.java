@@ -13,6 +13,7 @@ import com.novoda.github.reports.batch.aws.queue.AmazonQueue;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueService;
 import com.novoda.github.reports.batch.aws.worker.AmazonWorkerService;
+import com.novoda.github.reports.batch.aws.worker.LambdaPropertiesReader;
 import com.novoda.github.reports.batch.worker.BasicWorker;
 import com.novoda.github.reports.batch.worker.WorkerOperationFailedException;
 import com.novoda.github.reports.lambda.worker.AmazonWorkerHandlerService;
@@ -28,7 +29,8 @@ public class Lambda {
         this.amazonConfigurationConverter = AmazonConfigurationConverter.newInstance();
 
         AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance(null);
-        AmazonWorkerService workerService = AmazonWorkerService.newInstance(amazonCredentialsReader);
+        LambdaPropertiesReader lambdaPropertiesReader = LambdaPropertiesReader.newInstance();
+        AmazonWorkerService workerService = AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader);
         AmazonAlarmService alarmService = AmazonAlarmService.newInstance(amazonCredentialsReader);
         AmazonQueueService queueService = AmazonQueueService.newInstance(amazonCredentialsReader);
         EmailNotifierService notifierService = EmailNotifierService.newInstance();

@@ -9,6 +9,7 @@ import com.novoda.github.reports.batch.aws.queue.AmazonQueue;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueService;
 import com.novoda.github.reports.batch.aws.worker.AmazonWorkerService;
+import com.novoda.github.reports.batch.aws.worker.LambdaPropertiesReader;
 import com.novoda.github.reports.batch.command.AwsBatchOptions;
 import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
 import com.novoda.github.reports.batch.configuration.GithubConfiguration;
@@ -38,7 +39,8 @@ public class AwsCommandHandler implements CommandHandler<AwsBatchOptions> {
                 DatabaseCredentialsReader.newInstance(),
                 GithubCredentialsReader.newInstance(),
                 EmailCredentialsReader.newInstance(),
-                AmazonCredentialsReader.newInstance()
+                AmazonCredentialsReader.newInstance(),
+                LambdaPropertiesReader.newInstance()
         );
     }
 
@@ -46,14 +48,15 @@ public class AwsCommandHandler implements CommandHandler<AwsBatchOptions> {
                               DatabaseCredentialsReader databaseCredentialsReader,
                               GithubCredentialsReader githubCredentialsReader,
                               EmailCredentialsReader emailCredentialsReader,
-                              AmazonCredentialsReader amazonCredentialsReader) {
+                              AmazonCredentialsReader amazonCredentialsReader,
+                              LambdaPropertiesReader lambdaPropertiesReader) {
 
         this.systemClock = systemClock;
         this.databaseCredentialsReader = databaseCredentialsReader;
         this.githubCredentialsReader = githubCredentialsReader;
         this.emailCredentialsReader = emailCredentialsReader;
         this.queueService = AmazonQueueService.newInstance(amazonCredentialsReader);
-        this.workerService = AmazonWorkerService.newInstance(amazonCredentialsReader);
+        this.workerService = AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader);
     }
 
     @Override

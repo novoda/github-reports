@@ -4,6 +4,7 @@
 *.iml
 *.class
 *.credentials
+*.properties
 */build/
 out/
 classes/
