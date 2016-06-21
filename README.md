@@ -13,6 +13,7 @@ Base modules allow for behaviour decomposition, each taking care of one specific
 
 * [`core`](core/README.md) contains all the models and main interfaces shared across the project
 * [`db-layer`](db-layer/README.md) implements the persistence layer on a MySQL database
+* [`network`](network/README.md) cotains all the network (HTTP) components used to query API
 * [`github`](gitub/README.md) contains the components to query the Github API and persist the retrieved elements on the database
 * [`float`](float/README.md) contains all the components needed to query the Float API
 

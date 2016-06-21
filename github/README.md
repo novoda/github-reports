@@ -1,5 +1,5 @@
-github service
-==============
+github
+======
 
 _Github service library to retrieve Github organisation data and store them on a database._
 
