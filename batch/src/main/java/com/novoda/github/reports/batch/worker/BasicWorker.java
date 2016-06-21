@@ -75,9 +75,9 @@ public class BasicWorker<
             logger.log("The alarm \"%s\" has been removed.", alarmName);
         }
 
-        Q queue = getQueue(configuration);
-
+        Q queue = null;
         try {
+            queue = getQueue(configuration);
             M queueMessage = getItem(queue);
             List<M> newMessages = handleQueueMessage(configuration, queueMessage);
             updateQueue(queue, queueMessage, newMessages);
@@ -93,6 +93,8 @@ public class BasicWorker<
         } catch (Throwable t) {
             handleAnyOtherException(configuration, queue, t);
         }
+
+        logger.log("COMPLETED.");
     }
 
     private Q getQueue(C configuration) {
@@ -209,11 +211,12 @@ public class BasicWorker<
         logger.log("There was an unhandled error which terminated the job.");
         logger.log(t);
 
-        logger.log("Purging the queue...");
-        queue.purgeQueue();
-        logger.log("Queue purged.");
-
-        removeQueue(queueService, queue);
+        if (queue != null) {
+            logger.log("Purging the queue...");
+            queue.purgeQueue();
+            logger.log("Queue purged.");
+            removeQueue(queueService, queue);
+        }
         notifyError(configuration, t);
     }
 

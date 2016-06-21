@@ -2,7 +2,7 @@ package com.novoda.github.reports.batch.aws.credentials;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProviderChain;
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.novoda.github.reports.properties.PropertiesReader;
 
 public class AmazonCredentialsReader {
@@ -22,7 +22,7 @@ public class AmazonCredentialsReader {
 
     private AmazonCredentialsReader(PropertiesReader propertiesReader) {
         this.credentialsProviderChain = new AWSCredentialsProviderChain(
-                new EnvironmentVariableCredentialsProvider(),
+                new DefaultAWSCredentialsProviderChain(),
                 PropertiesAWSCredentialsProvider.newInstance(propertiesReader)
         );
     }

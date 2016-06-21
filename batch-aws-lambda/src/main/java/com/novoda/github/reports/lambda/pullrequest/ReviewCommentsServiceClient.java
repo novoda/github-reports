@@ -3,11 +3,13 @@ package com.novoda.github.reports.lambda.pullrequest;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.queue.QueueMessage;
+import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.issue.NextMessagesIssueEventTransformer;
 import com.novoda.github.reports.lambda.issue.ResponseRepositoryIssueEventPersistTransformer;
 import com.novoda.github.reports.lambda.issue.TransformToRepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
+import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 import com.novoda.github.reports.service.pullrequest.GithubPullRequestService;
 import com.novoda.github.reports.service.pullrequest.PullRequestService;
 
@@ -20,6 +22,7 @@ public class ReviewCommentsServiceClient {
 
     private final PullRequestService pullRequestService;
     private final DateToISO8601Converter dateConverter;
+    private final ResponseRepositoryIssueEventPersistTransformer responseRepositoryIssueEventPersistTransformer;
 
     public static ReviewCommentsServiceClient newInstance() {
         PullRequestService pullRequestService = GithubPullRequestService.newInstance();
@@ -27,9 +30,27 @@ public class ReviewCommentsServiceClient {
         return new ReviewCommentsServiceClient(pullRequestService, dateConverter);
     }
 
+    public static ReviewCommentsServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
+                                                          DatabaseCredentialsReader databaseCredentialsReader) {
+
+        PullRequestService pullRequestService = GithubPullRequestService.newInstance(githubCredentialsReader);
+        DateToISO8601Converter dateConverter = new DateToISO8601Converter();
+        return new ReviewCommentsServiceClient(pullRequestService, dateConverter, databaseCredentialsReader);
+    }
+
     private ReviewCommentsServiceClient(PullRequestService pullRequestService, DateToISO8601Converter dateConverter) {
         this.pullRequestService = pullRequestService;
         this.dateConverter = dateConverter;
+        this.responseRepositoryIssueEventPersistTransformer = ResponseRepositoryIssueEventPersistTransformer.newInstance();
+    }
+
+    private ReviewCommentsServiceClient(PullRequestService pullRequestService,
+                                        DateToISO8601Converter dateConverter,
+                                        DatabaseCredentialsReader databaseCredentialsReader) {
+
+        this.pullRequestService = pullRequestService;
+        this.dateConverter = dateConverter;
+        this.responseRepositoryIssueEventPersistTransformer = ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
     }
 
     public Observable<AmazonQueueMessage> retrieveReviewCommentsFromPullRequest(AmazonGetReviewCommentsQueueMessage message) {
@@ -43,7 +64,7 @@ public class ReviewCommentsServiceClient {
                 .compose(new TransformToRepositoryIssueEvent<>(message.issueNumber(),
                                                                message.repositoryId(),
                                                                RepositoryIssueEventComment::new))
-                .compose(ResponseRepositoryIssueEventPersistTransformer.newInstance())
+                .compose(responseRepositoryIssueEventPersistTransformer)
                 .compose(NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetReviewCommentsQueueMessage()));
     }
 

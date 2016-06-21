@@ -16,8 +16,17 @@ public class PropertiesReader {
         return new PropertiesReader(fileName);
     }
 
+    public static PropertiesReader newInstance(Properties properties) {
+        return new PropertiesReader(properties);
+    }
+
     private PropertiesReader(String fileName) {
         this.fileName = fileName;
+    }
+
+    public PropertiesReader(Properties properties) {
+        this.properties = properties;
+        this.fileName = null;
     }
 
     public String readProperty(String key) {

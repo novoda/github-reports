@@ -25,11 +25,17 @@ public class DbConnectionManager implements ConnectionManager {
     private DataSource dataSource;
 
     public static DbConnectionManager newInstance() {
-        return new DbConnectionManager();
+        DatabaseCredentialsReader databaseCredentialsReader = DatabaseCredentialsReader
+                .newInstance(PropertiesReader.newInstance(DATABASE_CREDENTIALS_FILENAME));
+        return new DbConnectionManager(databaseCredentialsReader);
     }
 
-    private DbConnectionManager() {
-        databaseCredentialsReader = DatabaseCredentialsReader.newInstance(PropertiesReader.newInstance(DATABASE_CREDENTIALS_FILENAME));
+    public static DbConnectionManager newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
+        return new DbConnectionManager(databaseCredentialsReader);
+    }
+
+    private DbConnectionManager(DatabaseCredentialsReader databaseCredentialsReader) {
+        this.databaseCredentialsReader = databaseCredentialsReader;
     }
 
     @Override
