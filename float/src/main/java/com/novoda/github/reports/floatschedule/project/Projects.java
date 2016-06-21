@@ -1,13 +1,11 @@
 package com.novoda.github.reports.floatschedule.project;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
 public class Projects {
 
-    @Expose
     @SerializedName("projects")
     private List<Project> projects;
 
