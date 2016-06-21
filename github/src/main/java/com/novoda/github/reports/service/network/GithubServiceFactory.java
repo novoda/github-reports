@@ -3,19 +3,15 @@ package com.novoda.github.reports.service.network;
 import com.novoda.github.reports.network.HttpClientFactory;
 import com.novoda.github.reports.network.Interceptors;
 import com.novoda.github.reports.network.OkHttpClientFactory;
+import com.novoda.github.reports.network.ServiceFactory;
 
 import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-class GithubServiceFactory {
+class GithubServiceFactory extends ServiceFactory<GithubApiService> {
 
     private static final String GITHUB_ENDPOINT = "https://api.github.com/";
-
-    private final OkHttpClient okHttpClient;
-    private final GsonConverterFactory gsonConverterFactory;
-    private final RxJavaCallAdapterFactory rxJavaCallAdapterFactory;
 
     public static GithubServiceFactory newInstance() {
         Interceptors githubInterceptors = GithubInterceptors.defaultInterceptors();
@@ -39,23 +35,18 @@ class GithubServiceFactory {
     private GithubServiceFactory(OkHttpClient okHttpClient,
                                  GsonConverterFactory gsonConverterFactory,
                                  RxJavaCallAdapterFactory rxJavaCallAdapterFactory) {
-        this.okHttpClient = okHttpClient;
-        this.gsonConverterFactory = gsonConverterFactory;
-        this.rxJavaCallAdapterFactory = rxJavaCallAdapterFactory;
+
+        super(okHttpClient, gsonConverterFactory, rxJavaCallAdapterFactory);
     }
 
-    GithubApiService createService() {
-        return createRetrofit()
-                .create(GithubApiService.class);
+    @Override
+    protected Class<GithubApiService> getServiceClass() {
+        return GithubApiService.class;
     }
 
-    private Retrofit createRetrofit() {
-        return new Retrofit.Builder()
-                .client(okHttpClient)
-                .baseUrl(GITHUB_ENDPOINT)
-                .addConverterFactory(gsonConverterFactory)
-                .addCallAdapterFactory(rxJavaCallAdapterFactory)
-                .build();
+    @Override
+    protected String getBaseEndpoint() {
+        return GITHUB_ENDPOINT;
     }
 
 }
