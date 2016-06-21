@@ -1,18 +1,26 @@
 package com.novoda.github.reports.service.network;
 
+import com.novoda.github.reports.service.properties.GithubCredentialsReader;
+
 import okhttp3.OkHttpClient;
 
 class OkHttpClientFactory implements HttpClientFactory {
 
     private final OkHttpClientBuilder okHttpClientBuilder;
 
+    public static OkHttpClientFactory newInstance(GithubCredentialsReader githubCredentialsReader) {
+        Interceptors interceptors = Interceptors.defaultInterceptors(githubCredentialsReader);
+        return newInstanceWithInterceptors(interceptors);
+    }
+
     public static OkHttpClientFactory newInstance() {
-        OkHttpClientBuilder okHttpClientBuilder = OkHttpClientBuilder.newInstance();
         Interceptors interceptors = Interceptors.defaultInterceptors();
+        return newInstanceWithInterceptors(interceptors);
+    }
 
-        okHttpClientBuilder
-                .withInterceptors(interceptors);
-
+    private static OkHttpClientFactory newInstanceWithInterceptors(Interceptors interceptors) {
+        OkHttpClientBuilder okHttpClientBuilder = OkHttpClientBuilder.newInstance();
+        okHttpClientBuilder.withInterceptors(interceptors);
         return new OkHttpClientFactory(okHttpClientBuilder);
     }
 

@@ -43,7 +43,7 @@ public class Lambda {
     private void init(Context context) {
         this.amazonConfigurationConverter = AmazonConfigurationConverter.newInstance();
         this.lambdaLogger = new LambdaLogger(context);
-        AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance(null);
+        AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance();
         LambdaPropertiesReader lambdaPropertiesReader = LambdaPropertiesReader.newInstance();
         AmazonWorkerService workerService = AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader);
         AmazonAlarmService alarmService = AmazonAlarmService.newInstance(amazonCredentialsReader);

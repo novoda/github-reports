@@ -5,6 +5,7 @@ import com.novoda.github.reports.data.UserDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbEventDataLayer;
 import com.novoda.github.reports.data.db.DbUserDataLayer;
+import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
@@ -19,9 +20,17 @@ public class RepositoryIssuePersistTransformer implements ComposedPersistTransfo
     private final PersistUserTransformer persistUserTransformer;
     private final PersistIssueTransformer persistIssueTransformer;
 
+    public static RepositoryIssuePersistTransformer newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
+        ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager(databaseCredentialsReader);
+        return buildRepositoryIssuePersistTransformer(connectionManager);
+    }
+
     public static RepositoryIssuePersistTransformer newInstance() {
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
+        return buildRepositoryIssuePersistTransformer(connectionManager);
+    }
 
+    private static RepositoryIssuePersistTransformer buildRepositoryIssuePersistTransformer(ConnectionManager connectionManager) {
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssue, User> userConverter = UserConverter.newInstance();
         PersistUserTransformer persistUserTransformer = PersistUserTransformer.newInstance(userDataLayer, userConverter);
@@ -32,6 +41,7 @@ public class RepositoryIssuePersistTransformer implements ComposedPersistTransfo
 
         return new RepositoryIssuePersistTransformer(persistUserTransformer, persistIssueTransformer);
     }
+
 
     RepositoryIssuePersistTransformer(PersistUserTransformer persistUserTransformer, PersistIssueTransformer persistIssueTransformer) {
         this.persistUserTransformer = persistUserTransformer;

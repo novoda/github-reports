@@ -12,7 +12,7 @@ public class AmazonWorkerHandlerService implements WorkerHandlerService<AmazonQu
 
     @Override
     public WorkerHandler<AmazonQueueMessage> getWorkerHandler() {
-        return AmazonWorkerHandler.newInstance();
+        return new AmazonWorkerHandler();
     }
 
 }

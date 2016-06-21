@@ -3,6 +3,7 @@ package com.novoda.github.reports.lambda.repository;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetRepositoriesQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.queue.QueueMessage;
+import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.persistence.PersistOperator;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
@@ -11,6 +12,7 @@ import com.novoda.github.reports.data.model.Repository;
 import com.novoda.github.reports.service.persistence.ConnectionManagerContainer;
 import com.novoda.github.reports.service.persistence.converter.Converter;
 import com.novoda.github.reports.service.persistence.converter.RepositoryConverter;
+import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.service.repository.GithubRepositoryService;
 import com.novoda.github.reports.service.repository.RepositoryService;
@@ -25,11 +27,22 @@ public class RepositoriesServiceClient {
     private final RepoDataLayer repoDataLayer;
     private final Converter<GithubRepository, Repository> converter;
 
-
     public static RepositoriesServiceClient newInstance() {
         RepositoryService repositoriesService = GithubRepositoryService.newInstance();
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
         RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
+        Converter<GithubRepository, Repository> converter = RepositoryConverter.newInstance();
+        return new RepositoriesServiceClient(repositoriesService, repoDataLayer, converter);
+    }
+
+    public static RepositoriesServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
+                                                        DatabaseCredentialsReader databaseCredentialsReader) {
+
+        RepositoryService repositoriesService = GithubRepositoryService.newInstance(githubCredentialsReader);
+
+        ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager(databaseCredentialsReader);
+        RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
+
         Converter<GithubRepository, Repository> converter = RepositoryConverter.newInstance();
         return new RepositoriesServiceClient(repositoriesService, repoDataLayer, converter);
     }

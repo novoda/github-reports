@@ -1,5 +1,7 @@
 package com.novoda.github.reports.service.network;
 
+import com.novoda.github.reports.service.properties.GithubCredentialsReader;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -12,6 +14,11 @@ class GithubServiceFactory {
     private final OkHttpClient okHttpClient;
     private final GsonConverterFactory gsonConverterFactory;
     private final RxJavaCallAdapterFactory rxJavaCallAdapterFactory;
+
+    public static GithubServiceFactory newInstance(GithubCredentialsReader githubCredentialsReader) {
+        HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance(githubCredentialsReader);
+        return newInstance(httpClientFactory);
+    }
 
     public static GithubServiceFactory newInstance() {
         HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance();
@@ -33,6 +40,7 @@ class GithubServiceFactory {
     private GithubServiceFactory(OkHttpClient okHttpClient,
                                  GsonConverterFactory gsonConverterFactory,
                                  RxJavaCallAdapterFactory rxJavaCallAdapterFactory) {
+
         this.okHttpClient = okHttpClient;
         this.gsonConverterFactory = gsonConverterFactory;
         this.rxJavaCallAdapterFactory = rxJavaCallAdapterFactory;
