@@ -25,7 +25,7 @@ For an example, see the `reports-batch` [`database.credentials.sample` file](../
 #### Github
 
 To be able to use the Github API, you must put a `github.credentials` file in the resources or classloader accessible folder, with the
-`GITHUB_OAUTH_TOKEN` property set to an API key that you can generate on your Github organization profile.
+`GITHUB_OAUTH_TOKEN` property set to an API key that you can generate on your Github organisation profile.
 
 For an example, see the `reports-batch` [`github.credentials.sample` file](../reports-batch/src/main/resources/github.credentials.sample).
 
