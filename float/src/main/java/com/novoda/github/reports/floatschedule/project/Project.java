@@ -9,4 +9,8 @@ public class Project {
     @SerializedName("project_name")
     private String projectName;
 
+    @Override
+    public String toString() {
+        return projectName;
+    }
 }
