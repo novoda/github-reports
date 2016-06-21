@@ -1,5 +1,7 @@
 apply plugin: 'java'
 
+mainClassName = 'com.novoda.github.reports.floatschedule.Main'
+
 sourceCompatibility = 1.8
 
 repositories {
