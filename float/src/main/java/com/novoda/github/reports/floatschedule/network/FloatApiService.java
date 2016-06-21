@@ -1,4 +1,6 @@
-package com.novoda.github.reports.floatschedule;
+package com.novoda.github.reports.floatschedule.network;
+
+import com.novoda.github.reports.floatschedule.people.People;
 
 import java.util.List;
 
