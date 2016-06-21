@@ -17,14 +17,21 @@ public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
 
     private final LambdaPropertiesReader lambdaPropertiesReader;
     private final AWSLambdaClient awsLambdaClient;
+    private final AmazonConfigurationConverter amazonConfigurationConverter;
 
-    public static AmazonWorkerService newInstance(AmazonCredentialsReader amazonCredentialsReader, LambdaPropertiesReader lambdaPropertiesReader) {
-        return new AmazonWorkerService(amazonCredentialsReader, lambdaPropertiesReader);
+    public static AmazonWorkerService newInstance(AmazonCredentialsReader amazonCredentialsReader,
+                                                  LambdaPropertiesReader lambdaPropertiesReader) {
+
+        return new AmazonWorkerService(amazonCredentialsReader, lambdaPropertiesReader, AmazonConfigurationConverter.newInstance());
     }
 
-    private AmazonWorkerService(AmazonCredentialsReader amazonCredentialsReader, LambdaPropertiesReader lambdaPropertiesReader) {
+    private AmazonWorkerService(AmazonCredentialsReader amazonCredentialsReader,
+                                LambdaPropertiesReader lambdaPropertiesReader,
+                                AmazonConfigurationConverter amazonConfigurationConverter) {
+
         this.lambdaPropertiesReader = lambdaPropertiesReader;
         this.awsLambdaClient = new AWSLambdaClient(amazonCredentialsReader.getAWSCredentials());
+        this.amazonConfigurationConverter = amazonConfigurationConverter;
     }
 
     @Override
@@ -45,7 +52,7 @@ public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
     private String getConfigurationAsJson(AmazonConfiguration configuration) throws WorkerStartException {
         String rawConfiguration;
         try {
-            rawConfiguration = AmazonConfigurationConverter.newInstance().toJson(configuration);
+            rawConfiguration = amazonConfigurationConverter.toJson(configuration);
         } catch (ConfigurationConverterException e) {
             throw new WorkerStartException(e);
         }
