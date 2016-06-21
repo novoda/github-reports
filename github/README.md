@@ -34,6 +34,6 @@ For an example, see the `reports-batch` [`github.credentials.sample` file](../re
 The main components of this module are:
 
 * `GithubRepositoryService` that retrieves issues, comments and events for a Github repo
-* `GithubIssueService` that retrieves repositories for an organization
+* `GithubIssueService` that retrieves repositories for an organisation
 * `GithubPullRequestService` that retrieves diff comments for pull requests
 * all the transformers in the `persistence` package that provide a way to pipe the persistence mechanism in a RxJava pipeline
