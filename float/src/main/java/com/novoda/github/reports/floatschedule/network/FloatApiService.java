@@ -1,7 +1,7 @@
 package com.novoda.github.reports.floatschedule.network;
 
 import com.novoda.github.reports.floatschedule.people.People;
-import com.novoda.github.reports.floatschedule.project.Project;
+import com.novoda.github.reports.floatschedule.project.Projects;
 
 import java.util.List;
 
@@ -11,9 +11,9 @@ import rx.Observable;
 
 public interface FloatApiService {
 
-    @GET("/people")
+    @GET("people")
     Observable<Response<List<People>>> getPeople();
 
-    @GET("/project")
-    Observable<Response<List<Project>>> getProjects();
+    @GET("projects")
+    Observable<Response<Projects>> getProjects();
 }
