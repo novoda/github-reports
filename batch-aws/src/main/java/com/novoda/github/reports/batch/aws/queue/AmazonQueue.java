@@ -20,6 +20,7 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
 
     private static final Integer MAX_NUMBER_MESSAGES = 1;
     private static final Integer DEFAULT_VISIBILITY_TIMEOUT = 0;
+    private static final float BATCH_MAX_SIZE = 10f;
 
     private final AmazonSQSClient amazonSQSClient;
     private final String queueUrl;
@@ -58,22 +59,49 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
 
     @Override
     public List<AmazonQueueMessage> addItems(List<AmazonQueueMessage> queueMessages) throws QueueOperationFailedException {
-        int size = queueMessages.size();
-        List<SendMessageBatchRequestEntry> sendMessageBatchRequestEntries = new ArrayList<>(size);
 
-        for (int i = 0; i < queueMessages.size(); i++) {
-            SendMessageBatchRequestEntry entry = getSendMessageRequestEntry(queueMessages.get(i), i);
-            sendMessageBatchRequestEntries.add(entry);
+        List<List<SendMessageBatchRequestEntry>> queueMessageBatches = bufferQueueMessagesAsBatches(queueMessages);
+
+        for (List<SendMessageBatchRequestEntry> queueMessageBatch : queueMessageBatches) {
+            sendQueueMessageBatch(queueMessageBatch);
         }
 
-        SendMessageBatchRequest sendMessageBatchRequest = getSendMessageBatchRequest(sendMessageBatchRequestEntries);
+        return queueMessages;
+    }
+
+    private void sendQueueMessageBatch(List<SendMessageBatchRequestEntry> queueMessageBatch) throws QueueOperationFailedException {
+        SendMessageBatchRequest sendMessageBatchRequest = getSendMessageBatchRequest(queueMessageBatch);
         SendMessageBatchResult sendMessageBatchResult = amazonSQSClient.sendMessageBatch(sendMessageBatchRequest);
 
         if (hasBatchOperationFailed(sendMessageBatchResult)) {
             throw new QueueOperationFailedException("Add items");
         }
+    }
 
-        return queueMessages;
+    private List<List<SendMessageBatchRequestEntry>> bufferQueueMessagesAsBatches(List<AmazonQueueMessage> queueMessages) {
+        int originalSize = queueMessages.size();
+        int batches = calculateNumberOfAddItemsBatches(originalSize);
+
+        List<List<SendMessageBatchRequestEntry>> queueMessageBatches = new ArrayList<>(batches);
+
+        for (int batchCounter = 0; batchCounter < batches; batchCounter++) {
+            List<SendMessageBatchRequestEntry> sendMessageBatchRequestEntries = new ArrayList<>();
+            int counter = (int) (batchCounter * BATCH_MAX_SIZE);
+            int finalCounter = (int) Math.min(counter + BATCH_MAX_SIZE, originalSize);
+
+            for (; counter < finalCounter; counter++) {
+                AmazonQueueMessage queueMessage = queueMessages.get(counter);
+                SendMessageBatchRequestEntry sendMessageRequestEntry = getSendMessageRequestEntry(queueMessage, counter);
+                sendMessageBatchRequestEntries.add(sendMessageRequestEntry);
+            }
+
+            queueMessageBatches.add(sendMessageBatchRequestEntries);
+        }
+        return queueMessageBatches;
+    }
+
+    private int calculateNumberOfAddItemsBatches(int originalSize) {
+        return (int) Math.ceil(originalSize / BATCH_MAX_SIZE);
     }
 
     private SendMessageBatchRequestEntry getSendMessageRequestEntry(AmazonQueueMessage queueMessage, int id) {
@@ -108,7 +136,7 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
         amazonSQSClient.purgeQueue(purgeQueueRequest);
     }
 
-    public String getName() {
+    String getName() {
         return queueUrl;
     }
 }
