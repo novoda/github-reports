@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import okhttp3.Interceptor;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 public abstract class Interceptors {
 
@@ -21,6 +22,10 @@ public abstract class Interceptors {
     public Interceptors with(Interceptor interceptor) {
         interceptors.add(interceptor);
         return this;
+    }
+
+    public Interceptors withDebugInterceptor() {
+        return with(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS));
     }
 
     public List<Interceptor> asList() {
