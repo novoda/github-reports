@@ -21,6 +21,8 @@ public class ProjectServiceClient {
 
     public Observable<Project> getProjects() {
         return floatApiService.getProjects()
-                .flatMapIterable(Response::body);
+                .map(Response::body)
+                .map(Projects::getProjects)
+                .flatMapIterable(p -> p);
     }
 }
