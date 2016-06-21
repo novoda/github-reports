@@ -228,7 +228,6 @@ public class BasicWorker<
 
     private void notifyError(C configuration, Throwable t) {
         logger.log("Notifying error...");
-        t.printStackTrace();
 
         Notifier<N, C> notifier = getNotifier();
         try {
@@ -239,6 +238,7 @@ public class BasicWorker<
             e.printStackTrace();
         }
         logger.log("Error notified.");
+        t.printStackTrace();
     }
 
     private Notifier<N, C> getNotifier() {
