@@ -34,13 +34,16 @@ public class AwsCommandHandler implements CommandHandler<AwsBatchOptions> {
     private final AmazonWorkerService workerService;
 
     public static AwsCommandHandler newInstance() {
+        AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance();
+        LambdaPropertiesReader lambdaPropertiesReader = LambdaPropertiesReader.newInstance();
+
         return new AwsCommandHandler(
                 SystemClock.newInstance(),
                 DatabaseCredentialsReader.newInstance(),
                 GithubCredentialsReader.newInstance(),
                 EmailCredentialsReader.newInstance(),
-                AmazonCredentialsReader.newInstance(),
-                LambdaPropertiesReader.newInstance()
+                AmazonQueueService.newInstance(amazonCredentialsReader),
+                AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader)
         );
     }
 
@@ -48,15 +51,15 @@ public class AwsCommandHandler implements CommandHandler<AwsBatchOptions> {
                               DatabaseCredentialsReader databaseCredentialsReader,
                               GithubCredentialsReader githubCredentialsReader,
                               EmailCredentialsReader emailCredentialsReader,
-                              AmazonCredentialsReader amazonCredentialsReader,
-                              LambdaPropertiesReader lambdaPropertiesReader) {
+                              AmazonQueueService queueService,
+                              AmazonWorkerService workerService) {
 
         this.systemClock = systemClock;
         this.databaseCredentialsReader = databaseCredentialsReader;
         this.githubCredentialsReader = githubCredentialsReader;
         this.emailCredentialsReader = emailCredentialsReader;
-        this.queueService = AmazonQueueService.newInstance(amazonCredentialsReader);
-        this.workerService = AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader);
+        this.queueService = queueService;
+        this.workerService = workerService;
     }
 
     @Override
