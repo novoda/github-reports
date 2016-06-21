@@ -23,6 +23,6 @@ public class ProjectServiceClient {
         return floatApiService.getProjects()
                 .map(Response::body)
                 .map(Projects::getProjects)
-                .flatMapIterable(p -> p);
+                .flatMapIterable(projects -> projects);
     }
 }
