@@ -1,7 +1,5 @@
 apply plugin: 'java'
 
-mainClassName = 'com.novoda.github.reports.floatschedule.Main'
-
 sourceCompatibility = 1.8
 
 repositories {
@@ -9,6 +7,7 @@ repositories {
 }
 
 dependencies {
+    compile project(':core')
     compile project(':network')
 
     compile 'io.reactivex:rxjava:1.1.5'
