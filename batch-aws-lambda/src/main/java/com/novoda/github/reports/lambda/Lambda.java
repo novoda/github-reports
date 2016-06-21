@@ -17,17 +17,32 @@ import com.novoda.github.reports.batch.aws.worker.LambdaPropertiesReader;
 import com.novoda.github.reports.batch.worker.BasicWorker;
 import com.novoda.github.reports.batch.worker.WorkerOperationFailedException;
 import com.novoda.github.reports.lambda.worker.AmazonWorkerHandlerService;
+import com.novoda.github.reports.lambda.worker.LambdaLogger;
 
 import java.io.InputStream;
 
 public class Lambda {
 
-    private final AmazonConfigurationConverter amazonConfigurationConverter;
-    private final BasicWorker<AmazonAlarm, AmazonQueueMessage, AmazonQueue, EmailNotifierConfiguration, AmazonConfiguration> worker;
+    private AmazonConfigurationConverter amazonConfigurationConverter;
+    private BasicWorker<AmazonAlarm, AmazonQueueMessage, AmazonQueue, EmailNotifierConfiguration, AmazonConfiguration> worker;
+    private LambdaLogger lambdaLogger;
 
-    public Lambda() {
+    public void handle(InputStream configuration, Context context) throws ConfigurationConverterException, WorkerOperationFailedException {
+        init(context);
+
+        AmazonConfiguration amazonConfiguration = amazonConfigurationConverter.fromJson(configuration);
+
+        lambdaLogger.log("Handling configuration:");
+        lambdaLogger.log(amazonConfiguration.toString());
+
+        worker.doWork(amazonConfiguration);
+
+        lambdaLogger.log("Work done.");
+    }
+
+    private void init(Context context) {
         this.amazonConfigurationConverter = AmazonConfigurationConverter.newInstance();
-
+        this.lambdaLogger = new LambdaLogger(context);
         AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance(null);
         LambdaPropertiesReader lambdaPropertiesReader = LambdaPropertiesReader.newInstance();
         AmazonWorkerService workerService = AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader);
@@ -41,23 +56,9 @@ public class Lambda {
                 alarmService,
                 queueService,
                 notifierService,
-                workerHandlerService
+                workerHandlerService,
+                lambdaLogger
         );
-    }
-
-    public void handle(InputStream configuration, Context context) throws ConfigurationConverterException, WorkerOperationFailedException {
-        AmazonConfiguration amazonConfiguration = amazonConfigurationConverter.fromJson(configuration);
-
-        log(context, "Handling configuration:");
-        log(context, amazonConfiguration.toString());
-
-        worker.doWork(amazonConfiguration);
-
-        log(context, "Work done.");
-    }
-
-    private void log(Context context, String string) {
-        context.getLogger().log(string);
     }
 
 }
