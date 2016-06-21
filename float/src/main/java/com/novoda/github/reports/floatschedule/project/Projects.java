@@ -9,6 +9,10 @@ public class Projects {
     @SerializedName("projects")
     private List<Project> projects;
 
+    Projects(List<Project> projects) {
+        this.projects = projects;
+    }
+
     public List<Project> getProjects() {
         return projects;
     }
