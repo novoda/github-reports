@@ -1,6 +1,7 @@
 package com.novoda.github.reports.floatschedule.network;
 
 import com.novoda.github.reports.network.HttpClientFactory;
+import com.novoda.github.reports.network.Interceptors;
 import com.novoda.github.reports.network.OkHttpClientFactory;
 import com.novoda.github.reports.network.ServiceFactory;
 
@@ -13,12 +14,14 @@ public class FloatServiceFactory extends ServiceFactory<FloatApiService> {
     private static final String FLOAT_ENDPOINT = "https://api.float.com/api/v1/";
 
     public static FloatServiceFactory newInstance() {
-        HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance();
+        Interceptors floatInterceptors = FloatInterceptors.defaultInterceptors();
+        HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance(floatInterceptors);
         return newInstance(httpClientFactory);
     }
 
     public static FloatServiceFactory newCachingInstance() {
-        HttpClientFactory httpClientFactory = OkHttpClientFactory.newCachingInstance();
+        Interceptors floatInterceptors = FloatInterceptors.defaultInterceptors();
+        HttpClientFactory httpClientFactory = OkHttpClientFactory.newCachingInstance(floatInterceptors);
         return newInstance(httpClientFactory);
     }
 
