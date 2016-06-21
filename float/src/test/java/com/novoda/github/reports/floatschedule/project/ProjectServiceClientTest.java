@@ -19,8 +19,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ProjectServiceClientTest {
 
-    // given the api returns a Projects with several Project objs, our observable emits them
-
     @Mock
     FloatApiService mockFloatApiService;
 
