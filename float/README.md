@@ -1,5 +1,5 @@
-float service
-=============
+float
+=====
 
 _Float service library to retrieve data related with projects and people assigned to them_
 
