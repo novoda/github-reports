@@ -10,6 +10,11 @@ public class Project {
     @SerializedName("project_name")
     private String projectName;
 
+    Project(int projectId, String projectName) {
+        this.projectId = projectId;
+        this.projectName = projectName;
+    }
+
     @Override
     public String toString() {
         return projectName + " [" + projectId + "]";
