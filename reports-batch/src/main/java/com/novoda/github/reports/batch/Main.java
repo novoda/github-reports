@@ -38,7 +38,7 @@ public class Main {
             AwsCommandHandler commandHandler = AwsCommandHandler.newInstance();
             commandHandler.handle(awsBatchOptions);
         } else {
-            throw new UnhandledCommandException(String.format("The command %s is not supported", command));
+            throw new UnhandledCommandException(command);
         }
     }
 
