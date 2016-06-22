@@ -9,6 +9,7 @@ public class Assignment {
     @SerializedName("people_id")
     private int personId;
 
+    @SerializedName("tasks")
     private List<Task> tasks;
 
     Assignment(int personId, List<Task> tasks) {
