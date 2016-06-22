@@ -3,6 +3,7 @@ package com.novoda.github.reports.batch.aws.queue;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.DeleteMessageRequest;
 import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.services.sqs.model.MessageAttributeValue;
 import com.amazonaws.services.sqs.model.PurgeQueueRequest;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageBatchRequest;
@@ -15,7 +16,9 @@ import com.novoda.github.reports.batch.queue.QueueOperationFailedException;
 import com.novoda.github.reports.batch.worker.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class AmazonQueue implements Queue<AmazonQueueMessage> {
 
@@ -121,8 +124,16 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
         Message message = amazonQueueMessageConverter.toMessage(queueMessage);
         return new SendMessageBatchRequestEntry()
                 .withId(Integer.toString(id))
-                //.withMessageAttributes(DEFAULT_MESSAGE_ATTRIBUTES)
+                .withMessageAttributes(getDefaultMessageAttributes())
                 .withMessageBody(message.getBody());
+    }
+
+    private Map<String, MessageAttributeValue> getDefaultMessageAttributes() {
+        String attributeName = "MessageRetentionPeriod";
+        String attributeDataType = "Number";
+        String maxRetentionTimeInSeconds = "1209600";
+        MessageAttributeValue attributeValue = new MessageAttributeValue().withStringValue(maxRetentionTimeInSeconds).withDataType(attributeDataType);
+        return Collections.singletonMap(attributeName, attributeValue);
     }
 
     private SendMessageBatchRequest getSendMessageBatchRequest(List<SendMessageBatchRequestEntry> entries) {
