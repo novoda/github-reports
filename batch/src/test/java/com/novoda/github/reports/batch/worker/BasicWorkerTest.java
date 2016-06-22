@@ -117,22 +117,57 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenEmptyQueue_whenDoWork_thenNotifyCompletionAndDeleteQueueAndDoNotReschedule() throws
-            EmptyQueueException, MessageConverterException, WorkerOperationFailedException, NotifierOperationFailedException, WorkerStartException {
+    public void givenEmptyQueue_whenDoWork_thenNotifyCompletionAndNoErrors() throws
+            EmptyQueueException,
+            MessageConverterException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException {
+
+        givenEmptyQueue();
+
+        worker.doWork(configuration);
+
+        verify(notifier).notifyCompletion(configuration);
+        verifyNoErrorNotified();
+    }
+
+    @Test
+    public void givenEmptyQueue_whenDoWork_thenDeleteQueue() throws
+            EmptyQueueException,
+            MessageConverterException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException,
+            WorkerStartException {
 
         Queue<QueueMessage> queue = givenEmptyQueue();
 
         worker.doWork(configuration);
 
-        verify(notifier).notifyCompletion(configuration);
         verify(queueService).removeQueue(queue);
-        verifyNoErrorNotified();
+    }
+
+    @Test
+    public void givenEmptyQueue_whenDoWork_thenDoNotReschedule() throws
+            EmptyQueueException,
+            MessageConverterException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException,
+            WorkerStartException {
+
+        givenEmptyQueue();
+
+        worker.doWork(configuration);
+
         verifyNoRescheduleImmediately();
     }
 
     @Test
     public void givenIncompatibleMessageInQueue_whenDoWork_thenNotifyConversionErrorAndDoNotReschedule() throws
-            EmptyQueueException, MessageConverterException, WorkerOperationFailedException, NotifierOperationFailedException, WorkerStartException {
+            EmptyQueueException,
+            MessageConverterException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException,
+            WorkerStartException {
 
         givenInvalidMessagesQueue();
 
@@ -171,34 +206,57 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenDoNotPurgeDeleteQueueAndNotifyErrorAndDoNotReschedule() throws Throwable {
+    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenDoNotPurgeDeleteQueue() throws Throwable {
+
+        Queue<QueueMessage> queue = givenAnyQueueAndErroringWorkerHandler_whenDoWork();
+
+        verify(queue, never()).purgeQueue();
+        verify(queueService, never()).removeQueue(queue);
+    }
+
+    @Test
+    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenNotifyError() throws Throwable {
+
+        givenAnyQueueAndErroringWorkerHandler_whenDoWork();
+
+        verifyErrorNotified(Exception.class);
+    }
+
+    @Test
+    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenDoNotReschedule() throws Throwable {
+
+        givenAnyQueueAndErroringWorkerHandler_whenDoWork();
+
+        verifyNoRescheduleImmediately();
+    }
+
+    private Queue<QueueMessage> givenAnyQueueAndErroringWorkerHandler_whenDoWork() throws EmptyQueueException,
+            MessageConverterException,
+            com.novoda.github.reports.batch.MessageNotSupportedException,
+            WorkerOperationFailedException {
 
         Queue<QueueMessage> queue = givenAnyQueue();
         when(workerHandler.handleQueueMessage(eq(configuration), any(QueueMessage.class))).thenThrow(Exception.class);
 
         worker.doWork(configuration);
-
-        verify(queue, never()).purgeQueue();
-        verify(queueService, never()).removeQueue(queue);
-        verifyErrorNotified(Exception.class);
-        verifyNoRescheduleImmediately();
+        return queue;
     }
 
     @Test
-    public void givenFailingQueueAddItems_whenDoWork_thenNotifyQueueOperationFailedExceptionAndReschedule()
-            throws EmptyQueueException, MessageConverterException, QueueOperationFailedException, WorkerOperationFailedException,
+    public void givenFailingQueueAddItems_whenDoWork_thenNotifyQueueOperationFailedException() throws
+            EmptyQueueException,
+            MessageConverterException,
+            QueueOperationFailedException,
+            WorkerOperationFailedException,
             NotifierOperationFailedException {
 
-        Queue<QueueMessage> queue = givenAnyQueue();
-        when(queue.addItems(anyListOf(QueueMessage.class))).thenThrow(QueueOperationFailedException.class);
-
-        worker.doWork(configuration);
+        givenFailingQueueAddItems_whenDoWork();
 
         verifyErrorNotified(QueueOperationFailedException.class);
     }
 
     @Test
-    public void givenFailingQueueAddItemsAndCantReschedule_whenDoWork_thenNotifyQueueOperationFailedExceptionAndNotifyWorkerStartException() throws
+    public void givenFailingQueueAddItems_whenDoWork_thenReschedule() throws
             EmptyQueueException,
             MessageConverterException,
             QueueOperationFailedException,
@@ -206,14 +264,63 @@ public class BasicWorkerTest {
             NotifierOperationFailedException,
             WorkerStartException {
 
+        givenFailingQueueAddItems_whenDoWork();
+
+        verifyRescheduleImmediately();
+    }
+
+    private void givenFailingQueueAddItems_whenDoWork() throws
+            EmptyQueueException,
+            MessageConverterException,
+            QueueOperationFailedException,
+            WorkerOperationFailedException {
+
+        Queue<QueueMessage> queue = givenAnyQueue();
+        when(queue.addItems(anyListOf(QueueMessage.class))).thenThrow(QueueOperationFailedException.class);
+
+        worker.doWork(configuration);
+    }
+
+    @Test
+    public void givenFailingQueueAddItemsAndCantReschedule_whenDoWork_thenNotifyQueueOperationFailedException() throws
+            EmptyQueueException,
+            MessageConverterException,
+            QueueOperationFailedException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException,
+            WorkerStartException {
+
+        givenFailingQueueAddItemsAndCantReschedule_whenDoWork();
+
+        verifyErrorNotified(QueueOperationFailedException.class);
+    }
+
+    @Test
+    public void givenFailingQueueAddItemsAndCantReschedule_whenDoWork_thenNotifyWorkerStartException() throws
+            EmptyQueueException,
+            MessageConverterException,
+            QueueOperationFailedException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException,
+            WorkerStartException {
+
+        givenFailingQueueAddItemsAndCantReschedule_whenDoWork();
+
+        verifyErrorNotified(WorkerStartException.class);
+    }
+
+    private void givenFailingQueueAddItemsAndCantReschedule_whenDoWork() throws
+            EmptyQueueException,
+            MessageConverterException,
+            QueueOperationFailedException,
+            WorkerStartException,
+            WorkerOperationFailedException {
+
         Queue<QueueMessage> queue = givenAnyQueue();
         when(queue.addItems(anyListOf(QueueMessage.class))).thenThrow(QueueOperationFailedException.class);
         doThrow(WorkerStartException.class).when(workerService).startWorker(any());
 
         worker.doWork(configuration);
-
-        verifyErrorNotified(QueueOperationFailedException.class);
-        verifyErrorNotified(WorkerStartException.class);
     }
 
     @Test
