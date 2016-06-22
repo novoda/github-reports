@@ -55,14 +55,15 @@ public class ReviewCommentsServiceClient {
 
     public Observable<AmazonQueueMessage> retrieveReviewCommentsFromPullRequest(AmazonGetReviewCommentsQueueMessage message) {
         String date = dateConverter.toISO8601NoMillisOrNull(message.sinceOrNull());
-        return pullRequestService.getPullRequestReviewCommentsFor(
-                message.organisationName(),
-                message.repositoryName(),
-                issueNumberFrom(message),
-                date,
-                pageFrom(message),
-                DEFAULT_PER_PAGE_COUNT
-        )
+        return pullRequestService
+                .getPullRequestReviewCommentsFor(
+                        message.organisationName(),
+                        message.repositoryName(),
+                        issueNumberFrom(message),
+                        date,
+                        pageFrom(message),
+                        DEFAULT_PER_PAGE_COUNT
+                )
                 .compose(new TransformToRepositoryIssueEvent<>(
                         message.repositoryId(),
                         message.issueNumber(),
