@@ -46,7 +46,7 @@ public class LocalCommandHandler implements CommandHandler<LocalBatchOptions> {
         }
 
         System.out.println("Remaining number of requests: " + remainingCounter.get());
-        System.out.println("Reset time: " + resetRepository.getNextResetTime() + ", " + new Date(resetRepository.getNextResetTime() * 1000L));
+        System.out.println("Reset time: " + resetRepository.getNextResetTime() + ", " + new Date(resetRepository.getNextResetTime()));
     }
 
 }
