@@ -2,9 +2,11 @@ package com.novoda.github.reports.floatschedule.network;
 
 import com.novoda.github.reports.floatschedule.people.People;
 import com.novoda.github.reports.floatschedule.project.Projects;
+import com.novoda.github.reports.floatschedule.task.Assignments;
 
 import retrofit2.Response;
 import retrofit2.http.GET;
+import retrofit2.http.Query;
 import rx.Observable;
 
 public interface FloatApiService {
@@ -14,4 +16,9 @@ public interface FloatApiService {
 
     @GET("projects")
     Observable<Response<Projects>> getProjects();
+
+    @GET("tasks")
+    Observable<Response<Assignments>> getTasks(@Query("start_day") String startDate,
+                                               @Query("weeks") Integer weeks,
+                                               @Query("people_id") Integer peopleId);
 }
