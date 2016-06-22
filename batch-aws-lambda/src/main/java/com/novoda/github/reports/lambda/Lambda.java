@@ -15,6 +15,7 @@ import com.novoda.github.reports.batch.aws.queue.AmazonQueueService;
 import com.novoda.github.reports.batch.aws.worker.AmazonWorkerService;
 import com.novoda.github.reports.batch.aws.worker.LambdaPropertiesReader;
 import com.novoda.github.reports.batch.worker.BasicWorker;
+import com.novoda.github.reports.batch.worker.Logger;
 import com.novoda.github.reports.batch.worker.WorkerOperationFailedException;
 import com.novoda.github.reports.lambda.worker.AmazonWorkerHandlerService;
 import com.novoda.github.reports.lambda.worker.LambdaLogger;
@@ -25,32 +26,32 @@ public class Lambda {
 
     private AmazonConfigurationConverter amazonConfigurationConverter;
     private BasicWorker<AmazonAlarm, AmazonQueueMessage, AmazonQueue, EmailNotifierConfiguration, AmazonConfiguration> worker;
-    private LambdaLogger lambdaLogger;
+    private Logger logger;
 
     public void handle(InputStream configuration, Context context) throws ConfigurationConverterException, WorkerOperationFailedException {
         init(context);
 
         AmazonConfiguration amazonConfiguration = amazonConfigurationConverter.fromJson(configuration);
 
-        lambdaLogger.log("Handling configuration:\n" + amazonConfiguration);
+        logger.log("Handling configuration:\n" + amazonConfiguration);
 
         worker.doWork(amazonConfiguration);
 
-        lambdaLogger.log("Work done.");
+        logger.log("Work done.");
     }
 
     private void init(Context context) {
         this.amazonConfigurationConverter = AmazonConfigurationConverter.newInstance();
-        this.lambdaLogger = new LambdaLogger(context);
+        this.logger = new LambdaLogger(context);
 
         AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance();
         LambdaPropertiesReader lambdaPropertiesReader = LambdaPropertiesReader.newInstance();
 
-        AmazonWorkerService workerService = AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader, lambdaLogger);
-        AmazonAlarmService alarmService = AmazonAlarmService.newInstance(amazonCredentialsReader, lambdaLogger);
-        AmazonQueueService queueService = AmazonQueueService.newInstance(amazonCredentialsReader, lambdaLogger);
-        EmailNotifierService notifierService = EmailNotifierService.newInstance(lambdaLogger);
-        AmazonWorkerHandlerService workerHandlerService = AmazonWorkerHandlerService.newInstance(lambdaLogger);
+        AmazonWorkerService workerService = AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader, logger);
+        AmazonAlarmService alarmService = AmazonAlarmService.newInstance(amazonCredentialsReader, logger);
+        AmazonQueueService queueService = AmazonQueueService.newInstance(amazonCredentialsReader, logger);
+        EmailNotifierService notifierService = EmailNotifierService.newInstance(logger);
+        AmazonWorkerHandlerService workerHandlerService = AmazonWorkerHandlerService.newInstance(logger);
 
         this.worker = BasicWorker.newInstance(
                 workerService,
@@ -58,7 +59,7 @@ public class Lambda {
                 queueService,
                 notifierService,
                 workerHandlerService,
-                lambdaLogger
+                logger
         );
     }
 
