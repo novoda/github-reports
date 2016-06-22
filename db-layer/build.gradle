@@ -44,7 +44,7 @@ dependencies {
 jooq {
     reports(sourceSets.main) {
         jdbc {
-            driver = 'com.mysql.cj.jdbc.Driver'
+            driver = 'com.mysql.jdbc.Driver'
             url = getDatabaseConnectionString()
             user = getDatabaseUsername()
             password = getDatabasePassword()
