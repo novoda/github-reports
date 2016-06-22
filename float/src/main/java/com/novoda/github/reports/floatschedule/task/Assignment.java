@@ -14,4 +14,8 @@ public class Assignment {
     public List<Task> getTasks() {
         return tasks;
     }
+
+    public int getPersonId() {
+        return personId;
+    }
 }
