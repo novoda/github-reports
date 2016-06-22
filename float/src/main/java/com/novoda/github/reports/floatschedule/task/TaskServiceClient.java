@@ -20,7 +20,11 @@ public class TaskServiceClient {
     }
 
     public Observable<Task> getTasks() {
-        return floatApiService.getTasks()
+        return getTasks(null, null, null);
+    }
+
+    public Observable<Task> getTasks(String date, Integer numberOfWeeks, Integer personId) {
+        return floatApiService.getTasks(date, numberOfWeeks, personId)
                 .map(Response::body)
                 .map(Assignments::getAssignments)
                 .flatMapIterable(assignments -> assignments)

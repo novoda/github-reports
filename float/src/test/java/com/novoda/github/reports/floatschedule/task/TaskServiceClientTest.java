@@ -14,6 +14,8 @@ import rx.Observable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -50,7 +52,8 @@ public class TaskServiceClientTest {
 
     @Test
     public void givenApiReturnsTasks_whenQueryingForTasks_thenEachSingleTaskIsEmitted() {
-        when(mockFloatApiService.getTasks()).thenReturn(apiObservable);
+        when(mockFloatApiService.getTasks(anyString(), anyInt(), anyInt())).thenReturn(apiObservable);
+        when(mockFloatApiService.getTasks(null, null, null)).thenReturn(apiObservable);
 
         taskServiceClient.getTasks()
                 .subscribeOn(Schedulers.immediate())
