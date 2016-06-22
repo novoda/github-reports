@@ -4,9 +4,11 @@ import com.novoda.github.reports.batch.aws.queue.AmazonGetIssuesQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
+import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.issue.GithubIssueService;
 import com.novoda.github.reports.service.issue.IssueService;
+import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 
@@ -19,7 +21,7 @@ public class IssuesServiceClient {
 
     private final IssueService issueService;
     private final DateToISO8601Converter dateConverter;
-    private final ResponseRepositoryIssuePersistTransformer responseRepositoryIssuePersistTransformer;
+    private final ResponsePersistTransformer<RepositoryIssue> responseRepositoryIssuePersistTransformer;
 
     public static IssuesServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
