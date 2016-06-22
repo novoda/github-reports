@@ -69,8 +69,10 @@ public class CommentsServiceClient {
                         RepositoryIssueEventComment::new
                 ))
                 .compose(responseRepositoryIssueEventPersistTransformer)
-                .compose(NextMessagesIssueEventTransformer.newInstance(message,
-                                                                       buildAmazonGetCommentsQueueMessage()));
+                .compose(NextMessagesIssueEventTransformer.newInstance(
+                        message,
+                        buildAmazonGetCommentsQueueMessage()
+                ));
     }
 
     private Func3<Boolean, Long, AmazonGetCommentsQueueMessage, AmazonGetCommentsQueueMessage> buildAmazonGetCommentsQueueMessage() {
