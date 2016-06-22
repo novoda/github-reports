@@ -12,6 +12,7 @@ import com.novoda.github.reports.batch.queue.EmptyQueueException;
 import com.novoda.github.reports.batch.queue.MessageConverterException;
 import com.novoda.github.reports.batch.queue.Queue;
 import com.novoda.github.reports.batch.queue.QueueOperationFailedException;
+import com.novoda.github.reports.batch.worker.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,20 +26,24 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
     private final AmazonSQSClient amazonSQSClient;
     private final String queueUrl;
     private final AmazonQueueMessageConverter amazonQueueMessageConverter;
+    private final Logger logger;
 
-    public static AmazonQueue newInstance(AmazonSQSClient amazonSQSClient, String queueUrl) {
+    public static AmazonQueue newInstance(AmazonSQSClient amazonSQSClient, String queueUrl, Logger logger) {
         AmazonQueueMessageConverter amazonQueueMessageConverter = AmazonQueueMessageConverter.newInstance();
-        return new AmazonQueue(amazonQueueMessageConverter, amazonSQSClient, queueUrl);
+        return new AmazonQueue(amazonQueueMessageConverter, amazonSQSClient, queueUrl, logger);
     }
 
-    private AmazonQueue(AmazonQueueMessageConverter amazonQueueMessageConverter, AmazonSQSClient amazonSQSClient, String queueUrl) {
+    private AmazonQueue(AmazonQueueMessageConverter amazonQueueMessageConverter, AmazonSQSClient amazonSQSClient, String queueUrl, Logger logger) {
         this.amazonQueueMessageConverter = amazonQueueMessageConverter;
         this.amazonSQSClient = amazonSQSClient;
         this.queueUrl = queueUrl;
+        this.logger = logger;
     }
 
     @Override
     public AmazonQueueMessage getItem() throws EmptyQueueException, MessageConverterException {
+        logger.log("Getting first item from queue...");
+
         ReceiveMessageRequest receiveMessageRequest = getReceiveMessageRequest(queueUrl);
         List<Message> messages = amazonSQSClient.receiveMessage(receiveMessageRequest).getMessages();
 
@@ -47,7 +52,11 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
         }
 
         Message message = messages.get(0);
-        return amazonQueueMessageConverter.fromMessage(message);
+        AmazonQueueMessage item = amazonQueueMessageConverter.fromMessage(message);
+
+        logger.log("Got item:\n%s", item);
+
+        return item;
     }
 
     private ReceiveMessageRequest getReceiveMessageRequest(String queueUrl) {
@@ -59,12 +68,16 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
 
     @Override
     public List<AmazonQueueMessage> addItems(List<AmazonQueueMessage> queueMessages) throws QueueOperationFailedException {
+        int size = queueMessages.size();
+        logger.log("Adding %d new items in the queue...", size);
 
         List<List<SendMessageBatchRequestEntry>> queueMessageBatches = bufferQueueMessagesAsBatches(queueMessages);
 
         for (List<SendMessageBatchRequestEntry> queueMessageBatch : queueMessageBatches) {
             sendQueueMessageBatch(queueMessageBatch);
         }
+
+        logger.log("Added %d new items in the queue.", size);
 
         return queueMessages;
     }
@@ -123,17 +136,24 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
 
     @Override
     public AmazonQueueMessage removeItem(AmazonQueueMessage queueMessage) {
+        logger.log("Removing item from the queue...");
+
         DeleteMessageRequest deleteMessageRequest = new DeleteMessageRequest()
                 .withQueueUrl(queueUrl)
                 .withReceiptHandle(queueMessage.receiptHandle());
         amazonSQSClient.deleteMessage(deleteMessageRequest);
+
+        logger.log("Removed item:\n%s", queueMessage);
+
         return queueMessage;
     }
 
     @Override
     public void purgeQueue() {
+        logger.log("Purging the queue...");
         PurgeQueueRequest purgeQueueRequest = new PurgeQueueRequest().withQueueUrl(queueUrl);
         amazonSQSClient.purgeQueue(purgeQueueRequest);
+        logger.log("Queue purged.");
     }
 
     String getName() {

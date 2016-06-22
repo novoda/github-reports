@@ -8,6 +8,7 @@ import com.novoda.github.reports.batch.aws.queue.AmazonGetReviewCommentsQueueMes
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.configuration.Configuration;
 import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
+import com.novoda.github.reports.batch.worker.Logger;
 import com.novoda.github.reports.batch.worker.WorkerHandler;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.MessageNotSupportedException;
@@ -24,7 +25,9 @@ import java.util.Properties;
 
 import rx.Observable;
 
-public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
+class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
+
+    private final Logger logger;
 
     private RepositoriesServiceClient repositoriesServiceClient;
     private IssuesServiceClient issuesServiceClient;
@@ -32,8 +35,14 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
     private EventsServiceClient eventsServiceClient;
     private ReviewCommentsServiceClient reviewCommentsServiceClient;
 
+    AmazonWorkerHandler(Logger logger) {
+        this.logger = logger;
+    }
+
     @Override
     public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage) throws Throwable {
+        logger.log("Handling the message...");
+
         init(configuration);
 
         Observable<AmazonQueueMessage> nextMessagesObservable;
@@ -58,7 +67,9 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
         }
 
         try {
-            return collectDerivedMessagesFrom(nextMessagesObservable);
+            List<AmazonQueueMessage> nextMessages = collectDerivedMessagesFrom(nextMessagesObservable);
+            logger.log("Message handled. %d new messages have been generated", nextMessages.size());
+            return nextMessages;
         } catch (RuntimeException exception) {
             Throwable cause = exception.getCause();
             if (cause != null) {
@@ -66,7 +77,6 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             }
             throw exception;
         }
-
     }
 
     private void init(Configuration configuration) {

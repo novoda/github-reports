@@ -1,5 +1,6 @@
 package com.novoda.github.reports.batch.handler;
 
+import com.novoda.github.reports.batch.aws.LocalLogger;
 import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.batch.aws.configuration.EmailNotifierConfiguration;
 import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsReader;
@@ -13,6 +14,7 @@ import com.novoda.github.reports.batch.aws.worker.LambdaPropertiesReader;
 import com.novoda.github.reports.batch.command.AwsBatchOptions;
 import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
 import com.novoda.github.reports.batch.configuration.GithubConfiguration;
+import com.novoda.github.reports.batch.worker.Logger;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 import com.novoda.github.reports.util.SystemClock;
@@ -36,14 +38,15 @@ public class AwsCommandHandler implements CommandHandler<AwsBatchOptions> {
     public static AwsCommandHandler newInstance() {
         AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance();
         LambdaPropertiesReader lambdaPropertiesReader = LambdaPropertiesReader.newInstance();
+        Logger logger = LocalLogger.newInstance(AwsCommandHandler.class);
 
         return new AwsCommandHandler(
                 SystemClock.newInstance(),
                 DatabaseCredentialsReader.newInstance(),
                 GithubCredentialsReader.newInstance(),
                 EmailCredentialsReader.newInstance(),
-                AmazonQueueService.newInstance(amazonCredentialsReader),
-                AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader)
+                AmazonQueueService.newInstance(amazonCredentialsReader, logger),
+                AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader, logger)
         );
     }
 

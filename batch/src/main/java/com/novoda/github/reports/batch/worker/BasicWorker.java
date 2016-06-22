@@ -57,6 +57,7 @@ public class BasicWorker<
                         WorkerHandlerService<M> workerHandlerService,
                         Logger logger,
                         SystemClock systemClock) {
+
         this.workerService = workerService;
         this.alarmService = alarmService;
         this.queueService = queueService;
@@ -70,9 +71,8 @@ public class BasicWorker<
     public void doWork(C configuration) throws WorkerOperationFailedException {
         if (configuration.hasAlarm()) {
             String alarmName = configuration.alarmName();
-            logger.log("The input configuration has an alarm with name \"%s\" that will be removed...", alarmName);
+            logger.log("The input configuration has an alarm with name \"%s\".", alarmName);
             alarmService.removeAlarm(alarmName);
-            logger.log("The alarm \"%s\" has been removed.", alarmName);
         }
 
         Q queue = null;
@@ -99,39 +99,21 @@ public class BasicWorker<
 
     private Q getQueue(C configuration) {
         String queueName = configuration.jobName();
-        logger.log("Getting queue with name \"%s\"...", queueName);
-        Q queue = queueService.getQueue(queueName);
-        logger.log("Got queue with name \"%s\".", queueName);
-        return queue;
+        return queueService.getQueue(queueName);
     }
 
     private M getItem(Q queue) throws EmptyQueueException, MessageConverterException {
-        logger.log("Getting first item from queue...");
-        M item = queue.getItem();
-        logger.log("Got item.");
-        return item;
+        return queue.getItem();
     }
 
     private List<M> handleQueueMessage(C configuration, M queueMessage) throws Throwable {
-        logger.log("Getting worker handler...");
         WorkerHandler<M> workerHandler = workerHandlerService.getWorkerHandler();
-        logger.log("Got worker handler.");
-
-        logger.log("Handling the message...");
-        List<M> nextMessages = workerHandler.handleQueueMessage(configuration, queueMessage);
-        logger.log("Message handled. %d new messages have been generated", nextMessages.size());
-        return nextMessages;
+        return workerHandler.handleQueueMessage(configuration, queueMessage);
     }
 
     private void updateQueue(Q queue, M queueMessage, List<M> newMessages) throws QueueOperationFailedException {
-        logger.log("Removing first item from the queue...");
         queue.removeItem(queueMessage);
-        logger.log("Removed first item from the queue.");
-
-        int size = newMessages.size();
-        logger.log("Adding %d new items in the queue...", size);
         queue.addItems(newMessages);
-        logger.log("Added %d new items in the queue.", size);
     }
 
     private void handleEmptyQueueException(C configuration, Q queue) {
@@ -143,29 +125,24 @@ public class BasicWorker<
     }
 
     private void notifyCompletion(C configuration) {
-        logger.log("Notifying completion...");
         Notifier<N, C> notifier = getNotifier();
         try {
             notifier.notifyCompletion(configuration);
         } catch (NotifierOperationFailedException e) {
-            logger.log("Could not notify the completion.");
-            logger.log(e);
+            logger.log("Could not notify the completion because of error:\n%s", e);
             e.printStackTrace();
         }
-        logger.log("Completion notified.");
     }
 
     private void handleMessageConverterException(C configuration, MessageConverterException e) {
-        logger.log("Error while converting the message from the queue.");
-        logger.log(e);
+        logger.log("Error while converting the message from the queue:\n%s", e);
         notifyError(configuration, e);
     }
 
     private void handleRateLimitEncounteredException(C configuration, RateLimitEncounteredException e)
             throws WorkerOperationFailedException {
 
-        logger.log("Rate limit encountered.");
-        logger.log(e);
+        logger.log("Rate limit encountered:\n%s", e);
 
         long differenceInMinutesFromNow = systemClock.getDifferenceInMinutesFromNow(e.getResetDate());
         rescheduleForLater(configuration, differenceInMinutesFromNow);
@@ -190,8 +167,7 @@ public class BasicWorker<
     }
 
     private void handleQueueOperationFailedException(C configuration, Q queue, QueueOperationFailedException e) {
-        logger.log("A queue operation failed.");
-        logger.log(e);
+        logger.log("A queue operation failed:\n%s", e);
 
         notifyError(configuration, e);
         try {
@@ -203,42 +179,34 @@ public class BasicWorker<
 
     @Override
     public void rescheduleImmediately(C configuration) throws WorkerStartException {
+        logger.log("Restarting this worker...");
         configuration = configuration.withNoAlarmName();
         workerService.startWorker(configuration);
     }
 
     private void handleAnyOtherException(C configuration, Q queue, Throwable t) {
-        logger.log("There was an unhandled error which terminated the job.");
-        logger.log(t);
+        logger.log("There was an unhandled error which terminated the job:\n%s", t);
 
         if (queue != null) {
-            logger.log("Purging the queue...");
             queue.purgeQueue();
-            logger.log("Queue purged.");
             removeQueue(queueService, queue);
         }
         notifyError(configuration, t);
     }
 
     private void removeQueue(QueueService<Q> queueService, Q queue) {
-        logger.log("Deleting queue...");
         queueService.removeQueue(queue);
-        logger.log("Deleted queue.");
     }
 
     private void notifyError(C configuration, Throwable t) {
-        logger.log("Notifying error...");
-
         Notifier<N, C> notifier = getNotifier();
         try {
+            t.printStackTrace();
             notifier.notifyError(configuration, t);
         } catch (NotifierOperationFailedException e) {
-            logger.log("Could not notify the error.");
-            logger.log(e);
+            logger.log("During the error notification another error occurred:\n%s", e);
             e.printStackTrace();
         }
-        logger.log("Error notified.");
-        t.printStackTrace();
     }
 
     private Notifier<N, C> getNotifier() {
