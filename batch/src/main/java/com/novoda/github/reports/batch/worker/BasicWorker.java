@@ -138,6 +138,10 @@ public class BasicWorker<
         notifier.notifyCompletion(configuration);
     }
 
+    private void removeQueue(QueueService<Q> queueService, Q queue) {
+        queueService.removeQueue(queue);
+    }
+
     private void handleMessageConverterException(C configuration, MessageConverterException e) throws NotifierOperationFailedException {
         logger.log("Error while converting the message from the queue:\n%s", e);
         notifyError(configuration, e);
@@ -194,21 +198,11 @@ public class BasicWorker<
     private void handleAnyOtherException(C configuration, Q queue, Throwable t) {
         logger.log("There was an unhandled error which terminated the job:\n%s", t);
 
-        if (queue != null) {
-            // TODO restore this
-            //queue.purgeQueue();
-            //removeQueue(queueService, queue);
-        }
-
         try {
             notifyError(configuration, t);
         } catch (NotifierOperationFailedException e) {
             e.printStackTrace();
         }
-    }
-
-    private void removeQueue(QueueService<Q> queueService, Q queue) {
-        queueService.removeQueue(queue);
     }
 
     private void notifyError(C configuration, Throwable t) throws NotifierOperationFailedException {
