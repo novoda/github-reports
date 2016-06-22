@@ -13,10 +13,23 @@ public class Task {
     @SerializedName("person_name")
     private String personName;
 
+    @SerializedName("project_id")
+    private int projectId;
+
+    @SerializedName("project_name")
+    private String projectName;
+
+    @SerializedName("client_name")
+    private String clientName;
+
     @SerializedName("start_date")
     private String startDate;
 
     @SerializedName("end_date")
     private String endDate;
 
+    @Override
+    public String toString() {
+        return name + "@" + projectName + " (" + clientName + ") [" + id + "], " + personName;
+    }
 }
