@@ -4,7 +4,9 @@ import com.novoda.github.reports.batch.aws.queue.AmazonGetCommentsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
+import com.novoda.github.reports.lambda.NextMessagesTransformer;
 import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
+import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssueService;
 import com.novoda.github.reports.service.issue.IssueService;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
@@ -26,7 +28,10 @@ public class CommentsServiceClient {
     public static CommentsServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
-        return new CommentsServiceClient(issueService, dateConverter);
+        ResponsePersistTransformer<RepositoryIssueEvent> persistRepositoryIssueEventsTransformer =
+                ResponseRepositoryIssueEventPersistTransformer.newInstance();
+
+        return new CommentsServiceClient(issueService, dateConverter, persistRepositoryIssueEventsTransformer);
     }
 
     public static CommentsServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
@@ -34,22 +39,19 @@ public class CommentsServiceClient {
 
         IssueService issueService = GithubIssueService.newInstance(githubCredentialsReader);
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
-        return new CommentsServiceClient(issueService, dateConverter, databaseCredentialsReader);
-    }
+        ResponsePersistTransformer<RepositoryIssueEvent> persistRepositoryIssueEventsTransformer =
+                ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
 
-    private CommentsServiceClient(IssueService issueService, DateToISO8601Converter dateConverter) {
-        this.issueService = issueService;
-        this.dateConverter = dateConverter;
-        this.responseRepositoryIssueEventPersistTransformer = ResponseRepositoryIssueEventPersistTransformer.newInstance();
+        return new CommentsServiceClient(issueService, dateConverter, persistRepositoryIssueEventsTransformer);
     }
 
     private CommentsServiceClient(IssueService issueService,
                                   DateToISO8601Converter dateConverter,
-                                  DatabaseCredentialsReader databaseCredentialsReader) {
+                                  ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer) {
 
         this.issueService = issueService;
         this.dateConverter = dateConverter;
-        this.responseRepositoryIssueEventPersistTransformer = ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
+        this.responseRepositoryIssueEventPersistTransformer = responseRepositoryIssueEventPersistTransformer;
     }
 
     public Observable<AmazonQueueMessage> retrieveCommentsAsEventsFrom(AmazonGetCommentsQueueMessage message) {
@@ -64,17 +66,29 @@ public class CommentsServiceClient {
                         pageFrom(message),
                         DEFAULT_PER_PAGE_COUNT
                 )
-                .compose(new TransformToRepositoryIssueEvent<>(
-                        message.repositoryId(),
-                        message.issueNumber(),
-                        message.issueOwnerId(),
-                        RepositoryIssueEventComment::new
-                ))
+                .compose(transformToRepositoryIssueEvents(message))
                 .compose(responseRepositoryIssueEventPersistTransformer)
-                .compose(NextMessagesIssueEventTransformer.newInstance(
-                        message,
-                        buildAmazonGetCommentsQueueMessage()
-                ));
+                .compose(getNextQueueMessages(message));
+    }
+
+    private int pageFrom(QueueMessage message) {
+        return Math.toIntExact(message.page());
+    }
+
+    private TransformToRepositoryIssueEvent<GithubComment, RepositoryIssueEventComment> transformToRepositoryIssueEvents(AmazonGetCommentsQueueMessage message) {
+        return new TransformToRepositoryIssueEvent<>(
+                message.repositoryId(),
+                message.issueNumber(),
+                message.issueOwnerId(),
+                RepositoryIssueEventComment::new
+        );
+    }
+
+    private NextMessagesTransformer<RepositoryIssueEvent, AmazonGetCommentsQueueMessage> getNextQueueMessages(AmazonGetCommentsQueueMessage message) {
+        return NextMessagesIssueEventTransformer.newInstance(
+                message,
+                buildAmazonGetCommentsQueueMessage()
+        );
     }
 
     private Func3<Boolean, Long, AmazonGetCommentsQueueMessage, AmazonGetCommentsQueueMessage> buildAmazonGetCommentsQueueMessage() {
@@ -89,10 +103,6 @@ public class CommentsServiceClient {
                 amazonGetCommentsQueueMessage.issueNumber(),
                 amazonGetCommentsQueueMessage.issueOwnerId()
         );
-    }
-
-    private int pageFrom(QueueMessage message) {
-        return Math.toIntExact(message.page());
     }
 
 }
