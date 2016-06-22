@@ -14,7 +14,6 @@ import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -81,8 +80,7 @@ public class RateLimitHandlerInterceptorTest {
         when(mockChain.proceed(ANY_REQUEST)).thenReturn(ANY_RATE_LIMIT_RESPONSE);
         when(mockRateLimitRemainingCounter.get()).thenReturn(ZERO_COUNTER);
 
-        thrown.expect(IOException.class);
-        thrown.expectCause(isA(RateLimitEncounteredException.class));
+        thrown.expect(RateLimitEncounteredException.class);
 
         interceptor.intercept(mockChain);
     }

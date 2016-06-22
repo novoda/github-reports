@@ -202,6 +202,7 @@ public class AmazonQueueMessageConverterTest {
                 .repositoryName(AMAZON_GET_COMMENTS_QUEUE_MESSAGE.repositoryName())
                 .repositoryId(AMAZON_GET_COMMENTS_QUEUE_MESSAGE.repositoryId())
                 .issueNumber(AMAZON_GET_COMMENTS_QUEUE_MESSAGE.issueNumber())
+                .issueOwnerId(AMAZON_GET_COMMENTS_QUEUE_MESSAGE.issueOwnerId())
                 .build();
         assertEquals(expected, actual);
     }
@@ -220,6 +221,7 @@ public class AmazonQueueMessageConverterTest {
                 .repositoryName(AMAZON_GET_EVENTS_QUEUE_MESSAGE.repositoryName())
                 .repositoryId(AMAZON_GET_EVENTS_QUEUE_MESSAGE.repositoryId())
                 .issueNumber(AMAZON_GET_EVENTS_QUEUE_MESSAGE.issueNumber())
+                .issueOwnerId(AMAZON_GET_EVENTS_QUEUE_MESSAGE.issueOwnerId())
                 .build();
         assertEquals(expected, actual);
     }
@@ -238,6 +240,7 @@ public class AmazonQueueMessageConverterTest {
                 .repositoryName(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.repositoryName())
                 .repositoryId(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.repositoryId())
                 .issueNumber(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.issueNumber())
+                .issueOwnerId(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.issueOwnerId())
                 .build();
         assertEquals(expected, actual);
     }

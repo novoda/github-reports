@@ -31,6 +31,7 @@ import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.isA;
 
 public class BasicWorkerTest {
 
@@ -170,15 +171,15 @@ public class BasicWorkerTest {
     }
 
     @Test
-    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenPurgeDeleteQueueAndNotifyErrorAndDoNotReschedule() throws Throwable {
+    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenDoNotPurgeDeleteQueueAndNotifyErrorAndDoNotReschedule() throws Throwable {
 
         Queue<QueueMessage> queue = givenAnyQueue();
         when(workerHandler.handleQueueMessage(eq(configuration), any(QueueMessage.class))).thenThrow(Exception.class);
 
         worker.doWork(configuration);
 
-        verify(queue).purgeQueue();
-        verify(queueService).removeQueue(queue);
+        verify(queue, never()).purgeQueue();
+        verify(queueService, never()).removeQueue(queue);
         verifyErrorNotified(Exception.class);
         verifyNoRescheduleImmediately();
     }
