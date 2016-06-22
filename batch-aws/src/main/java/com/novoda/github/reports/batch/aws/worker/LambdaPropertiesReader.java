@@ -5,7 +5,7 @@ import com.novoda.github.reports.properties.PropertiesReader;
 public class LambdaPropertiesReader {
 
     private static final String LAMBDA_PROPERTIES_FILENAME = "lambda.properties";
-    private static final String AWS_LAMBDA_NAME = "AWS_LAMBDA_NAME";
+    private static final String AWS_LAMBDA_ARN = "AWS_LAMBDA_ARN";
 
     private final PropertiesReader propertiesReader;
 
@@ -19,7 +19,7 @@ public class LambdaPropertiesReader {
     }
 
     public String getLambdaName() {
-        return propertiesReader.readProperty(AWS_LAMBDA_NAME);
+        return propertiesReader.readProperty(AWS_LAMBDA_ARN);
     }
 
 }

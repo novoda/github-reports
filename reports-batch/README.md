@@ -34,12 +34,11 @@ properties defined:
 
 * `AWS_ACCESS_KEY_ID`, access key ID for your IAM user
 * `AWS_SECRET_ACCESS_KEY`, secret access key for your IAM user
-* `AWS_LAMBDA_NAME`, (only if your module needs to start the default lambda), name of the batch lambda
 
 For an example, see the [`amazon.credentials.sample` file](src/main/resources/amazon.credentials.sample).
 
 You also need to add a `lambda.properties` file in the classloader accessible folder, referencing the name of the AWS Lambda that will handle the
-actual processing in the `AWS_LAMBDA_NAME` property (see [`lambda.properties.sample`](src/main/resources/lambda.properties.sample)).
+actual processing in the `AWS_LAMBDA_AR` property (see [`lambda.properties.sample`](src/main/resources/lambda.properties.sample)).
 
 #### Email (AWS only)
 
