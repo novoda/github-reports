@@ -121,6 +121,7 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
         Message message = amazonQueueMessageConverter.toMessage(queueMessage);
         return new SendMessageBatchRequestEntry()
                 .withId(Integer.toString(id))
+                //.withMessageAttributes(DEFAULT_MESSAGE_ATTRIBUTES)
                 .withMessageBody(message.getBody());
     }
 
