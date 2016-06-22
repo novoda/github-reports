@@ -40,11 +40,10 @@ public class RepositoriesServiceClient {
                                                         DatabaseCredentialsReader databaseCredentialsReader) {
 
         RepositoryService repositoriesService = GithubRepositoryService.newInstance(githubCredentialsReader);
-
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager(databaseCredentialsReader);
         DbDataLayer<Repository, RepositoryRecord> repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
-
         Converter<GithubRepository, Repository> converter = RepositoryConverter.newInstance();
+
         return new RepositoriesServiceClient(repositoriesService, repoDataLayer, converter);
     }
 
@@ -60,12 +59,20 @@ public class RepositoriesServiceClient {
     public Observable<AmazonQueueMessage> retrieveRepositoriesFor(AmazonGetRepositoriesQueueMessage message) {
         return repositoryService
                 .getRepositoriesFor(message.organisationName(), pageFrom(message), DEFAULT_PER_PAGE_COUNT)
-                .lift(new PersistOperator<>(repoDataLayer, converter))
-                .compose(NextMessagesRepositoryTransformer.newInstance(message));
+                .lift(persistRepositories())
+                .compose(getNextQueueMessages(message));
     }
 
     private int pageFrom(QueueMessage message) {
         return Math.toIntExact(message.page());
+    }
+
+    private PersistOperator<GithubRepository, Repository> persistRepositories() {
+        return new PersistOperator<>(repoDataLayer, converter);
+    }
+
+    private NextMessagesRepositoryTransformer getNextQueueMessages(AmazonGetRepositoriesQueueMessage message) {
+        return NextMessagesRepositoryTransformer.newInstance(message);
     }
 
 }

@@ -4,10 +4,12 @@ import com.novoda.github.reports.batch.aws.queue.AmazonGetReviewCommentsQueueMes
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
+import com.novoda.github.reports.lambda.NextMessagesTransformer;
 import com.novoda.github.reports.lambda.issue.NextMessagesIssueEventTransformer;
 import com.novoda.github.reports.lambda.issue.ResponseRepositoryIssueEventPersistTransformer;
 import com.novoda.github.reports.lambda.issue.TransformToRepositoryIssueEvent;
 import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
+import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
@@ -29,7 +31,10 @@ public class ReviewCommentsServiceClient {
     public static ReviewCommentsServiceClient newInstance() {
         PullRequestService pullRequestService = GithubPullRequestService.newInstance();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
-        return new ReviewCommentsServiceClient(pullRequestService, dateConverter);
+        ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer =
+                ResponseRepositoryIssueEventPersistTransformer.newInstance();
+
+        return new ReviewCommentsServiceClient(pullRequestService, dateConverter, responseRepositoryIssueEventPersistTransformer);
     }
 
     public static ReviewCommentsServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
@@ -37,22 +42,19 @@ public class ReviewCommentsServiceClient {
 
         PullRequestService pullRequestService = GithubPullRequestService.newInstance(githubCredentialsReader);
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
-        return new ReviewCommentsServiceClient(pullRequestService, dateConverter, databaseCredentialsReader);
-    }
+        ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer =
+                ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
 
-    private ReviewCommentsServiceClient(PullRequestService pullRequestService, DateToISO8601Converter dateConverter) {
-        this.pullRequestService = pullRequestService;
-        this.dateConverter = dateConverter;
-        this.responseRepositoryIssueEventPersistTransformer = ResponseRepositoryIssueEventPersistTransformer.newInstance();
+        return new ReviewCommentsServiceClient(pullRequestService, dateConverter, responseRepositoryIssueEventPersistTransformer);
     }
 
     private ReviewCommentsServiceClient(PullRequestService pullRequestService,
                                         DateToISO8601Converter dateConverter,
-                                        DatabaseCredentialsReader databaseCredentialsReader) {
+                                        ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer) {
 
         this.pullRequestService = pullRequestService;
         this.dateConverter = dateConverter;
-        this.responseRepositoryIssueEventPersistTransformer = ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
+        this.responseRepositoryIssueEventPersistTransformer = responseRepositoryIssueEventPersistTransformer;
     }
 
     public Observable<AmazonQueueMessage> retrieveReviewCommentsFromPullRequest(AmazonGetReviewCommentsQueueMessage message) {
@@ -66,26 +68,29 @@ public class ReviewCommentsServiceClient {
                         pageFrom(message),
                         DEFAULT_PER_PAGE_COUNT
                 )
-                .compose(new TransformToRepositoryIssueEvent<>(
-                        message.repositoryId(),
-                        message.issueNumber(),
-                        message.issueOwnerId(),
-                        RepositoryIssueEventComment::new
-                ))
+                .compose(transformToRepositoryIssueEvents(message))
                 .compose(responseRepositoryIssueEventPersistTransformer)
-                .compose(NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetReviewCommentsQueueMessage()));
+                .compose(getNextQueueMessages(message));
     }
 
-    private int pageFrom(QueueMessage message) {
-        return Math.toIntExact(message.page());
+    private TransformToRepositoryIssueEvent<GithubComment, RepositoryIssueEventComment> transformToRepositoryIssueEvents(AmazonGetReviewCommentsQueueMessage message) {
+        return new TransformToRepositoryIssueEvent<>(
+                message.repositoryId(),
+                message.issueNumber(),
+                message.issueOwnerId(),
+                RepositoryIssueEventComment::new
+        );
     }
 
     private int issueNumberFrom(AmazonGetReviewCommentsQueueMessage message) {
         return Math.toIntExact(message.issueNumber());
     }
 
-    private Func3<Boolean, Long, AmazonGetReviewCommentsQueueMessage, AmazonGetReviewCommentsQueueMessage>
-    buildAmazonGetReviewCommentsQueueMessage() {
+    private int pageFrom(QueueMessage message) {
+        return Math.toIntExact(message.page());
+    }
+
+    private Func3<Boolean, Long, AmazonGetReviewCommentsQueueMessage, AmazonGetReviewCommentsQueueMessage> buildAmazonGetReviewCommentsQueueMessage() {
 
         return (isTerminal, nextPage, amazonGetReviewCommentsQueueMessage) -> AmazonGetReviewCommentsQueueMessage.create(
                 isTerminal,
@@ -98,6 +103,10 @@ public class ReviewCommentsServiceClient {
                 amazonGetReviewCommentsQueueMessage.issueNumber(),
                 amazonGetReviewCommentsQueueMessage.issueOwnerId()
         );
+    }
+
+    private NextMessagesTransformer<RepositoryIssueEvent, AmazonGetReviewCommentsQueueMessage> getNextQueueMessages(AmazonGetReviewCommentsQueueMessage message) {
+        return NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetReviewCommentsQueueMessage());
     }
 
 }

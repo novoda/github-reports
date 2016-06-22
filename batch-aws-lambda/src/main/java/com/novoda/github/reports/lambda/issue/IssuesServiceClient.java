@@ -26,7 +26,10 @@ public class IssuesServiceClient {
     public static IssuesServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
-        return new IssuesServiceClient(issueService, dateConverter);
+        ResponsePersistTransformer<RepositoryIssue> responseRepositoryIssuePersistTransformer =
+                ResponseRepositoryIssuePersistTransformer.newInstance();
+
+        return new IssuesServiceClient(issueService, dateConverter, responseRepositoryIssuePersistTransformer);
     }
 
     public static IssuesServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
@@ -34,24 +37,19 @@ public class IssuesServiceClient {
 
         IssueService issueService = GithubIssueService.newInstance(githubCredentialsReader);
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
-        return new IssuesServiceClient(issueService, dateConverter, databaseCredentialsReader);
-    }
+        ResponsePersistTransformer<RepositoryIssue> responseRepositoryIssuePersistTransformer =
+                ResponseRepositoryIssuePersistTransformer.newInstance(databaseCredentialsReader);
 
-    private IssuesServiceClient(IssueService issueService,
-                                DateToISO8601Converter dateConverter) {
-
-        this.issueService = issueService;
-        this.dateConverter = dateConverter;
-        this.responseRepositoryIssuePersistTransformer = ResponseRepositoryIssuePersistTransformer.newInstance();
+        return new IssuesServiceClient(issueService, dateConverter, responseRepositoryIssuePersistTransformer);
     }
 
     private IssuesServiceClient(IssueService issueService,
                                 DateToISO8601Converter dateConverter,
-                                DatabaseCredentialsReader databaseCredentialsReader) {
+                                ResponsePersistTransformer<RepositoryIssue> responseRepositoryIssuePersistTransformer) {
 
         this.issueService = issueService;
         this.dateConverter = dateConverter;
-        this.responseRepositoryIssuePersistTransformer = ResponseRepositoryIssuePersistTransformer.newInstance(databaseCredentialsReader);
+        this.responseRepositoryIssuePersistTransformer = responseRepositoryIssuePersistTransformer;
     }
 
     public Observable<AmazonQueueMessage> retrieveIssuesFor(AmazonGetIssuesQueueMessage message) {
@@ -65,13 +63,21 @@ public class IssuesServiceClient {
                         pageFrom(message),
                         DEFAULT_PER_PAGE_COUNT
                 )
-                .compose(TransformToRepositoryIssue.newInstance(message.repositoryId()))
+                .compose(transformToRepositoryIssues(message))
                 .compose(responseRepositoryIssuePersistTransformer)
-                .compose(NextMessagesIssueTransformer.newInstance(message));
+                .compose(getNextQueueMessages(message));
     }
 
     private int pageFrom(QueueMessage message) {
         return Math.toIntExact(message.page());
+    }
+
+    private TransformToRepositoryIssue transformToRepositoryIssues(AmazonGetIssuesQueueMessage message) {
+        return TransformToRepositoryIssue.newInstance(message.repositoryId());
+    }
+
+    private NextMessagesIssueTransformer getNextQueueMessages(AmazonGetIssuesQueueMessage message) {
+        return NextMessagesIssueTransformer.newInstance(message);
     }
 
 }

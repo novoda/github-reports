@@ -4,6 +4,7 @@ import com.novoda.github.reports.batch.aws.queue.AmazonGetEventsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
+import com.novoda.github.reports.lambda.NextMessagesTransformer;
 import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
 import com.novoda.github.reports.service.issue.GithubEvent;
 import com.novoda.github.reports.service.issue.GithubIssueService;
@@ -43,23 +44,24 @@ public class EventsServiceClient {
 
     public static EventsServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
-        return new EventsServiceClient(issueService);
+        return new EventsServiceClient(issueService, ResponseRepositoryIssueEventPersistTransformer.newInstance());
     }
 
     public static EventsServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
                                                   DatabaseCredentialsReader databaseCredentialsReader) {
+
         IssueService issueService = GithubIssueService.newInstance(githubCredentialsReader);
-        return new EventsServiceClient(issueService, databaseCredentialsReader);
+        ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer =
+                ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
+
+        return new EventsServiceClient(issueService, responseRepositoryIssueEventPersistTransformer);
     }
 
-    private EventsServiceClient(IssueService issueService) {
-        this.issueService = issueService;
-        this.responseRepositoryIssueEventPersistTransformer = ResponseRepositoryIssueEventPersistTransformer.newInstance();
-    }
+    private EventsServiceClient(IssueService issueService,
+                                ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer) {
 
-    private EventsServiceClient(IssueService issueService, DatabaseCredentialsReader databaseCredentialsReader) {
         this.issueService = issueService;
-        this.responseRepositoryIssueEventPersistTransformer = ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
+        this.responseRepositoryIssueEventPersistTransformer = responseRepositoryIssueEventPersistTransformer;
     }
 
     public Observable<AmazonQueueMessage> retrieveEventsFrom(AmazonGetEventsQueueMessage message) {
@@ -72,14 +74,13 @@ public class EventsServiceClient {
                         DEFAULT_PER_PAGE_COUNT
                 )
                 .map(filterInterestingEvents())
-                .compose(new TransformToRepositoryIssueEvent<>(
-                        message.repositoryId(),
-                        message.issueNumber(),
-                        message.issueOwnerId(),
-                        RepositoryIssueEventEvent::newInstance
-                ))
+                .compose(transformToRepositoryIssueEvents(message))
                 .compose(responseRepositoryIssueEventPersistTransformer)
-                .compose(NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetEventsQueueMessage()));
+                .compose(getNextQueueMessages(message));
+    }
+
+    private int pageFrom(QueueMessage message) {
+        return Math.toIntExact(message.page());
     }
 
     private Func1<Response<List<GithubEvent>>, Response<List<GithubEvent>>> filterInterestingEvents() {
@@ -96,8 +97,17 @@ public class EventsServiceClient {
         return EVENT_TYPES_TO_BE_STORED.contains(event.getType());
     }
 
-    private int pageFrom(QueueMessage message) {
-        return Math.toIntExact(message.page());
+    private TransformToRepositoryIssueEvent<GithubEvent, RepositoryIssueEventEvent> transformToRepositoryIssueEvents(AmazonGetEventsQueueMessage message) {
+        return new TransformToRepositoryIssueEvent<>(
+                message.repositoryId(),
+                message.issueNumber(),
+                message.issueOwnerId(),
+                RepositoryIssueEventEvent::newInstance
+        );
+    }
+
+    private NextMessagesTransformer<RepositoryIssueEvent, AmazonGetEventsQueueMessage> getNextQueueMessages(AmazonGetEventsQueueMessage message) {
+        return NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetEventsQueueMessage());
     }
 
     private Func3<Boolean, Long, AmazonGetEventsQueueMessage, AmazonGetEventsQueueMessage> buildAmazonGetEventsQueueMessage() {
