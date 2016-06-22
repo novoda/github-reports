@@ -24,6 +24,7 @@ import org.mockito.internal.verification.VerificationModeFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -100,7 +101,7 @@ public class EmailNotifierTest {
 
         verifyEmailSetWithParametersFromConfig();
         verify(email).setSubject("[github-reports] Your job has errored!");
-        verify(email).setMsg("The job with name \"" + ANY_JOB_NAME + "\" has errored.");
+        verify(email).setMsg(startsWith("The job with name \"" + ANY_JOB_NAME + "\" has errored."));
     }
 
     private void verifyEmailSetWithParametersFromConfig() throws EmailException {
