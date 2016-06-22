@@ -4,6 +4,7 @@ import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.batch.aws.configuration.EmailNotifierConfiguration;
 import com.novoda.github.reports.batch.notifier.Notifier;
 import com.novoda.github.reports.batch.notifier.NotifierOperationFailedException;
+import com.novoda.github.reports.batch.worker.Logger;
 
 import java.util.List;
 
@@ -20,23 +21,29 @@ class EmailNotifier implements Notifier<EmailNotifierConfiguration, AmazonConfig
     private static final String ERROR_BODY = "The job with name \"%s\" has errored.";
 
     private final Email email;
+    private final Logger logger;
 
-    public static EmailNotifier newInstance() {
-        return new EmailNotifier(new SimpleEmail());
+    public static EmailNotifier newInstance(Logger logger) {
+        return new EmailNotifier(new SimpleEmail(), logger);
     }
 
-    private EmailNotifier(Email email) {
+    private EmailNotifier(Email email, Logger logger) {
         this.email = email;
+        this.logger = logger;
     }
 
     @Override
     public void notifyCompletion(AmazonConfiguration configuration) throws NotifierOperationFailedException {
+        logger.log("Notifying completion...");
         sendEmail(configuration, COMPLETION_SUBJECT, COMPLETION_BODY);
+        logger.log("Completion notified.");
     }
 
     @Override
     public void notifyError(AmazonConfiguration configuration, Throwable throwable) throws NotifierOperationFailedException {
+        logger.log("Notifying error: %s", throwable);
         sendEmail(configuration, ERROR_SUBJECT, ERROR_BODY);
+        logger.log("Error notified.");
     }
 
     private void sendEmail(AmazonConfiguration configuration, String subjectTemplate, String bodyTemplate) throws NotifierOperationFailedException {

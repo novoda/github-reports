@@ -32,8 +32,7 @@ public class Lambda {
 
         AmazonConfiguration amazonConfiguration = amazonConfigurationConverter.fromJson(configuration);
 
-        lambdaLogger.log("Handling configuration:");
-        lambdaLogger.log(amazonConfiguration.toString());
+        lambdaLogger.log("Handling configuration:\n" + amazonConfiguration);
 
         worker.doWork(amazonConfiguration);
 
@@ -43,13 +42,15 @@ public class Lambda {
     private void init(Context context) {
         this.amazonConfigurationConverter = AmazonConfigurationConverter.newInstance();
         this.lambdaLogger = new LambdaLogger(context);
+
         AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance();
         LambdaPropertiesReader lambdaPropertiesReader = LambdaPropertiesReader.newInstance();
-        AmazonWorkerService workerService = AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader);
-        AmazonAlarmService alarmService = AmazonAlarmService.newInstance(amazonCredentialsReader);
-        AmazonQueueService queueService = AmazonQueueService.newInstance(amazonCredentialsReader);
-        EmailNotifierService notifierService = EmailNotifierService.newInstance();
-        AmazonWorkerHandlerService workerHandlerService = AmazonWorkerHandlerService.newInstance();
+
+        AmazonWorkerService workerService = AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader, lambdaLogger);
+        AmazonAlarmService alarmService = AmazonAlarmService.newInstance(amazonCredentialsReader, lambdaLogger);
+        AmazonQueueService queueService = AmazonQueueService.newInstance(amazonCredentialsReader, lambdaLogger);
+        EmailNotifierService notifierService = EmailNotifierService.newInstance(lambdaLogger);
+        AmazonWorkerHandlerService workerHandlerService = AmazonWorkerHandlerService.newInstance(lambdaLogger);
 
         this.worker = BasicWorker.newInstance(
                 workerService,
