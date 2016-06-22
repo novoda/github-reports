@@ -14,8 +14,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import okhttp3.Headers;
@@ -93,10 +91,6 @@ public class EventsServiceClient {
     }
 
     private boolean shouldStoreEvent(GithubEvent event) {
-        if (event == null || event.getType() == null) {
-            Logger.getGlobal().log(Level.WARNING, "null WTF");
-            return false;
-        }
         return EVENT_TYPES_TO_BE_STORED.contains(event.getType());
     }
 
