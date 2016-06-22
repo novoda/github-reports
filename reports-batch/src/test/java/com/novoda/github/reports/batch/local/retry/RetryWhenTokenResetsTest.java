@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.retry;
+package com.novoda.github.reports.batch.local.retry;
 
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
 import com.novoda.github.reports.service.network.RateLimitResetRepository;

@@ -28,6 +28,10 @@ dependencies {
     testCompile 'org.mockito:mockito-core:2.0.53-beta'
 }
 
+jar {
+    exclude '*.properties.sample'
+}
+
 task zip(type: Zip) {
     from compileJava
     from processResources
@@ -42,4 +46,5 @@ task uploadLambda(type: AWSLambdaMigrateFunctionTask, dependsOn: zip) {
     zipFile = zip.archivePath
     handler = 'com.novoda.github.reports.lambda.Lambda::handle'
     runtime = Runtime.Java8
+    timeout = 300
 }
