@@ -28,6 +28,11 @@ public class Task {
     @SerializedName("end_date")
     private String endDate;
 
+    Task(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return name + "@" + projectName + " (" + clientName + ") [" + id + "], " + personName;

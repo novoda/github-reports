@@ -11,6 +11,11 @@ public class Assignment {
 
     private List<Task> tasks;
 
+    Assignment(int personId, List<Task> tasks) {
+        this.personId = personId;
+        this.tasks = tasks;
+    }
+
     public List<Task> getTasks() {
         return tasks;
     }

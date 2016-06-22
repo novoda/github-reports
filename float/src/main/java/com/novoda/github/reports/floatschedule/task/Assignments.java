@@ -15,6 +15,10 @@ public class Assignments {
     @SerializedName("start_yr")
     private int year;
 
+    Assignments(List<Assignment> assignments) {
+        this.assignments = assignments;
+    }
+
     public List<Assignment> getAssignments() {
         return assignments;
     }
