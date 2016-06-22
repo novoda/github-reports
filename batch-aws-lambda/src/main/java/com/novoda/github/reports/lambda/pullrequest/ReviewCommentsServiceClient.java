@@ -55,15 +55,20 @@ public class ReviewCommentsServiceClient {
 
     public Observable<AmazonQueueMessage> retrieveReviewCommentsFromPullRequest(AmazonGetReviewCommentsQueueMessage message) {
         String date = dateConverter.toISO8601NoMillisOrNull(message.sinceOrNull());
-        return pullRequestService.getPullRequestReviewCommentsFor(message.organisationName(),
-                                                                  message.repositoryName(),
-                                                                  issueNumberFrom(message),
-                                                                  date,
-                                                                  pageFrom(message),
-                                                                  DEFAULT_PER_PAGE_COUNT)
-                .compose(new TransformToRepositoryIssueEvent<>(message.issueNumber(),
-                                                               message.repositoryId(),
-                                                               RepositoryIssueEventComment::new))
+        return pullRequestService.getPullRequestReviewCommentsFor(
+                message.organisationName(),
+                message.repositoryName(),
+                issueNumberFrom(message),
+                date,
+                pageFrom(message),
+                DEFAULT_PER_PAGE_COUNT
+        )
+                .compose(new TransformToRepositoryIssueEvent<>(
+                        message.repositoryId(),
+                        message.issueNumber(),
+                        message.issueOwnerId(),
+                        RepositoryIssueEventComment::new
+                ))
                 .compose(responseRepositoryIssueEventPersistTransformer)
                 .compose(NextMessagesIssueEventTransformer.newInstance(message, buildAmazonGetReviewCommentsQueueMessage()));
     }
@@ -79,15 +84,16 @@ public class ReviewCommentsServiceClient {
     private Func3<Boolean, Long, AmazonGetReviewCommentsQueueMessage, AmazonGetReviewCommentsQueueMessage>
     buildAmazonGetReviewCommentsQueueMessage() {
 
-        return (isTerminal, nextPage, getReviewCommentsQueueMessage) -> AmazonGetReviewCommentsQueueMessage.create(
+        return (isTerminal, nextPage, amazonGetReviewCommentsQueueMessage) -> AmazonGetReviewCommentsQueueMessage.create(
                 isTerminal,
                 nextPage,
-                getReviewCommentsQueueMessage.receiptHandle(),
-                getReviewCommentsQueueMessage.organisationName(),
-                getReviewCommentsQueueMessage.sinceOrNull(),
-                getReviewCommentsQueueMessage.repositoryId(),
-                getReviewCommentsQueueMessage.repositoryName(),
-                getReviewCommentsQueueMessage.issueNumber()
+                amazonGetReviewCommentsQueueMessage.receiptHandle(),
+                amazonGetReviewCommentsQueueMessage.organisationName(),
+                amazonGetReviewCommentsQueueMessage.sinceOrNull(),
+                amazonGetReviewCommentsQueueMessage.repositoryId(),
+                amazonGetReviewCommentsQueueMessage.repositoryName(),
+                amazonGetReviewCommentsQueueMessage.issueNumber(),
+                amazonGetReviewCommentsQueueMessage.issueOwnerId()
         );
     }
 

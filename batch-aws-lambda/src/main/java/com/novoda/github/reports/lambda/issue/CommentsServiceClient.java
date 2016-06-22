@@ -65,6 +65,7 @@ public class CommentsServiceClient {
                 .compose(new TransformToRepositoryIssueEvent<>(
                         message.repositoryId(),
                         message.issueNumber(),
+                        message.issueOwnerId(),
                         RepositoryIssueEventComment::new
                 ))
                 .compose(responseRepositoryIssueEventPersistTransformer)
@@ -81,7 +82,8 @@ public class CommentsServiceClient {
                 amazonGetCommentsQueueMessage.sinceOrNull(),
                 amazonGetCommentsQueueMessage.repositoryId(),
                 amazonGetCommentsQueueMessage.repositoryName(),
-                amazonGetCommentsQueueMessage.issueNumber()
+                amazonGetCommentsQueueMessage.issueNumber(),
+                amazonGetCommentsQueueMessage.issueOwnerId()
         );
     }
 

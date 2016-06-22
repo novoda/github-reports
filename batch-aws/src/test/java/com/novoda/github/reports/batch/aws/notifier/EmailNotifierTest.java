@@ -5,6 +5,7 @@ import com.novoda.github.reports.batch.aws.configuration.EmailNotifierConfigurat
 import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
 import com.novoda.github.reports.batch.configuration.GithubConfiguration;
 import com.novoda.github.reports.batch.notifier.NotifierOperationFailedException;
+import com.novoda.github.reports.batch.worker.Logger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -65,6 +66,9 @@ public class EmailNotifierTest {
 
     @Mock
     private Email email;
+
+    @Mock
+    private Logger logger;
 
     @InjectMocks
     private EmailNotifier notifier;
@@ -127,7 +131,7 @@ public class EmailNotifierTest {
         when(email.send()).thenThrow(EmailException.class);
 
         expectedException.expect(NotifierOperationFailedException.class);
-        notifier.notifyError(AMAZON_CONFIGURATION, any(Exception.class));
+        notifier.notifyError(AMAZON_CONFIGURATION, new Exception());
     }
 
 }
