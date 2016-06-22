@@ -18,4 +18,5 @@ public class Assignments {
     public List<Assignment> getAssignments() {
         return assignments;
     }
+
 }
