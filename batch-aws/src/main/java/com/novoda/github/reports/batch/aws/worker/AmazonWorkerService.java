@@ -1,22 +1,66 @@
 package com.novoda.github.reports.batch.aws.worker;
 
-import com.novoda.github.reports.batch.configuration.Configuration;
+import com.amazonaws.services.lambda.AWSLambdaClient;
+import com.amazonaws.services.lambda.model.InvocationType;
+import com.amazonaws.services.lambda.model.InvokeRequest;
+import com.amazonaws.services.lambda.model.InvokeResult;
+import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
+import com.novoda.github.reports.batch.aws.configuration.AmazonConfigurationConverter;
+import com.novoda.github.reports.batch.aws.configuration.ConfigurationConverterException;
+import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsReader;
 import com.novoda.github.reports.batch.worker.WorkerService;
+import com.novoda.github.reports.batch.worker.WorkerStartException;
 
-public class AmazonWorkerService implements WorkerService {
+public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
 
-    public static AmazonWorkerService newInstance() {
-        return new AmazonWorkerService();
+    private static final int SUCCESSFUL_INVOKE_RESULT_CODE = 202;
+
+    private final LambdaPropertiesReader lambdaPropertiesReader;
+    private final AWSLambdaClient awsLambdaClient;
+    private final AmazonConfigurationConverter amazonConfigurationConverter;
+
+    public static AmazonWorkerService newInstance(AmazonCredentialsReader amazonCredentialsReader,
+                                                  LambdaPropertiesReader lambdaPropertiesReader) {
+
+        return new AmazonWorkerService(amazonCredentialsReader, lambdaPropertiesReader, AmazonConfigurationConverter.newInstance());
+    }
+
+    private AmazonWorkerService(AmazonCredentialsReader amazonCredentialsReader,
+                                LambdaPropertiesReader lambdaPropertiesReader,
+                                AmazonConfigurationConverter amazonConfigurationConverter) {
+
+        this.lambdaPropertiesReader = lambdaPropertiesReader;
+        this.awsLambdaClient = new AWSLambdaClient(amazonCredentialsReader.getAWSCredentials());
+        this.amazonConfigurationConverter = amazonConfigurationConverter;
     }
 
     @Override
-    public void startWorker(Configuration configuration) {
-        // TODO launch lambda
+    public void startWorker(AmazonConfiguration configuration) throws WorkerStartException {
+        String rawConfiguration = getConfigurationAsJson(configuration);
+
+        InvokeRequest invokeRequest = new InvokeRequest()
+                .withFunctionName(getWorkerName())
+                .withPayload(rawConfiguration)
+                .withInvocationType(InvocationType.Event);
+
+        InvokeResult invokeResult = awsLambdaClient.invoke(invokeRequest);
+        if (invokeResult.getStatusCode() != SUCCESSFUL_INVOKE_RESULT_CODE) {
+            throw WorkerStartException.withStatusCode(invokeResult.getStatusCode());
+        }
+    }
+
+    private String getConfigurationAsJson(AmazonConfiguration configuration) throws WorkerStartException {
+        String rawConfiguration;
+        try {
+            rawConfiguration = amazonConfigurationConverter.toJson(configuration);
+        } catch (ConfigurationConverterException e) {
+            throw new WorkerStartException(e);
+        }
+        return rawConfiguration;
     }
 
     @Override
     public String getWorkerName() {
-        // TODO read from properties
-        return "github-reports";
+        return lambdaPropertiesReader.getLambdaName();
     }
 }

@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.timeline;
+package com.novoda.github.reports.batch.local.timeline;
 
 import com.novoda.github.reports.service.timeline.GithubTimelineService;
 import com.novoda.github.reports.service.timeline.TimelineEvent;

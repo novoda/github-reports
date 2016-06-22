@@ -27,7 +27,7 @@ public class BasicWorker<
         C extends Configuration<N>>
         implements Worker<N, C> {
 
-    private final WorkerService workerService;
+    private final WorkerService<C> workerService;
     private final AlarmService<A, C> alarmService;
     private final QueueService<Q> queueService;
     private final NotifierService<N, C> notifierService;
@@ -39,7 +39,7 @@ public class BasicWorker<
             M extends QueueMessage,
             Q extends Queue<M>,
             N extends NotifierConfiguration,
-            C extends Configuration<N>> BasicWorker<A, M, Q, N, C> newInstance(WorkerService workerService,
+            C extends Configuration<N>> BasicWorker<A, M, Q, N, C> newInstance(WorkerService<C> workerService,
                                                                                AlarmService<A, C> alarmService,
                                                                                QueueService<Q> queueService,
                                                                                NotifierService<N, C> notifierService,
@@ -48,12 +48,12 @@ public class BasicWorker<
         return new BasicWorker<>(workerService, alarmService, queueService, notifierService, workerHandlerService, systemClock);
     }
 
-    protected BasicWorker(WorkerService workerService,
-                          AlarmService<A, C> alarmService,
-                          QueueService<Q> queueService,
-                          NotifierService<N, C> notifierService,
-                          WorkerHandlerService<M> workerHandlerService,
-                          SystemClock systemClock) {
+    private BasicWorker(WorkerService<C> workerService,
+                        AlarmService<A, C> alarmService,
+                        QueueService<Q> queueService,
+                        NotifierService<N, C> notifierService,
+                        WorkerHandlerService<M> workerHandlerService,
+                        SystemClock systemClock) {
         this.workerService = workerService;
         this.alarmService = alarmService;
         this.queueService = queueService;
@@ -83,7 +83,7 @@ public class BasicWorker<
         } catch (RateLimitEncounteredException e) {
             handleRateLimitEncounteredException(configuration, e);
         } catch (QueueOperationFailedException e) {
-            handleQueueOperationFailedException(configuration, e);
+            handleQueueOperationFailedException(configuration, queue, e);
         } catch (Throwable t) {
             handleAnyOtherException(configuration, queue, t);
         }
@@ -144,13 +144,17 @@ public class BasicWorker<
         return configuration.withAlarmName(alarm.getName());
     }
 
-    private void handleQueueOperationFailedException(C configuration, QueueOperationFailedException e) {
+    private void handleQueueOperationFailedException(C configuration, Q queue, QueueOperationFailedException e) {
         notifyError(configuration, e);
-        rescheduleImmediately(configuration);
+        try {
+            rescheduleImmediately(configuration);
+        } catch (WorkerStartException cantRescheduleException) {
+            handleAnyOtherException(configuration, queue, cantRescheduleException);
+        }
     }
 
     @Override
-    public void rescheduleImmediately(C configuration) {
+    public void rescheduleImmediately(C configuration) throws WorkerStartException {
         configuration = configuration.withNoAlarmName();
         workerService.startWorker(configuration);
     }
