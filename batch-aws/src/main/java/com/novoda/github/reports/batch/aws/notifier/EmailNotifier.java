@@ -6,6 +6,8 @@ import com.novoda.github.reports.batch.notifier.Notifier;
 import com.novoda.github.reports.batch.notifier.NotifierOperationFailedException;
 import com.novoda.github.reports.batch.worker.Logger;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 import org.apache.commons.mail.DefaultAuthenticator;
@@ -42,8 +44,16 @@ class EmailNotifier implements Notifier<EmailNotifierConfiguration, AmazonConfig
     @Override
     public void notifyError(AmazonConfiguration configuration, Throwable throwable) throws NotifierOperationFailedException {
         logger.log("Notifying error: %s", throwable);
-        sendEmail(configuration, ERROR_SUBJECT, ERROR_BODY);
+        sendEmail(configuration, ERROR_SUBJECT, getErrorBody(throwable));
         logger.log("Error notified.");
+    }
+
+    private String getErrorBody(Throwable throwable) {
+        StringWriter exceptionWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(exceptionWriter);
+        throwable.printStackTrace(printWriter);
+
+        return ERROR_BODY + "\n\n" + exceptionWriter.toString();
     }
 
     private void sendEmail(AmazonConfiguration configuration, String subjectTemplate, String bodyTemplate) throws NotifierOperationFailedException {
