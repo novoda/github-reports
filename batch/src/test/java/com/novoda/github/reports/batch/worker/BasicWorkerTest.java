@@ -55,6 +55,9 @@ public class BasicWorkerTest {
     private WorkerHandlerService workerHandlerService;
 
     @Mock
+    private Logger logger;
+
+    @Mock
     private SystemClock systemClock;
 
     @InjectMocks

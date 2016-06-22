@@ -75,6 +75,7 @@ public class EventsServiceClient {
                 .compose(new TransformToRepositoryIssueEvent<>(
                         message.repositoryId(),
                         message.issueNumber(),
+                        message.issueOwnerId(),
                         RepositoryIssueEventEvent::newInstance
                 ))
                 .compose(responseRepositoryIssueEventPersistTransformer)
@@ -92,29 +93,29 @@ public class EventsServiceClient {
     }
 
     private boolean shouldStoreEvent(GithubEvent event) {
-        if (event == null) {
+        if (event == null || event.getType() == null) {
             Logger.getGlobal().log(Level.WARNING, "null WTF");
             return false;
         }
-        Logger.getGlobal().log(Level.WARNING, event.getType().name());
         return EVENT_TYPES_TO_BE_STORED.contains(event.getType());
-    }
-
-    private Func3<Boolean, Long, AmazonGetEventsQueueMessage, AmazonGetEventsQueueMessage> buildAmazonGetEventsQueueMessage() {
-        return (isTerminal, nextPage, amazonGetCommentsQueueMessage) -> AmazonGetEventsQueueMessage.create(
-                isTerminal,
-                nextPage,
-                amazonGetCommentsQueueMessage.receiptHandle(),
-                amazonGetCommentsQueueMessage.organisationName(),
-                amazonGetCommentsQueueMessage.sinceOrNull(),
-                amazonGetCommentsQueueMessage.repositoryId(),
-                amazonGetCommentsQueueMessage.repositoryName(),
-                amazonGetCommentsQueueMessage.issueNumber()
-        );
     }
 
     private int pageFrom(QueueMessage message) {
         return Math.toIntExact(message.page());
+    }
+
+    private Func3<Boolean, Long, AmazonGetEventsQueueMessage, AmazonGetEventsQueueMessage> buildAmazonGetEventsQueueMessage() {
+        return (isTerminal, nextPage, amazonGetEventsQueueMessage) -> AmazonGetEventsQueueMessage.create(
+                isTerminal,
+                nextPage,
+                amazonGetEventsQueueMessage.receiptHandle(),
+                amazonGetEventsQueueMessage.organisationName(),
+                amazonGetEventsQueueMessage.sinceOrNull(),
+                amazonGetEventsQueueMessage.repositoryId(),
+                amazonGetEventsQueueMessage.repositoryName(),
+                amazonGetEventsQueueMessage.issueNumber(),
+                amazonGetEventsQueueMessage.issueOwnerId()
+        );
     }
 
 }

@@ -19,9 +19,20 @@ public abstract class AmazonRawQueueMessage {
                                         @Nullable Long page,
                                         @Nullable String repositoryName,
                                         @Nullable Long repositoryId,
-                                        @Nullable Long issueNumber) {
+                                        @Nullable Long issueNumber,
+                                        @Nullable Long issueOwnerId) {
 
-        return new AutoValue_AmazonRawQueueMessage(type, organisationName, since, isTerminal, page, repositoryName, repositoryId, issueNumber);
+        return new AutoValue_AmazonRawQueueMessage(
+                type,
+                organisationName,
+                since,
+                isTerminal,
+                page,
+                repositoryName,
+                repositoryId,
+                issueNumber,
+                issueOwnerId
+        );
     }
 
     public static TypeAdapter<AmazonRawQueueMessage> typeAdapter(Gson gson) {
@@ -53,6 +64,9 @@ public abstract class AmazonRawQueueMessage {
 
     @Nullable
     abstract Long issueNumber();
+
+    @Nullable
+    abstract Long issueOwnerId();
 
     public enum Type {
         @SerializedName("repositories")
@@ -100,6 +114,8 @@ public abstract class AmazonRawQueueMessage {
         public abstract Builder repositoryId(Long repositoryId);
 
         public abstract Builder issueNumber(Long issueNumber);
+
+        public abstract Builder issueOwnerId(Long issueOwnerId);
 
         public abstract AmazonRawQueueMessage build();
 

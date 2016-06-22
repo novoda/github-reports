@@ -28,6 +28,7 @@ public class AmazonQueueMessageConverterTest {
     private static final Long ANY_REPO_ID = 666L;
     private static final String ANY_REPO_NAME = "yolo";
     private static final Long ANY_ISSUE_NUMBER = 42L;
+    private static final Long ANY_ISSUE_OWNER_ID = 123L;
 
     private static final AmazonGetRepositoriesQueueMessage AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE = AmazonGetRepositoriesQueueMessage.create(
             ANY_TERMINAL,
@@ -53,7 +54,8 @@ public class AmazonQueueMessageConverterTest {
             ANY_DATE,
             ANY_REPO_ID,
             ANY_REPO_NAME,
-            ANY_ISSUE_NUMBER
+            ANY_ISSUE_NUMBER,
+            ANY_ISSUE_OWNER_ID
     );
     private static final AmazonGetEventsQueueMessage AMAZON_GET_EVENTS_QUEUE_MESSAGE = AmazonGetEventsQueueMessage.create(
             ANY_TERMINAL,
@@ -63,7 +65,8 @@ public class AmazonQueueMessageConverterTest {
             ANY_DATE,
             ANY_REPO_ID,
             ANY_REPO_NAME,
-            ANY_ISSUE_NUMBER
+            ANY_ISSUE_NUMBER,
+            ANY_ISSUE_OWNER_ID
     );
     private static final AmazonGetReviewCommentsQueueMessage AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE = AmazonGetReviewCommentsQueueMessage.create(
             ANY_TERMINAL,
@@ -73,7 +76,8 @@ public class AmazonQueueMessageConverterTest {
             ANY_DATE,
             ANY_REPO_ID,
             ANY_REPO_NAME,
-            ANY_ISSUE_NUMBER
+            ANY_ISSUE_NUMBER,
+            ANY_ISSUE_OWNER_ID
     );
 
     private AmazonQueueMessageConverter converter;

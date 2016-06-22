@@ -17,7 +17,8 @@ public abstract class AmazonGetReviewCommentsQueueMessage implements AmazonQueue
                                                              @Nullable Date since,
                                                              Long repositoryId,
                                                              String repositoryName,
-                                                             Long issueNumber) {
+                                                             Long issueNumber,
+                                                             Long issueOwnerId) {
 
         return new AutoValue_AmazonGetReviewCommentsQueueMessage(
                 terminal,
@@ -27,7 +28,8 @@ public abstract class AmazonGetReviewCommentsQueueMessage implements AmazonQueue
                 since,
                 repositoryId,
                 repositoryName,
-                issueNumber
+                issueNumber,
+                issueOwnerId
         );
     }
 
