@@ -6,11 +6,11 @@ public class WorkerStartException extends Exception {
         super(e);
     }
 
-    public static WorkerStartException withStatusCode(Integer statusCode) {
-        return new WorkerStartException(String.format("The worker was invoked but failed with status code %s.", statusCode));
+    public WorkerStartException(String message) {
+        super(message);
     }
 
-    private WorkerStartException(String message) {
-        super(message);
+    public static WorkerStartException withStatusCode(Integer statusCode) {
+        return new WorkerStartException(String.format("The worker was invoked but failed with status code %s.", statusCode));
     }
 }

@@ -1,5 +1,6 @@
 package com.novoda.github.reports.lambda.worker;
 
+import com.novoda.github.reports.batch.MessageNotSupportedException;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetCommentsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetEventsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetIssuesQueueMessage;
@@ -11,12 +12,12 @@ import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
 import com.novoda.github.reports.batch.worker.Logger;
 import com.novoda.github.reports.batch.worker.WorkerHandler;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
-import com.novoda.github.reports.lambda.MessageNotSupportedException;
 import com.novoda.github.reports.lambda.issue.CommentsServiceClient;
 import com.novoda.github.reports.lambda.issue.EventsServiceClient;
 import com.novoda.github.reports.lambda.issue.IssuesServiceClient;
 import com.novoda.github.reports.lambda.pullrequest.ReviewCommentsServiceClient;
 import com.novoda.github.reports.lambda.repository.RepositoriesServiceClient;
+import com.novoda.github.reports.service.network.RateLimitEncounteredException;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 
 import java.util.ArrayList;
@@ -40,7 +41,9 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
     }
 
     @Override
-    public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage) throws Throwable {
+    public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage)
+            throws RateLimitEncounteredException, MessageNotSupportedException {
+
         logger.log("Handling the message...");
 
         init(configuration);
@@ -66,17 +69,9 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             throw new MessageNotSupportedException(queueMessage);
         }
 
-        try {
-            List<AmazonQueueMessage> nextMessages = collectDerivedMessagesFrom(nextMessagesObservable);
-            logger.log("Message handled. %d new messages have been generated", nextMessages.size());
-            return nextMessages;
-        } catch (RuntimeException exception) {
-            Throwable cause = exception.getCause();
-            if (cause != null) {
-                throw cause;
-            }
-            throw exception;
-        }
+        List<AmazonQueueMessage> nextMessages = collectDerivedMessagesFrom(nextMessagesObservable);
+        logger.log("Message handled. %d new messages have been generated", nextMessages.size());
+        return nextMessages;
     }
 
     private void init(Configuration configuration) {
@@ -105,7 +100,9 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
         return DatabaseCredentialsReader.newInstance(databaseProperties);
     }
 
-    private ArrayList<AmazonQueueMessage> collectDerivedMessagesFrom(Observable<AmazonQueueMessage> nextMessagesObservable) {
+    private ArrayList<AmazonQueueMessage> collectDerivedMessagesFrom(Observable<AmazonQueueMessage> nextMessagesObservable)
+            throws RateLimitEncounteredException {
+
         return nextMessagesObservable
                 .collect(ArrayList<AmazonQueueMessage>::new, ArrayList::add)
                 .toBlocking()
