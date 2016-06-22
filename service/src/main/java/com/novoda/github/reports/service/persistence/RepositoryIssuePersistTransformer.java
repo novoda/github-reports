@@ -17,8 +17,8 @@ import rx.Observable;
 
 public class RepositoryIssuePersistTransformer implements ComposedPersistTransformer<RepositoryIssue> {
 
-    private final PersistUserTransformer persistUserTransformer;
-    private final PersistIssueTransformer persistIssueTransformer;
+    private final PersistTransformer<RepositoryIssue, User> persistUserTransformer;
+    private final PersistTransformer<RepositoryIssue, Event> persistIssueTransformer;
 
     public static RepositoryIssuePersistTransformer newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager(databaseCredentialsReader);
@@ -33,17 +33,18 @@ public class RepositoryIssuePersistTransformer implements ComposedPersistTransfo
     private static RepositoryIssuePersistTransformer buildRepositoryIssuePersistTransformer(ConnectionManager connectionManager) {
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssue, User> userConverter = UserConverter.newInstance();
-        PersistUserTransformer persistUserTransformer = PersistUserTransformer.newInstance(userDataLayer, userConverter);
+        PersistTransformer<RepositoryIssue, User> persistUserTransformer = PersistUserTransformer.newInstance(userDataLayer, userConverter);
 
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssue, Event> issueConverter = IssueConverter.newInstance();
-        PersistIssueTransformer persistIssueTransformer = PersistIssueTransformer.newInstance(eventDataLayer, issueConverter);
+        PersistTransformer<RepositoryIssue, Event> persistIssueTransformer = PersistIssueTransformer.newInstance(eventDataLayer, issueConverter);
 
         return new RepositoryIssuePersistTransformer(persistUserTransformer, persistIssueTransformer);
     }
 
+    RepositoryIssuePersistTransformer(PersistTransformer<RepositoryIssue, User> persistUserTransformer,
+                                      PersistTransformer<RepositoryIssue, Event> persistIssueTransformer) {
 
-    RepositoryIssuePersistTransformer(PersistUserTransformer persistUserTransformer, PersistIssueTransformer persistIssueTransformer) {
         this.persistUserTransformer = persistUserTransformer;
         this.persistIssueTransformer = persistIssueTransformer;
     }

@@ -4,8 +4,10 @@ import com.novoda.github.reports.batch.aws.queue.AmazonGetCommentsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
+import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
 import com.novoda.github.reports.service.issue.GithubIssueService;
 import com.novoda.github.reports.service.issue.IssueService;
+import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
@@ -19,7 +21,7 @@ public class CommentsServiceClient {
 
     private final IssueService issueService;
     private final DateToISO8601Converter dateConverter;
-    private final ResponseRepositoryIssueEventPersistTransformer responseRepositoryIssueEventPersistTransformer;
+    private final ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer;
 
     public static CommentsServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();

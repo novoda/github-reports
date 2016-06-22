@@ -7,6 +7,8 @@ import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.issue.NextMessagesIssueEventTransformer;
 import com.novoda.github.reports.lambda.issue.ResponseRepositoryIssueEventPersistTransformer;
 import com.novoda.github.reports.lambda.issue.TransformToRepositoryIssueEvent;
+import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
+import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
@@ -22,7 +24,7 @@ public class ReviewCommentsServiceClient {
 
     private final PullRequestService pullRequestService;
     private final DateToISO8601Converter dateConverter;
-    private final ResponseRepositoryIssueEventPersistTransformer responseRepositoryIssueEventPersistTransformer;
+    private final ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer;
 
     public static ReviewCommentsServiceClient newInstance() {
         PullRequestService pullRequestService = GithubPullRequestService.newInstance();
