@@ -8,7 +8,7 @@ public class DatabaseCredentialsReader {
 
     public static final String PROPERTY_USERNAME = "user";
     public static final String PROPERTY_PASSWORD = "password";
-    public static final String DATABASE_PROPERTIES_FILENAME = "database.credentials";
+    private static final String DATABASE_PROPERTIES_FILENAME = "database.credentials";
 
     public static final String USER_KEY = "DB_USER";
     public static final String PASSWORD_KEY = "DB_PASSWORD";
