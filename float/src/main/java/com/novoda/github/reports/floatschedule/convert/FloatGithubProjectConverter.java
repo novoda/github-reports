@@ -27,17 +27,20 @@ public class FloatGithubProjectConverter {
     @Nullable
     public String getFloatProject(String repositoryName) throws IOException {
         readIfNeeded();
-
-        String lowerCaseRepository = repositoryName.toLowerCase(Locale.UK);
-
         final String[] match = { null };
-        projectsToRepositories.forEach((floatProject, repositories) -> {
-            if (repositories.contains(lowerCaseRepository)) {
-                match[0] = floatProject;
-            }
-        });
-
+        projectsToRepositories.entrySet()
+                .stream()
+                .filter(entry -> containsIgnoreCase(repositoryName, entry.getValue()))
+                .findFirst()
+                .ifPresent(entry -> match[0] = entry.getKey());
         return match[0];
+    }
+
+    private boolean containsIgnoreCase(String target, List<String> list) {
+        return list.stream()
+                .filter(target::equalsIgnoreCase)
+                .findFirst()
+                .orElse(null) != null;
     }
 
     private void readIfNeeded() throws IOException {
