@@ -79,31 +79,37 @@ public class BasicWorker<
             alarmService.removeAlarm(alarmName);
         }
 
+        try {
+            doWorkAndHandleErrors(configuration);
+        } catch (Throwable throwable) {
+            handleAnyOtherException(configuration, throwable);
+        }
+    }
+
+    private void doWorkAndHandleErrors(C configuration) throws
+            NotifierOperationFailedException,
+            WorkerOperationFailedException,
+            WorkerStartException {
+
         Q queue = null;
 
         try {
-            try {
-                queue = getQueue(configuration);
-                M queueMessage = getItem(queue);
-                List<M> newMessages = handleQueueMessage(configuration, queueMessage);
-                updateQueue(queue, queueMessage, newMessages);
-                rescheduleImmediately(configuration);
-            } catch (EmptyQueueException emptyQueue) {
-                handleEmptyQueueException(configuration, queue);
-            } catch (MessageConverterException e) {
-                handleMessageConverterException(configuration, e);
-            } catch (RateLimitEncounteredException e) {
-                handleRateLimitEncounteredException(configuration, e);
-            } catch (QueueOperationFailedException e) {
-                handleQueueOperationFailedException(configuration, e);
-            } catch (Throwable t) {
-                handleAnyOtherException(configuration, queue, t);
-            }
-        } catch (Throwable throwable) {
-            handleAnyOtherException(configuration, queue, throwable);
+            queue = getQueue(configuration);
+            M queueMessage = getItem(queue);
+            List<M> newMessages = handleQueueMessage(configuration, queueMessage);
+            updateQueue(queue, queueMessage, newMessages);
+            rescheduleImmediately(configuration);
+        } catch (EmptyQueueException emptyQueue) {
+            handleEmptyQueueException(configuration, queue);
+        } catch (MessageConverterException e) {
+            handleMessageConverterException(configuration, e);
+        } catch (RateLimitEncounteredException e) {
+            handleRateLimitEncounteredException(configuration, e);
+        } catch (QueueOperationFailedException e) {
+            handleQueueOperationFailedException(configuration, e);
+        } catch (Throwable t) {
+            handleAnyOtherException(configuration, t);
         }
-
-        logger.log("COMPLETED.");
     }
 
     private Q getQueue(C configuration) {
@@ -195,7 +201,7 @@ public class BasicWorker<
         workerService.startWorker(configuration);
     }
 
-    private void handleAnyOtherException(C configuration, Q queue, Throwable throwable) {
+    private void handleAnyOtherException(C configuration, Throwable throwable) {
         logger.log("There was an unhandled error which terminated the job:\n%s", throwable);
 
         try {
