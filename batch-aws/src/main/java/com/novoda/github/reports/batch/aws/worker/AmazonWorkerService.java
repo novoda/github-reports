@@ -8,7 +8,9 @@ import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.batch.aws.configuration.AmazonConfigurationConverter;
 import com.novoda.github.reports.batch.aws.configuration.ConfigurationConverterException;
 import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsReader;
-import com.novoda.github.reports.batch.worker.Logger;
+import com.novoda.github.reports.batch.logger.DefaultLogger;
+import com.novoda.github.reports.batch.logger.Logger;
+import com.novoda.github.reports.batch.logger.LoggerHandler;
 import com.novoda.github.reports.batch.worker.WorkerService;
 import com.novoda.github.reports.batch.worker.WorkerStartException;
 
@@ -23,9 +25,14 @@ public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
 
     public static AmazonWorkerService newInstance(AmazonCredentialsReader amazonCredentialsReader,
                                                   LambdaPropertiesReader lambdaPropertiesReader,
-                                                  Logger logger) {
+                                                  LoggerHandler lambdaLoggerHandler) {
 
-        return new AmazonWorkerService(amazonCredentialsReader, lambdaPropertiesReader, logger, AmazonConfigurationConverter.newInstance());
+        return new AmazonWorkerService(
+                amazonCredentialsReader,
+                lambdaPropertiesReader,
+                DefaultLogger.newInstance(lambdaLoggerHandler),
+                AmazonConfigurationConverter.newInstance()
+        );
     }
 
     private AmazonWorkerService(AmazonCredentialsReader amazonCredentialsReader,
@@ -41,7 +48,7 @@ public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
 
     @Override
     public void startWorker(AmazonConfiguration configuration) throws WorkerStartException {
-        logger.log("Starting a new worker instance asynchronously...");
+        logger.info("Starting a new worker instance asynchronously...");
 
         String rawConfiguration = getConfigurationAsJson(configuration);
 
@@ -53,11 +60,11 @@ public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
         InvokeResult invokeResult = awsLambdaClient.invoke(invokeRequest);
         Integer statusCode = invokeResult.getStatusCode();
         if (statusCode != SUCCESSFUL_INVOKE_RESULT_CODE) {
-            logger.log("Could not start a new worker instance, status code %d.", statusCode);
+            logger.error("Could not start a new worker instance, status code %d.", statusCode);
             throw WorkerStartException.withStatusCode(statusCode);
         }
 
-        logger.log("New worker instance started asynchronously.");
+        logger.info("New worker instance started asynchronously.");
     }
 
     private String getConfigurationAsJson(AmazonConfiguration configuration) throws WorkerStartException {

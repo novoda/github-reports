@@ -13,7 +13,7 @@ import com.novoda.github.reports.batch.queue.EmptyQueueException;
 import com.novoda.github.reports.batch.queue.MessageConverterException;
 import com.novoda.github.reports.batch.queue.Queue;
 import com.novoda.github.reports.batch.queue.QueueOperationFailedException;
-import com.novoda.github.reports.batch.worker.Logger;
+import com.novoda.github.reports.batch.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +45,7 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
 
     @Override
     public AmazonQueueMessage getItem() throws EmptyQueueException, MessageConverterException {
-        logger.log("Getting first item from queue...");
+        logger.debug("Getting first item from queue...");
 
         ReceiveMessageRequest receiveMessageRequest = getReceiveMessageRequest(queueUrl);
         List<Message> messages = amazonSQSClient.receiveMessage(receiveMessageRequest).getMessages();
@@ -57,7 +57,7 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
         Message message = messages.get(0);
         AmazonQueueMessage item = amazonQueueMessageConverter.fromMessage(message);
 
-        logger.log("Got item:\n%s", item);
+        logger.info("Got item:\n%s", item);
 
         return item;
     }
@@ -72,7 +72,7 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
     @Override
     public List<AmazonQueueMessage> addItems(List<AmazonQueueMessage> queueMessages) throws QueueOperationFailedException {
         int size = queueMessages.size();
-        logger.log("Adding %d new items in the queue...", size);
+        logger.debug("Adding %d new items in the queue...", size);
 
         List<List<SendMessageBatchRequestEntry>> queueMessageBatches = bufferQueueMessagesAsBatches(queueMessages);
 
@@ -80,7 +80,7 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
             sendQueueMessageBatch(queueMessageBatch);
         }
 
-        logger.log("Added %d new items in the queue.", size);
+        logger.debug("Added %d new items in the queue.", size);
 
         return queueMessages;
     }
@@ -148,24 +148,24 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
 
     @Override
     public AmazonQueueMessage removeItem(AmazonQueueMessage queueMessage) {
-        logger.log("Removing item from the queue...");
+        logger.debug("Removing item from the queue...");
 
         DeleteMessageRequest deleteMessageRequest = new DeleteMessageRequest()
                 .withQueueUrl(queueUrl)
                 .withReceiptHandle(queueMessage.receiptHandle());
         amazonSQSClient.deleteMessage(deleteMessageRequest);
 
-        logger.log("Removed item:\n%s", queueMessage);
+        logger.debug("Removed item:\n%s", queueMessage);
 
         return queueMessage;
     }
 
     @Override
     public void purgeQueue() {
-        logger.log("Purging the queue...");
+        logger.debug("Purging the queue...");
         PurgeQueueRequest purgeQueueRequest = new PurgeQueueRequest().withQueueUrl(queueUrl);
         amazonSQSClient.purgeQueue(purgeQueueRequest);
-        logger.log("Queue purged.");
+        logger.debug("Queue purged.");
     }
 
     String getName() {

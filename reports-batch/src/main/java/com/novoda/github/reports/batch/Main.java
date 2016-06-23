@@ -3,9 +3,9 @@ package com.novoda.github.reports.batch;
 import com.beust.jcommander.JCommander;
 import com.novoda.github.reports.batch.command.AwsBatchOptions;
 import com.novoda.github.reports.batch.command.LocalBatchOptions;
+import com.novoda.github.reports.batch.handler.AwsBombCommandHandler;
 import com.novoda.github.reports.batch.handler.AwsNewCommandHandler;
 import com.novoda.github.reports.batch.handler.AwsResumeCommandHandler;
-import com.novoda.github.reports.batch.handler.AwsBombCommandHandler;
 import com.novoda.github.reports.batch.handler.LocalCommandHandler;
 import com.novoda.github.reports.data.db.LogHelper;
 

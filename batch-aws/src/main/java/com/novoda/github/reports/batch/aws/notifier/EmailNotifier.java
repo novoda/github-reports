@@ -4,7 +4,7 @@ import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.batch.aws.configuration.EmailNotifierConfiguration;
 import com.novoda.github.reports.batch.notifier.Notifier;
 import com.novoda.github.reports.batch.notifier.NotifierOperationFailedException;
-import com.novoda.github.reports.batch.worker.Logger;
+import com.novoda.github.reports.batch.logger.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -36,16 +36,16 @@ class EmailNotifier implements Notifier<EmailNotifierConfiguration, AmazonConfig
 
     @Override
     public void notifyCompletion(AmazonConfiguration configuration) throws NotifierOperationFailedException {
-        logger.log("Notifying completion...");
+        logger.info("Notifying completion...");
         sendEmail(configuration, COMPLETION_SUBJECT, COMPLETION_BODY);
-        logger.log("Completion notified.");
+        logger.info("Completion notified.");
     }
 
     @Override
     public void notifyError(AmazonConfiguration configuration, Throwable throwable) throws NotifierOperationFailedException {
-        logger.log("Notifying error: %s", throwable);
+        logger.warn("Notifying error: %s", throwable);
         sendEmail(configuration, ERROR_SUBJECT, getErrorBody(throwable));
-        logger.log("Error notified.");
+        logger.warn("Error notified.");
     }
 
     private String getErrorBody(Throwable throwable) {
