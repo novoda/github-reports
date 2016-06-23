@@ -2,7 +2,7 @@ package com.novoda.github.reports.service.network;
 
 import java.util.Date;
 
-public class RateLimitEncounteredException extends Throwable {
+public class RateLimitEncounteredException extends RuntimeException {
 
     private final Date resetDate;
 

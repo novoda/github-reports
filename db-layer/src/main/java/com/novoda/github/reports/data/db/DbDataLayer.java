@@ -14,7 +14,7 @@ import org.jooq.InsertOnDuplicateSetMoreStep;
 import org.jooq.Query;
 import org.jooq.Record;
 
-abstract class DbDataLayer<T, D extends Record> implements DataLayer<T> {
+public abstract class DbDataLayer<T, D extends Record> implements DataLayer<T> {
 
     private final ConnectionManager connectionManager;
 
