@@ -3,7 +3,6 @@ package com.novoda.github.reports.floatschedule.convert;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
@@ -50,6 +49,12 @@ public class FloatGithubUserConverter {
     @Nullable
     public String getGithubUser(String floatName) throws IOException {
         readIfNeeded();
-        return floatToGithubUsers.get(floatName.toLowerCase(Locale.UK));
+        final String[] match = { null };
+        floatToGithubUsers.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().equalsIgnoreCase(floatName))
+                .findFirst()
+                .ifPresent(entry -> match[0] = entry.getValue());
+        return match[0];
     }
 }
