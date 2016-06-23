@@ -3,13 +3,16 @@ package com.novoda.github.reports.floatschedule.convert;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hamcrest.text.IsEqualIgnoringCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+
+
 
 public class FloatGithubUserConverterTest {
 
@@ -36,11 +39,7 @@ public class FloatGithubUserConverterTest {
 
         String actual = floatGithubUserConverter.getFloatUser("github meirinho");
 
-        assertEqualsIgnoreCase("float pirata", actual);
-    }
-
-    private void assertEqualsIgnoreCase(String expected, String actual) {
-        assertTrue(expected.equalsIgnoreCase(actual));
+        assertThat("float pirata", IsEqualIgnoringCase.equalToIgnoringCase(actual));
     }
 
     @Test
@@ -48,6 +47,6 @@ public class FloatGithubUserConverterTest {
 
         String actual = floatGithubUserConverter.getGithubUser("float pirata");
 
-        assertEqualsIgnoreCase("github meirinho", actual);
+        assertThat("github meirinho", IsEqualIgnoringCase.equalToIgnoringCase(actual));
     }
 }
