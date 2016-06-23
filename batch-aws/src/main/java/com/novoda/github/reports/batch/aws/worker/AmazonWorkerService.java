@@ -48,7 +48,7 @@ public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
 
     @Override
     public void startWorker(AmazonConfiguration configuration) throws WorkerStartException {
-        logger.info("Starting a new worker instance asynchronously...");
+        logger.debug("Starting a new worker instance asynchronously...");
 
         String rawConfiguration = getConfigurationAsJson(configuration);
 
@@ -64,7 +64,7 @@ public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
             throw WorkerStartException.withStatusCode(statusCode);
         }
 
-        logger.info("New worker instance started asynchronously.");
+        logger.debug("New worker instance started asynchronously.");
     }
 
     private String getConfigurationAsJson(AmazonConfiguration configuration) throws WorkerStartException {
