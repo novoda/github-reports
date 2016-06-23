@@ -21,11 +21,11 @@ dependencies {
     compile project(':core')
     compile project(':db-layer')
 
-    compile 'joda-time:joda-time:2.9.3'
+    compile 'joda-time:joda-time:2.9.4'
     compile 'com.beust:jcommander:1.48'
 
     testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.0.53-beta'
+    testCompile 'org.mockito:mockito-core:2.0.71-beta'
 }
 
 jar {
