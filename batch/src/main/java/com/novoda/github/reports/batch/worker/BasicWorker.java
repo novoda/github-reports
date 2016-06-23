@@ -207,9 +207,10 @@ public class BasicWorker<
         }
 
         hasRescheduled = true;
-        logger.info("Restarting this worker...");
         configuration = configuration.withNoAlarmName();
         workerService.startWorker(configuration);
+
+        logger.info("New worker instance started.");
     }
 
     private void handleAnyOtherException(C configuration, Throwable throwable) {
