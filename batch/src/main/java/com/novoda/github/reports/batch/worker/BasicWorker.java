@@ -195,13 +195,13 @@ public class BasicWorker<
         workerService.startWorker(configuration);
     }
 
-    private void handleAnyOtherException(C configuration, Q queue, Throwable t) {
-        logger.log("There was an unhandled error which terminated the job:\n%s", t);
+    private void handleAnyOtherException(C configuration, Q queue, Throwable throwable) {
+        logger.log("There was an unhandled error which terminated the job:\n%s", throwable);
 
         try {
-            notifyError(configuration, t);
-        } catch (NotifierOperationFailedException e) {
-            e.printStackTrace();
+            notifyError(configuration, throwable);
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
