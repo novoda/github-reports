@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hamcrest.text.IsEqualIgnoringCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -27,7 +29,7 @@ public class FloatGithubProjectConverterTest {
         initMocks(this);
 
         mapFromReader = new HashMap<>(1);
-        mapFromReader.put("float", Arrays.asList("repo1", "repo2"));
+        mapFromReader.put("Float", Arrays.asList("repo1", "repo2"));
         when(mockJsonMapReader.readFromResource("projects.json")).thenReturn(mapFromReader);
 
         floatGithubProjectConverter = new FloatGithubProjectConverter(mockJsonMapReader);
@@ -38,7 +40,7 @@ public class FloatGithubProjectConverterTest {
 
         String actual = floatGithubProjectConverter.getFloatProject("repo2");
 
-        assertEquals("float", actual);
+        assertThat("float", IsEqualIgnoringCase.equalToIgnoringCase(actual));
     }
 
     @Test
