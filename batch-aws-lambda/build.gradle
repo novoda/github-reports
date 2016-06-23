@@ -29,7 +29,7 @@ dependencies {
 }
 
 jar {
-    exclude '*.properties.sample'
+    exclude '*.sample'
 }
 
 task zip(type: Zip) {
@@ -38,6 +38,7 @@ task zip(type: Zip) {
     into('lib') {
         from configurations.runtime
     }
+    exclude '*.sample'
 }
 
 task uploadLambda(type: AWSLambdaMigrateFunctionTask, dependsOn: zip) {
@@ -46,5 +47,6 @@ task uploadLambda(type: AWSLambdaMigrateFunctionTask, dependsOn: zip) {
     zipFile = zip.archivePath
     handler = 'com.novoda.github.reports.lambda.Lambda::handle'
     runtime = Runtime.Java8
+    memorySize = 256
     timeout = 300
 }

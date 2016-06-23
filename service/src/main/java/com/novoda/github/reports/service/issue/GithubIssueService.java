@@ -3,6 +3,7 @@ package com.novoda.github.reports.service.issue;
 import com.novoda.github.reports.service.network.GithubApiService;
 import com.novoda.github.reports.service.network.GithubCachingServiceContainer;
 import com.novoda.github.reports.service.network.GithubServiceContainer;
+import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 
 import java.util.List;
 
@@ -17,6 +18,11 @@ public class GithubIssueService implements IssueService {
 
     public static IssueService newInstance() {
         GithubApiService githubApiService = GithubServiceContainer.getGithubService();
+        return new GithubIssueService(githubApiService);
+    }
+
+    public static IssueService newInstance(GithubCredentialsReader githubCredentialsReader) {
+        GithubApiService githubApiService = GithubServiceContainer.getGithubService(githubCredentialsReader);
         return new GithubIssueService(githubApiService);
     }
 

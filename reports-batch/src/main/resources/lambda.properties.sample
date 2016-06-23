@@ -1,1 +1,1 @@
-AWS_LAMBDA_NAME=github-reports-lambda
+AWS_LAMBDA_ARN=github-reports-lambda
