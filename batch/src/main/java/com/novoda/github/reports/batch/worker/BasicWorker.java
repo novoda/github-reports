@@ -101,14 +101,14 @@ public class BasicWorker<
             rescheduleImmediately(configuration);
         } catch (EmptyQueueException emptyQueue) {
             handleEmptyQueueException(configuration, queue);
-        } catch (MessageConverterException e) {
-            handleMessageConverterException(configuration, e);
-        } catch (RateLimitEncounteredException e) {
-            handleRateLimitEncounteredException(configuration, e);
-        } catch (QueueOperationFailedException e) {
-            handleQueueOperationFailedException(configuration, e);
-        } catch (Throwable t) {
-            handleAnyOtherException(configuration, t);
+        } catch (MessageConverterException messageConversionError) {
+            handleMessageConverterException(configuration, messageConversionError);
+        } catch (RateLimitEncounteredException rateLimitError) {
+            handleRateLimitEncounteredException(configuration, rateLimitError);
+        } catch (QueueOperationFailedException queueOperationFail) {
+            handleQueueOperationFailedException(configuration, queueOperationFail);
+        } catch (Throwable anyOtherError) {
+            handleAnyOtherException(configuration, anyOtherError);
         }
     }
 
@@ -206,8 +206,8 @@ public class BasicWorker<
 
         try {
             notifyError(configuration, throwable);
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Throwable notificationError) {
+            notificationError.printStackTrace();
         }
     }
 
