@@ -5,7 +5,7 @@ import com.novoda.github.reports.batch.aws.configuration.EmailNotifierConfigurat
 import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
 import com.novoda.github.reports.batch.configuration.GithubConfiguration;
 import com.novoda.github.reports.batch.notifier.NotifierOperationFailedException;
-import com.novoda.github.reports.batch.worker.Logger;
+import com.novoda.github.reports.batch.logger.Logger;
 
 import java.util.Arrays;
 import java.util.List;

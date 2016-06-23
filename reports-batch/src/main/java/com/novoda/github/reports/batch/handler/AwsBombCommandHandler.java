@@ -1,11 +1,10 @@
 package com.novoda.github.reports.batch.handler;
 
-import com.novoda.github.reports.batch.aws.LocalLogger;
 import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsReader;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueue;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueService;
 import com.novoda.github.reports.batch.command.AwsBatchOptions;
-import com.novoda.github.reports.batch.worker.Logger;
+import com.novoda.github.reports.batch.logger.DefaultLoggerHandler;
 
 public class AwsBombCommandHandler implements CommandHandler<AwsBatchOptions> {
 
@@ -13,8 +12,8 @@ public class AwsBombCommandHandler implements CommandHandler<AwsBatchOptions> {
 
     public static AwsBombCommandHandler newInstance() {
         AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance();
-        Logger logger = LocalLogger.newInstance(AwsBombCommandHandler.class);
-        return new AwsBombCommandHandler(AmazonQueueService.newInstance(amazonCredentialsReader, logger));
+        DefaultLoggerHandler loggerHandler = new DefaultLoggerHandler();
+        return new AwsBombCommandHandler(AmazonQueueService.newInstance(amazonCredentialsReader, loggerHandler));
     }
 
     private AwsBombCommandHandler(AmazonQueueService queueService) {

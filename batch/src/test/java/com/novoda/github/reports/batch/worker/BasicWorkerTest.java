@@ -4,6 +4,7 @@ import com.novoda.github.reports.batch.alarm.Alarm;
 import com.novoda.github.reports.batch.alarm.AlarmService;
 import com.novoda.github.reports.batch.configuration.Configuration;
 import com.novoda.github.reports.batch.configuration.NotifierConfiguration;
+import com.novoda.github.reports.batch.logger.Logger;
 import com.novoda.github.reports.batch.notifier.Notifier;
 import com.novoda.github.reports.batch.notifier.NotifierOperationFailedException;
 import com.novoda.github.reports.batch.notifier.NotifierService;

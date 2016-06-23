@@ -14,7 +14,9 @@ import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.batch.aws.configuration.AmazonConfigurationConverter;
 import com.novoda.github.reports.batch.aws.configuration.ConfigurationConverterException;
 import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsReader;
-import com.novoda.github.reports.batch.worker.Logger;
+import com.novoda.github.reports.batch.logger.DefaultLogger;
+import com.novoda.github.reports.batch.logger.Logger;
+import com.novoda.github.reports.batch.logger.LoggerHandler;
 import com.novoda.github.reports.util.SystemClock;
 
 public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfiguration> {
@@ -28,18 +30,25 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
     private final SystemClock systemClock;
     private final Logger logger;
 
-    public static AmazonAlarmService newInstance(AmazonCredentialsReader amazonCredentialsReader, Logger logger) {
+    public static AmazonAlarmService newInstance(AmazonCredentialsReader amazonCredentialsReader, LoggerHandler loggerHandler) {
         AWSCredentials awsCredentials = amazonCredentialsReader.getAWSCredentials();
         AmazonConfigurationConverter amazonConfigurationConverter = AmazonConfigurationConverter.newInstance();
         AmazonCloudWatchEventsClient amazonEventsClient = new AmazonCloudWatchEventsClient(awsCredentials);
         SystemClock systemClock = SystemClock.newInstance();
-        return new AmazonAlarmService(amazonConfigurationConverter, amazonEventsClient, systemClock, logger);
+
+        return new AmazonAlarmService(
+                amazonConfigurationConverter,
+                amazonEventsClient,
+                systemClock,
+                DefaultLogger.newInstance(loggerHandler)
+        );
     }
 
     private AmazonAlarmService(AmazonConfigurationConverter amazonConfigurationConverter,
                                AmazonCloudWatchEventsClient amazonEventsClient,
                                SystemClock systemClock,
                                Logger logger) {
+
         this.amazonConfigurationConverter = amazonConfigurationConverter;
         this.amazonEventsClient = amazonEventsClient;
         this.systemClock = systemClock;
@@ -48,12 +57,12 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
 
     @Override
     public AmazonAlarm createNewAlarm(long minutes, String jobName, String workerName) {
-        logger.log("Creating new alarm in %d minutes for %s...", minutes, jobName);
+        logger.debug("Creating new alarm in %d minutes for %s...", minutes, jobName);
         String alarmName = createNewAlarmName(jobName);
 
         AmazonAlarm alarm = AmazonAlarm.newInstance(minutes, alarmName, workerName);
 
-        logger.log("Alarm created with name \"%s\".", alarmName);
+        logger.debug("Alarm created with name \"%s\".", alarmName);
 
         return alarm;
     }
@@ -65,11 +74,11 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
     @Override
     public AmazonAlarm postAlarm(AmazonAlarm alarm, AmazonConfiguration configuration) throws AlarmOperationFailedException {
         String alarmName = alarm.getName();
-        logger.log("Saving alarm with name \"%s\"...", alarmName);
+        logger.debug("Saving alarm with name \"%s\"...", alarmName);
         try {
             saveRule(alarm);
             addTargetToRule(alarm, configuration);
-            logger.log("Alarm \"%s\" saved.", alarmName);
+            logger.debug("Alarm \"%s\" saved.", alarmName);
         } catch (Exception e) {
             throw new AlarmOperationFailedException("postAlarm", e);
         }
@@ -122,10 +131,10 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
 
     @Override
     public String removeAlarm(String alarmName) {
-        logger.log("Removing alarm \"%s\"...", alarmName);
+        logger.debug("Removing alarm \"%s\"...", alarmName);
         removeTargetFromRule(alarmName);
         removeRule(alarmName);
-        logger.log("The alarm \"%s\" has been removed.", alarmName);
+        logger.debug("The alarm \"%s\" has been removed.", alarmName);
         return alarmName;
     }
 
