@@ -10,25 +10,37 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class JsonMapReader {
+class JsonMapReader<T> {
 
     private static final String DELIMITER = "\n";
 
     private final Gson gson;
+    private final Class<T> classOfT;
 
-    public static JsonMapReader newInstance() {
-        return new JsonMapReader(new Gson());
+    @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "unchecked"})
+    static JsonMapReader<Map<String,String>> newStringToStringInstance() {
+        Map<String, String> map = new HashMap<>(0);
+        Class mapClass = map.getClass();
+        return new JsonMapReader<>(new Gson(), mapClass);
     }
 
-    JsonMapReader(Gson gson) {
+    @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "unchecked"})
+    static JsonMapReader<Map<String, List<String>>> newStringToListOfStringsInstance() {
+        Map<String, List<String>> map = new HashMap<>(0);
+        Class mapClass = map.getClass();
+        return new JsonMapReader<>(new Gson(), mapClass);
+    }
+
+    JsonMapReader(Gson gson, Class<T> classOfT) {
         this.gson = gson;
+        this.classOfT = classOfT;
     }
 
-    public Map<String, String> readFromResource(String fileName) throws URISyntaxException, IOException  {
-
+    T readFromResource(String fileName) throws URISyntaxException, IOException {
         URL url = JsonMapReader.class.getClassLoader().getResource(fileName);
         if (url == null) {
             throw new FileNotFoundException(fileName + " was not found in the resources directory.");
@@ -37,9 +49,7 @@ public class JsonMapReader {
         Path path = Paths.get(url.toURI());
         String content = Files.lines(path).collect(Collectors.joining(DELIMITER));
 
-        Map<String, String> map = new HashMap<>(0);
-        return gson.fromJson(content, map.getClass());
+        return gson.fromJson(content, classOfT);
     }
-
 
 }
