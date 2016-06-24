@@ -1,6 +1,5 @@
 package com.novoda.github.reports.batch.handler;
 
-import com.novoda.github.reports.batch.aws.LocalLogger;
 import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.batch.aws.configuration.EmailNotifierConfiguration;
 import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsReader;
@@ -10,13 +9,15 @@ import com.novoda.github.reports.batch.aws.worker.LambdaPropertiesReader;
 import com.novoda.github.reports.batch.command.AwsBatchOptions;
 import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
 import com.novoda.github.reports.batch.configuration.GithubConfiguration;
-import com.novoda.github.reports.batch.worker.Logger;
+import com.novoda.github.reports.batch.logger.DefaultLogger;
+import com.novoda.github.reports.batch.logger.DefaultLoggerHandler;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 
 public class AwsResumeCommandHandler implements CommandHandler<AwsBatchOptions> {
 
     private static final String NO_ALARM_NAME = null;
+    private static DefaultLogger logger;
 
     private final DatabaseCredentialsReader databaseCredentialsReader;
     private final GithubCredentialsReader githubCredentialsReader;
@@ -26,13 +27,14 @@ public class AwsResumeCommandHandler implements CommandHandler<AwsBatchOptions> 
     public static AwsResumeCommandHandler newInstance() {
         AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance();
         LambdaPropertiesReader lambdaPropertiesReader = LambdaPropertiesReader.newInstance();
-        Logger logger = LocalLogger.newInstance(AwsResumeCommandHandler.class);
+        DefaultLoggerHandler loggerHandler = new DefaultLoggerHandler();
+        logger = DefaultLogger.newInstance(loggerHandler);
 
         return new AwsResumeCommandHandler(
                 DatabaseCredentialsReader.newInstance(),
                 GithubCredentialsReader.newInstance(),
                 EmailCredentialsReader.newInstance(),
-                AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader, logger)
+                AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader, loggerHandler)
         );
     }
 
@@ -53,6 +55,7 @@ public class AwsResumeCommandHandler implements CommandHandler<AwsBatchOptions> 
         AmazonConfiguration initialConfiguration = getInitialConfiguration(options, jobName);
 
         workerService.startWorker(initialConfiguration);
+        logger.info("Process restarted on lamda for queue %s.", jobName);
     }
 
     private AmazonConfiguration getInitialConfiguration(AwsBatchOptions options, String jobName) {

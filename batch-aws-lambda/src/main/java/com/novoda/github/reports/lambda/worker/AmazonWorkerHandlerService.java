@@ -1,7 +1,9 @@
 package com.novoda.github.reports.lambda.worker;
 
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
-import com.novoda.github.reports.batch.worker.Logger;
+import com.novoda.github.reports.batch.logger.DefaultLogger;
+import com.novoda.github.reports.batch.logger.Logger;
+import com.novoda.github.reports.batch.logger.LoggerHandler;
 import com.novoda.github.reports.batch.worker.WorkerHandler;
 import com.novoda.github.reports.batch.worker.WorkerHandlerService;
 
@@ -9,8 +11,8 @@ public class AmazonWorkerHandlerService implements WorkerHandlerService<AmazonQu
 
     private final Logger logger;
 
-    public static AmazonWorkerHandlerService newInstance(Logger logger) {
-        return new AmazonWorkerHandlerService(logger);
+    public static AmazonWorkerHandlerService newInstance(LoggerHandler loggerHandler) {
+        return new AmazonWorkerHandlerService(DefaultLogger.newInstance(loggerHandler));
     }
 
     private AmazonWorkerHandlerService(Logger logger) {
@@ -19,9 +21,9 @@ public class AmazonWorkerHandlerService implements WorkerHandlerService<AmazonQu
 
     @Override
     public WorkerHandler<AmazonQueueMessage> getWorkerHandler() {
-        logger.log("Getting worker handler...");
+        logger.debug("Getting worker handler...");
         WorkerHandler<AmazonQueueMessage> workerHandler = new AmazonWorkerHandler(logger);
-        logger.log("Got worker handler.");
+        logger.debug("Got worker handler.");
 
         return workerHandler;
     }
