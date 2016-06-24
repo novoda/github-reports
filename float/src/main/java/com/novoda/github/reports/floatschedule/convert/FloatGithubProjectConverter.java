@@ -34,17 +34,6 @@ public class FloatGithubProjectConverter {
         return match[0];
     }
 
-    private void readIfNeeded() throws IOException {
-        if (fileContentsAlreadyRead()) {
-            return;
-        }
-        try {
-            projectToRepositories = jsonMapReader.readFromResource("projects.json");
-        } catch (URISyntaxException | IOException e) {
-            throw new IOException("Could not read users from file.");
-        }
-    }
-
     private boolean fileContentsAlreadyRead() {
         return projectToRepositories != null;
     }
@@ -59,5 +48,16 @@ public class FloatGithubProjectConverter {
     public List<String> getRepositories(String floatProject) throws IOException {
         readIfNeeded();
         return projectToRepositories.get(floatProject.toLowerCase(Locale.UK));
+    }
+
+    private void readIfNeeded() throws IOException {
+        if (fileContentsAlreadyRead()) {
+            return;
+        }
+        try {
+            projectToRepositories = jsonMapReader.readFromResource("projects.json");
+        } catch (URISyntaxException | IOException e) {
+            throw new IOException("Could not read users from file.");
+        }
     }
 }
