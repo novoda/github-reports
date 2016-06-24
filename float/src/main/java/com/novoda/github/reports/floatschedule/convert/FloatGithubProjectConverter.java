@@ -34,12 +34,6 @@ public class FloatGithubProjectConverter {
         return match[0];
     }
 
-    private boolean containsIgnoreCase(String target, List<String> list) {
-        return list.stream()
-                .filter(target::equalsIgnoreCase)
-                .count() > 0;
-    }
-
     private void readIfNeeded() throws IOException {
         if (fileContentsAlreadyRead()) {
             return;
@@ -53,6 +47,12 @@ public class FloatGithubProjectConverter {
 
     private boolean fileContentsAlreadyRead() {
         return projectToRepositories != null;
+    }
+
+    private boolean containsIgnoreCase(String target, List<String> list) {
+        return list.stream()
+                .filter(target::equalsIgnoreCase)
+                .count() > 0;
     }
 
     @Nullable
