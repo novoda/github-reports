@@ -29,7 +29,7 @@ public class DefaultLoggerTest {
 
         logger.info(ANY_MESSAGE);
 
-        verify(loggerHandler).log("[INFO] " + ANY_MESSAGE);
+        verify(loggerHandler).log("[ INFO ] " + ANY_MESSAGE);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class DefaultLoggerTest {
         logger.logAll();
         logger.debug(ANY_MESSAGE);
 
-        verify(loggerHandler).log("[DEBUG] " + ANY_MESSAGE);
+        verify(loggerHandler).log("[ DEBUG ] " + ANY_MESSAGE);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class DefaultLoggerTest {
 
         logger.error(ANY_MESSAGE);
 
-        verify(loggerHandler).log("[ERROR] " + ANY_MESSAGE);
+        verify(loggerHandler).log("[ ERROR ] \u274C  " + ANY_MESSAGE);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class DefaultLoggerTest {
 
         logger.error(ANY_MESSAGE);
 
-        verify(loggerHandler).log("[ERROR] " + ANY_MESSAGE);
+        verify(loggerHandler).log("[ ERROR ] \u274C  " + ANY_MESSAGE);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class DefaultLoggerTest {
 
         logger.warn(ANY_MESSAGE);
 
-        verify(loggerHandler).log("[WARNING] " + ANY_MESSAGE);
+        verify(loggerHandler).log("[ WARNING ] \u26A0  " + ANY_MESSAGE);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class DefaultLoggerTest {
 
         logger.info(ANY_MESSAGE);
 
-        verify(loggerHandler).log("[INFO] " + ANY_MESSAGE);
+        verify(loggerHandler).log("[ INFO ] " + ANY_MESSAGE);
     }
 
     @Test
@@ -103,7 +103,7 @@ public class DefaultLoggerTest {
 
         logger.debug(ANY_MESSAGE);
 
-        verify(loggerHandler).log("[DEBUG] " + ANY_MESSAGE);
+        verify(loggerHandler).log("[ DEBUG ] " + ANY_MESSAGE);
     }
 
     private void verifyDoNotLog() {

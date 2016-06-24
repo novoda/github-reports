@@ -12,8 +12,7 @@ public interface Logger {
     }
 
     default void error(Throwable t) {
-        log(ERROR, t.toString());
-        log(ERROR, t.getMessage());
+        log(ERROR, t.getMessage() + "\n" + t.toString());
     }
 
     default void error(String template, Object... args) {
@@ -41,10 +40,36 @@ public interface Logger {
     void logNone();
 
     enum Level {
-        DEBUG,
-        INFO,
-        WARNING,
-        ERROR
+        DEBUG("DEBUG"),
+        INFO("INFO"),
+        WARNING("WARNING", 0x26A0),
+        ERROR("ERROR", 0x274C);
+
+        private final String levelName;
+        private final String emojiCode;
+
+        Level(String levelName) {
+            this.levelName = levelName;
+            this.emojiCode = null;
+        }
+
+        Level(String levelName, int emojiCode) {
+            this.levelName = levelName;
+            this.emojiCode = StringHelper.emojiToString(emojiCode);
+        }
+
+        @Override
+        public String toString() {
+            return wrapInBrackets(levelName) + getEmojiString();
+        }
+
+        private String wrapInBrackets(String wrapThis) {
+            return "[ " + wrapThis + " ]";
+        }
+
+        private String getEmojiString() {
+            return emojiCode != null ? " " + emojiCode + " " : "";
+        }
     }
 
 }

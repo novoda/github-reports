@@ -18,6 +18,7 @@ import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.batch.queue.QueueOperationFailedException;
 import com.novoda.github.reports.batch.queue.QueueService;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
+import com.novoda.github.reports.util.StringHelper;
 import com.novoda.github.reports.util.SystemClock;
 
 import java.util.List;
@@ -149,9 +150,11 @@ public class BasicWorker<
     }
 
     private void handleEmptyQueueException(C configuration, Q queue) throws NotifierOperationFailedException {
-        logger.info("It looks like the queue is empty.");
+        logger.debug("It looks like the queue is empty.");
+        logger.info(StringHelper.emojiToString(0x2705) + "  Job completed successfully!");
 
         notifyCompletion(configuration);
+        logger.info("Completion notified.");
 
         removeQueue(queueService, queue);
     }

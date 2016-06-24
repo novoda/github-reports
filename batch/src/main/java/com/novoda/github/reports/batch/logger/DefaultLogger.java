@@ -51,6 +51,6 @@ public class DefaultLogger implements Logger {
     }
 
     private String getLogString(Level level, String message) {
-        return String.format("[%s] %s", level.toString(), message);
+        return String.format("%s %s", level.toString(), message);
     }
 }
