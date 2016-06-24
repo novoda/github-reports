@@ -25,4 +25,9 @@ public abstract class AmazonGetRepositoriesQueueMessage implements AmazonQueueMe
         );
     }
 
+    @Override
+    public String toShortString() {
+        return String.format("%s/REPOS %s", organisationName(), getPageAndTerminalString());
+    }
+
 }
