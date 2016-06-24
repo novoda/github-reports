@@ -50,6 +50,4 @@ public class FloatGithubProjectConverterTest {
 
         assertEquals(mapFromReader.get("float"), actual);
     }
-
-
 }
