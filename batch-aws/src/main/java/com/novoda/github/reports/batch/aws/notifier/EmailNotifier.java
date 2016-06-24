@@ -36,9 +36,9 @@ class EmailNotifier implements Notifier<EmailNotifierConfiguration, AmazonConfig
 
     @Override
     public void notifyCompletion(AmazonConfiguration configuration) throws NotifierOperationFailedException {
-        logger.info("Notifying completion...");
+        logger.debug("Notifying completion...");
         sendEmail(configuration, COMPLETION_SUBJECT, COMPLETION_BODY);
-        logger.info("Completion notified.");
+        logger.debug("Completion notified.");
     }
 
     @Override
