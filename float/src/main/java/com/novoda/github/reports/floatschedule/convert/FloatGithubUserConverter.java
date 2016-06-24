@@ -33,17 +33,6 @@ public class FloatGithubUserConverter {
         return match[0];
     }
 
-    private void readIfNeeded() throws IOException {
-        if (fileContentsAlreadyRead()) {
-            return;
-        }
-        try {
-            floatToGithubUser = jsonMapReader.readFromResource("users.json");
-        } catch (URISyntaxException | IOException e) {
-            throw new IOException("Could not read users from file.");
-        }
-    }
-
     private boolean fileContentsAlreadyRead() {
         return floatToGithubUser != null;
     }
@@ -58,5 +47,16 @@ public class FloatGithubUserConverter {
                 .findFirst()
                 .ifPresent(entry -> match[0] = entry.getValue());
         return match[0];
+    }
+
+    private void readIfNeeded() throws IOException {
+        if (fileContentsAlreadyRead()) {
+            return;
+        }
+        try {
+            floatToGithubUser = jsonMapReader.readFromResource("users.json");
+        } catch (URISyntaxException | IOException e) {
+            throw new IOException("Could not read users from file.");
+        }
     }
 }
