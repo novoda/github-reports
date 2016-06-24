@@ -13,9 +13,9 @@ public interface QueueMessage {
     }
 
     default String getTerminalString() {
-        if (!localTerminal()) {
-            return "";
+        if (localTerminal()) {
+            return " is terminal";
         }
-        return " is terminal";
+        return "";
     }
 }
