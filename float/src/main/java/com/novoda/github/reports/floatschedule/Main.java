@@ -13,9 +13,28 @@ public class Main {
 
     public static void main(String[] args) {
 
+        TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
+
         //getPersons();
         //getProjects();
-        getTasks();
+        //getTasks();
+
+        /*
+        TO DO
+            . get tasks for a given user
+            . get projects
+            . determine to which repositories the user is assigned to
+        */
+
+        // . paul requests data for "adam brown"
+        // TODO get "adam brown"'s github handle        -> json file
+        // TODO get "adam brown"'s float projects       -> float api
+        // TODO get projects' repositories              -> json file
+        // we're now ready to hit github-stats
+
+        // 1.
+
+
 
         System.out.println("... DONE!");
 
