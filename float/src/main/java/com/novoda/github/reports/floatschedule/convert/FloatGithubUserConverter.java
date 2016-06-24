@@ -5,6 +5,8 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 public class FloatGithubUserConverter {
 
     private final JsonMapReader<Map<String, String>> jsonMapReader;
@@ -20,7 +22,8 @@ public class FloatGithubUserConverter {
         floatToGithubUser = new HashMap<>();
     }
 
-    public String getFloatUserOrNull(String githubUsername) throws IOException {
+    @Nullable
+    public String getFloatUser(String githubUsername) throws IOException {
         readIfNeeded();
 
         final String[] match = { null };
@@ -43,7 +46,8 @@ public class FloatGithubUserConverter {
         }
     }
 
-    public String getGithubUserOrNull(String floatName) throws IOException {
+    @Nullable
+    public String getGithubUser(String floatName) throws IOException {
         readIfNeeded();
         final String[] match = { null };
         floatToGithubUser.entrySet()
