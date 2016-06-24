@@ -37,7 +37,7 @@ public class FloatGithubUserConverterTest {
     @Test
     public void givenAJsonFileWithUsers_whenGettingTheFloatUsernameForAGithubUsername_thenItIsTheExpected() throws Exception {
 
-        String actual = floatGithubUserConverter.getFloatUser("github meirinho");
+        String actual = floatGithubUserConverter.getFloatUserOrNull("github meirinho");
 
         assertThat("float pirata", IsEqualIgnoringCase.equalToIgnoringCase(actual));
     }
@@ -45,7 +45,7 @@ public class FloatGithubUserConverterTest {
     @Test
     public void givenAJsonFileWithUsers_whenGettingTheGithubUsernameForAFloatUsername_thenItIsTheExpeced() throws Exception {
 
-        String actual = floatGithubUserConverter.getGithubUser("float pirata");
+        String actual = floatGithubUserConverter.getGithubUserOrNull("float pirata");
 
         assertThat("github meirinho", IsEqualIgnoringCase.equalToIgnoringCase(actual));
     }
