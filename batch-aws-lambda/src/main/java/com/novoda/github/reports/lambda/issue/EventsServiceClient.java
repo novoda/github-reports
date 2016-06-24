@@ -102,6 +102,7 @@ public class EventsServiceClient {
                 message.repositoryId(),
                 message.issueNumber(),
                 message.issueOwnerId(),
+                message.isPullRequest(),
                 RepositoryIssueEventEvent::newInstance
         );
     }
@@ -120,7 +121,8 @@ public class EventsServiceClient {
                 amazonGetEventsQueueMessage.repositoryId(),
                 amazonGetEventsQueueMessage.repositoryName(),
                 amazonGetEventsQueueMessage.issueNumber(),
-                amazonGetEventsQueueMessage.issueOwnerId()
+                amazonGetEventsQueueMessage.issueOwnerId(),
+                amazonGetEventsQueueMessage.isPullRequest()
         );
     }
 

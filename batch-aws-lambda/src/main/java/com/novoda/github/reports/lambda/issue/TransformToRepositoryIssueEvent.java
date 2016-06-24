@@ -19,16 +19,18 @@ public class TransformToRepositoryIssueEvent<T, C extends RepositoryIssueEvent>
     private final Long repositoryId;
     private final Long issueNumber;
     private final Long issueOwnerId;
+    private boolean isPullRequest;
     private final Func2<RepositoryIssue, T, C> repositoryIssueEventCreator;
 
     public TransformToRepositoryIssueEvent(Long repositoryId,
                                            Long issueNumber,
                                            Long issueOwnerId,
-                                           Func2<RepositoryIssue, T, C> repositoryIssueEventCreator) {
+                                           boolean isPullRequest, Func2<RepositoryIssue, T, C> repositoryIssueEventCreator) {
 
         this.repositoryId = repositoryId;
         this.issueNumber = issueNumber;
         this.issueOwnerId = issueOwnerId;
+        this.isPullRequest = isPullRequest;
         this.repositoryIssueEventCreator = repositoryIssueEventCreator;
     }
 
@@ -40,7 +42,7 @@ public class TransformToRepositoryIssueEvent<T, C extends RepositoryIssueEvent>
                     List<RepositoryIssueEvent> body = response.body().stream()
                             .map(githubEvent -> {
                                 GithubRepository repository = new GithubRepository(repositoryId);
-                                GithubIssue issue = new GithubIssue(Math.toIntExact(issueNumber), issueOwnerId);
+                                GithubIssue issue = new GithubIssue(Math.toIntExact(issueNumber), issueOwnerId, isPullRequest);
                                 RepositoryIssue repositoryIssue = new RepositoryIssue(repository, issue);
                                 return repositoryIssueEventCreator.call(repositoryIssue, githubEvent);
                             })

@@ -34,9 +34,10 @@ public class GithubIssue {
     @SerializedName("pull_request")
     private GithubPullRequest pullRequest;
 
-    public GithubIssue(int issueNumber, long ownerId) {
+    public GithubIssue(int issueNumber, long ownerId, boolean isPullRequest) {
         this.number = issueNumber;
         this.user = new GithubUser(ownerId);
+        this.pullRequest = new GithubPullRequest();
     }
 
     public long getId() {

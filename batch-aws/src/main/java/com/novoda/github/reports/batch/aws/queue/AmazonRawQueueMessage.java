@@ -20,7 +20,8 @@ public abstract class AmazonRawQueueMessage {
                                         @Nullable String repositoryName,
                                         @Nullable Long repositoryId,
                                         @Nullable Long issueNumber,
-                                        @Nullable Long issueOwnerId) {
+                                        @Nullable Long issueOwnerId,
+                                        @Nullable Boolean isPullRequest) {
 
         return new AutoValue_AmazonRawQueueMessage(
                 type,
@@ -31,7 +32,8 @@ public abstract class AmazonRawQueueMessage {
                 repositoryName,
                 repositoryId,
                 issueNumber,
-                issueOwnerId
+                issueOwnerId,
+                isPullRequest
         );
     }
 
@@ -67,6 +69,9 @@ public abstract class AmazonRawQueueMessage {
 
     @Nullable
     abstract Long issueOwnerId();
+
+    @Nullable
+    abstract Boolean isPullRequest();
 
     public enum Type {
         @SerializedName("repositories")
@@ -116,6 +121,8 @@ public abstract class AmazonRawQueueMessage {
         public abstract Builder issueNumber(Long issueNumber);
 
         public abstract Builder issueOwnerId(Long issueOwnerId);
+
+        public abstract Builder isPullRequest(Boolean isPullRequest);
 
         public abstract AmazonRawQueueMessage build();
 

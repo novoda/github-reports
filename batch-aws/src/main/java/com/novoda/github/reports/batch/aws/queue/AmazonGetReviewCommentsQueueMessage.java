@@ -1,14 +1,14 @@
 package com.novoda.github.reports.batch.aws.queue;
 
 import com.google.auto.value.AutoValue;
-import com.novoda.github.reports.batch.queue.GetCommentsQueueMessage;
+import com.novoda.github.reports.batch.queue.GetAllEventsQueueMessage;
 
 import java.util.Date;
 
 import org.jetbrains.annotations.Nullable;
 
 @AutoValue
-public abstract class AmazonGetReviewCommentsQueueMessage implements AmazonQueueMessage, GetCommentsQueueMessage {
+public abstract class AmazonGetReviewCommentsQueueMessage implements AmazonQueueMessage, GetAllEventsQueueMessage {
 
     public static AmazonGetReviewCommentsQueueMessage create(Boolean terminal,
                                                              Long page,
@@ -18,7 +18,8 @@ public abstract class AmazonGetReviewCommentsQueueMessage implements AmazonQueue
                                                              Long repositoryId,
                                                              String repositoryName,
                                                              Long issueNumber,
-                                                             Long issueOwnerId) {
+                                                             Long issueOwnerId,
+                                                             Boolean isPullRequest) {
 
         return new AutoValue_AmazonGetReviewCommentsQueueMessage(
                 terminal,
@@ -29,7 +30,8 @@ public abstract class AmazonGetReviewCommentsQueueMessage implements AmazonQueue
                 repositoryId,
                 repositoryName,
                 issueNumber,
-                issueOwnerId
+                issueOwnerId,
+                isPullRequest
         );
     }
 
