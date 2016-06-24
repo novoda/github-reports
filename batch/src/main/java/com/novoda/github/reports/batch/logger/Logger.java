@@ -1,5 +1,7 @@
 package com.novoda.github.reports.batch.logger;
 
+import com.novoda.github.reports.util.StringHelper;
+
 import static com.novoda.github.reports.batch.logger.Logger.Level.*;
 
 public interface Logger {
