@@ -7,13 +7,17 @@ public class DefaultLogger implements Logger {
     private final LoggerHandler handler;
     private Level minimumLevel;
 
-    public static DefaultLogger newInstance(LoggerHandler loggerHandler) {
-        return new DefaultLogger(loggerHandler);
+    public static DefaultLogger newInstance(LoggerHandler loggerHandler, Level minimumLevel) {
+        return new DefaultLogger(loggerHandler, minimumLevel);
     }
 
-    private DefaultLogger(LoggerHandler handler) {
+    public static DefaultLogger newInstance(LoggerHandler loggerHandler) {
+        return new DefaultLogger(loggerHandler, Level.INFO);
+    }
+
+    private DefaultLogger(LoggerHandler handler, Level minimumLevel) {
         this.handler = handler;
-        setMinimumLevel(Level.DEBUG);
+        setMinimumLevel(minimumLevel);
     }
 
     @Override
