@@ -24,6 +24,7 @@ public class JsonMapReaderTest {
 
     @Test(expected = FileNotFoundException.class)
     public void givenANonExistentFile_whenReadingIt_thenAnExceptionIsThrown() throws Exception {
+
         stringToStringReader.readFromResource("nope.json");
     }
 
