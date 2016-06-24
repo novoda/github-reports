@@ -22,6 +22,10 @@ import static org.jooq.impl.DSL.countDistinct;
 
 class DatabaseHelper {
 
+    static {
+        LogHelper.turnOffJooqAd();
+    }
+
     static final String EVENTS_COUNT = "events_count";
     static final String REPOSITORIES_COUNT = "repositories_count";
     private static final String PEOPLE_COUNT = "people_count";
