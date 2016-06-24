@@ -12,8 +12,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-
-
 public class FloatGithubUserConverterTest {
 
     private Map<String, String> mapFromReader;
