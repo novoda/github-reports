@@ -2,7 +2,6 @@ package com.novoda.github.reports.floatschedule.convert;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 public class FloatGithubUserConverter {
 
     private final JsonMapReader<Map<String, String>> jsonMapReader;
-    private final Map<String, String> floatToGithubUser;
+    private Map<String, String> floatToGithubUser;
 
     public static FloatGithubUserConverter newInstance() {
         JsonMapReader<Map<String, String>> jsonReader = JsonMapReader.newStringToStringInstance();
@@ -19,7 +18,6 @@ public class FloatGithubUserConverter {
 
     FloatGithubUserConverter(JsonMapReader<Map<String, String>> jsonMapReader) {
         this.jsonMapReader = jsonMapReader;
-        floatToGithubUser = new HashMap<>();
     }
 
     @Nullable
@@ -36,14 +34,18 @@ public class FloatGithubUserConverter {
     }
 
     private void readIfNeeded() throws IOException {
-        if (!floatToGithubUser.isEmpty()) {
+        if (fileContentsAlreadyRead()) {
             return;
         }
         try {
-            floatToGithubUser.putAll(jsonMapReader.readFromResource("users.json"));
+            floatToGithubUser = jsonMapReader.readFromResource("users.json");
         } catch (URISyntaxException | IOException e) {
             throw new IOException("Could not read users from file.");
         }
+    }
+
+    private boolean fileContentsAlreadyRead() {
+        return floatToGithubUser != null;
     }
 
     @Nullable
