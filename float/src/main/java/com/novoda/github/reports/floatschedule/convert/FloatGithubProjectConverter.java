@@ -39,8 +39,7 @@ public class FloatGithubProjectConverter {
     private boolean containsIgnoreCase(String target, List<String> list) {
         return list.stream()
                 .filter(target::equalsIgnoreCase)
-                .findFirst()
-                .orElse(null) != null;
+                .count() > 0;
     }
 
     private void readIfNeeded() throws IOException {
