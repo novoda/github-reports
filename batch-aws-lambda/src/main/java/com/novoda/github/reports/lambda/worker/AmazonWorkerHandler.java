@@ -68,7 +68,6 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
         }
 
         List<AmazonQueueMessage> nextMessages = collectDerivedMessagesFrom(nextMessagesObservable);
-        logger.info("Message handled. %d new messages have been generated", nextMessages.size());
         return nextMessages;
     }
 

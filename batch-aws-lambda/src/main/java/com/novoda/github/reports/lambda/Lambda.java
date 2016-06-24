@@ -40,7 +40,7 @@ public class Lambda {
 
         AmazonConfiguration amazonConfiguration = amazonConfigurationConverter.fromJson(configuration);
 
-        lambaLogger.debug("Handling configuration:\n" + amazonConfiguration);
+        lambaLogger.debug("Handling configuration:\n%s", amazonConfiguration);
 
         worker.doWork(amazonConfiguration);
 

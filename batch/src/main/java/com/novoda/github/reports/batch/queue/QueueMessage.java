@@ -6,4 +6,16 @@ public interface QueueMessage {
 
     Long page();
 
+    String toShortString();
+
+    default String getPageAndTerminalString() {
+        return String.format("(page %d%s)", page(), getTerminalString());
+    }
+
+    default String getTerminalString() {
+        if (localTerminal()) {
+            return "";
+        }
+        return " is terminal";
+    }
 }

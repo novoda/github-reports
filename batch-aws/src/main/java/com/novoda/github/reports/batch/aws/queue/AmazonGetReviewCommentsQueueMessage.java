@@ -33,4 +33,9 @@ public abstract class AmazonGetReviewCommentsQueueMessage implements AmazonQueue
         );
     }
 
+    @Override
+    public String toShortString() {
+        return String.format("%s/%s/%d/REVIEW-COMMENTS %s", organisationName(), repositoryName(), issueNumber(), getPageAndTerminalString());
+    }
+
 }

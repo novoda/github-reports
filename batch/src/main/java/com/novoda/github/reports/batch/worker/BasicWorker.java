@@ -133,8 +133,14 @@ public class BasicWorker<
     }
 
     private List<M> handleQueueMessage(C configuration, M queueMessage) throws Throwable {
+        logger.info("Handling message: %s...", queueMessage.toShortString());
+
         WorkerHandler<M> workerHandler = workerHandlerService.getWorkerHandler();
-        return workerHandler.handleQueueMessage(configuration, queueMessage);
+        List<M> nextMessages = workerHandler.handleQueueMessage(configuration, queueMessage);
+
+        logger.info("Message handled. %d new messages have been generated.", nextMessages.size());
+
+        return nextMessages;
     }
 
     private void updateQueue(Q queue, M queueMessage, List<M> newMessages) throws QueueOperationFailedException {

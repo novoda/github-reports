@@ -33,4 +33,9 @@ public abstract class AmazonGetEventsQueueMessage implements AmazonQueueMessage,
         );
     }
 
+    @Override
+    public String toShortString() {
+        return String.format("%s/%s/%d/EVENTS %s", organisationName(), repositoryName(), issueNumber(), getPageAndTerminalString());
+    }
+
 }

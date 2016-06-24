@@ -57,7 +57,7 @@ public class AmazonQueue implements Queue<AmazonQueueMessage> {
         Message message = messages.get(0);
         AmazonQueueMessage item = amazonQueueMessageConverter.fromMessage(message);
 
-        logger.info("Got item:\n%s", item);
+        logger.debug("Got item:\n%s", item);
 
         return item;
     }
