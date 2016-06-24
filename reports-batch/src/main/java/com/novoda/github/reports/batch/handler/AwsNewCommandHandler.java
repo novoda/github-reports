@@ -1,6 +1,5 @@
 package com.novoda.github.reports.batch.handler;
 
-import com.novoda.github.reports.batch.aws.LocalLogger;
 import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.batch.aws.configuration.EmailNotifierConfiguration;
 import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsReader;
@@ -14,7 +13,8 @@ import com.novoda.github.reports.batch.aws.worker.LambdaPropertiesReader;
 import com.novoda.github.reports.batch.command.AwsBatchOptions;
 import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
 import com.novoda.github.reports.batch.configuration.GithubConfiguration;
-import com.novoda.github.reports.batch.worker.Logger;
+import com.novoda.github.reports.batch.logger.DefaultLogger;
+import com.novoda.github.reports.batch.logger.DefaultLoggerHandler;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 
@@ -26,6 +26,7 @@ public class AwsNewCommandHandler implements CommandHandler<AwsBatchOptions> {
     private static final Long FIRST_PAGE = 1L;
     private static final String RECEIPT_HANDLE = "0";
     private static final String NO_ALARM_NAME = null;
+    private static DefaultLogger logger;
 
     private final DatabaseCredentialsReader databaseCredentialsReader;
     private final GithubCredentialsReader githubCredentialsReader;
@@ -36,14 +37,15 @@ public class AwsNewCommandHandler implements CommandHandler<AwsBatchOptions> {
     public static AwsNewCommandHandler newInstance() {
         AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance();
         LambdaPropertiesReader lambdaPropertiesReader = LambdaPropertiesReader.newInstance();
-        Logger logger = LocalLogger.newInstance(AwsNewCommandHandler.class);
+        DefaultLoggerHandler loggerHandler = new DefaultLoggerHandler();
+        logger = DefaultLogger.newInstance(loggerHandler);
 
         return new AwsNewCommandHandler(
                 DatabaseCredentialsReader.newInstance(),
                 GithubCredentialsReader.newInstance(),
                 EmailCredentialsReader.newInstance(),
-                AmazonQueueService.newInstance(amazonCredentialsReader, logger),
-                AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader, logger)
+                AmazonQueueService.newInstance(amazonCredentialsReader, loggerHandler),
+                AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader, loggerHandler)
         );
     }
 
@@ -68,8 +70,10 @@ public class AwsNewCommandHandler implements CommandHandler<AwsBatchOptions> {
 
         AmazonQueue queue = queueService.createQueue(jobName);
         queue.addItem(initialMessage);
+        logger.info("Queue initialised with message \"%s\" for new job \"%s\".", initialMessage.toShortString(), jobName);
 
         workerService.startWorker(initialConfiguration);
+        logger.info("Process started on AWS Lambda.");
     }
 
     @NotNull

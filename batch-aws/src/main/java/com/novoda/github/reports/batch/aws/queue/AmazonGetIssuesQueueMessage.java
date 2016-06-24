@@ -29,4 +29,9 @@ public abstract class AmazonGetIssuesQueueMessage implements AmazonQueueMessage,
         );
     }
 
+    @Override
+    public String toShortString() {
+        return String.format("%s/%s/ISSUES %s", organisationName(), repositoryName(), getPageAndTerminalString());
+    }
+
 }

@@ -5,6 +5,9 @@ import com.novoda.github.reports.batch.alarm.AlarmOperationFailedException;
 import com.novoda.github.reports.batch.alarm.AlarmService;
 import com.novoda.github.reports.batch.configuration.Configuration;
 import com.novoda.github.reports.batch.configuration.NotifierConfiguration;
+import com.novoda.github.reports.batch.logger.DefaultLogger;
+import com.novoda.github.reports.batch.logger.Logger;
+import com.novoda.github.reports.batch.logger.LoggerHandler;
 import com.novoda.github.reports.batch.notifier.Notifier;
 import com.novoda.github.reports.batch.notifier.NotifierOperationFailedException;
 import com.novoda.github.reports.batch.notifier.NotifierService;
@@ -15,6 +18,7 @@ import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.batch.queue.QueueOperationFailedException;
 import com.novoda.github.reports.batch.queue.QueueService;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
+import com.novoda.github.reports.util.StringHelper;
 import com.novoda.github.reports.util.SystemClock;
 
 import java.util.List;
@@ -47,9 +51,17 @@ public class BasicWorker<
                                                                                QueueService<Q> queueService,
                                                                                NotifierService<N, C> notifierService,
                                                                                WorkerHandlerService<M> workerHandlerService,
-                                                                               Logger logger) {
+                                                                               LoggerHandler loggerHandler) {
+
         SystemClock systemClock = SystemClock.newInstance();
-        return new BasicWorker<>(workerService, alarmService, queueService, notifierService, workerHandlerService, logger, systemClock);
+        DefaultLogger logger = DefaultLogger.newInstance(loggerHandler);
+        return new BasicWorker<>(workerService,
+                                 alarmService,
+                                 queueService,
+                                 notifierService,
+                                 workerHandlerService,
+                                 logger,
+                                 systemClock);
     }
 
     private BasicWorker(WorkerService<C> workerService,
@@ -75,7 +87,7 @@ public class BasicWorker<
     public void doWork(C configuration) throws WorkerOperationFailedException {
         if (configuration.hasAlarm()) {
             String alarmName = configuration.alarmName();
-            logger.log("The input configuration has an alarm with name \"%s\".", alarmName);
+            logger.info("The input configuration has an alarm with name \"%s\".", alarmName);
             alarmService.removeAlarm(alarmName);
         }
 
@@ -122,8 +134,14 @@ public class BasicWorker<
     }
 
     private List<M> handleQueueMessage(C configuration, M queueMessage) throws Throwable {
+        logger.info("Handling message: %s...", queueMessage.toShortString());
+
         WorkerHandler<M> workerHandler = workerHandlerService.getWorkerHandler();
-        return workerHandler.handleQueueMessage(configuration, queueMessage);
+        List<M> nextMessages = workerHandler.handleQueueMessage(configuration, queueMessage);
+
+        logger.info("Message handled. %d new messages have been generated.", nextMessages.size());
+
+        return nextMessages;
     }
 
     private void updateQueue(Q queue, M queueMessage, List<M> newMessages) throws QueueOperationFailedException {
@@ -132,9 +150,11 @@ public class BasicWorker<
     }
 
     private void handleEmptyQueueException(C configuration, Q queue) throws NotifierOperationFailedException {
-        logger.log("It looks like the queue is empty.");
+        logger.debug("It looks like the queue is empty.");
+        logger.info(StringHelper.emojiToString(0x2705) + "  Job completed successfully!");
 
         notifyCompletion(configuration);
+        logger.info("Completion notified.");
 
         removeQueue(queueService, queue);
     }
@@ -149,14 +169,14 @@ public class BasicWorker<
     }
 
     private void handleMessageConverterException(C configuration, MessageConverterException e) throws NotifierOperationFailedException {
-        logger.log("Error while converting the message from the queue:\n%s", e);
+        logger.error("Error while converting the message from the queue:\n%s", e);
         notifyError(configuration, e);
     }
 
     private void handleRateLimitEncounteredException(C configuration, RateLimitEncounteredException e)
             throws WorkerOperationFailedException {
 
-        logger.log("Rate limit encountered:\n%s", e);
+        logger.warn("Rate limit encountered:\n%s", e);
 
         long differenceInMinutesFromNow = systemClock.getDifferenceInMinutesFromNow(e.getResetDate());
         rescheduleForLater(configuration, differenceInMinutesFromNow);
@@ -164,7 +184,7 @@ public class BasicWorker<
 
     @Override
     public void rescheduleForLater(C configuration, long minutesFromNow) throws WorkerOperationFailedException {
-        logger.log("Rescheduling in %d minutes...", minutesFromNow);
+        logger.info("Rescheduling in %d minutes...", minutesFromNow);
         String workerName = workerService.getWorkerName();
         A alarm = alarmService.createNewAlarm(minutesFromNow, configuration.jobName(), workerName);
         configuration = withNewAlarmIntoConfiguration(alarm, configuration);
@@ -173,7 +193,7 @@ public class BasicWorker<
         } catch (AlarmOperationFailedException e) {
             throw new WorkerOperationFailedException("rescheduleForLater", e);
         }
-        logger.log("Rescheduled in %d minutes.", minutesFromNow);
+        logger.info("Rescheduled in %d minutes.", minutesFromNow);
     }
 
     private C withNewAlarmIntoConfiguration(A alarm, C configuration) {
@@ -183,7 +203,7 @@ public class BasicWorker<
     private void handleQueueOperationFailedException(C configuration, QueueOperationFailedException e)
             throws WorkerStartException, NotifierOperationFailedException {
 
-        logger.log("A queue operation failed:\n%s", e);
+        logger.error("A queue operation failed:\n%s", e);
 
         notifyError(configuration, e);
         rescheduleImmediately(configuration);
@@ -196,13 +216,14 @@ public class BasicWorker<
         }
 
         hasRescheduled = true;
-        logger.log("Restarting this worker...");
         configuration = configuration.withNoAlarmName();
         workerService.startWorker(configuration);
+
+        logger.info("New worker instance started.");
     }
 
     private void handleAnyOtherException(C configuration, Throwable throwable) {
-        logger.log("There was an unhandled error which terminated the job:\n%s", throwable);
+        logger.error("There was an unhandled error which terminated the job:\n%s", throwable);
 
         try {
             notifyError(configuration, throwable);

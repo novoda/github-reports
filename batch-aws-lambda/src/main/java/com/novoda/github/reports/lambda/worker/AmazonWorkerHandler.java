@@ -9,7 +9,7 @@ import com.novoda.github.reports.batch.aws.queue.AmazonGetReviewCommentsQueueMes
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.configuration.Configuration;
 import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
-import com.novoda.github.reports.batch.worker.Logger;
+import com.novoda.github.reports.batch.logger.Logger;
 import com.novoda.github.reports.batch.worker.WorkerHandler;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.issue.CommentsServiceClient;
@@ -44,8 +44,6 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
     public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage)
             throws RateLimitEncounteredException, MessageNotSupportedException {
 
-        logger.log("Handling the message...");
-
         init(configuration);
 
         Observable<AmazonQueueMessage> nextMessagesObservable;
@@ -70,7 +68,6 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
         }
 
         List<AmazonQueueMessage> nextMessages = collectDerivedMessagesFrom(nextMessagesObservable);
-        logger.log("Message handled. %d new messages have been generated", nextMessages.size());
         return nextMessages;
     }
 
