@@ -25,12 +25,12 @@ public class AmazonWorkerService implements WorkerService<AmazonConfiguration> {
 
     public static AmazonWorkerService newInstance(AmazonCredentialsReader amazonCredentialsReader,
                                                   LambdaPropertiesReader lambdaPropertiesReader,
-                                                  LoggerHandler lambdaLoggerHandler) {
+                                                  LoggerHandler loggerHandler) {
 
         return new AmazonWorkerService(
                 amazonCredentialsReader,
                 lambdaPropertiesReader,
-                DefaultLogger.newInstance(lambdaLoggerHandler),
+                DefaultLogger.newInstance(loggerHandler),
                 AmazonConfigurationConverter.newInstance()
         );
     }

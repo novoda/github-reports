@@ -31,7 +31,7 @@ public class Lambda {
     private Logger lambaLogger;
 
     public void handle(InputStream configuration, Context context) throws ConfigurationConverterException, WorkerOperationFailedException {
-        LambdaLoggerHandler lambdaLoggerHandler = new LambdaLoggerHandler(context);
+        LoggerHandler lambdaLoggerHandler = new LambdaLoggerHandler(context);
         this.lambaLogger = DefaultLogger.newInstance(lambdaLoggerHandler);
 
         lambaLogger.info("LAMBDA START.");

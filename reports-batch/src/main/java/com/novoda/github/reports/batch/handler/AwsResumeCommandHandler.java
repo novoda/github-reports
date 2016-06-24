@@ -25,13 +25,13 @@ public class AwsResumeCommandHandler implements CommandHandler<AwsBatchOptions> 
     public static AwsResumeCommandHandler newInstance() {
         AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance();
         LambdaPropertiesReader lambdaPropertiesReader = LambdaPropertiesReader.newInstance();
-        DefaultLoggerHandler lambdaLoggerHandler = new DefaultLoggerHandler();
+        DefaultLoggerHandler loggerHandler = new DefaultLoggerHandler();
 
         return new AwsResumeCommandHandler(
                 DatabaseCredentialsReader.newInstance(),
                 GithubCredentialsReader.newInstance(),
                 EmailCredentialsReader.newInstance(),
-                AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader, lambdaLoggerHandler)
+                AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader, loggerHandler)
         );
     }
 
