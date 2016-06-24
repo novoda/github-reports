@@ -2,7 +2,6 @@ package com.novoda.github.reports.floatschedule.convert;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class FloatGithubProjectConverter {
 
     private final JsonMapReader<Map<String, List<String>>> jsonMapReader;
-    private final Map<String, List<String>> projectToRepositories;
+    private Map<String, List<String>> projectToRepositories;
 
     public static FloatGithubProjectConverter newInstance() {
         JsonMapReader<Map<String, List<String>>> jsonMapReader = JsonMapReader.newStringToListOfStringsInstance();
@@ -21,7 +20,6 @@ public class FloatGithubProjectConverter {
 
     FloatGithubProjectConverter(JsonMapReader<Map<String, List<String>>> jsonMapReader) {
         this.jsonMapReader = jsonMapReader;
-        projectToRepositories = new HashMap<>();
     }
 
     @Nullable
@@ -43,14 +41,18 @@ public class FloatGithubProjectConverter {
     }
 
     private void readIfNeeded() throws IOException {
-        if (!projectToRepositories.isEmpty()) {
+        if (fileContentsAlreadyRead()) {
             return;
         }
         try {
-            projectToRepositories.putAll(jsonMapReader.readFromResource("projects.json"));
+            projectToRepositories = jsonMapReader.readFromResource("projects.json");
         } catch (URISyntaxException | IOException e) {
             throw new IOException("Could not read users from file.");
         }
+    }
+
+    private boolean fileContentsAlreadyRead() {
+        return projectToRepositories != null;
     }
 
     @Nullable
