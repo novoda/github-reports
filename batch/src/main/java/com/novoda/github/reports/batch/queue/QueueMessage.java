@@ -13,7 +13,7 @@ public interface QueueMessage {
     }
 
     default String getTerminalString() {
-        if (localTerminal()) {
+        if (!localTerminal()) {
             return "";
         }
         return " is terminal";
