@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public class FloatGithubProjectConverter {
 
     private final JsonMapReader<Map<String, List<String>>> jsonMapReader;
-    private final Map<String, List<String>> projectsToRepositories;
+    private final Map<String, List<String>> projectToRepositories;
 
     public static FloatGithubProjectConverter newInstance() {
         JsonMapReader<Map<String, List<String>>> jsonMapReader = JsonMapReader.newStringToListOfStringsInstance();
@@ -21,14 +21,14 @@ public class FloatGithubProjectConverter {
 
     FloatGithubProjectConverter(JsonMapReader<Map<String, List<String>>> jsonMapReader) {
         this.jsonMapReader = jsonMapReader;
-        projectsToRepositories = new HashMap<>();
+        projectToRepositories = new HashMap<>();
     }
 
     @Nullable
     public String getFloatProject(String repositoryName) throws IOException {
         readIfNeeded();
         final String[] match = { null };
-        projectsToRepositories.entrySet()
+        projectToRepositories.entrySet()
                 .stream()
                 .filter(entry -> containsIgnoreCase(repositoryName, entry.getValue()))
                 .findFirst()
@@ -43,11 +43,11 @@ public class FloatGithubProjectConverter {
     }
 
     private void readIfNeeded() throws IOException {
-        if (!projectsToRepositories.isEmpty()) {
+        if (!projectToRepositories.isEmpty()) {
             return;
         }
         try {
-            projectsToRepositories.putAll(jsonMapReader.readFromResource("projects.json"));
+            projectToRepositories.putAll(jsonMapReader.readFromResource("projects.json"));
         } catch (URISyntaxException | IOException e) {
             throw new IOException("Could not read users from file.");
         }
@@ -56,6 +56,6 @@ public class FloatGithubProjectConverter {
     @Nullable
     public List<String> getRepositories(String floatProject) throws IOException {
         readIfNeeded();
-        return projectsToRepositories.get(floatProject.toLowerCase(Locale.UK));
+        return projectToRepositories.get(floatProject.toLowerCase(Locale.UK));
     }
 }
