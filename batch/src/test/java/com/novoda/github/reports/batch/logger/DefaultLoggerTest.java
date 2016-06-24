@@ -2,11 +2,11 @@ package com.novoda.github.reports.batch.logger;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class DefaultLoggerTest {
@@ -16,20 +16,20 @@ public class DefaultLoggerTest {
     @Mock
     LoggerHandler loggerHandler;
 
-    @InjectMocks
-    DefaultLogger logger;
+    private DefaultLogger logger;
 
     @Before
     public void setUp() {
         initMocks(this);
+        logger = DefaultLogger.newInstance(loggerHandler);
     }
 
     @Test
-    public void givenLogger_whenLogDebug_thenLogMinimumLevelMessage() {
+    public void givenLogger_whenLogInfo_thenLogMinimumLevelMessage() {
 
-        logger.debug(ANY_MESSAGE);
+        logger.info(ANY_MESSAGE);
 
-        verify(loggerHandler).log("[DEBUG] " + ANY_MESSAGE);
+        verify(loggerHandler).log("[INFO] " + ANY_MESSAGE);
     }
 
     @Test
