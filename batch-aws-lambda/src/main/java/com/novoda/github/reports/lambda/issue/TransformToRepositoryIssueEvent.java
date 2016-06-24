@@ -25,7 +25,8 @@ public class TransformToRepositoryIssueEvent<T, C extends RepositoryIssueEvent>
     public TransformToRepositoryIssueEvent(Long repositoryId,
                                            Long issueNumber,
                                            Long issueOwnerId,
-                                           boolean isPullRequest, Func2<RepositoryIssue, T, C> repositoryIssueEventCreator) {
+                                           boolean isPullRequest,
+                                           Func2<RepositoryIssue, T, C> repositoryIssueEventCreator) {
 
         this.repositoryId = repositoryId;
         this.issueNumber = issueNumber;
