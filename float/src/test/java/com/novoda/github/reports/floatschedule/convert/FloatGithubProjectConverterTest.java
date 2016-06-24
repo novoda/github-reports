@@ -36,7 +36,7 @@ public class FloatGithubProjectConverterTest {
     }
 
     @Test
-    public void givenAJsonFileWithProjects_whenGettingTheFloatProjectNameForARepository_thenItIsTheExpected() throws Exception {
+    public void givenAJsonFileWithProjects_whenGettingTheFloatProjectNameForARepository_thenReturnsMatch() throws Exception {
 
         String actual = floatGithubProjectConverter.getFloatProjectOrNull("repo2");
 
@@ -44,7 +44,7 @@ public class FloatGithubProjectConverterTest {
     }
 
     @Test
-    public void givenAJsonFileWithProjects_whenGettingRepositoriesForTheFloatProject_thenTheyAreTheExpected() throws Exception {
+    public void givenAJsonFileWithProjects_whenGettingRepositoriesForTheFloatProject_thenReturnsMatch() throws Exception {
 
         List<String> actual = floatGithubProjectConverter.getRepositoriesOrNull("float");
 
