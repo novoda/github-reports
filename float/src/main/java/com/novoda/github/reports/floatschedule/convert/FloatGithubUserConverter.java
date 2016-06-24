@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 public class FloatGithubUserConverter {
 
     private final JsonMapReader<Map<String, String>> jsonMapReader;
-    private final Map<String, String> floatToGithubUsers;
+    private final Map<String, String> floatToGithubUser;
 
     public static FloatGithubUserConverter newInstance() {
         JsonMapReader<Map<String, String>> jsonReader = JsonMapReader.newStringToStringInstance();
@@ -19,7 +19,7 @@ public class FloatGithubUserConverter {
 
     FloatGithubUserConverter(JsonMapReader<Map<String, String>> jsonMapReader) {
         this.jsonMapReader = jsonMapReader;
-        floatToGithubUsers = new HashMap<>();
+        floatToGithubUser = new HashMap<>();
     }
 
     @Nullable
@@ -27,7 +27,7 @@ public class FloatGithubUserConverter {
         readIfNeeded();
 
         final String[] match = { null };
-        floatToGithubUsers.forEach((floatName, githubName) -> {
+        floatToGithubUser.forEach((floatName, githubName) -> {
             if (githubName.equalsIgnoreCase(githubUsername)) {
                 match[0] = floatName;
             }
@@ -36,11 +36,11 @@ public class FloatGithubUserConverter {
     }
 
     private void readIfNeeded() throws IOException {
-        if (!floatToGithubUsers.isEmpty()) {
+        if (!floatToGithubUser.isEmpty()) {
             return;
         }
         try {
-            floatToGithubUsers.putAll(jsonMapReader.readFromResource("users.json"));
+            floatToGithubUser.putAll(jsonMapReader.readFromResource("users.json"));
         } catch (URISyntaxException | IOException e) {
             throw new IOException("Could not read users from file.");
         }
@@ -50,7 +50,7 @@ public class FloatGithubUserConverter {
     public String getGithubUser(String floatName) throws IOException {
         readIfNeeded();
         final String[] match = { null };
-        floatToGithubUsers.entrySet()
+        floatToGithubUser.entrySet()
                 .stream()
                 .filter(entry -> entry.getKey().equalsIgnoreCase(floatName))
                 .findFirst()
