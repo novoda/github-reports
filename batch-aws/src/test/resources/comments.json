@@ -7,5 +7,6 @@
   "repositoryId": 666,
   "repositoryName": "yolo",
   "issueNumber": 42,
-  "issueOwnerId": 123
+  "issueOwnerId": 123,
+  "isPullRequest": false
 }
