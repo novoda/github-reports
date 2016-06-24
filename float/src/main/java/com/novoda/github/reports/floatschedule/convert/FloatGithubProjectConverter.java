@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
-
 public class FloatGithubProjectConverter {
 
     private final JsonMapReader<Map<String, List<String>>> jsonMapReader;
@@ -24,8 +22,7 @@ public class FloatGithubProjectConverter {
         projectToRepositories = new HashMap<>();
     }
 
-    @Nullable
-    public String getFloatProject(String repositoryName) throws IOException {
+    public String getFloatProjectOrNull(String repositoryName) throws IOException {
         readIfNeeded();
         final String[] match = { null };
         projectToRepositories.entrySet()
@@ -53,8 +50,7 @@ public class FloatGithubProjectConverter {
         }
     }
 
-    @Nullable
-    public List<String> getRepositories(String floatProject) throws IOException {
+    public List<String> getRepositoriesOrNull(String floatProject) throws IOException {
         readIfNeeded();
         return projectToRepositories.get(floatProject.toLowerCase(Locale.UK));
     }
