@@ -94,7 +94,8 @@ class AmazonQueueMessageConverter {
                 rawQueueMessage.since(),
                 rawQueueMessage.repositoryId(),
                 rawQueueMessage.repositoryName(),
-                rawQueueMessage.issueNumber()
+                rawQueueMessage.issueNumber(),
+                rawQueueMessage.issueOwnerId()
         );
     }
 
@@ -107,7 +108,8 @@ class AmazonQueueMessageConverter {
                 rawQueueMessage.since(),
                 rawQueueMessage.repositoryId(),
                 rawQueueMessage.repositoryName(),
-                rawQueueMessage.issueNumber()
+                rawQueueMessage.issueNumber(),
+                rawQueueMessage.issueOwnerId()
         );
     }
 
@@ -120,7 +122,8 @@ class AmazonQueueMessageConverter {
                 rawQueueMessage.since(),
                 rawQueueMessage.repositoryId(),
                 rawQueueMessage.repositoryName(),
-                rawQueueMessage.issueNumber()
+                rawQueueMessage.issueNumber(),
+                rawQueueMessage.issueOwnerId()
         );
     }
 
@@ -174,6 +177,7 @@ class AmazonQueueMessageConverter {
                                               AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
         toGetIssuesRawMessage(message, rawQueueMessageBuilder);
         rawQueueMessageBuilder.issueNumber(message.issueNumber());
+        rawQueueMessageBuilder.issueOwnerId(message.issueOwnerId());
     }
 
     private void toGetIssuesRawMessage(GetIssuesQueueMessage message,

@@ -1,30 +1,30 @@
-package com.novoda.github.reports.batch;
+package com.novoda.github.reports.batch.local;
 
-import com.novoda.github.reports.batch.issue.CommentsServiceClient;
-import com.novoda.github.reports.batch.issue.EventsServiceClient;
-import com.novoda.github.reports.batch.issue.IssuesServiceClient;
+import com.novoda.github.reports.batch.local.issue.CommentsServiceClient;
+import com.novoda.github.reports.batch.local.issue.EventsServiceClient;
+import com.novoda.github.reports.batch.local.issue.IssuesServiceClient;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.repository.GithubRepository;
-import com.novoda.github.reports.batch.repository.RepositoriesServiceClient;
+import com.novoda.github.reports.batch.local.repository.RepositoriesServiceClient;
 
 import java.util.Collections;
 import java.util.Date;
 
 import rx.Observable;
 
-class BatchClient {
+public class LocalBatchClient {
 
     private static final IssuesServiceClient ISSUE_SERVICE_CLIENT = IssuesServiceClient.newInstance();
     private static final RepositoriesServiceClient REPOSITORY_SERVICE_CLIENT = RepositoriesServiceClient.newInstance();
     private static final CommentsServiceClient COMMENTS_SERVICE_CLIENT = CommentsServiceClient.newInstance();
     private static final EventsServiceClient EVENTS_SERVICE_CLIENT = EventsServiceClient.newInstance();
 
-    private BatchClient() {
+    private LocalBatchClient() {
         // non-instantiable
     }
 
-    static Observable<RepositoryIssueEvent> retrieve(String organisation, Date since) {
+    public static Observable<RepositoryIssueEvent> retrieve(String organisation, Date since) {
         return Observable.from(Collections.singletonList(organisation))
                 .compose(retrieveRepositoriesFromOrganizations())
                 .compose(retrieveIssuesFromRepositories(since))

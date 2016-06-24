@@ -10,10 +10,13 @@ organisation from Amazon AWS using lambdas, SQS and events.
 
 ### Configuration
 
+#### Amazon AWS
+
 As a first step, install the [AWS CLI](https://aws.amazon.com/cli/) and [configure it with your credentials and region]
 (http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-quick-configuration).
 
-Since this module runs on AWS Lambda, you need no configuration/credentials file in the classpath.
+You need to add a `lambda.properties` file in the classloader accessible folder, referencing the ARN of the AWS Lambda that will handle the
+actual processing in the `AWS_LAMBDA_ARN` property (see [`lambda.properties.sample`](src/main/resources/lambda.properties.sample)).
 
 ### Role creation
 

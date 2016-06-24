@@ -4,6 +4,7 @@ import com.novoda.github.reports.batch.alarm.Alarm;
 import com.novoda.github.reports.batch.alarm.AlarmService;
 import com.novoda.github.reports.batch.configuration.Configuration;
 import com.novoda.github.reports.batch.configuration.NotifierConfiguration;
+import com.novoda.github.reports.batch.logger.Logger;
 import com.novoda.github.reports.batch.notifier.Notifier;
 import com.novoda.github.reports.batch.notifier.NotifierOperationFailedException;
 import com.novoda.github.reports.batch.notifier.NotifierService;
@@ -21,12 +22,17 @@ import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.AdditionalMatchers;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import static org.mockito.AdditionalMatchers.not;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.isA;
 
 public class BasicWorkerTest {
 
@@ -36,7 +42,7 @@ public class BasicWorkerTest {
     private static final Boolean HAS_ALARM = true;
 
     @Mock
-    private WorkerService workerService;
+    private WorkerService<Configuration<NotifierConfiguration>> workerService;
 
     @Mock
     private AlarmService<Alarm, Configuration<NotifierConfiguration>> alarmService;
@@ -49,6 +55,9 @@ public class BasicWorkerTest {
 
     @Mock
     private WorkerHandlerService workerHandlerService;
+
+    @Mock
+    private Logger logger;
 
     @Mock
     private SystemClock systemClock;
@@ -72,12 +81,12 @@ public class BasicWorkerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(configuration.jobName()).thenReturn(ANY_QUEUE_JOB_NAME);
+        when(configuration.jobName()).thenReturn(ANY_QUEUE_JOB_NAME);
 
-        Mockito.when(alarm.getName()).thenReturn(ANY_ALARM_NAME);
+        when(alarm.getName()).thenReturn(ANY_ALARM_NAME);
 
-        Mockito.when(notifierService.getNotifier()).thenReturn(notifier);
-        Mockito.when(workerHandlerService.getWorkerHandler()).thenReturn(workerHandler);
+        when(notifierService.getNotifier()).thenReturn(notifier);
+        when(workerHandlerService.getWorkerHandler()).thenReturn(workerHandler);
     }
 
     @Test
@@ -89,12 +98,12 @@ public class BasicWorkerTest {
 
         worker.doWork(configuration);
 
-        Mockito.verify(alarmService).removeAlarm(configuration.alarmName());
+        verify(alarmService).removeAlarm(configuration.alarmName());
     }
 
     private void givenStartedFromAlarm() {
-        Mockito.when(configuration.alarmName()).thenReturn(ANY_ALARM_NAME);
-        Mockito.when(configuration.hasAlarm()).thenReturn(HAS_ALARM);
+        when(configuration.alarmName()).thenReturn(ANY_ALARM_NAME);
+        when(configuration.hasAlarm()).thenReturn(HAS_ALARM);
     }
 
     @Test
@@ -105,26 +114,61 @@ public class BasicWorkerTest {
 
         worker.doWork(configuration);
 
-        Mockito.verify(alarmService, Mockito.never()).removeAlarm(Matchers.any(Alarm.class));
+        verify(alarmService, never()).removeAlarm(any(Alarm.class));
     }
 
     @Test
-    public void givenEmptyQueue_whenDoWork_thenNotifyCompletionAndDeleteQueueAndDoNotReschedule()
-            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException, NotifierOperationFailedException {
+    public void givenEmptyQueue_whenDoWork_thenNotifyCompletionAndNoErrors() throws
+            EmptyQueueException,
+            MessageConverterException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException {
+
+        givenEmptyQueue();
+
+        worker.doWork(configuration);
+
+        verify(notifier).notifyCompletion(configuration);
+        verifyNoErrorNotified();
+    }
+
+    @Test
+    public void givenEmptyQueue_whenDoWork_thenDeleteQueue() throws
+            EmptyQueueException,
+            MessageConverterException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException,
+            WorkerStartException {
 
         Queue<QueueMessage> queue = givenEmptyQueue();
 
         worker.doWork(configuration);
 
-        Mockito.verify(notifier).notifyCompletion(configuration);
-        Mockito.verify(queueService).removeQueue(queue);
-        verifyNoErrorNotified();
+        verify(queueService).removeQueue(queue);
+    }
+
+    @Test
+    public void givenEmptyQueue_whenDoWork_thenDoNotReschedule() throws
+            EmptyQueueException,
+            MessageConverterException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException,
+            WorkerStartException {
+
+        givenEmptyQueue();
+
+        worker.doWork(configuration);
+
         verifyNoRescheduleImmediately();
     }
 
     @Test
-    public void givenIncompatibleMessageInQueue_whenDoWork_thenNotifyConversionErrorAndDoNotReschedule()
-            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException, NotifierOperationFailedException {
+    public void givenIncompatibleMessageInQueue_whenDoWork_thenNotifyConversionErrorAndDoNotReschedule() throws
+            EmptyQueueException,
+            MessageConverterException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException,
+            WorkerStartException {
 
         givenInvalidMessagesQueue();
 
@@ -140,7 +184,7 @@ public class BasicWorkerTest {
 
         worker.doWork(configuration);
 
-        Mockito.verify(workerHandler).handleQueueMessage(Matchers.eq(configuration), Matchers.any(QueueMessage.class));
+        verify(workerHandler).handleQueueMessage(eq(configuration), any(QueueMessage.class));
     }
 
     @Test
@@ -149,49 +193,140 @@ public class BasicWorkerTest {
         Instant nextResetInstant = Instant.now().plusSeconds(600);
         Date nextResetDate = new Date(nextResetInstant.toEpochMilli());
         RateLimitEncounteredException rateLimitEncounteredException = new RateLimitEncounteredException("YOLO", nextResetDate);
-        Mockito.when(workerHandler.handleQueueMessage(Matchers.eq(configuration), Matchers.any(QueueMessage.class)))
+        when(workerHandler.handleQueueMessage(eq(configuration), any(QueueMessage.class)))
                 .thenThrow(rateLimitEncounteredException);
-        Mockito.when(workerService.getWorkerName()).thenReturn(ANY_WORKER_DESCRIPTOR);
-        Mockito.when(alarmService.createNewAlarm(Matchers.anyLong(), Matchers.eq(ANY_QUEUE_JOB_NAME), Matchers.eq(ANY_WORKER_DESCRIPTOR)))
+        when(workerService.getWorkerName()).thenReturn(ANY_WORKER_DESCRIPTOR);
+        when(alarmService.createNewAlarm(anyLong(), eq(ANY_QUEUE_JOB_NAME), eq(ANY_WORKER_DESCRIPTOR)))
                 .thenReturn(alarm);
 
         worker.doWork(configuration);
 
-        Mockito.verify(alarmService).createNewAlarm(Matchers.anyLong(), Matchers.eq(ANY_QUEUE_JOB_NAME), Matchers.eq(ANY_WORKER_DESCRIPTOR));
-        Mockito.verify(alarmService).postAlarm(Matchers.any(Alarm.class), AdditionalMatchers.not(Matchers.eq(configuration)));
+        verify(alarmService).createNewAlarm(anyLong(), eq(ANY_QUEUE_JOB_NAME), eq(ANY_WORKER_DESCRIPTOR));
+        verify(alarmService).postAlarm(any(Alarm.class), not(eq(configuration)));
         verifyNoErrorNotified();
     }
 
     @Test
-    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenPurgeDeleteQueueAndNotifyErrorAndDoNotReschedule() throws Throwable {
+    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenDoNotPurgeDeleteQueue() throws Throwable {
 
-        Queue<QueueMessage> queue = givenAnyQueue();
-        Mockito.when(workerHandler.handleQueueMessage(Matchers.eq(configuration), Matchers.any(QueueMessage.class))).thenThrow(Exception.class);
+        Queue<QueueMessage> queue = givenAnyQueueAndErroringWorkerHandler_whenDoWork();
 
-        worker.doWork(configuration);
-
-        Mockito.verify(queue).purgeQueue();
-        Mockito.verify(queueService).removeQueue(queue);
-        verifyErrorNotified(Exception.class);
-        verifyNoRescheduleImmediately();
+        verify(queue, never()).purgeQueue();
+        verify(queueService, never()).removeQueue(queue);
     }
 
     @Test
-    public void givenFailingQueueAddItems_whenDoWork_thenNotifyErrorAndReschedule()
-            throws EmptyQueueException, MessageConverterException, QueueOperationFailedException, WorkerOperationFailedException,
-            NotifierOperationFailedException {
+    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenNotifyError() throws Throwable {
+
+        givenAnyQueueAndErroringWorkerHandler_whenDoWork();
+
+        verifyErrorNotified(Exception.class);
+    }
+
+    @Test
+    public void givenAnyQueueAndErroringWorkerHandler_whenDoWork_thenDoNotReschedule() throws Throwable {
+
+        givenAnyQueueAndErroringWorkerHandler_whenDoWork();
+
+        verifyNoRescheduleImmediately();
+    }
+
+    private Queue<QueueMessage> givenAnyQueueAndErroringWorkerHandler_whenDoWork() throws EmptyQueueException,
+            MessageConverterException,
+            com.novoda.github.reports.batch.MessageNotSupportedException,
+            WorkerOperationFailedException {
 
         Queue<QueueMessage> queue = givenAnyQueue();
-        Mockito.when(queue.addItems(Matchers.anyListOf(QueueMessage.class))).thenThrow(QueueOperationFailedException.class);
+        when(workerHandler.handleQueueMessage(eq(configuration), any(QueueMessage.class))).thenThrow(Exception.class);
 
         worker.doWork(configuration);
+        return queue;
+    }
+
+    @Test
+    public void givenFailingQueueAddItems_whenDoWork_thenNotifyQueueOperationFailedException() throws
+            EmptyQueueException,
+            MessageConverterException,
+            QueueOperationFailedException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException {
+
+        givenFailingQueueAddItems_whenDoWork();
 
         verifyErrorNotified(QueueOperationFailedException.class);
     }
 
     @Test
+    public void givenFailingQueueAddItems_whenDoWork_thenReschedule() throws
+            EmptyQueueException,
+            MessageConverterException,
+            QueueOperationFailedException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException,
+            WorkerStartException {
+
+        givenFailingQueueAddItems_whenDoWork();
+
+        verifyRescheduleImmediately();
+    }
+
+    private void givenFailingQueueAddItems_whenDoWork() throws
+            EmptyQueueException,
+            MessageConverterException,
+            QueueOperationFailedException,
+            WorkerOperationFailedException {
+
+        Queue<QueueMessage> queue = givenAnyQueue();
+        when(queue.addItems(anyListOf(QueueMessage.class))).thenThrow(QueueOperationFailedException.class);
+
+        worker.doWork(configuration);
+    }
+
+    @Test
+    public void givenFailingQueueAddItemsAndCantReschedule_whenDoWork_thenNotifyQueueOperationFailedException() throws
+            EmptyQueueException,
+            MessageConverterException,
+            QueueOperationFailedException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException,
+            WorkerStartException {
+
+        givenFailingQueueAddItemsAndCantReschedule_whenDoWork();
+
+        verifyErrorNotified(QueueOperationFailedException.class);
+    }
+
+    @Test
+    public void givenFailingQueueAddItemsAndCantReschedule_whenDoWork_thenNotifyWorkerStartException() throws
+            EmptyQueueException,
+            MessageConverterException,
+            QueueOperationFailedException,
+            WorkerOperationFailedException,
+            NotifierOperationFailedException,
+            WorkerStartException {
+
+        givenFailingQueueAddItemsAndCantReschedule_whenDoWork();
+
+        verifyErrorNotified(WorkerStartException.class);
+    }
+
+    private void givenFailingQueueAddItemsAndCantReschedule_whenDoWork() throws
+            EmptyQueueException,
+            MessageConverterException,
+            QueueOperationFailedException,
+            WorkerStartException,
+            WorkerOperationFailedException {
+
+        Queue<QueueMessage> queue = givenAnyQueue();
+        when(queue.addItems(anyListOf(QueueMessage.class))).thenThrow(QueueOperationFailedException.class);
+        doThrow(WorkerStartException.class).when(workerService).startWorker(any());
+
+        worker.doWork(configuration);
+    }
+
+    @Test
     public void givenAnyQueue_whenDoWork_thenRescheduleImmediately()
-            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException {
+            throws EmptyQueueException, MessageConverterException, WorkerOperationFailedException, WorkerStartException {
 
         givenAnyQueue();
 
@@ -201,43 +336,43 @@ public class BasicWorkerTest {
     }
 
     private Queue<QueueMessage> givenAnyQueue() throws EmptyQueueException, MessageConverterException {
-        Queue<QueueMessage> anyQueue = Mockito.mock(DefaultQueue.class);
-        QueueMessage queueMessage = Mockito.mock(QueueMessage.class);
-        Mockito.when(anyQueue.getItem()).thenReturn(queueMessage);
+        Queue<QueueMessage> anyQueue = mock(DefaultQueue.class);
+        QueueMessage queueMessage = mock(QueueMessage.class);
+        when(anyQueue.getItem()).thenReturn(queueMessage);
         return givenQueue(anyQueue);
     }
 
     private Queue<QueueMessage> givenEmptyQueue() throws EmptyQueueException, MessageConverterException {
-        Queue<QueueMessage> emptyQueue = Mockito.mock(DefaultQueue.class);
-        Mockito.when(emptyQueue.getItem()).thenThrow(EmptyQueueException.class);
+        Queue<QueueMessage> emptyQueue = mock(DefaultQueue.class);
+        when(emptyQueue.getItem()).thenThrow(EmptyQueueException.class);
         return givenQueue(emptyQueue);
     }
 
     private Queue<QueueMessage> givenInvalidMessagesQueue() throws EmptyQueueException, MessageConverterException {
-        Queue<QueueMessage> emptyQueue = Mockito.mock(DefaultQueue.class);
-        Mockito.when(emptyQueue.getItem()).thenThrow(MessageConverterException.class);
+        Queue<QueueMessage> emptyQueue = mock(DefaultQueue.class);
+        when(emptyQueue.getItem()).thenThrow(MessageConverterException.class);
         return givenQueue(emptyQueue);
     }
 
     private Queue<QueueMessage> givenQueue(Queue<QueueMessage> queue) {
-        Mockito.when(queueService.getQueue(ANY_QUEUE_JOB_NAME)).thenReturn(queue);
+        when(queueService.getQueue(ANY_QUEUE_JOB_NAME)).thenReturn(queue);
         return queue;
     }
 
     private void verifyNoErrorNotified() throws NotifierOperationFailedException {
-        Mockito.verify(notifier, Mockito.never()).notifyError(Matchers.any(DefaultConfiguration.class), Matchers.any(Exception.class));
+        verify(notifier, never()).notifyError(any(DefaultConfiguration.class), any(Exception.class));
     }
 
-    private void verifyNoRescheduleImmediately() {
-        Mockito.verify(workerService, Mockito.never()).startWorker(configuration);
+    private void verifyNoRescheduleImmediately() throws WorkerStartException {
+        verify(workerService, never()).startWorker(configuration);
     }
 
     private <T extends Exception> void verifyErrorNotified(Class<T> exception) throws NotifierOperationFailedException {
-        Mockito.verify(notifier).notifyError(Matchers.any(DefaultConfiguration.class), Matchers.any(exception));
+        verify(notifier).notifyError(any(DefaultConfiguration.class), isA(exception));
     }
 
-    private void verifyRescheduleImmediately() {
-        Mockito.verify(workerService).startWorker(AdditionalMatchers.not(Matchers.eq(configuration)));
+    private void verifyRescheduleImmediately() throws WorkerStartException {
+        verify(workerService).startWorker(not(eq(configuration)));
     }
 
 }

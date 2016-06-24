@@ -6,4 +6,8 @@ public class StringHelper {
         return (string == null || string.isEmpty());
     }
 
+    public static String emojiToString(int emojiCode) {
+        return String.valueOf(Character.toChars(emojiCode));
+    }
+
 }

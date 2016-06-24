@@ -17,7 +17,8 @@ public abstract class AmazonGetEventsQueueMessage implements AmazonQueueMessage,
                                                      @Nullable Date since,
                                                      Long repositoryId,
                                                      String repositoryName,
-                                                     Long issueNumber) {
+                                                     Long issueNumber,
+                                                     Long issueOwnerId) {
 
         return new AutoValue_AmazonGetEventsQueueMessage(
                 terminal,
@@ -27,8 +28,14 @@ public abstract class AmazonGetEventsQueueMessage implements AmazonQueueMessage,
                 since,
                 repositoryId,
                 repositoryName,
-                issueNumber
+                issueNumber,
+                issueOwnerId
         );
+    }
+
+    @Override
+    public String toShortString() {
+        return String.format("%s/%s/%d/EVENTS %s", organisationName(), repositoryName(), issueNumber(), getPageAndTerminalString());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.novoda.github.reports.lambda.worker;
 
+import com.novoda.github.reports.batch.MessageNotSupportedException;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetCommentsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetEventsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonGetIssuesQueueMessage;
@@ -7,57 +8,43 @@ import com.novoda.github.reports.batch.aws.queue.AmazonGetRepositoriesQueueMessa
 import com.novoda.github.reports.batch.aws.queue.AmazonGetReviewCommentsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.configuration.Configuration;
+import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
+import com.novoda.github.reports.batch.logger.Logger;
 import com.novoda.github.reports.batch.worker.WorkerHandler;
-import com.novoda.github.reports.lambda.MessageNotSupportedException;
+import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.issue.CommentsServiceClient;
 import com.novoda.github.reports.lambda.issue.EventsServiceClient;
 import com.novoda.github.reports.lambda.issue.IssuesServiceClient;
 import com.novoda.github.reports.lambda.pullrequest.ReviewCommentsServiceClient;
 import com.novoda.github.reports.lambda.repository.RepositoriesServiceClient;
+import com.novoda.github.reports.service.network.RateLimitEncounteredException;
+import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import rx.Observable;
 
-public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
+class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
-    private final RepositoriesServiceClient repositoriesServiceClient;
-    private final IssuesServiceClient issuesServiceClient;
-    private final CommentsServiceClient commentsServiceClient;
-    private final EventsServiceClient eventsServiceClient;
-    private final ReviewCommentsServiceClient reviewCommentsServiceClient;
+    private final Logger logger;
 
-    public static AmazonWorkerHandler newInstance() {
-        RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance();
-        IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance();
-        EventsServiceClient eventsServiceClient = EventsServiceClient.newInstance();
-        CommentsServiceClient commentsServiceClient = CommentsServiceClient.newInstance();
-        ReviewCommentsServiceClient reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance();
-        return new AmazonWorkerHandler(
-                repositoriesServiceClient,
-                issuesServiceClient,
-                eventsServiceClient,
-                commentsServiceClient,
-                reviewCommentsServiceClient
-        );
-    }
+    private RepositoriesServiceClient repositoriesServiceClient;
+    private IssuesServiceClient issuesServiceClient;
+    private CommentsServiceClient commentsServiceClient;
+    private EventsServiceClient eventsServiceClient;
+    private ReviewCommentsServiceClient reviewCommentsServiceClient;
 
-    private AmazonWorkerHandler(RepositoriesServiceClient repositoriesServiceClient,
-                                IssuesServiceClient issuesServiceClient,
-                                EventsServiceClient eventsServiceClient,
-                                CommentsServiceClient commentsServiceClient,
-                                ReviewCommentsServiceClient reviewCommentsServiceClient) {
-
-        this.repositoriesServiceClient = repositoriesServiceClient;
-        this.issuesServiceClient = issuesServiceClient;
-        this.eventsServiceClient = eventsServiceClient;
-        this.commentsServiceClient = commentsServiceClient;
-        this.reviewCommentsServiceClient = reviewCommentsServiceClient;
+    AmazonWorkerHandler(Logger logger) {
+        this.logger = logger;
     }
 
     @Override
-    public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage) throws Throwable {
+    public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage)
+            throws RateLimitEncounteredException, MessageNotSupportedException {
+
+        init(configuration);
 
         Observable<AmazonQueueMessage> nextMessagesObservable;
 
@@ -80,19 +67,39 @@ public class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
             throw new MessageNotSupportedException(queueMessage);
         }
 
-        try {
-            return collectDerivedMessagesFrom(nextMessagesObservable);
-        } catch (RuntimeException exception) {
-            Throwable cause = exception.getCause();
-            if (cause != null) {
-                throw cause;
-            }
-            throw exception;
-        }
-
+        List<AmazonQueueMessage> nextMessages = collectDerivedMessagesFrom(nextMessagesObservable);
+        return nextMessages;
     }
 
-    private ArrayList<AmazonQueueMessage> collectDerivedMessagesFrom(Observable<AmazonQueueMessage> nextMessagesObservable) {
+    private void init(Configuration configuration) {
+        GithubCredentialsReader githubCredentialsReader = buildGithubCredentialsReader(configuration);
+        DatabaseCredentialsReader databaseCredentialsReader = buildDatabaseCredentialsReader(configuration);
+
+        repositoriesServiceClient = RepositoriesServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
+        issuesServiceClient = IssuesServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
+        eventsServiceClient = EventsServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
+        commentsServiceClient = CommentsServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
+        reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
+    }
+
+    private GithubCredentialsReader buildGithubCredentialsReader(Configuration configuration) {
+        Properties githubProperties = new Properties();
+        githubProperties.setProperty(GithubCredentialsReader.TOKEN_KEY, configuration.githubConfiguration().token());
+        return GithubCredentialsReader.newInstance(githubProperties);
+    }
+
+    private DatabaseCredentialsReader buildDatabaseCredentialsReader(Configuration configuration) {
+        Properties databaseProperties = new Properties();
+        DatabaseConfiguration databaseConfiguration = configuration.databaseConfiguration();
+        databaseProperties.setProperty(DatabaseCredentialsReader.USER_KEY, databaseConfiguration.username());
+        databaseProperties.setProperty(DatabaseCredentialsReader.PASSWORD_KEY, databaseConfiguration.password());
+        databaseProperties.setProperty(DatabaseCredentialsReader.CONNECTION_STRING_KEY, databaseConfiguration.connectionString());
+        return DatabaseCredentialsReader.newInstance(databaseProperties);
+    }
+
+    private ArrayList<AmazonQueueMessage> collectDerivedMessagesFrom(Observable<AmazonQueueMessage> nextMessagesObservable)
+            throws RateLimitEncounteredException {
+
         return nextMessagesObservable
                 .collect(ArrayList<AmazonQueueMessage>::new, ArrayList::add)
                 .toBlocking()

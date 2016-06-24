@@ -2,11 +2,47 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Action": "sts:AssumeRole",
       "Effect": "Allow",
+      "Action": "sts:AssumeRole",
       "Principal": {
         "Service": "lambda.amazonaws.com"
       }
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["lambda:InvokeFunction"],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Action": ["sqs:*"],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Sid": "CloudWatchEventsFullAccess",
+      "Effect": "Allow",
+      "Action": "events:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "IAMPassRoleForCloudWatchEvents",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::*:role/AWS_Events_Invoke_Targets"
+    },
+    {
+      "Action": ["logs:*"],
+      "Effect": "Allow",
+      "Resource": "*"
     }
   ]
 }

@@ -34,7 +34,11 @@ properties defined:
 
 * `AWS_ACCESS_KEY_ID`, access key ID for your IAM user
 * `AWS_SECRET_ACCESS_KEY`, secret access key for your IAM user
+
 For an example, see the [`amazon.credentials.sample` file](src/main/resources/amazon.credentials.sample).
+
+You also need to add a `lambda.properties` file in the classloader accessible folder, referencing the name of the AWS Lambda that will handle the
+actual processing in the `AWS_LAMBDA_AR` property (see [`lambda.properties.sample`](src/main/resources/lambda.properties.sample)).
 
 #### Email (AWS only)
 
@@ -69,7 +73,8 @@ To debug the application in IDEA, simply put the credential files in the `src/ma
 
 ### Usage
 
-The CLI has 2 commands available, `local` and `aws`, that execute the batch process locally or on Amazon AWS.
+The CLI has 4 commands available, `local`, `aws-new`, `aws-bomb` and `aws-resume` that execute, stop or resume the batch process locally or on
+Amazon AWS.
 
 **Note**: the examples in the following sections assume that you're running the applications from the `bin` directory in the distribution folder,
 where you have the `reports-batch` bash file available. If you are running from the IDE, remember that **`reports-batch` is not a program argument**.
@@ -91,10 +96,14 @@ The program may temporarily halt if the Github API calls reach a predefined rate
 To use `reports-batch`, simply run:
 
 ```shell
-$ reports-batch aws your-organization-name --from 2016-01-01 --email carl@novoda.com franceso@novoda.com
+$ reports-batch aws-new your-organization-name --job my-job-name --from 2016-01-01 --email carl@novoda.com franceso@novoda.com
 ```
 
 The `from` parameter is optional and can be specified as an ISO-8601 date/time string.
 
 The program will delegate the job to AWS and report that it has correctly started, then it will exit. You will receive a completion notification on
 the specified emails, if provided.
+
+If you want to resume a job that has previously errored, run the CLI with the command `aws-resume` instead (w/ same parameters but the `from` date).
+
+If you want to stop a currently executing job, run the CLI with the command `aws-bomb` (w/ same parameters but the `from` date).

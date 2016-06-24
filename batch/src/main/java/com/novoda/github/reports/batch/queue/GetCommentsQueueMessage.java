@@ -4,4 +4,6 @@ public interface GetCommentsQueueMessage extends GetIssuesQueueMessage {
 
     Long issueNumber();
 
+    Long issueOwnerId();
+
 }
