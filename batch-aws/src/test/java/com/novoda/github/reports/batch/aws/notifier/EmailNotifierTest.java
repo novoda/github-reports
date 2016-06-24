@@ -5,6 +5,7 @@ import com.novoda.github.reports.batch.aws.configuration.EmailNotifierConfigurat
 import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
 import com.novoda.github.reports.batch.configuration.GithubConfiguration;
 import com.novoda.github.reports.batch.notifier.NotifierOperationFailedException;
+import com.novoda.github.reports.batch.logger.Logger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.mockito.internal.verification.VerificationModeFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -66,6 +68,9 @@ public class EmailNotifierTest {
     @Mock
     private Email email;
 
+    @Mock
+    private Logger logger;
+
     @InjectMocks
     private EmailNotifier notifier;
 
@@ -96,7 +101,7 @@ public class EmailNotifierTest {
 
         verifyEmailSetWithParametersFromConfig();
         verify(email).setSubject("[github-reports] Your job has errored!");
-        verify(email).setMsg("The job with name \"" + ANY_JOB_NAME + "\" has errored.");
+        verify(email).setMsg(startsWith("The job with name \"" + ANY_JOB_NAME + "\" has errored."));
     }
 
     private void verifyEmailSetWithParametersFromConfig() throws EmailException {
@@ -127,7 +132,7 @@ public class EmailNotifierTest {
         when(email.send()).thenThrow(EmailException.class);
 
         expectedException.expect(NotifierOperationFailedException.class);
-        notifier.notifyError(AMAZON_CONFIGURATION, any(Exception.class));
+        notifier.notifyError(AMAZON_CONFIGURATION, new Exception());
     }
 
 }

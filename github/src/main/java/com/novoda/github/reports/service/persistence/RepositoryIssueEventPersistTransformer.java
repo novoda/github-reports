@@ -5,6 +5,7 @@ import com.novoda.github.reports.data.UserDataLayer;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbEventDataLayer;
 import com.novoda.github.reports.data.db.DbUserDataLayer;
+import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
@@ -20,7 +21,15 @@ public class RepositoryIssueEventPersistTransformer implements ComposedPersistTr
 
     public static RepositoryIssueEventPersistTransformer newInstance() {
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
+        return buildRepositoryIssueEventPersistTransformer(connectionManager);
+    }
 
+    public static RepositoryIssueEventPersistTransformer newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
+        ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager(databaseCredentialsReader);
+        return buildRepositoryIssueEventPersistTransformer(connectionManager);
+    }
+
+    private static RepositoryIssueEventPersistTransformer buildRepositoryIssueEventPersistTransformer(ConnectionManager connectionManager) {
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         Converter<RepositoryIssueEvent, User> eventUserConverter = EventUserConverter.newInstance();
         PersistEventUserTransformer persistEventUserTransformer = PersistEventUserTransformer.newInstance(userDataLayer, eventUserConverter);

@@ -1,9 +1,9 @@
-package com.novoda.github.reports.batch.issue;
+package com.novoda.github.reports.batch.local.issue;
 
-import com.novoda.github.reports.batch.pullrequest.PullRequestServiceClient;
-import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubject;
-import com.novoda.github.reports.batch.retry.RateLimitResetTimerSubjectContainer;
-import com.novoda.github.reports.batch.retry.RetryWhenTokenResets;
+import com.novoda.github.reports.batch.local.pullrequest.PullRequestServiceClient;
+import com.novoda.github.reports.batch.local.retry.RateLimitResetTimerSubject;
+import com.novoda.github.reports.batch.local.retry.RateLimitResetTimerSubjectContainer;
+import com.novoda.github.reports.batch.local.retry.RetryWhenTokenResets;
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 

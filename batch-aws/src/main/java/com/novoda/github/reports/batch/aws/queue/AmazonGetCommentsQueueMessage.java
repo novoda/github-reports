@@ -17,7 +17,8 @@ public abstract class AmazonGetCommentsQueueMessage implements AmazonQueueMessag
                                                        @Nullable Date since,
                                                        Long repositoryId,
                                                        String repositoryName,
-                                                       Long issueNumber) {
+                                                       Long issueNumber,
+                                                       Long issueOwnerId) {
 
         return new AutoValue_AmazonGetCommentsQueueMessage(
                 terminal,
@@ -27,8 +28,14 @@ public abstract class AmazonGetCommentsQueueMessage implements AmazonQueueMessag
                 since,
                 repositoryId,
                 repositoryName,
-                issueNumber
+                issueNumber,
+                issueOwnerId
         );
+    }
+
+    @Override
+    public String toShortString() {
+        return String.format("%s/%s/%d/COMMENTS %s", organisationName(), repositoryName(), issueNumber(), getPageAndTerminalString());
     }
 
 }

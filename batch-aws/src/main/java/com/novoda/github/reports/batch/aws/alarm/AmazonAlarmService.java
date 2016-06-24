@@ -8,12 +8,15 @@ import com.amazonaws.services.cloudwatchevents.model.PutTargetsRequest;
 import com.amazonaws.services.cloudwatchevents.model.RemoveTargetsRequest;
 import com.amazonaws.services.cloudwatchevents.model.RuleState;
 import com.amazonaws.services.cloudwatchevents.model.Target;
+import com.novoda.github.reports.batch.alarm.AlarmOperationFailedException;
+import com.novoda.github.reports.batch.alarm.AlarmService;
 import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.batch.aws.configuration.AmazonConfigurationConverter;
 import com.novoda.github.reports.batch.aws.configuration.ConfigurationConverterException;
-import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsService;
-import com.novoda.github.reports.batch.alarm.AlarmOperationFailedException;
-import com.novoda.github.reports.batch.alarm.AlarmService;
+import com.novoda.github.reports.batch.aws.credentials.AmazonCredentialsReader;
+import com.novoda.github.reports.batch.logger.DefaultLogger;
+import com.novoda.github.reports.batch.logger.Logger;
+import com.novoda.github.reports.batch.logger.LoggerHandler;
 import com.novoda.github.reports.util.SystemClock;
 
 public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfiguration> {
@@ -25,27 +28,43 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
     private final AmazonConfigurationConverter amazonConfigurationConverter;
     private final AmazonCloudWatchEventsClient amazonEventsClient;
     private final SystemClock systemClock;
+    private final Logger logger;
 
-    public static AmazonAlarmService newInstance(AmazonCredentialsService amazonCredentialsService) {
-        AWSCredentials awsCredentials = amazonCredentialsService.getAWSCredentials();
+    public static AmazonAlarmService newInstance(AmazonCredentialsReader amazonCredentialsReader, LoggerHandler loggerHandler) {
+        AWSCredentials awsCredentials = amazonCredentialsReader.getAWSCredentials();
         AmazonConfigurationConverter amazonConfigurationConverter = AmazonConfigurationConverter.newInstance();
         AmazonCloudWatchEventsClient amazonEventsClient = new AmazonCloudWatchEventsClient(awsCredentials);
         SystemClock systemClock = SystemClock.newInstance();
-        return new AmazonAlarmService(amazonConfigurationConverter, amazonEventsClient, systemClock);
+
+        return new AmazonAlarmService(
+                amazonConfigurationConverter,
+                amazonEventsClient,
+                systemClock,
+                DefaultLogger.newInstance(loggerHandler)
+        );
     }
 
     private AmazonAlarmService(AmazonConfigurationConverter amazonConfigurationConverter,
                                AmazonCloudWatchEventsClient amazonEventsClient,
-                               SystemClock systemClock) {
+                               SystemClock systemClock,
+                               Logger logger) {
+
         this.amazonConfigurationConverter = amazonConfigurationConverter;
         this.amazonEventsClient = amazonEventsClient;
         this.systemClock = systemClock;
+        this.logger = logger;
     }
 
     @Override
     public AmazonAlarm createNewAlarm(long minutes, String jobName, String workerName) {
+        logger.debug("Creating new alarm in %d minutes for %s...", minutes, jobName);
         String alarmName = createNewAlarmName(jobName);
-        return AmazonAlarm.newInstance(minutes, alarmName, workerName);
+
+        AmazonAlarm alarm = AmazonAlarm.newInstance(minutes, alarmName, workerName);
+
+        logger.debug("Alarm created with name \"%s\".", alarmName);
+
+        return alarm;
     }
 
     private String createNewAlarmName(String jobName) {
@@ -54,9 +73,12 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
 
     @Override
     public AmazonAlarm postAlarm(AmazonAlarm alarm, AmazonConfiguration configuration) throws AlarmOperationFailedException {
+        String alarmName = alarm.getName();
+        logger.debug("Saving alarm with name \"%s\"...", alarmName);
         try {
             saveRule(alarm);
             addTargetToRule(alarm, configuration);
+            logger.debug("Alarm \"%s\" saved.", alarmName);
         } catch (Exception e) {
             throw new AlarmOperationFailedException("postAlarm", e);
         }
@@ -109,8 +131,10 @@ public class AmazonAlarmService implements AlarmService<AmazonAlarm, AmazonConfi
 
     @Override
     public String removeAlarm(String alarmName) {
+        logger.debug("Removing alarm \"%s\"...", alarmName);
         removeTargetFromRule(alarmName);
         removeRule(alarmName);
+        logger.debug("The alarm \"%s\" has been removed.", alarmName);
         return alarmName;
     }
 

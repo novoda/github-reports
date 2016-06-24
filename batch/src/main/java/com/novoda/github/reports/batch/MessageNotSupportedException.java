@@ -1,4 +1,4 @@
-package com.novoda.github.reports.lambda;
+package com.novoda.github.reports.batch;
 
 import com.novoda.github.reports.batch.queue.QueueMessage;
 

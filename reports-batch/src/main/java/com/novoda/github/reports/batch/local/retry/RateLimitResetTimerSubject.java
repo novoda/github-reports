@@ -1,4 +1,4 @@
-package com.novoda.github.reports.batch.retry;
+package com.novoda.github.reports.batch.local.retry;
 
 import java.util.concurrent.TimeUnit;
 

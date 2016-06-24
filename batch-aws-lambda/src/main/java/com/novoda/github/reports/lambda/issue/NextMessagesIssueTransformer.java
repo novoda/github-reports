@@ -51,7 +51,8 @@ class NextMessagesIssueTransformer extends NextMessagesTransformer<RepositoryIss
                     currentMessage.sinceOrNull(),
                     currentMessage.repositoryId(),
                     currentMessage.repositoryName(),
-                    (long) item.getIssueNumber()
+                    (long) item.getIssueNumber(),
+                    item.getUserId()
             ));
         }
 
@@ -63,7 +64,8 @@ class NextMessagesIssueTransformer extends NextMessagesTransformer<RepositoryIss
                 currentMessage.sinceOrNull(),
                 currentMessage.repositoryId(),
                 currentMessage.repositoryName(),
-                (long) item.getIssueNumber()
+                (long) item.getIssueNumber(),
+                item.getUserId()
         ));
 
         derived.add(AmazonGetEventsQueueMessage.create(
@@ -74,7 +76,8 @@ class NextMessagesIssueTransformer extends NextMessagesTransformer<RepositoryIss
                 currentMessage.sinceOrNull(),
                 currentMessage.repositoryId(),
                 currentMessage.repositoryName(),
-                (long) item.getIssueNumber()
+                (long) item.getIssueNumber(),
+                item.getUserId()
         ));
 
         return derived;

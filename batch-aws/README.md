@@ -18,6 +18,7 @@ properties defined:
 
 * `AWS_ACCESS_KEY_ID`, access key ID for your IAM user
 * `AWS_SECRET_ACCESS_KEY`, secret access key for your IAM user
+* `AWS_LAMBDA_ARN`, (only if your module needs to start the default lambda), ARN of the batch lambda
 
 For an example, see the `reports-batch` [`amazon.credentials.sample` file](../reports-batch/src/main/resources/amazon.credentials.sample).
 

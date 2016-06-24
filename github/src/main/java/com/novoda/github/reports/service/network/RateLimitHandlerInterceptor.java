@@ -35,7 +35,7 @@ class RateLimitHandlerInterceptor implements Interceptor {
         if (response.code() == HTTP_STATUS_CODE_UNAUTHORIZED && remainingCount <= 0) {
             long resetTime = rateLimitResetRepository.getNextResetTime();
             Date resetDate = new Date(resetTime);
-            throw new IOException(new RateLimitEncounteredException("Rate limit encountered, retry at " + resetDate.toString(), resetDate));
+            throw new RateLimitEncounteredException("Rate limit encountered, retry at " + resetDate.toString(), resetDate);
         }
 
         return response;

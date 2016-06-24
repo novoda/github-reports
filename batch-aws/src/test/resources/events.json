@@ -6,5 +6,6 @@
   "isTerminal": true,
   "repositoryId": 666,
   "repositoryName": "yolo",
-  "issueNumber": 42
+  "issueNumber": 42,
+  "issueOwnerId": 123
 }
