@@ -34,7 +34,7 @@ public class Lambda {
         LoggerHandler lambdaLoggerHandler = new LambdaLoggerHandler(context);
         this.lambaLogger = DefaultLogger.newInstance(lambdaLoggerHandler);
 
-        lambaLogger.info("LAMBDA START.");
+        lambaLogger.info("λ START.");
 
         init(context, lambdaLoggerHandler);
 
@@ -44,7 +44,7 @@ public class Lambda {
 
         worker.doWork(amazonConfiguration);
 
-        lambaLogger.info("LAMBDA DONE.");
+        lambaLogger.info("λ DONE.");
     }
 
     private void init(Context context, LoggerHandler loggerHandler) {
