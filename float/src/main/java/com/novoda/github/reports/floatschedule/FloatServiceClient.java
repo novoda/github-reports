@@ -42,14 +42,17 @@ class FloatServiceClient {
         this.taskServiceClient = taskServiceClient;
     }
 
-    Observable<String> getGithubRepositories(String githubUsername) throws IOException, NoMatchFoundException {
+    Observable<String> getRepositoryNamesForFloatUser(String floatUsername) {
         // TODO start date, end date
-
-        return getTasksFor(getFloatUsername(githubUsername))
+        return getTasksFor(floatUsername)
                 .map(this::getRepositoriesFor)
                 .collect((Func0<List<String>>) ArrayList::new, List::addAll)
                 .flatMapIterable(UtilityFunctions.identity())
                 .distinct();
+    }
+
+    Observable<String> getRepositoryNamesForGithubUser(String githubUsername) throws IOException, NoMatchFoundException {
+        return getRepositoryNamesForFloatUser(getFloatUsername(githubUsername));
     }
 
     private String getFloatUsername(String githubUsername) throws IOException, NoMatchFoundException {
