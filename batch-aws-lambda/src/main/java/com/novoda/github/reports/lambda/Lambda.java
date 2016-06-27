@@ -52,11 +52,12 @@ public class Lambda {
 
         AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance();
         LambdaPropertiesReader lambdaPropertiesReader = LambdaPropertiesReader.newInstance();
+        ContextDescriptor contextDescriptor = ContextDescriptor.from(context);
 
         AmazonWorkerService workerService = AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader, loggerHandler);
         AmazonAlarmService alarmService = AmazonAlarmService.newInstance(amazonCredentialsReader, loggerHandler);
         AmazonQueueService queueService = AmazonQueueService.newInstance(amazonCredentialsReader, loggerHandler);
-        EmailNotifierService notifierService = EmailNotifierService.newInstance(loggerHandler, context);
+        EmailNotifierService notifierService = EmailNotifierService.newInstance(loggerHandler, contextDescriptor);
         AmazonWorkerHandlerService workerHandlerService = AmazonWorkerHandlerService.newInstance(loggerHandler);
 
         this.worker = BasicWorker.newInstance(
