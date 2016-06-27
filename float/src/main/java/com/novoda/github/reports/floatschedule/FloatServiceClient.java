@@ -42,17 +42,18 @@ class FloatServiceClient {
         this.taskServiceClient = taskServiceClient;
     }
 
-    Observable<String> getRepositoryNamesForFloatUser(String floatUsername) {
-        // TODO start date, end date
-        return getTasksFor(floatUsername)
+    Observable<String> getRepositoryNamesForFloatUser(String floatUsername, String startDate, int numberOfWeeks) {
+        return getTasksFor(floatUsername, startDate, numberOfWeeks)
                 .map(this::getRepositoriesFor)
                 .collect((Func0<List<String>>) ArrayList::new, List::addAll)
                 .flatMapIterable(UtilityFunctions.identity())
                 .distinct();
     }
 
-    Observable<String> getRepositoryNamesForGithubUser(String githubUsername) throws IOException, NoMatchFoundException {
-        return getRepositoryNamesForFloatUser(getFloatUsername(githubUsername));
+    Observable<String> getRepositoryNamesForGithubUser(String githubUsername, String startDate, int numberOfWeeks)
+            throws IOException, NoMatchFoundException {
+
+        return getRepositoryNamesForFloatUser(getFloatUsername(githubUsername), startDate, numberOfWeeks);
     }
 
     private String getFloatUsername(String githubUsername) throws IOException, NoMatchFoundException {
@@ -63,14 +64,14 @@ class FloatServiceClient {
         try {
             return floatGithubProjectConverter.getRepositories(task.getProjectName());
         } catch (IOException | NoMatchFoundException e) {
-            // ignore
+            // ignored
         }
         return Collections.emptyList();
     }
 
-    private Observable<Task> getTasksFor(String floatUsername) {
+    private Observable<Task> getTasksFor(String floatUsername, String startDate, int numberOfWeeks) {
         return peopleServiceClient.getPersons()
                 .filter(person -> person.getName().equalsIgnoreCase(floatUsername))
-                .flatMap(person -> taskServiceClient.getTasks("2014-01-01", 200, person.getId())); // FIXME
+                .flatMap(person -> taskServiceClient.getTasks(startDate, numberOfWeeks, person.getId()));
     }
 }
