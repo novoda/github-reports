@@ -372,7 +372,7 @@ public class BasicWorkerTest {
     }
 
     private void verifyRescheduleImmediately() throws WorkerStartException {
-        verify(workerService).startWorker(not(eq(configuration)));
+        verify(workerService, only()).startWorker(not(eq(configuration)));
     }
 
 }
