@@ -11,18 +11,20 @@ import com.novoda.github.reports.batch.logger.Logger;
 public class EmailNotifierService implements NotifierService<EmailNotifierConfiguration, AmazonConfiguration> {
 
     private final Logger logger;
+    private final Object additionalInfo;
 
-    public static EmailNotifierService newInstance(LoggerHandler loggerHandler) {
-        return new EmailNotifierService(DefaultLogger.newInstance(loggerHandler));
+    public static EmailNotifierService newInstance(LoggerHandler loggerHandler, Object additionalInfo) {
+        return new EmailNotifierService(DefaultLogger.newInstance(loggerHandler), additionalInfo);
     }
 
-    private EmailNotifierService(Logger logger) {
+    private EmailNotifierService(Logger logger, Object additionalInfo) {
         this.logger = logger;
+        this.additionalInfo = additionalInfo;
     }
 
     @Override
     public Notifier<EmailNotifierConfiguration, AmazonConfiguration> getNotifier() {
-        return EmailNotifier.newInstance(logger);
+        return EmailNotifier.newInstance(logger, additionalInfo);
     }
 
 }
