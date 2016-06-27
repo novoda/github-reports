@@ -46,7 +46,7 @@ public class FloatGithubProjectConverter {
     public List<String> getRepositories(String floatProject) throws IOException, NoMatchFoundException {
         readIfNeeded();
 
-        @SuppressWarnings("unchecked") // it's safe 'cause we're only using the array here, where we we for sure the types
+        @SuppressWarnings("unchecked") // it's safe 'cause we're only using the array here, we know the types
         final List<String>[] match = new List[]{ null };
         projectToRepositories.entrySet()
                 .stream()
