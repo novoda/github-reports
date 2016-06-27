@@ -35,7 +35,7 @@ public class FloatGithubUserConverter {
         return match[0];
     }
 
-    String getGithubUser(String floatName) throws IOException, NoMatchFoundException {
+    public String getGithubUser(String floatName) throws IOException, NoMatchFoundException {
         readIfNeeded();
         final String[] match = { null };
         floatToGithubUser.entrySet()
