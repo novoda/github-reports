@@ -35,11 +35,7 @@ public class FloatGithubUserConverter {
         return match[0];
     }
 
-    private boolean fileContentsAlreadyRead() {
-        return floatToGithubUser != null;
-    }
-
-    public String getGithubUser(String floatName) throws IOException, NoMatchFoundException {
+    String getGithubUser(String floatName) throws IOException, NoMatchFoundException {
         readIfNeeded();
         final String[] match = { null };
         floatToGithubUser.entrySet()
@@ -64,5 +60,9 @@ public class FloatGithubUserConverter {
         } catch (URISyntaxException | IOException e) {
             throw new IOException("Could not read users from file.");
         }
+    }
+
+    private boolean fileContentsAlreadyRead() {
+        return floatToGithubUser != null;
     }
 }
