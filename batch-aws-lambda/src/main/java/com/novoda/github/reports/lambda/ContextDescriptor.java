@@ -5,7 +5,7 @@ import com.novoda.github.reports.batch.aws.notifier.AdditionalInfo;
 
 class ContextDescriptor implements AdditionalInfo {
 
-    private Context context;
+    private final Context context;
 
     static ContextDescriptor from(Context context) {
         return new ContextDescriptor(context);
