@@ -19,15 +19,15 @@ class EmailNotifier implements Notifier<EmailNotifierConfiguration, AmazonConfig
 
     private static final String COMPLETION_SUBJECT = "[github-reports] Your job has completed!";
     private static final String COMPLETION_BODY = "The job with name \"%s\" has completed successfully.";
-    private static final String ERROR_SUBJECT = "[github-reports] Your job has errored!";
-    private static final String ERROR_BODY = "The job with name \"%s\" has errored.";
-    private static final Object NO_ADDITIONAL_INFO = null;
+    private static final String ERROR_SUBJECT = "[github-reports] Your job has failed!";
+    private static final String ERROR_BODY = "The job with name \"%s\" has failed because of an error.";
+    private static final AdditionalInfo NO_ADDITIONAL_INFO = null;
 
     private final Email email;
     private final Logger logger;
-    private final Object additionalInfo;
+    private final AdditionalInfo additionalInfo;
 
-    public static EmailNotifier newInstance(Logger logger, Object additionalInfo) {
+    public static EmailNotifier newInstance(Logger logger, AdditionalInfo additionalInfo) {
         return new EmailNotifier(new SimpleEmail(), logger, additionalInfo);
     }
 
@@ -35,7 +35,7 @@ class EmailNotifier implements Notifier<EmailNotifierConfiguration, AmazonConfig
         return new EmailNotifier(new SimpleEmail(), logger, NO_ADDITIONAL_INFO);
     }
 
-    EmailNotifier(Email email, Logger logger, Object additionalInfo) {
+    EmailNotifier(Email email, Logger logger, AdditionalInfo additionalInfo) {
         this.email = email;
         this.logger = logger;
         this.additionalInfo = additionalInfo;
@@ -97,7 +97,7 @@ class EmailNotifier implements Notifier<EmailNotifierConfiguration, AmazonConfig
         String body = String.format(bodyTemplate, configuration.jobName());
         if (additionalInfo != null) {
             body += "\nAdditional information:\n";
-            body += additionalInfo.toString();
+            body += additionalInfo.describeAdditionalInfo();
         }
         return body;
     }
