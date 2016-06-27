@@ -43,11 +43,23 @@ public class FloatGithubProjectConverterTest {
         assertThat("float", IsEqualIgnoringCase.equalToIgnoringCase(actual));
     }
 
+    @Test(expected = NoMatchFoundException.class)
+    public void givenAJsonFileWithNoMatch_whenGettingTheFloatProjectNameForARepository_thenThrowsException() throws Exception {
+
+        floatGithubProjectConverter.getFloatProject("repo420");
+    }
+
     @Test
     public void givenAJsonFileWithProjects_whenGettingRepositoriesForTheFloatProject_thenReturnsMatch() throws Exception {
 
-        List<String> actual = floatGithubProjectConverter.getRepositories("float");
+        List<String> actual = floatGithubProjectConverter.getRepositories("Float");
 
-        assertEquals(mapFromReader.get("float"), actual);
+        assertEquals(mapFromReader.get("Float"), actual);
+    }
+
+    @Test(expected = NoMatchFoundException.class)
+    public void givenAJsonFileWithNoMappings_whenGettingRepositoriesForTheFloatProject_thenThrowsException() throws Exception {
+
+        floatGithubProjectConverter.getRepositories("dab");
     }
 }
