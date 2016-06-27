@@ -18,7 +18,7 @@ public interface FloatApiService {
     Observable<Response<Projects>> getProjects();
 
     @GET("tasks")
-    Observable<Response<Assignments>> getTasks(@Query("start_day") String startDate,
+    Observable<Response<Assignments>> getTasks(@Query("start_day") String startDate,    // yyyy-mm-dd
                                                @Query("weeks") Integer weeks,
                                                @Query("people_id") Integer peopleId);
 }
