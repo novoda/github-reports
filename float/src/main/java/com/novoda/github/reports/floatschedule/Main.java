@@ -13,31 +13,35 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
-
         //getPersons();
         //getProjects();
         //getTasks();
 
-        /*
-        TO DO
-            . get tasks for a given user
-            . get projects
-            . determine to which repositories the user is assigned to
-        */
+        getRepos();
 
-        // . paul requests data for "adam brown"
-        // TODO get "adam brown"'s github handle        -> json file
-        // TODO get "adam brown"'s float projects       -> float api
-        // TODO get projects' repositories              -> json file
-        // we're now ready to hit github-stats
+        System.out.println("\n\t... DONE!");
+    }
 
-        // 1.
+    private static void getRepos() {
+        FloatServiceClient floatServiceClient = FloatServiceClient.newInstance();
+        floatServiceClient.getRepositoryNamesForFloatUser("paul blundell", "2014-01-01", 42)
+                .toBlocking()
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println(">>> COMPLETED!");
+                    }
 
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println(">>> ERROR: " + e.getMessage());
+                    }
 
-
-        System.out.println("... DONE!");
-
+                    @Override
+                    public void onNext(String repo) {
+                        System.out.println("> Repository: " + repo);
+                    }
+                });
     }
 
     private static void getTasks() {
