@@ -18,7 +18,7 @@ public class FloatGithubUserConverter {
         this.jsonMapReader = jsonMapReader;
     }
 
-    public String getFloatUser(String githubUsername) throws IOException, NoMatchException {
+    public String getFloatUser(String githubUsername) throws IOException, NoMatchFoundException {
         readIfNeeded();
 
         final String[] match = { null };
@@ -29,7 +29,7 @@ public class FloatGithubUserConverter {
         });
 
         if (match[0] == null) {
-            throw new NoMatchException(githubUsername);
+            throw new NoMatchFoundException(githubUsername);
         }
 
         return match[0];
@@ -39,7 +39,7 @@ public class FloatGithubUserConverter {
         return floatToGithubUser != null;
     }
 
-    public String getGithubUser(String floatName) throws IOException, NoMatchException {
+    public String getGithubUser(String floatName) throws IOException, NoMatchFoundException {
         readIfNeeded();
         final String[] match = { null };
         floatToGithubUser.entrySet()
@@ -49,7 +49,7 @@ public class FloatGithubUserConverter {
                 .ifPresent(entry -> match[0] = entry.getValue());
 
         if (match[0] == null) {
-            throw new NoMatchException(floatName);
+            throw new NoMatchFoundException(floatName);
         }
 
         return match[0];
