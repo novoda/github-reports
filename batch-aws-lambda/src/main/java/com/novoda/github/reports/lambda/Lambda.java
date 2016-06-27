@@ -28,23 +28,23 @@ public class Lambda {
 
     private AmazonConfigurationConverter amazonConfigurationConverter;
     private BasicWorker<AmazonAlarm, AmazonQueueMessage, AmazonQueue, EmailNotifierConfiguration, AmazonConfiguration> worker;
-    private Logger lambaLogger;
+    private Logger lambdaLogger;
 
     public void handle(InputStream configuration, Context context) throws ConfigurationConverterException, WorkerOperationFailedException {
         LoggerHandler lambdaLoggerHandler = new LambdaLoggerHandler(context);
-        this.lambaLogger = DefaultLogger.newInstance(lambdaLoggerHandler);
+        this.lambdaLogger = DefaultLogger.newInstance(lambdaLoggerHandler);
 
-        lambaLogger.info("λ START.");
+        lambdaLogger.info("λ START.");
 
         init(context, lambdaLoggerHandler);
 
         AmazonConfiguration amazonConfiguration = amazonConfigurationConverter.fromJson(configuration);
 
-        lambaLogger.debug("Handling configuration:\n%s", amazonConfiguration);
+        lambdaLogger.debug("Handling configuration:\n%s", amazonConfiguration);
 
         worker.doWork(amazonConfiguration);
 
-        lambaLogger.info("λ DONE.");
+        lambdaLogger.info("λ DONE.");
     }
 
     private void init(Context context, LoggerHandler loggerHandler) {
