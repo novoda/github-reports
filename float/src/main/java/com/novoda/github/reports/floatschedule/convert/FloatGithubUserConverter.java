@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
-
 public class FloatGithubUserConverter {
 
     private final JsonMapReader<Map<String, String>> jsonMapReader;
@@ -20,8 +18,7 @@ public class FloatGithubUserConverter {
         this.jsonMapReader = jsonMapReader;
     }
 
-    @Nullable
-    public String getFloatUser(String githubUsername) throws IOException {
+    public String getFloatUser(String githubUsername) throws IOException, UserNotFoundException {
         readIfNeeded();
 
         final String[] match = { null };
@@ -30,6 +27,11 @@ public class FloatGithubUserConverter {
                 match[0] = floatName;
             }
         });
+
+        if (match[0] == null) {
+            throw new UserNotFoundException(githubUsername);
+        }
+
         return match[0];
     }
 
@@ -37,8 +39,7 @@ public class FloatGithubUserConverter {
         return floatToGithubUser != null;
     }
 
-    @Nullable
-    public String getGithubUser(String floatName) throws IOException {
+    public String getGithubUser(String floatName) throws IOException, UserNotFoundException {
         readIfNeeded();
         final String[] match = { null };
         floatToGithubUser.entrySet()
@@ -46,6 +47,11 @@ public class FloatGithubUserConverter {
                 .filter(entry -> entry.getKey().equalsIgnoreCase(floatName))
                 .findFirst()
                 .ifPresent(entry -> match[0] = entry.getValue());
+
+        if (match[0] == null) {
+            throw new UserNotFoundException(floatName);
+        }
+
         return match[0];
     }
 
@@ -57,6 +63,13 @@ public class FloatGithubUserConverter {
             floatToGithubUser = jsonMapReader.readFromResource("users.json");
         } catch (URISyntaxException | IOException e) {
             throw new IOException("Could not read users from file.");
+        }
+    }
+
+    public static class UserNotFoundException extends Exception {
+
+        UserNotFoundException(String username) {
+            super("Could not find a match for user \"" + username + "\". Please check your mappings file and/or your query string.");
         }
     }
 }
