@@ -19,7 +19,7 @@ public class TransformToRepositoryIssueEvent<T, C extends RepositoryIssueEvent>
     private final Long repositoryId;
     private final Long issueNumber;
     private final Long issueOwnerId;
-    private boolean isPullRequest;
+    private final boolean isPullRequest;
     private final Func2<RepositoryIssue, T, C> repositoryIssueEventCreator;
 
     public TransformToRepositoryIssueEvent(Long repositoryId,
