@@ -37,7 +37,9 @@ public class GithubIssue {
     public GithubIssue(int issueNumber, long ownerId, boolean isPullRequest) {
         this.number = issueNumber;
         this.user = new GithubUser(ownerId);
-        this.pullRequest = new GithubPullRequest();
+        if (isPullRequest) {
+            this.pullRequest = new GithubPullRequest();
+        }
     }
 
     public long getId() {
