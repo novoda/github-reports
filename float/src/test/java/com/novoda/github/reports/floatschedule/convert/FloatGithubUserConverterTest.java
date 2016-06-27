@@ -1,7 +1,5 @@
 package com.novoda.github.reports.floatschedule.convert;
 
-import com.novoda.github.reports.floatschedule.convert.FloatGithubUserConverter.UserNotFoundException;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +40,7 @@ public class FloatGithubUserConverterTest {
         assertThat("float pirata", IsEqualIgnoringCase.equalToIgnoringCase(actual));
     }
 
-    @Test(expected = UserNotFoundException.class)
+    @Test(expected = NoMatchException.class)
     public void givenAJsonFileWithNoMatch_whenGettingTheFloatUsernameForAGithubUsername_thenThrowsException() throws Exception {
 
         floatGithubUserConverter.getFloatUser("sebastião");
@@ -56,7 +54,7 @@ public class FloatGithubUserConverterTest {
         assertThat("github meirinho", IsEqualIgnoringCase.equalToIgnoringCase(actual));
     }
 
-    @Test(expected = UserNotFoundException.class)
+    @Test(expected = NoMatchException.class)
     public void givenAJsonFileWithNoMatch_whenGettingTheGithubUsernameForAFloatUsername_thenThrowsException() throws Exception {
 
         floatGithubUserConverter.getGithubUser("palerma");

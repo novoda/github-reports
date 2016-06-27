@@ -18,7 +18,7 @@ public class FloatGithubUserConverter {
         this.jsonMapReader = jsonMapReader;
     }
 
-    public String getFloatUser(String githubUsername) throws IOException, UserNotFoundException {
+    public String getFloatUser(String githubUsername) throws IOException, NoMatchException {
         readIfNeeded();
 
         final String[] match = { null };
@@ -29,7 +29,7 @@ public class FloatGithubUserConverter {
         });
 
         if (match[0] == null) {
-            throw new UserNotFoundException(githubUsername);
+            throw new NoMatchException(githubUsername);
         }
 
         return match[0];
@@ -39,7 +39,7 @@ public class FloatGithubUserConverter {
         return floatToGithubUser != null;
     }
 
-    public String getGithubUser(String floatName) throws IOException, UserNotFoundException {
+    public String getGithubUser(String floatName) throws IOException, NoMatchException {
         readIfNeeded();
         final String[] match = { null };
         floatToGithubUser.entrySet()
@@ -49,7 +49,7 @@ public class FloatGithubUserConverter {
                 .ifPresent(entry -> match[0] = entry.getValue());
 
         if (match[0] == null) {
-            throw new UserNotFoundException(floatName);
+            throw new NoMatchException(floatName);
         }
 
         return match[0];
@@ -63,13 +63,6 @@ public class FloatGithubUserConverter {
             floatToGithubUser = jsonMapReader.readFromResource("users.json");
         } catch (URISyntaxException | IOException e) {
             throw new IOException("Could not read users from file.");
-        }
-    }
-
-    public static class UserNotFoundException extends Exception {
-
-        UserNotFoundException(String username) {
-            super("Could not find a match for user \"" + username + "\". Please check your mappings file and/or your query string.");
         }
     }
 }
