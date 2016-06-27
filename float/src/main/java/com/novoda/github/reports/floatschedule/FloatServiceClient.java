@@ -16,7 +16,7 @@ import rx.Observable;
 import rx.functions.Func0;
 import rx.internal.util.UtilityFunctions;
 
-public class FloatServiceClient {
+class FloatServiceClient {
 
     private final FloatGithubUserConverter floatGithubUserConverter;
     private final FloatGithubProjectConverter floatGithubProjectConverter;
@@ -42,7 +42,7 @@ public class FloatServiceClient {
         this.taskServiceClient = taskServiceClient;
     }
 
-    Observable<String> getGithubRepositories(String githubUsername) {
+    Observable<String> getGithubRepositories(String githubUsername) throws IOException, NoMatchFoundException {
         // TODO start date, end date
 
         return getTasksFor(getFloatUsername(githubUsername))
@@ -52,13 +52,8 @@ public class FloatServiceClient {
                 .distinct();
     }
 
-    private String getFloatUsername(String githubUsername) {
-        try {
-            return floatGithubUserConverter.getFloatUser(githubUsername);
-        } catch (IOException | NoMatchFoundException e) {
-            e.printStackTrace();
-        }
-        return "";
+    private String getFloatUsername(String githubUsername) throws IOException, NoMatchFoundException {
+        return floatGithubUserConverter.getFloatUser(githubUsername);
     }
 
     private List<String> getRepositoriesFor(Task task) {
