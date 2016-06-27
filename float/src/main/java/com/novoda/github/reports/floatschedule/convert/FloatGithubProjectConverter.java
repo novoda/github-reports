@@ -3,10 +3,7 @@ package com.novoda.github.reports.floatschedule.convert;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-
-import org.jetbrains.annotations.Nullable;
 
 public class FloatGithubProjectConverter {
 
@@ -22,15 +19,20 @@ public class FloatGithubProjectConverter {
         this.jsonMapReader = jsonMapReader;
     }
 
-    @Nullable
-    public String getFloatProject(String repositoryName) throws IOException {
+    public String getFloatProject(String repositoryName) throws IOException, NoMatchFoundException {
         readIfNeeded();
+
         final String[] match = { null };
         projectToRepositories.entrySet()
                 .stream()
                 .filter(entry -> containsIgnoreCase(repositoryName, entry.getValue()))
                 .findFirst()
                 .ifPresent(entry -> match[0] = entry.getKey());
+
+        if (match[0] == null) {
+            throw new NoMatchFoundException(repositoryName);
+        }
+
         return match[0];
     }
 
@@ -44,10 +46,22 @@ public class FloatGithubProjectConverter {
                 .count() > 0;
     }
 
-    @Nullable
-    public List<String> getRepositories(String floatProject) throws IOException {
+    public List<String> getRepositories(String floatProject) throws IOException, NoMatchFoundException {
         readIfNeeded();
-        return projectToRepositories.get(floatProject.toLowerCase(Locale.UK));
+
+        @SuppressWarnings("unchecked") // it's safe 'cause we're only using the array here, where we we for sure the types
+        final List<String>[] match = new List[]{ null };
+        projectToRepositories.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().equalsIgnoreCase(floatProject))
+                .findFirst()
+                .ifPresent(entry -> match[0] = entry.getValue());
+
+        if (match[0] == null) {
+            throw new NoMatchFoundException(floatProject);
+        }
+
+        return match[0];
     }
 
     private void readIfNeeded() throws IOException {
@@ -60,4 +74,5 @@ public class FloatGithubProjectConverter {
             throw new IOException("Could not read users from file.");
         }
     }
+
 }
