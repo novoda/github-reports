@@ -78,6 +78,7 @@ public class ReviewCommentsServiceClient {
                 message.repositoryId(),
                 message.issueNumber(),
                 message.issueOwnerId(),
+                message.isPullRequest(),
                 RepositoryIssueEventComment::new
         );
     }
@@ -101,7 +102,8 @@ public class ReviewCommentsServiceClient {
                 amazonGetReviewCommentsQueueMessage.repositoryId(),
                 amazonGetReviewCommentsQueueMessage.repositoryName(),
                 amazonGetReviewCommentsQueueMessage.issueNumber(),
-                amazonGetReviewCommentsQueueMessage.issueOwnerId()
+                amazonGetReviewCommentsQueueMessage.issueOwnerId(),
+                amazonGetReviewCommentsQueueMessage.isPullRequest()
         );
     }
 
