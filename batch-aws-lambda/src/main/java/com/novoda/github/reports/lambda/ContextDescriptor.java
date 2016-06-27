@@ -1,8 +1,9 @@
 package com.novoda.github.reports.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.novoda.github.reports.batch.aws.notifier.AdditionalInfo;
 
-class ContextDescriptor {
+class ContextDescriptor implements AdditionalInfo {
 
     private Context context;
 
@@ -15,7 +16,7 @@ class ContextDescriptor {
     }
 
     @Override
-    public String toString() {
+    public String describeAdditionalInfo() {
         return String.format(
                 "AWS Request ID: %s\n" +
                         "Log Group/Stream: %s/%s\n" +

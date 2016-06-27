@@ -62,7 +62,7 @@ public class EmailNotifierTest {
             GITHUB_CONFIGURATION,
             EMAIL_NOTIFIER_CONFIGURATION
     );
-    private static final java.lang.String ANY_ADDITIONAL_INFO = "Some additional info\nhere.";
+    private static final String ANY_ADDITIONAL_INFO = "Some additional info\nhere.";
 
     @Mock
     private Email email;
@@ -71,7 +71,7 @@ public class EmailNotifierTest {
     private Logger logger;
 
     @Mock
-    private Object additionalInfo;
+    private AdditionalInfo additionalInfo;
 
     private EmailNotifier notifier;
 
@@ -105,8 +105,8 @@ public class EmailNotifierTest {
         notifier.notifyError(AMAZON_CONFIGURATION, new Exception());
 
         verifyEmailSetWithParametersFromConfig();
-        verify(email).setSubject("[github-reports] Your job has errored!");
-        verify(email).setMsg(startsWith("The job with name \"" + ANY_JOB_NAME + "\" has errored."));
+        verify(email).setSubject("[github-reports] Your job has failed!");
+        verify(email).setMsg(startsWith("The job with name \"" + ANY_JOB_NAME + "\" has failed because of an error."));
     }
 
     private void verifyEmailSetWithParametersFromConfig() throws EmailException {
@@ -148,8 +148,7 @@ public class EmailNotifierTest {
     public void givenNotifierWithAdditionalInfo_whenNotifyCompletion_thenSendAdditionalInfo()
             throws NotifierOperationFailedException, EmailException {
 
-        notifier = new EmailNotifier(email, logger, additionalInfo);
-        when(additionalInfo.toString()).thenReturn(ANY_ADDITIONAL_INFO);
+        givenNotifierWithAdditionalInfo();
 
         notifier.notifyCompletion(AMAZON_CONFIGURATION);
 
@@ -160,12 +159,16 @@ public class EmailNotifierTest {
     public void givenNotifierWithAdditionalInfo_whenNotifyError_thenSendAdditionalInfo()
             throws NotifierOperationFailedException, EmailException {
 
-        notifier = new EmailNotifier(email, logger, additionalInfo);
-        when(additionalInfo.toString()).thenReturn(ANY_ADDITIONAL_INFO);
+        givenNotifierWithAdditionalInfo();
 
         notifier.notifyError(AMAZON_CONFIGURATION, new Exception());
 
         verify(email).setMsg(endsWith(ANY_ADDITIONAL_INFO));
+    }
+
+    private void givenNotifierWithAdditionalInfo() {
+        notifier = new EmailNotifier(email, logger, additionalInfo);
+        when(additionalInfo.describeAdditionalInfo()).thenReturn(ANY_ADDITIONAL_INFO);
     }
 
 }
