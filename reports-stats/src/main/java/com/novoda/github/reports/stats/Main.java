@@ -29,7 +29,7 @@ public class Main {
     private static final String COMMAND_USER = "user";
     private static final String COMMAND_REPO = "repo";
     private static final String COMMAND_PROJECT = "project";
-    private static final String COMMAND_PR = "pr";
+    private static final String COMMAND_PULL_REQUEST = "pr";
 
     private void execute(String[] args) throws UnhandledCommandException, OptionsNotValidException {
         UserOptions userOptions = new UserOptions();
@@ -41,7 +41,7 @@ public class Main {
         commander.addCommand(COMMAND_USER, userOptions);
         commander.addCommand(COMMAND_REPO, repoOptions);
         commander.addCommand(COMMAND_PROJECT, projectOptions);
-        commander.addCommand(COMMAND_PR, prOptions);
+        commander.addCommand(COMMAND_PULL_REQUEST, prOptions);
 
         commander.parse(args);
         String command = commander.getParsedCommand();
@@ -58,7 +58,7 @@ public class Main {
         } else if (command.equals(COMMAND_PROJECT)) {
             ProjectCommandHandler handler = new ProjectCommandHandler(DbProjectDataLayer.newInstance(connectionManager));
             stats = handler.handle(projectOptions);
-        } else if (command.equals(COMMAND_PR)) {
+        } else if (command.equals(COMMAND_PULL_REQUEST)) {
             PullRequestOptionsValidator validator = new PullRequestOptionsValidator();
             validator.validate(prOptions);
             PullRequestCommandHandler handler = new PullRequestCommandHandler(DbEventDataLayer.newInstance(connectionManager));
