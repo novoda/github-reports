@@ -27,7 +27,7 @@ public class FloatGithubProjectConverter {
         final String[] match = { null };
         projectToRepositories.entrySet()
                 .stream()
-                .filter(entry -> githubRepositoryNameInGithubRepositoriesMappings(repositoryName, entry))
+                .filter(entry -> repositoryIsInRepositoriesOfProject(repositoryName, entry))
                 .findFirst()
                 .ifPresent(entry -> match[0] = entry.getKey());
 
@@ -38,10 +38,14 @@ public class FloatGithubProjectConverter {
         return match[0];
     }
 
-    private boolean githubRepositoryNameInGithubRepositoriesMappings(String githubRepositoryName, Map.Entry<String, List<String>> entry) {
-        return entry.getValue().stream()
-                .filter(githubProjects -> githubProjects.toLowerCase(Locale.UK).contains(githubRepositoryName.toLowerCase(Locale.UK)))
+    private boolean repositoryIsInRepositoriesOfProject(String githubRepositoryName, Map.Entry<String, List<String>> projectWithRepositoryNames) {
+        return projectWithRepositoryNames.getValue().stream()
+                .filter(byRepositoriesContainingRepositoryWithName(githubRepositoryName))
                 .count() > 0;
+    }
+
+    private Predicate<String> byRepositoriesContainingRepositoryWithName(String githubRepositoryName) {
+        return githubProjects -> githubProjects.toLowerCase(Locale.UK).contains(githubRepositoryName.toLowerCase(Locale.UK));
     }
 
     public List<String> getRepositories(String floatProject) throws IOException, NoMatchFoundException {
