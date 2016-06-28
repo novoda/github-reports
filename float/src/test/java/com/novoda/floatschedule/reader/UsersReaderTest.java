@@ -1,7 +1,5 @@
 package com.novoda.floatschedule.reader;
 
-import com.novoda.floatschedule.convert.JsonMapReader;
-
 import java.util.HashMap;
 import java.util.Map;
 

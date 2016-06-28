@@ -1,7 +1,5 @@
 package com.novoda.floatschedule.reader;
 
-import com.novoda.floatschedule.convert.JsonMapReader;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
