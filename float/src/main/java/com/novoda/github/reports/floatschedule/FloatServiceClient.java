@@ -77,11 +77,11 @@ class FloatServiceClient {
                 .flatMap(toTasks(startDate, numberOfWeeks));
     }
 
-    private Func1<Person, Observable<? extends Task>> toTasks(String startDate, int numberOfWeeks) {
-        return person -> taskServiceClient.getTasks(startDate, numberOfWeeks, person.getId());
-    }
-
     private Func1<Person, Boolean> byFloatUsername(String floatUsername) {
         return person -> person.getName().equalsIgnoreCase(floatUsername);
+    }
+
+    private Func1<Person, Observable<? extends Task>> toTasks(String startDate, int numberOfWeeks) {
+        return person -> taskServiceClient.getTasks(startDate, numberOfWeeks, person.getId());
     }
 }
