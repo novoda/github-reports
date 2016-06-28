@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
-
 public class FloatGithubUserConverter {
 
     private final JsonMapReader<Map<String, String>> jsonMapReader;
@@ -20,8 +18,7 @@ public class FloatGithubUserConverter {
         this.jsonMapReader = jsonMapReader;
     }
 
-    @Nullable
-    public String getFloatUser(String githubUsername) throws IOException {
+    public String getFloatUser(String githubUsername) throws IOException, NoMatchFoundException {
         readIfNeeded();
 
         final String[] match = { null };
@@ -30,15 +27,15 @@ public class FloatGithubUserConverter {
                 match[0] = floatName;
             }
         });
+
+        if (match[0] == null) {
+            throw new NoMatchFoundException(githubUsername);
+        }
+
         return match[0];
     }
 
-    private boolean fileContentsAlreadyRead() {
-        return floatToGithubUser != null;
-    }
-
-    @Nullable
-    public String getGithubUser(String floatName) throws IOException {
+    public String getGithubUser(String floatName) throws IOException, NoMatchFoundException {
         readIfNeeded();
         final String[] match = { null };
         floatToGithubUser.entrySet()
@@ -46,6 +43,11 @@ public class FloatGithubUserConverter {
                 .filter(entry -> entry.getKey().equalsIgnoreCase(floatName))
                 .findFirst()
                 .ifPresent(entry -> match[0] = entry.getValue());
+
+        if (match[0] == null) {
+            throw new NoMatchFoundException(floatName);
+        }
+
         return match[0];
     }
 
@@ -58,5 +60,9 @@ public class FloatGithubUserConverter {
         } catch (URISyntaxException | IOException e) {
             throw new IOException("Could not read users from file.");
         }
+    }
+
+    private boolean fileContentsAlreadyRead() {
+        return floatToGithubUser != null;
     }
 }

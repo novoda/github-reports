@@ -33,6 +33,10 @@ public class Task {
         this.name = name;
     }
 
+    public String getProjectName() {
+        return projectName;
+    }
+
     @Override
     public String toString() {
         return name + "@" + projectName + " (" + clientName + ") [" + id + "], " + personName;

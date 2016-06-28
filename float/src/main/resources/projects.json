@@ -1,4 +1,9 @@
 {
   "All4": [ "all-4" ],
-  "The Times": [ "project-d" ]
+  "The Times": [ "project-d", "project-d-api" ],
+  "Oddschecker": ["oddschecker-android", "oddschecker-ios", "oddschecker-apiary" ],
+  "Sun+": ["sun-mobile-android" ],
+  "Ccleaner": [ "ccleaner" ],
+  "creators": [ "soundcloud-creators" ],
+  "R & D": [ "github-reports" ]
 }

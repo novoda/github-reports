@@ -15,10 +15,33 @@ public class Main {
 
         //getPersons();
         //getProjects();
-        getTasks();
+        //getTasks();
 
-        System.out.println("... DONE!");
+        getRepos();
 
+        System.out.println("\n\t... DONE!");
+    }
+
+    private static void getRepos() {
+        FloatServiceClient floatServiceClient = FloatServiceClient.newInstance();
+        floatServiceClient.getRepositoryNamesForFloatUser("paul blundell", "2014-01-01", 42)
+                .toBlocking()
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println(">>> COMPLETED!");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println(">>> ERROR: " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(String repo) {
+                        System.out.println("> Repository: " + repo);
+                    }
+                });
     }
 
     private static void getTasks() {
