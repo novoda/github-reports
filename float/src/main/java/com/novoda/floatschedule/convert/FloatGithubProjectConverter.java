@@ -1,7 +1,8 @@
 package com.novoda.floatschedule.convert;
 
+import com.novoda.floatschedule.reader.ProjectsReader;
+
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -9,23 +10,21 @@ import java.util.function.Predicate;
 
 public class FloatGithubProjectConverter {
 
-    private final JsonMapReader<Map<String, List<String>>> jsonMapReader;
-    private Map<String, List<String>> projectToRepositories;
+    private final ProjectsReader projectsReader;
 
     public static FloatGithubProjectConverter newInstance() {
-        JsonMapReader<Map<String, List<String>>> jsonMapReader = JsonMapReader.newStringToListOfStringsInstance();
-        return new FloatGithubProjectConverter(jsonMapReader);
+        return new FloatGithubProjectConverter(ProjectsReader.newInstance());
     }
 
-    FloatGithubProjectConverter(JsonMapReader<Map<String, List<String>>> jsonMapReader) {
-        this.jsonMapReader = jsonMapReader;
+    private FloatGithubProjectConverter(ProjectsReader projectsReader) {
+        this.projectsReader = projectsReader;
     }
 
     String getFloatProject(String repositoryName) throws IOException, NoMatchFoundException {
         readIfNeeded();
 
         final String[] match = { null };
-        projectToRepositories.entrySet()
+        projectsReader.getContent().entrySet()
                 .stream()
                 .filter(entry -> repositoryIsInRepositoriesOfProject(repositoryName, entry))
                 .findFirst()
@@ -53,7 +52,7 @@ public class FloatGithubProjectConverter {
 
         @SuppressWarnings("unchecked") // it's safe 'cause we're only using the array here, we know the types
         final List<String>[] match = new List[]{ null };
-        projectToRepositories.entrySet()
+        projectsReader.getContent().entrySet()
                 .stream()
                 .filter(byProjectHavingRepositories(floatProject))
                 .findFirst()
@@ -70,19 +69,11 @@ public class FloatGithubProjectConverter {
         return entry -> floatProject.toLowerCase(Locale.UK).contains(entry.getKey().toLowerCase(Locale.UK));
     }
 
-    private boolean fileContentsAlreadyRead() {
-        return projectToRepositories != null;
-    }
-
     private void readIfNeeded() throws IOException {
-        if (fileContentsAlreadyRead()) {
+        if (projectsReader.hasContent()) {
             return;
         }
-        try {
-            projectToRepositories = jsonMapReader.readFromResource("projects.json");
-        } catch (URISyntaxException | IOException e) {
-            throw new IOException("Could not read users from file.");
-        }
+        projectsReader.read();
     }
 
 }

@@ -1,5 +1,7 @@
 package com.novoda.floatschedule.convert;
 
+import com.novoda.floatschedule.reader.ProjectsReader;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.Map;
 import org.hamcrest.text.IsEqualIgnoringCase;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
@@ -17,22 +20,21 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FloatGithubProjectConverterTest {
 
-    private Map<String, List<String>> mapFromReader;
+    private Map<String, List<String>> projectToRepositories;
 
     @Mock
-    JsonMapReader<Map<String, List<String>>> mockJsonMapReader;
+    private ProjectsReader mockProjectsReader;
 
+    @InjectMocks
     private FloatGithubProjectConverter floatGithubProjectConverter;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
 
-        mapFromReader = new HashMap<>(1);
-        mapFromReader.put("Float", Arrays.asList("repo1", "repo2"));
-        when(mockJsonMapReader.readFromResource("projects.json")).thenReturn(mapFromReader);
-
-        floatGithubProjectConverter = new FloatGithubProjectConverter(mockJsonMapReader);
+        projectToRepositories = new HashMap<>(1);
+        projectToRepositories.put("Float", Arrays.asList("repo1", "repo2"));
+        when(mockProjectsReader.getContent()).thenReturn(projectToRepositories);
     }
 
     @Test
@@ -54,7 +56,7 @@ public class FloatGithubProjectConverterTest {
 
         List<String> actual = floatGithubProjectConverter.getRepositories("Float");
 
-        assertEquals(mapFromReader.get("Float"), actual);
+        assertEquals(projectToRepositories.get("Float"), actual);
     }
 
     @Test(expected = NoMatchFoundException.class)
