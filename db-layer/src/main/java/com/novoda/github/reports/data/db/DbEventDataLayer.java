@@ -42,6 +42,8 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
                                      Date to,
                                      List<String> projects,
                                      List<String> repositories,
+                                     List<String> teamUsers,
+                                     List<String> projectUsers,
                                      List<String> users,
                                      PullRequestStatsGroupBy groupBy,
                                      boolean withAverage) {

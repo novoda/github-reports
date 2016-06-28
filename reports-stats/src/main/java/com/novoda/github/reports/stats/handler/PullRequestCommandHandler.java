@@ -21,6 +21,8 @@ public class PullRequestCommandHandler implements CommandHandler<PullRequestStat
                 options.getTo(),
                 options.getProjects(),
                 options.getRepositories(),
+                options.getTeamUsers(),
+                options.getProjectUsers(),
                 options.getUsers(),
                 convertToGroupBy(options.getGroupBy()),
                 options.withAverage()

@@ -16,8 +16,16 @@ public class PullRequestOptions extends RangeOptions {
             description = "Projects to retrieve data from (can't be used together with \"--repositories\")")
     private List<String> projects;
 
+    @Parameter(names = {"--teamUsers", "-tu"},
+            description = "Users to treat as team (company) internals")
+    private List<String> teamUsers;
+
+    @Parameter(names = {"--projectUsers", "-pu"},
+            description = "Users to treat as project internals")
+    private List<String> projectUsers;
+
     @Parameter(names = {"--users", "-u"},
-            description = "Users to retrieve data for")
+            description = "Users to filter on")
     private List<String> users;
 
     @Parameter(names = {"--group-by", "-g"},
@@ -35,6 +43,14 @@ public class PullRequestOptions extends RangeOptions {
 
     public List<String> getProjects() {
         return projects;
+    }
+
+    public List<String> getTeamUsers() {
+        return teamUsers;
+    }
+
+    public List<String> getProjectUsers() {
+        return projectUsers;
     }
 
     public List<String> getUsers() {

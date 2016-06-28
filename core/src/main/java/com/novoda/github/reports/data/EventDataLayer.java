@@ -12,6 +12,8 @@ public interface EventDataLayer extends DataLayer<Event> {
                               Date to,
                               List<String> projects,
                               List<String> repositories,
+                              List<String> teamUsers,
+                              List<String> projectUsers,
                               List<String> users,
                               PullRequestStatsGroupBy groupBy,
                               boolean withAverage);
