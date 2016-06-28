@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import rx.Observable;
@@ -39,26 +40,23 @@ public class FloatServiceClientTest {
     private static final String ANY_OTHER_GITHUB_REPO_NAME = "nojo";
 
     @Mock
-    FloatGithubUserConverter mockFloatGithubUserConverter;
+    private FloatGithubUserConverter mockFloatGithubUserConverter;
 
     @Mock
-    FloatGithubProjectConverter mockFloatGithubProjectConverter;
+    private FloatGithubProjectConverter mockFloatGithubProjectConverter;
 
     @Mock
-    PeopleServiceClient mockPeopleServiceClient;
+    private PeopleServiceClient mockPeopleServiceClient;
 
     @Mock
-    TaskServiceClient mockTaskServiceClient;
+    private TaskServiceClient mockTaskServiceClient;
 
+    @InjectMocks
     private FloatServiceClient floatServiceClient;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        floatServiceClient = new FloatServiceClient(mockFloatGithubUserConverter,
-                                                    mockFloatGithubProjectConverter,
-                                                    mockPeopleServiceClient,
-                                                    mockTaskServiceClient);
 
         givenPersons();
 
