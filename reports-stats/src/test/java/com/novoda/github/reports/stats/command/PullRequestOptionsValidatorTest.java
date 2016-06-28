@@ -4,9 +4,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 
 public class PullRequestOptionsValidatorTest {
 
@@ -24,16 +25,13 @@ public class PullRequestOptionsValidatorTest {
 
     private PullRequestOptionsValidator validator;
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     @Before
     public void setUp() {
         validator = new PullRequestOptionsValidator();
     }
 
     @Test
-    public void givenOptionsWithProjectsAndNullRepositories_whenValidate_thenDoNotThrowException() throws OptionsNotValidException {
+    public void givenOptionsWithProjectsAndNullRepositories_whenValidate_thenValidate() {
         PullRequestOptions options = new PullRequestOptions(
                 ANY_VALID_PROJECTS,
                 NULL_REPOSITORIES,
@@ -44,12 +42,13 @@ public class PullRequestOptionsValidatorTest {
                 ANY_WITH_AVERAGE
         );
 
-        validator.validate(options);
+        boolean actual = validator.validate(options);
 
+        assertTrue(actual);
     }
 
     @Test
-    public void givenOptionsWithProjectsAndEmptyRepositories_whenValidate_thenDoNotThrowException() throws OptionsNotValidException {
+    public void givenOptionsWithProjectsAndEmptyRepositories_whenValidate_thenValidate() {
         PullRequestOptions options = new PullRequestOptions(
                 ANY_VALID_PROJECTS,
                 EMPTY_REPOSITORIES,
@@ -60,12 +59,13 @@ public class PullRequestOptionsValidatorTest {
                 ANY_WITH_AVERAGE
         );
 
-        validator.validate(options);
+        boolean actual = validator.validate(options);
 
+        assertTrue(actual);
     }
 
     @Test
-    public void givenOptionsWithRepositoriesAndNullProjects_whenValidate_thenDoNotThrowException() throws OptionsNotValidException {
+    public void givenOptionsWithRepositoriesAndNullProjects_whenValidate_thenValidate() {
         PullRequestOptions options = new PullRequestOptions(
                 NULL_PROJECTS,
                 ANY_VALID_REPOSITORIES,
@@ -76,12 +76,13 @@ public class PullRequestOptionsValidatorTest {
                 ANY_WITH_AVERAGE
         );
 
-        validator.validate(options);
+        boolean actual = validator.validate(options);
 
+        assertTrue(actual);
     }
 
     @Test
-    public void givenOptionsWithRepositoriesAndEmptyProjects_whenValidate_thenDoNotThrowException() throws OptionsNotValidException {
+    public void givenOptionsWithRepositoriesAndEmptyProjects_whenValidate_thenValidate() {
         PullRequestOptions options = new PullRequestOptions(
                 EMPTY_PROJECTS,
                 ANY_VALID_REPOSITORIES,
@@ -92,12 +93,13 @@ public class PullRequestOptionsValidatorTest {
                 ANY_WITH_AVERAGE
         );
 
-        validator.validate(options);
+        boolean actual = validator.validate(options);
 
+        assertTrue(actual);
     }
 
     @Test
-    public void givenOptionsWithRepositoriesAndProjects_whenValidate_thenThrowOptionsNotValidException() throws OptionsNotValidException {
+    public void givenOptionsWithRepositoriesAndProjects_whenValidate_thenDoNotValidate() {
         PullRequestOptions options = new PullRequestOptions(
                 ANY_VALID_PROJECTS,
                 ANY_VALID_REPOSITORIES,
@@ -108,13 +110,13 @@ public class PullRequestOptionsValidatorTest {
                 ANY_WITH_AVERAGE
         );
 
-        expectedException.expect(OptionsNotValidException.class);
+        boolean actual = validator.validate(options);
 
-        validator.validate(options);
+        assertFalse(actual);
     }
 
     @Test
-    public void givenOptionsWithEmptyRepositoriesAndEmptyProjects_whenValidate_thenDoNotThrowException() throws OptionsNotValidException {
+    public void givenOptionsWithEmptyRepositoriesAndEmptyProjects_whenValidate_thenValidate() {
         PullRequestOptions options = new PullRequestOptions(
                 EMPTY_PROJECTS,
                 EMPTY_REPOSITORIES,
@@ -125,12 +127,13 @@ public class PullRequestOptionsValidatorTest {
                 ANY_WITH_AVERAGE
         );
 
-        validator.validate(options);
+        boolean actual = validator.validate(options);
 
+        assertTrue(actual);
     }
 
     @Test
-    public void givenOptionsWithNullRepositoriesAndNullProjects_whenValidate_thenDoNotThrowException() throws OptionsNotValidException {
+    public void givenOptionsWithNullRepositoriesAndNullProjects_whenValidate_thenValidate() {
         PullRequestOptions options = new PullRequestOptions(
                 NULL_PROJECTS,
                 NULL_REPOSITORIES,
@@ -141,7 +144,8 @@ public class PullRequestOptionsValidatorTest {
                 ANY_WITH_AVERAGE
         );
 
-        validator.validate(options);
+        boolean actual = validator.validate(options);
 
+        assertTrue(actual);
     }
 }

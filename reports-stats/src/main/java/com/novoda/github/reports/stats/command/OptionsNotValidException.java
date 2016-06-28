@@ -2,7 +2,7 @@ package com.novoda.github.reports.stats.command;
 
 public class OptionsNotValidException extends Exception {
 
-    OptionsNotValidException(String message) {
+    public OptionsNotValidException(String message) {
         super(message);
     }
 
