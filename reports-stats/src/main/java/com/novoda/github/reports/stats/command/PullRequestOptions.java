@@ -94,6 +94,6 @@ public class PullRequestOptions extends RangeOptions {
     }
 
     private boolean isListNotEmpty(List<String> list) {
-        return list != null && list.size() > 0;
+        return list != null && !list.isEmpty();
     }
 }
