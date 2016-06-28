@@ -4,6 +4,7 @@ import com.novoda.github.reports.floatschedule.convert.FloatGithubProjectConvert
 import com.novoda.github.reports.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.github.reports.floatschedule.convert.NoMatchFoundException;
 import com.novoda.github.reports.floatschedule.people.PeopleServiceClient;
+import com.novoda.github.reports.floatschedule.people.Person;
 import com.novoda.github.reports.floatschedule.task.Task;
 import com.novoda.github.reports.floatschedule.task.TaskServiceClient;
 
@@ -14,6 +15,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.internal.util.UtilityFunctions;
 
 class FloatServiceClient {
@@ -71,7 +73,15 @@ class FloatServiceClient {
 
     private Observable<Task> getTasksFor(String floatUsername, String startDate, int numberOfWeeks) {
         return peopleServiceClient.getPersons()
-                .filter(person -> person.getName().equalsIgnoreCase(floatUsername))
-                .flatMap(person -> taskServiceClient.getTasks(startDate, numberOfWeeks, person.getId()));
+                .filter(byFloatUsername(floatUsername))
+                .flatMap(toTasks(startDate, numberOfWeeks));
+    }
+
+    private Func1<Person, Observable<? extends Task>> toTasks(String startDate, int numberOfWeeks) {
+        return person -> taskServiceClient.getTasks(startDate, numberOfWeeks, person.getId());
+    }
+
+    private Func1<Person, Boolean> byFloatUsername(String floatUsername) {
+        return person -> person.getName().equalsIgnoreCase(floatUsername);
     }
 }
