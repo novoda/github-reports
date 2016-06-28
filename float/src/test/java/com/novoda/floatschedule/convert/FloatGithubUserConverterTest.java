@@ -1,11 +1,14 @@
 package com.novoda.floatschedule.convert;
 
+import com.novoda.floatschedule.reader.UsersReader;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.hamcrest.text.IsEqualIgnoringCase;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertThat;
@@ -14,22 +17,19 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FloatGithubUserConverterTest {
 
-    private Map<String, String> mapFromReader;
-
     @Mock
-    JsonMapReader<Map<String, String>> mockJsonMapReader;
+    private UsersReader mockUsersReader;
 
+    @InjectMocks
     private FloatGithubUserConverter floatGithubUserConverter;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
 
-        floatGithubUserConverter = new FloatGithubUserConverter(mockJsonMapReader);
-
-        mapFromReader = new HashMap<>(1);
-        mapFromReader.put("Float Pirata", "github meirinho");
-        when(mockJsonMapReader.readFromResource("users.json")).thenReturn(mapFromReader);
+        Map<String, String> floatToGithubUserMap = new HashMap<>(1);
+        floatToGithubUserMap.put("Float Pirata", "github meirinho");
+        when(mockUsersReader.getContent()).thenReturn(floatToGithubUserMap);
     }
 
     @Test
