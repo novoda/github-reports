@@ -10,7 +10,6 @@ public interface EventDataLayer extends DataLayer<Event> {
 
     PullRequestStats getStats(Date from,
                               Date to,
-                              List<String> projects,
                               List<String> repositories,
                               List<String> teamUsers,
                               List<String> projectUsers,
