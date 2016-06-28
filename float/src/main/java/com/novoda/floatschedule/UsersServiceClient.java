@@ -16,11 +16,18 @@ public class UsersServiceClient {
 
     Observable<String> getAllGithubUsers() {
         try {
-            usersReader.read();
+            readIfNeeded();
             return Observable.from(usersReader.getContent().values());
         } catch (IOException e) {
             e.printStackTrace();
         }
         return Observable.empty();
+    }
+
+    private void readIfNeeded() throws IOException {
+        if (usersReader.hasContent()) {
+            return;
+        }
+        usersReader.read();
     }
 }
