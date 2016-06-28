@@ -60,7 +60,7 @@ public class Main {
             stats = handler.handle(projectOptions);
         } else if (command.equals(COMMAND_PULL_REQUEST)) {
             PullRequestOptionsValidator validator = new PullRequestOptionsValidator();
-            validator.validate(prOptions);
+            validatePrOptions(prOptions, validator);
             PullRequestCommandHandler handler = new PullRequestCommandHandler(DbEventDataLayer.newInstance(connectionManager));
             stats = handler.handle(prOptions);
         } else {
@@ -68,6 +68,13 @@ public class Main {
         }
 
         System.out.println(stats.describeStats());
+    }
+
+    private void validatePrOptions(PullRequestOptions prOptions, PullRequestOptionsValidator validator) throws OptionsNotValidException {
+        boolean isValid = validator.validate(prOptions);
+        if (!isValid) {
+            throw new OptionsNotValidException("You can't specify both projects and repositories in the options.");
+        }
     }
 
     public static void main(String[] args) throws UnhandledCommandException, OptionsNotValidException {
