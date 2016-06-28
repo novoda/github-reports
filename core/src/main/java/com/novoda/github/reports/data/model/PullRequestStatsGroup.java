@@ -20,6 +20,14 @@ public abstract class PullRequestStatsGroup {
 
     abstract List<PullRequestStatsUser> users();
 
+    abstract PullRequestStatsUser externalAverage();
+
+    abstract PullRequestStatsUser teamAverage();
+
+    abstract PullRequestStatsUser projectAverage();
+
+    abstract PullRequestStatsUser filterAverage();
+
     @AutoValue.Builder
     public static abstract class Builder {
         abstract Builder from(Date from);
@@ -29,6 +37,14 @@ public abstract class PullRequestStatsGroup {
         abstract Builder name(String name);
 
         abstract Builder users(List<PullRequestStatsUser> users);
+
+        abstract Builder externalAverage(PullRequestStatsUser externalAverage);
+
+        abstract Builder teamAverage(PullRequestStatsUser teamAverage);
+
+        abstract Builder projectAverage(PullRequestStatsUser projectAverage);
+
+        abstract Builder filterAverage(PullRequestStatsUser filterAverage);
 
         abstract PullRequestStatsGroup build();
     }

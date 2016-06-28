@@ -25,6 +25,8 @@ public abstract class PullRequestStatsUser {
 
     abstract Long commentsOnOwnPrs();
 
+    abstract UserType type();
+
     public Long getAverageOtherPeopleCommentsOnUserPrs() {
         return otherPeopleCommentsOnUserPrs() / openedPrs();
     }
@@ -52,7 +54,18 @@ public abstract class PullRequestStatsUser {
 
         abstract Builder commentsOnOwnPrs(Long commentsOnOwnPrs);
 
+        abstract Builder type(UserType type);
+
         abstract PullRequestStatsUser build();
+
+    }
+
+    public enum UserType {
+
+        EXTERNAL,
+        TEAM,
+        PROJECT,
+        FILTER
 
     }
 
