@@ -1,4 +1,4 @@
-package com.novoda.floatschedule.convert;
+package com.novoda.floatschedule.reader;
 
 import com.google.gson.Gson;
 
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class JsonMapReader<T> {
+class JsonMapReader<T> {
 
     private static final String DELIMITER = "\n";
 
@@ -22,7 +22,7 @@ public class JsonMapReader<T> {
     private final Class<T> classOfT;
 
     @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "unchecked"})
-    public static JsonMapReader<Map<String,String>> newStringToStringInstance() {
+    static JsonMapReader<Map<String,String>> newStringToStringInstance() {
         Map<String, String> map = new HashMap<>(0);
         Class mapClass = map.getClass();
         return new JsonMapReader<>(new Gson(), mapClass);
@@ -40,7 +40,7 @@ public class JsonMapReader<T> {
         this.classOfT = classOfT;
     }
 
-    public T readFromResource(String fileName) throws URISyntaxException, IOException {
+    T readFromResource(String fileName) throws URISyntaxException, IOException {
         URL url = JsonMapReader.class.getClassLoader().getResource(fileName);
         if (url == null) {
             throw new FileNotFoundException(fileName + " was not found in the resources directory.");
