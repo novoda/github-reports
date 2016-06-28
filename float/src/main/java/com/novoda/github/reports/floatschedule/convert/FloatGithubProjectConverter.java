@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class FloatGithubProjectConverter {
 
@@ -50,7 +51,7 @@ public class FloatGithubProjectConverter {
         final List<String>[] match = new List[]{ null };
         projectToRepositories.entrySet()
                 .stream()
-                .filter(entry -> floatProjectNameInProjectMappings(floatProject, entry))
+                .filter(byProjectHavingRepositories(floatProject))
                 .findFirst()
                 .ifPresent(entry -> match[0] = entry.getValue());
 
@@ -61,8 +62,8 @@ public class FloatGithubProjectConverter {
         return match[0];
     }
 
-    private boolean floatProjectNameInProjectMappings(String floatProject, Map.Entry<String, List<String>> entry) {
-        return floatProject.toLowerCase(Locale.UK).contains(entry.getKey().toLowerCase(Locale.UK));
+    private Predicate<Map.Entry<String, List<String>>> byProjectHavingRepositories(String floatProject) {
+        return entry -> floatProject.toLowerCase(Locale.UK).contains(entry.getKey().toLowerCase(Locale.UK));
     }
 
     private boolean fileContentsAlreadyRead() {
