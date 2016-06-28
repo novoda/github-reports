@@ -3,8 +3,11 @@ package com.novoda.github.reports.data.db;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
 import com.novoda.github.reports.data.model.Event;
+import com.novoda.github.reports.data.model.PullRequestStats;
 
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
 
 import org.jooq.DSLContext;
 import org.jooq.InsertOnDuplicateSetMoreStep;
@@ -32,5 +35,19 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
                 .set(EVENT.OWNER_USER_ID, element.ownerUserId())
                 .set(EVENT.EVENT_TYPE_ID, element.eventType().getValue())
                 .set(EVENT.DATE, date);
+    }
+
+    @Override
+    public PullRequestStats getStats(Date from,
+                                     Date to,
+                                     List<String> repositories,
+                                     List<String> teamUsers,
+                                     List<String> projectUsers,
+                                     List<String> users,
+                                     PullRequestStatsGroupBy groupBy,
+                                     boolean withAverage) {
+
+        // TODO: implement method
+        return null;
     }
 }
