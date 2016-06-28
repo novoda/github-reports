@@ -29,6 +29,8 @@ public class AmazonQueueMessageConverterTest {
     private static final String ANY_REPO_NAME = "yolo";
     private static final Long ANY_ISSUE_NUMBER = 42L;
     private static final Long ANY_ISSUE_OWNER_ID = 123L;
+    private static final Boolean ANY_ISSUE_NOT_PR = false;
+    private static final Boolean ANY_ISSUE_PR = true;
 
     private static final AmazonGetRepositoriesQueueMessage AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE = AmazonGetRepositoriesQueueMessage.create(
             ANY_TERMINAL,
@@ -55,7 +57,8 @@ public class AmazonQueueMessageConverterTest {
             ANY_REPO_ID,
             ANY_REPO_NAME,
             ANY_ISSUE_NUMBER,
-            ANY_ISSUE_OWNER_ID
+            ANY_ISSUE_OWNER_ID,
+            ANY_ISSUE_NOT_PR
     );
     private static final AmazonGetEventsQueueMessage AMAZON_GET_EVENTS_QUEUE_MESSAGE = AmazonGetEventsQueueMessage.create(
             ANY_TERMINAL,
@@ -66,7 +69,8 @@ public class AmazonQueueMessageConverterTest {
             ANY_REPO_ID,
             ANY_REPO_NAME,
             ANY_ISSUE_NUMBER,
-            ANY_ISSUE_OWNER_ID
+            ANY_ISSUE_OWNER_ID,
+            ANY_ISSUE_NOT_PR
     );
     private static final AmazonGetReviewCommentsQueueMessage AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE = AmazonGetReviewCommentsQueueMessage.create(
             ANY_TERMINAL,
@@ -77,7 +81,8 @@ public class AmazonQueueMessageConverterTest {
             ANY_REPO_ID,
             ANY_REPO_NAME,
             ANY_ISSUE_NUMBER,
-            ANY_ISSUE_OWNER_ID
+            ANY_ISSUE_OWNER_ID,
+            ANY_ISSUE_PR
     );
 
     private AmazonQueueMessageConverter converter;
@@ -203,6 +208,7 @@ public class AmazonQueueMessageConverterTest {
                 .repositoryId(AMAZON_GET_COMMENTS_QUEUE_MESSAGE.repositoryId())
                 .issueNumber(AMAZON_GET_COMMENTS_QUEUE_MESSAGE.issueNumber())
                 .issueOwnerId(AMAZON_GET_COMMENTS_QUEUE_MESSAGE.issueOwnerId())
+                .isPullRequest(AMAZON_GET_COMMENTS_QUEUE_MESSAGE.isPullRequest())
                 .build();
         assertEquals(expected, actual);
     }
@@ -222,6 +228,7 @@ public class AmazonQueueMessageConverterTest {
                 .repositoryId(AMAZON_GET_EVENTS_QUEUE_MESSAGE.repositoryId())
                 .issueNumber(AMAZON_GET_EVENTS_QUEUE_MESSAGE.issueNumber())
                 .issueOwnerId(AMAZON_GET_EVENTS_QUEUE_MESSAGE.issueOwnerId())
+                .isPullRequest(AMAZON_GET_EVENTS_QUEUE_MESSAGE.isPullRequest())
                 .build();
         assertEquals(expected, actual);
     }
@@ -241,6 +248,7 @@ public class AmazonQueueMessageConverterTest {
                 .repositoryId(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.repositoryId())
                 .issueNumber(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.issueNumber())
                 .issueOwnerId(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.issueOwnerId())
+                .isPullRequest(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.isPullRequest())
                 .build();
         assertEquals(expected, actual);
     }

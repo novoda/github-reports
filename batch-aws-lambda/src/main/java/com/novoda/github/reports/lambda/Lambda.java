@@ -28,23 +28,23 @@ public class Lambda {
 
     private AmazonConfigurationConverter amazonConfigurationConverter;
     private BasicWorker<AmazonAlarm, AmazonQueueMessage, AmazonQueue, EmailNotifierConfiguration, AmazonConfiguration> worker;
-    private Logger lambaLogger;
+    private Logger lambdaLogger;
 
     public void handle(InputStream configuration, Context context) throws ConfigurationConverterException, WorkerOperationFailedException {
         LoggerHandler lambdaLoggerHandler = new LambdaLoggerHandler(context);
-        this.lambaLogger = DefaultLogger.newInstance(lambdaLoggerHandler);
+        this.lambdaLogger = DefaultLogger.newInstance(lambdaLoggerHandler);
 
-        lambaLogger.info("λ START.");
+        lambdaLogger.info("λ START.");
 
         init(context, lambdaLoggerHandler);
 
         AmazonConfiguration amazonConfiguration = amazonConfigurationConverter.fromJson(configuration);
 
-        lambaLogger.debug("Handling configuration:\n%s", amazonConfiguration);
+        lambdaLogger.debug("Handling configuration:\n%s", amazonConfiguration);
 
         worker.doWork(amazonConfiguration);
 
-        lambaLogger.info("λ DONE.");
+        lambdaLogger.info("λ DONE.");
     }
 
     private void init(Context context, LoggerHandler loggerHandler) {
@@ -52,11 +52,12 @@ public class Lambda {
 
         AmazonCredentialsReader amazonCredentialsReader = AmazonCredentialsReader.newInstance();
         LambdaPropertiesReader lambdaPropertiesReader = LambdaPropertiesReader.newInstance();
+        ContextDescriptor contextDescriptor = ContextDescriptor.from(context);
 
         AmazonWorkerService workerService = AmazonWorkerService.newInstance(amazonCredentialsReader, lambdaPropertiesReader, loggerHandler);
         AmazonAlarmService alarmService = AmazonAlarmService.newInstance(amazonCredentialsReader, loggerHandler);
         AmazonQueueService queueService = AmazonQueueService.newInstance(amazonCredentialsReader, loggerHandler);
-        EmailNotifierService notifierService = EmailNotifierService.newInstance(loggerHandler);
+        EmailNotifierService notifierService = EmailNotifierService.newInstance(loggerHandler, contextDescriptor);
         AmazonWorkerHandlerService workerHandlerService = AmazonWorkerHandlerService.newInstance(loggerHandler);
 
         this.worker = BasicWorker.newInstance(

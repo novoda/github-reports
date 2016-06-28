@@ -77,6 +77,7 @@ public class CommentsServiceClient {
                 message.repositoryId(),
                 message.issueNumber(),
                 message.issueOwnerId(),
+                message.isPullRequest(),
                 RepositoryIssueEventComment::new
         );
     }
@@ -98,7 +99,8 @@ public class CommentsServiceClient {
                 amazonGetCommentsQueueMessage.repositoryId(),
                 amazonGetCommentsQueueMessage.repositoryName(),
                 amazonGetCommentsQueueMessage.issueNumber(),
-                amazonGetCommentsQueueMessage.issueOwnerId()
+                amazonGetCommentsQueueMessage.issueOwnerId(),
+                amazonGetCommentsQueueMessage.isPullRequest()
         );
     }
 

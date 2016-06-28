@@ -2,9 +2,9 @@ package com.novoda.github.reports.batch.aws.notifier;
 
 import com.novoda.github.reports.batch.aws.configuration.AmazonConfiguration;
 import com.novoda.github.reports.batch.aws.configuration.EmailNotifierConfiguration;
+import com.novoda.github.reports.batch.logger.Logger;
 import com.novoda.github.reports.batch.notifier.Notifier;
 import com.novoda.github.reports.batch.notifier.NotifierOperationFailedException;
-import com.novoda.github.reports.batch.logger.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -19,19 +19,26 @@ class EmailNotifier implements Notifier<EmailNotifierConfiguration, AmazonConfig
 
     private static final String COMPLETION_SUBJECT = "[github-reports] Your job has completed!";
     private static final String COMPLETION_BODY = "The job with name \"%s\" has completed successfully.";
-    private static final String ERROR_SUBJECT = "[github-reports] Your job has errored!";
-    private static final String ERROR_BODY = "The job with name \"%s\" has errored.";
+    private static final String ERROR_SUBJECT = "[github-reports] Your job has failed!";
+    private static final String ERROR_BODY = "The job with name \"%s\" has failed because of an error.";
+    private static final AdditionalInfo NO_ADDITIONAL_INFO = null;
 
     private final Email email;
     private final Logger logger;
+    private final AdditionalInfo additionalInfo;
 
-    public static EmailNotifier newInstance(Logger logger) {
-        return new EmailNotifier(new SimpleEmail(), logger);
+    public static EmailNotifier newInstance(Logger logger, AdditionalInfo additionalInfo) {
+        return new EmailNotifier(new SimpleEmail(), logger, additionalInfo);
     }
 
-    private EmailNotifier(Email email, Logger logger) {
+    public static EmailNotifier newInstance(Logger logger) {
+        return new EmailNotifier(new SimpleEmail(), logger, NO_ADDITIONAL_INFO);
+    }
+
+    EmailNotifier(Email email, Logger logger, AdditionalInfo additionalInfo) {
         this.email = email;
         this.logger = logger;
+        this.additionalInfo = additionalInfo;
     }
 
     @Override
@@ -79,11 +86,20 @@ class EmailNotifier implements Notifier<EmailNotifierConfiguration, AmazonConfig
         String subject = String.format(subjectTemplate, configuration.jobName());
         email.setSubject(subject);
 
-        String body = String.format(bodyTemplate, configuration.jobName());
+        String body = buildBody(configuration, bodyTemplate);
         email.setMsg(body);
 
         addRecipients(email, emailNotifierConfiguration.to());
         return email;
+    }
+
+    private String buildBody(AmazonConfiguration configuration, String bodyTemplate) {
+        String body = String.format(bodyTemplate, configuration.jobName());
+        if (additionalInfo != null) {
+            body += "\nAdditional information:\n";
+            body += additionalInfo.describeAdditionalInfo();
+        }
+        return body;
     }
 
     private void addRecipients(Email email, List<String> recipients) throws NotifierOperationFailedException {
