@@ -9,6 +9,7 @@ import java.util.List;
 public class PullRequestOptions extends RangeOptions {
 
     public PullRequestOptions() {
+        // no-op
     }
 
     PullRequestOptions(List<String> repositories,
