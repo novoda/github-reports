@@ -29,8 +29,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FloatServiceClientTest {
 
-    private static final String ANY_START_DATE = "";
-    private static final int ANY_NUMBER_OF_WEEKS = 0;
+    private static final String ANY_START_DATE = "2014-03-24";
+    private static final int ANY_NUMBER_OF_WEEKS = 42;
     private static final int ANY_PERSON_ID = 23;
     private static final String ANY_FLOAT_USERNAME = "imbecil";
     private static final String ANY_GITHUB_USERNAME = "palerma";
