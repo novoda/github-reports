@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class JsonMapReader<T> {
+public class JsonMapReader<T> {
 
     private static final String DELIMITER = "\n";
 
@@ -22,7 +22,7 @@ class JsonMapReader<T> {
     private final Class<T> classOfT;
 
     @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "unchecked"})
-    static JsonMapReader<Map<String,String>> newStringToStringInstance() {
+    public static JsonMapReader<Map<String,String>> newStringToStringInstance() {
         Map<String, String> map = new HashMap<>(0);
         Class mapClass = map.getClass();
         return new JsonMapReader<>(new Gson(), mapClass);
@@ -35,12 +35,12 @@ class JsonMapReader<T> {
         return new JsonMapReader<>(new Gson(), mapClass);
     }
 
-    JsonMapReader(Gson gson, Class<T> classOfT) {
+    private JsonMapReader(Gson gson, Class<T> classOfT) {
         this.gson = gson;
         this.classOfT = classOfT;
     }
 
-    T readFromResource(String fileName) throws URISyntaxException, IOException {
+    public T readFromResource(String fileName) throws URISyntaxException, IOException {
         URL url = JsonMapReader.class.getClassLoader().getResource(fileName);
         if (url == null) {
             throw new FileNotFoundException(fileName + " was not found in the resources directory.");
