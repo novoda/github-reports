@@ -1,28 +1,26 @@
 package com.novoda.floatschedule.convert;
 
+import com.novoda.floatschedule.reader.UsersReader;
+
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Map;
 
 public class FloatGithubUserConverter {
 
-    private final JsonMapReader<Map<String, String>> jsonMapReader;
-    private Map<String, String> floatToGithubUser;
+    private final UsersReader usersReader;
 
     public static FloatGithubUserConverter newInstance() {
-        JsonMapReader<Map<String, String>> jsonReader = JsonMapReader.newStringToStringInstance();
-        return new FloatGithubUserConverter(jsonReader);
+        return new FloatGithubUserConverter(UsersReader.newInstance());
     }
 
-    FloatGithubUserConverter(JsonMapReader<Map<String, String>> jsonMapReader) {
-        this.jsonMapReader = jsonMapReader;
+    private FloatGithubUserConverter(UsersReader usersReader) {
+        this.usersReader = usersReader;
     }
 
     public String getFloatUser(String githubUsername) throws IOException, NoMatchFoundException {
         readIfNeeded();
 
         final String[] match = { null };
-        floatToGithubUser.forEach((floatName, githubName) -> {
+        usersReader.getContent().forEach((floatName, githubName) -> {
             if (githubName.equalsIgnoreCase(githubUsername)) {
                 match[0] = floatName;
             }
@@ -38,7 +36,7 @@ public class FloatGithubUserConverter {
     public String getGithubUser(String floatName) throws IOException, NoMatchFoundException {
         readIfNeeded();
         final String[] match = { null };
-        floatToGithubUser.entrySet()
+        usersReader.getContent().entrySet()
                 .stream()
                 .filter(entry -> entry.getKey().equalsIgnoreCase(floatName))
                 .findFirst()
@@ -52,17 +50,9 @@ public class FloatGithubUserConverter {
     }
 
     private void readIfNeeded() throws IOException {
-        if (fileContentsAlreadyRead()) {
+        if (usersReader.hasContent()) {
             return;
         }
-        try {
-            floatToGithubUser = jsonMapReader.readFromResource("users.json");
-        } catch (URISyntaxException | IOException e) {
-            throw new IOException("Could not read users from file.");
-        }
-    }
-
-    private boolean fileContentsAlreadyRead() {
-        return floatToGithubUser != null;
+        usersReader.read();
     }
 }
