@@ -40,11 +40,23 @@ public class FloatGithubUserConverterTest {
         assertThat("float pirata", IsEqualIgnoringCase.equalToIgnoringCase(actual));
     }
 
+    @Test(expected = NoMatchFoundException.class)
+    public void givenAJsonFileWithNoMatch_whenGettingTheFloatUsernameForAGithubUsername_thenThrowsException() throws Exception {
+
+        floatGithubUserConverter.getFloatUser("sebastião");
+    }
+
     @Test
     public void givenAJsonFileWithUsers_whenGettingTheGithubUsernameForAFloatUsername_thenReturnsMatch() throws Exception {
 
         String actual = floatGithubUserConverter.getGithubUser("float pirata");
 
         assertThat("github meirinho", IsEqualIgnoringCase.equalToIgnoringCase(actual));
+    }
+
+    @Test(expected = NoMatchFoundException.class)
+    public void givenAJsonFileWithNoMatch_whenGettingTheGithubUsernameForAFloatUsername_thenThrowsException() throws Exception {
+
+        floatGithubUserConverter.getGithubUser("palerma");
     }
 }

@@ -17,6 +17,11 @@ public interface FloatApiService {
     @GET("projects")
     Observable<Response<Projects>> getProjects();
 
+    /**
+     * @param startDate assignments starting after this date. its format is YYYY-MM-dd
+     * @param weeks number of weeks to search up to, starting on startDate
+     * @param peopleId the person id to target, if any
+     */
     @GET("tasks")
     Observable<Response<Assignments>> getTasks(@Query("start_day") String startDate,
                                                @Query("weeks") Integer weeks,
