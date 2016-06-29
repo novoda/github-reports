@@ -16,6 +16,7 @@ import org.jooq.SelectOrderByStep;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.conditionalBetween;
 import static com.novoda.github.reports.data.db.Tables.*;
+import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.trueCondition;
 import static org.jooq.impl.DSL.val;
 
@@ -26,7 +27,8 @@ public class DbEventUserQueryBuilder {
     static final Long USER_ASSIGNED_ID = -2L;
     static final Long USER_FILTER_ID = -1L;
 
-    private static final String USER_TYPE = "type";
+    static final String USER_TYPE = "type";
+    static final Field<String> USER_TYPE_FIELD = field(USER_TYPE, String.class);
 
     private static final String USER_EXTERNAL = "EXTERNAL";
     private static final Field<String> USER_TYPE_EXTERNAL = val(USER_EXTERNAL).as(USER_TYPE);

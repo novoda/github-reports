@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.jooq.DSLContext;
 import org.jooq.InsertOnDuplicateSetMoreStep;
-import org.jooq.Record3;
+import org.jooq.Record4;
 import org.jooq.SelectOrderByStep;
 import org.jooq.conf.ParamType;
 
@@ -75,7 +75,7 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
             DbEventUserQueryBuilder userQueryBuilder = new DbEventUserQueryBuilder(parameters);
             DbEventMergedCountQueryBuilder mergedCountQueryBuilder = new DbEventMergedCountQueryBuilder(parameters, userQueryBuilder);
 
-            SelectOrderByStep<Record3<BigDecimal, Long, String>> mergedQuery = mergedCountQueryBuilder.getStats();
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> mergedQuery = mergedCountQueryBuilder.getStats();
 
             // TODO: remove after getting all stats, this is only needed for debug purposes
             String mergedSql = mergedQuery.getSQL(ParamType.INLINED);
