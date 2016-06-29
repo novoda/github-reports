@@ -21,14 +21,18 @@ public class PullRequestCommandHandler implements CommandHandler<PullRequestStat
     public PullRequestStats handle(PullRequestOptions options) {
         // TODO: retrieve repositories from float projects, for now it works only with explicit repos
         List<String> repositoriesFromProjects = options.getRepositories();
+        // TODO: retrieve team users from a team JSON
+        List<String> teamUsers = options.getTeamUsers();
+        // TODO: retrieve assigned users from the float integration
+        List<String> assignedUsers = options.getAssignedUsers();
 
         try {
             return dbEventDataLayer.getStats(
                     options.getFrom(),
                     options.getTo(),
                     repositoriesFromProjects,
-                    options.getTeamUsers(),
-                    options.getAssignedUsers(),
+                    teamUsers,
+                    assignedUsers,
                     options.getFilterUsers(),
                     convertToGroupBy(options.getGroupBy()),
                     options.withAverage()
