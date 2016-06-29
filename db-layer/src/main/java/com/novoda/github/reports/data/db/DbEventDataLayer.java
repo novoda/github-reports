@@ -1,5 +1,6 @@
 package com.novoda.github.reports.data.db;
 
+import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
 import com.novoda.github.reports.data.model.Event;
@@ -45,7 +46,7 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
                                      List<String> projectUsers,
                                      List<String> users,
                                      PullRequestStatsGroupBy groupBy,
-                                     boolean withAverage) {
+                                     boolean withAverage) throws DataLayerException {
 
         // TODO: implement method
         return null;

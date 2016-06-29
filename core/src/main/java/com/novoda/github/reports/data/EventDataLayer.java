@@ -15,7 +15,7 @@ public interface EventDataLayer extends DataLayer<Event> {
                               List<String> projectUsers,
                               List<String> users,
                               PullRequestStatsGroupBy groupBy,
-                              boolean withAverage);
+                              boolean withAverage) throws DataLayerException;
 
     enum PullRequestStatsGroupBy {
         NONE,
