@@ -6,7 +6,8 @@ import java.util.Set;
 
 import static com.novoda.github.reports.stats.command.PullRequestOptionsGroupBy.NONE;
 
-class PullRequestOptionsGroupByConverter implements IStringConverter<PullRequestOptionsGroupBy> {
+@SuppressWarnings("ALL")
+public class PullRequestOptionsGroupByConverter implements IStringConverter<PullRequestOptionsGroupBy> {
 
     @Override
     public PullRequestOptionsGroupBy convert(String value) {
