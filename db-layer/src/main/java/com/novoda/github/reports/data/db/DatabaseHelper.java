@@ -20,7 +20,7 @@ import static com.novoda.github.reports.data.db.Tables.REPOSITORY;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.countDistinct;
 
-class DatabaseHelper {
+public class DatabaseHelper {
 
     static {
         LogHelper.turnOffJooqAd();
@@ -41,12 +41,12 @@ class DatabaseHelper {
     static final Integer OPENED_PRS_ID = 200;
     static final Integer COMMENTED_ISSUES_ID = 102;
     static final Integer COMMENTED_PRS_ID = 202;
-    static final Integer MERGED_PRS_ID = 205;
+    public static final Integer MERGED_PRS_ID = 205;
 
     private static final byte FALSE_BYTE = 0;
     private static final byte TRUE_BYTE = 1;
 
-    static Condition conditionalBetween(TableField<?, Timestamp> field, Date from, Date to) {
+    public static Condition conditionalBetween(TableField<?, Timestamp> field, Date from, Date to) {
         Condition condition = field.isNotNull();
         if (from != null) {
             Timestamp fromTimestamp = dateToTimestamp(from);

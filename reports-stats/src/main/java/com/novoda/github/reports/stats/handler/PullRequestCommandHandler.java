@@ -1,5 +1,6 @@
 package com.novoda.github.reports.stats.handler;
 
+import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.db.DbEventDataLayer;
 import com.novoda.github.reports.data.model.PullRequestStats;
@@ -20,17 +21,27 @@ public class PullRequestCommandHandler implements CommandHandler<PullRequestStat
     public PullRequestStats handle(PullRequestOptions options) {
         // TODO: retrieve repositories from float projects, for now it works only with explicit repos
         List<String> repositoriesFromProjects = options.getRepositories();
+        // TODO: retrieve team users from a team JSON
+        List<String> teamUsers = options.getTeamUsers();
+        // TODO: retrieve assigned users from the float integration
+        List<String> assignedUsers = options.getAssignedUsers();
 
-        return dbEventDataLayer.getStats(
-                options.getFrom(),
-                options.getTo(),
-                repositoriesFromProjects,
-                options.getTeamUsers(),
-                options.getProjectUsers(),
-                options.getUsers(),
-                convertToGroupBy(options.getGroupBy()),
-                options.withAverage()
-        );
+        try {
+            return dbEventDataLayer.getStats(
+                    options.getFrom(),
+                    options.getTo(),
+                    repositoriesFromProjects,
+                    teamUsers,
+                    assignedUsers,
+                    options.getFilterUsers(),
+                    convertToGroupBy(options.getGroupBy()),
+                    options.withAverage()
+            );
+        } catch (DataLayerException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private EventDataLayer.PullRequestStatsGroupBy convertToGroupBy(PullRequestOptionsGroupBy groupBy) {
