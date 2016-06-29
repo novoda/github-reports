@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 
 import org.jooq.Field;
 import org.jooq.Record3;
+import org.jooq.Record4;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectHavingConditionStep;
 import org.jooq.SelectHavingStep;
@@ -20,6 +21,7 @@ import org.jooq.TableField;
 import static com.novoda.github.reports.data.db.DatabaseHelper.MERGED_PRS_ID;
 import static com.novoda.github.reports.data.db.DatabaseHelper.conditionalBetween;
 import static com.novoda.github.reports.data.db.Tables.*;
+import static com.novoda.github.reports.data.db.builder.DbEventUserQueryBuilder.USER_TYPE_FIELD;
 import static org.jooq.impl.DSL.*;
 
 public class DbEventMergedCountQueryBuilder {
@@ -44,8 +46,8 @@ public class DbEventMergedCountQueryBuilder {
         this.userQueryBuilder = userQueryBuilder;
     }
 
-    public SelectOrderByStep<Record3<BigDecimal, Long, String>> getStats() {
-        SelectOrderByStep<Record3<BigDecimal, Long, String>> allUserStats = getAllUserStats();
+    public SelectOrderByStep<Record4<BigDecimal, Long, String, String>> getStats() {
+        SelectOrderByStep<Record4<BigDecimal, Long, String, String>> allUserStats = getAllUserStats();
 
         if (parameters.isWithAverage()) {
             allUserStats = allUserStats
@@ -58,46 +60,46 @@ public class DbEventMergedCountQueryBuilder {
         return allUserStats;
     }
 
-    private SelectHavingConditionStep<Record3<BigDecimal, Long, String>> getAllUserStats() {
+    private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> getAllUserStats() {
         Table<Record3<Long, String, String>> allRelevantUsersTable = userQueryBuilder.getAllUsers().asTable(ALL_RELEVANT_USERS_TABLE);
         return getUserStatsForRelevantUsers(allRelevantUsersTable);
     }
 
-    private SelectHavingStep<Record3<BigDecimal, Long, String>> getAverageExternalUserStats() {
+    private SelectHavingStep<Record4<BigDecimal, Long, String, String>> getAverageExternalUserStats() {
         Table<Record3<Long, String, String>> externalUsersTable = userQueryBuilder.getExternalUsers().asTable(EXTERNAL_USERS_TABLE);
-        SelectHavingConditionStep<Record3<BigDecimal, Long, String>> externalUserStats = getUserStatsForRelevantUsers(externalUsersTable);
+        SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> externalUserStats = getUserStatsForRelevantUsers(externalUsersTable);
 
         return getAverageUserStats(externalUserStats, DbEventUserQueryBuilder.USER_EXTERNAL_ID);
     }
 
-    private SelectHavingStep<Record3<BigDecimal, Long, String>> getAverageTeamUserStats() {
+    private SelectHavingStep<Record4<BigDecimal, Long, String, String>> getAverageTeamUserStats() {
         Table<Record3<Long, String, String>> teamUsersTable = userQueryBuilder.getTeamUsers().asTable(TEAM_USERS_TABLE);
-        SelectHavingConditionStep<Record3<BigDecimal, Long, String>> teamUserStats = getUserStatsForRelevantUsers(teamUsersTable);
+        SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> teamUserStats = getUserStatsForRelevantUsers(teamUsersTable);
 
         return getAverageUserStats(teamUserStats, DbEventUserQueryBuilder.USER_TEAM_ID);
     }
 
-    private SelectHavingStep<Record3<BigDecimal, Long, String>> getAverageAssignedUserStats() {
+    private SelectHavingStep<Record4<BigDecimal, Long, String, String>> getAverageAssignedUserStats() {
         Table<Record3<Long, String, String>> assignedUsersTable = userQueryBuilder.getAssignedUsers().asTable(ASSIGNED_USERS_TABLE);
-        SelectHavingConditionStep<Record3<BigDecimal, Long, String>> assignedUserStats = getUserStatsForRelevantUsers(assignedUsersTable);
+        SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> assignedUserStats = getUserStatsForRelevantUsers(assignedUsersTable);
 
         return getAverageUserStats(assignedUserStats, DbEventUserQueryBuilder.USER_ASSIGNED_ID);
     }
 
-    private SelectHavingStep<Record3<BigDecimal, Long, String>> getAverageFilterUserStats() {
+    private SelectHavingStep<Record4<BigDecimal, Long, String, String>> getAverageFilterUserStats() {
         Table<Record3<Long, String, String>> filterUsersTable = userQueryBuilder.getFilterUsers().asTable(FILTER_USERS_TABLE);
-        SelectHavingConditionStep<Record3<BigDecimal, Long, String>> filterUserStats = getUserStatsForRelevantUsers(filterUsersTable);
+        SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> filterUserStats = getUserStatsForRelevantUsers(filterUsersTable);
 
         return getAverageUserStats(filterUserStats, DbEventUserQueryBuilder.USER_FILTER_ID);
     }
 
-    private SelectHavingConditionStep<Record3<BigDecimal, Long, String>> getUserStatsForRelevantUsers(Table<Record3<Long, String, String>> table) {
+    private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> getUserStatsForRelevantUsers(Table<Record3<Long, String, String>> table) {
         Field<String> groupField = getGroupFieldForMySQLOnly(parameters.getGroupBy());
 
-        SelectJoinStep<Record3<BigDecimal, Long, String>> selectCount = selectCountEventsGroupBy(groupField);
-        SelectJoinStep<Record3<BigDecimal, Long, String>> selectCountForRelevantUsers = innerJoinRelevantUsers(selectCount, table);
-        SelectConditionStep<Record3<BigDecimal, Long, String>> whereRepoAndDateMatch = whereRepoMatchesAndDateIsInRange(selectCountForRelevantUsers);
-        SelectHavingConditionStep<Record3<BigDecimal, Long, String>> havingMergeEvents = groupByFieldHavingMergedEvents(whereRepoAndDateMatch, groupField);
+        SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCount = selectCountEventsGroupBy(groupField);
+        SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCountForRelevantUsers = innerJoinRelevantUsers(selectCount, table);
+        SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereRepoAndDateMatch = whereRepoMatchesAndDateIsInRange(selectCountForRelevantUsers);
+        SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> havingMergeEvents = groupByFieldHavingMergedEvents(whereRepoAndDateMatch, groupField);
 
         return havingMergeEvents;
     }
@@ -127,14 +129,14 @@ public class DbEventMergedCountQueryBuilder {
         return field("DATE_FORMAT({0}, \"%Y" + GROUP_SELECTOR_SEPARATOR + "%v\")", String.class, date);
     }
 
-    private SelectJoinStep<Record3<BigDecimal, Long, String>> selectCountEventsGroupBy(Field<String> groupField) {
+    private SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCountEventsGroupBy(Field<String> groupField) {
         return parameters.getContext()
-                .select(count(EVENT.EVENT_TYPE_ID).cast(BigDecimal.class).as(MERGED_COUNT_FIELD), EVENT.AUTHOR_USER_ID, groupField)
+                .select(count(EVENT.EVENT_TYPE_ID).cast(BigDecimal.class).as(MERGED_COUNT_FIELD), EVENT.AUTHOR_USER_ID, USER_TYPE_FIELD, groupField)
                 .from(EVENT);
     }
 
-    private SelectJoinStep<Record3<BigDecimal, Long, String>> innerJoinRelevantUsers(SelectJoinStep<Record3<BigDecimal, Long, String>> select,
-                                                                                     Table<Record3<Long, String, String>> table) {
+    private SelectJoinStep<Record4<BigDecimal, Long, String, String>> innerJoinRelevantUsers(SelectJoinStep<Record4<BigDecimal, Long, String, String>> select,
+                                                                                             Table<Record3<Long, String, String>> table) {
 
         select = select
                 .innerJoin(table)
@@ -142,10 +144,10 @@ public class DbEventMergedCountQueryBuilder {
         return select;
     }
 
-    private SelectConditionStep<Record3<BigDecimal, Long, String>> whereRepoMatchesAndDateIsInRange(
-            SelectJoinStep<Record3<BigDecimal, Long, String>> select) {
+    private SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereRepoMatchesAndDateIsInRange(
+            SelectJoinStep<Record4<BigDecimal, Long, String, String>> select) {
 
-        SelectConditionStep<Record3<BigDecimal, Long, String>> where = select.where(trueCondition());
+        SelectConditionStep<Record4<BigDecimal, Long, String, String>> where = select.where(trueCondition());
 
         if (!parameters.getRepositories().isEmpty()) {
             where = select
@@ -157,8 +159,8 @@ public class DbEventMergedCountQueryBuilder {
         return where.and(conditionalBetween(EVENT.DATE, parameters.getFrom(), parameters.getTo()));
     }
 
-    private SelectHavingConditionStep<Record3<BigDecimal, Long, String>> groupByFieldHavingMergedEvents(
-            SelectConditionStep<Record3<BigDecimal, Long, String>> where,
+    private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> groupByFieldHavingMergedEvents(
+            SelectConditionStep<Record4<BigDecimal, Long, String, String>> where,
             Field<String> groupField) {
 
         return where
@@ -166,12 +168,17 @@ public class DbEventMergedCountQueryBuilder {
                 .having(EVENT.EVENT_TYPE_ID.eq(MERGED_PRS_ID));
     }
 
-    private SelectHavingStep<Record3<BigDecimal, Long, String>> getAverageUserStats(
-            SelectHavingConditionStep<Record3<BigDecimal, Long, String>> inputSelection,
+    private SelectHavingStep<Record4<BigDecimal, Long, String, String>> getAverageUserStats(
+            SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> inputSelection,
             Long averageUserId) {
 
         return parameters.getContext()
-                .select(avg(MERGED_COUNT_FIELD).as(MERGED_COUNT_FIELD), val(averageUserId).as(EVENT.AUTHOR_USER_ID), GROUP_SELECTOR_FIELD)
+                .select(
+                        avg(MERGED_COUNT_FIELD).as(MERGED_COUNT_FIELD),
+                        val(averageUserId).as(EVENT.AUTHOR_USER_ID),
+                        USER_TYPE_FIELD,
+                        GROUP_SELECTOR_FIELD
+                )
                 .from(inputSelection)
                 .groupBy(GROUP_SELECTOR_FIELD);
     }
