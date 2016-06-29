@@ -2,7 +2,7 @@ package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
-import com.novoda.github.reports.data.db.builder.DbEventMergedCountQueryBuilder;
+import com.novoda.github.reports.data.db.builder.DbEventCountForAuthorQueryBuilder;
 import com.novoda.github.reports.data.db.builder.DbEventUserQueryBuilder;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
 import com.novoda.github.reports.data.model.Event;
@@ -73,13 +73,19 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
             );
 
             DbEventUserQueryBuilder userQueryBuilder = new DbEventUserQueryBuilder(parameters);
-            DbEventMergedCountQueryBuilder mergedCountQueryBuilder = new DbEventMergedCountQueryBuilder(parameters, userQueryBuilder);
+            DbEventCountForAuthorQueryBuilder mergedCountQueryBuilder = DbEventCountForAuthorQueryBuilder
+                    .newMergedCountQueryBuilderInstance(parameters, userQueryBuilder);
+            DbEventCountForAuthorQueryBuilder openedCountQueryBuilder = DbEventCountForAuthorQueryBuilder
+                    .newOpenedCountQueryBuilderInstance(parameters, userQueryBuilder);
 
             SelectOrderByStep<Record4<BigDecimal, Long, String, String>> mergedQuery = mergedCountQueryBuilder.getStats();
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> openedQuery = openedCountQueryBuilder.getStats();
 
             // TODO: remove after getting all stats, this is only needed for debug purposes
             String mergedSql = mergedQuery.getSQL(ParamType.INLINED);
             System.out.println(mergedSql);
+            String openedSql = openedQuery.getSQL(ParamType.INLINED);
+            System.out.println(openedSql);
 
         } catch (SQLException e) {
             throw new DataLayerException(e);

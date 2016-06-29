@@ -19,12 +19,13 @@ import org.jooq.Table;
 import org.jooq.TableField;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.MERGED_PRS_ID;
+import static com.novoda.github.reports.data.db.DatabaseHelper.OPENED_PRS_ID;
 import static com.novoda.github.reports.data.db.DatabaseHelper.conditionalBetween;
 import static com.novoda.github.reports.data.db.Tables.*;
 import static com.novoda.github.reports.data.db.builder.DbEventUserQueryBuilder.USER_TYPE_FIELD;
 import static org.jooq.impl.DSL.*;
 
-public class DbEventMergedCountQueryBuilder {
+public class DbEventCountForAuthorQueryBuilder {
 
     private static final Field<String> GROUP_SELECTOR_FIELD = field("date_group", String.class);
     private static final String GROUP_SELECTOR_SEPARATOR = "-";
@@ -36,14 +37,31 @@ public class DbEventMergedCountQueryBuilder {
     private static final String ASSIGNED_USERS_TABLE = "assigned_users";
     private static final String FILTER_USERS_TABLE = "filter_users";
 
-    private static final Field<Integer> MERGED_COUNT_FIELD = field("merged_count", Integer.class);
+    private static final Field<Integer> COUNT_FIELD = field("count_field", Integer.class);
 
     private final PullRequestStatsParameters parameters;
     private final DbEventUserQueryBuilder userQueryBuilder;
+    private final Integer eventIdForCount;
 
-    public DbEventMergedCountQueryBuilder(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
+    public static DbEventCountForAuthorQueryBuilder newMergedCountQueryBuilderInstance(PullRequestStatsParameters parameters,
+                                                                                       DbEventUserQueryBuilder userQueryBuilder) {
+
+        return new DbEventCountForAuthorQueryBuilder(parameters, userQueryBuilder, MERGED_PRS_ID);
+    }
+
+    public static DbEventCountForAuthorQueryBuilder newOpenedCountQueryBuilderInstance(PullRequestStatsParameters parameters,
+                                                                                       DbEventUserQueryBuilder userQueryBuilder) {
+
+        return new DbEventCountForAuthorQueryBuilder(parameters, userQueryBuilder, OPENED_PRS_ID);
+    }
+
+    private DbEventCountForAuthorQueryBuilder(PullRequestStatsParameters parameters,
+                                              DbEventUserQueryBuilder userQueryBuilder,
+                                              Integer eventIdForCount) {
+
         this.parameters = parameters;
         this.userQueryBuilder = userQueryBuilder;
+        this.eventIdForCount = eventIdForCount;
     }
 
     public SelectOrderByStep<Record4<BigDecimal, Long, String, String>> getStats() {
@@ -99,9 +117,9 @@ public class DbEventMergedCountQueryBuilder {
         SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCount = selectCountEventsGroupBy(groupField);
         SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCountForRelevantUsers = innerJoinRelevantUsers(selectCount, table);
         SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereRepoAndDateMatch = whereRepoMatchesAndDateIsInRange(selectCountForRelevantUsers);
-        SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> havingMergeEvents = groupByFieldHavingMergedEvents(whereRepoAndDateMatch, groupField);
+        SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> havingSpecificEvents = groupByFieldHavingSpecificEventId(whereRepoAndDateMatch, groupField);
 
-        return havingMergeEvents;
+        return havingSpecificEvents;
     }
 
     private Field<String> getGroupFieldForMySQLOnly(EventDataLayer.PullRequestStatsGroupBy groupBy) {
@@ -131,7 +149,7 @@ public class DbEventMergedCountQueryBuilder {
 
     private SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCountEventsGroupBy(Field<String> groupField) {
         return parameters.getContext()
-                .select(count(EVENT.EVENT_TYPE_ID).cast(BigDecimal.class).as(MERGED_COUNT_FIELD), EVENT.AUTHOR_USER_ID, USER_TYPE_FIELD, groupField)
+                .select(count(EVENT.EVENT_TYPE_ID).cast(BigDecimal.class).as(COUNT_FIELD), EVENT.AUTHOR_USER_ID, USER_TYPE_FIELD, groupField)
                 .from(EVENT);
     }
 
@@ -159,13 +177,13 @@ public class DbEventMergedCountQueryBuilder {
         return where.and(conditionalBetween(EVENT.DATE, parameters.getFrom(), parameters.getTo()));
     }
 
-    private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> groupByFieldHavingMergedEvents(
+    private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> groupByFieldHavingSpecificEventId(
             SelectConditionStep<Record4<BigDecimal, Long, String, String>> where,
             Field<String> groupField) {
 
         return where
                 .groupBy(EVENT.EVENT_TYPE_ID, EVENT.AUTHOR_USER_ID, groupField)
-                .having(EVENT.EVENT_TYPE_ID.eq(MERGED_PRS_ID));
+                .having(EVENT.EVENT_TYPE_ID.eq(eventIdForCount));
     }
 
     private SelectHavingStep<Record4<BigDecimal, Long, String, String>> getAverageUserStats(
@@ -174,7 +192,7 @@ public class DbEventMergedCountQueryBuilder {
 
         return parameters.getContext()
                 .select(
-                        avg(MERGED_COUNT_FIELD).as(MERGED_COUNT_FIELD),
+                        avg(COUNT_FIELD).as(COUNT_FIELD),
                         val(averageUserId).as(EVENT.AUTHOR_USER_ID),
                         USER_TYPE_FIELD,
                         GROUP_SELECTOR_FIELD

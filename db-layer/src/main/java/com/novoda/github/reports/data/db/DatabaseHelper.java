@@ -38,7 +38,7 @@ public class DatabaseHelper {
     static final Condition EVENT_REPOSITORY_JOIN_ON_CONDITION = EVENT.REPOSITORY_ID.eq(REPOSITORY._ID);
 
     static final Integer OPENED_ISSUES_ID = 100;
-    static final Integer OPENED_PRS_ID = 200;
+    public static final Integer OPENED_PRS_ID = 200;
     static final Integer COMMENTED_ISSUES_ID = 102;
     static final Integer COMMENTED_PRS_ID = 202;
     public static final Integer MERGED_PRS_ID = 205;
