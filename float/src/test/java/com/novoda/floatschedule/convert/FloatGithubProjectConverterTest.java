@@ -12,9 +12,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.verification.VerificationModeFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -38,7 +40,7 @@ public class FloatGithubProjectConverterTest {
     }
 
     @Test
-    public void givenAJsonFileWithProjects_whenGettingTheFloatProjectNameForARepository_thenReturnsMatch() throws Exception {
+    public void givenProjectsWereRead_whenGettingTheFloatProjectNameForARepository_thenReturnsMatch() throws Exception {
 
         String actual = floatGithubProjectConverter.getFloatProject("repo2");
 
@@ -46,13 +48,13 @@ public class FloatGithubProjectConverterTest {
     }
 
     @Test(expected = NoMatchFoundException.class)
-    public void givenAJsonFileWithNoMatch_whenGettingTheFloatProjectNameForARepository_thenThrowsException() throws Exception {
+    public void givenWereReadButThereIsNoMatch_whenGettingTheFloatProjectNameForARepository_thenThrowsException() throws Exception {
 
         floatGithubProjectConverter.getFloatProject("repo420");
     }
 
     @Test
-    public void givenAJsonFileWithProjects_whenGettingRepositoriesForTheFloatProject_thenReturnsMatch() throws Exception {
+    public void givenProjectsWereRead_whenGettingRepositoriesForTheFloatProject_thenReturnsMatch() throws Exception {
 
         List<String> actual = floatGithubProjectConverter.getRepositories("Float");
 
@@ -60,8 +62,44 @@ public class FloatGithubProjectConverterTest {
     }
 
     @Test(expected = NoMatchFoundException.class)
-    public void givenAJsonFileWithNoMappings_whenGettingRepositoriesForTheFloatProject_thenThrowsException() throws Exception {
+    public void givenProjectsWereReadButThereIsNoMatch_whenGettingRepositoriesForTheFloatProject_thenThrowsException() throws Exception {
 
         floatGithubProjectConverter.getRepositories("dab");
+    }
+
+    @Test
+    public void givenProjectsWereNotRead_whenGettingTheFloatProjectName_thenContentIsRead() throws Exception {
+        when(mockProjectsReader.hasContent()).thenReturn(false);
+
+        floatGithubProjectConverter.getFloatProject("repo2");
+
+        verify(mockProjectsReader).read();
+    }
+
+    @Test
+    public void givenProjectsWereAlreadyRead_whenGettingTheFloatProjectNameAgain_thenContentIsNotReadAgain() throws Exception {
+        when(mockProjectsReader.hasContent()).thenReturn(true);
+
+        floatGithubProjectConverter.getFloatProject("repo2");
+
+        verify(mockProjectsReader, VerificationModeFactory.times(0)).read();
+    }
+
+    @Test
+    public void givenProjectsWereNotRead_whenGettingRepositoriesForTheFloatProject_thenContentIsRead() throws Exception {
+        when(mockProjectsReader.hasContent()).thenReturn(false);
+
+        floatGithubProjectConverter.getRepositories("Float");
+
+        verify(mockProjectsReader).read();
+    }
+
+    @Test
+    public void givenProjectsWereAlreadyRead_whenGettingRepositoriesForTheFloatProject_thenContentIsNotReadAgain() throws Exception {
+        when(mockProjectsReader.hasContent()).thenReturn(true);
+
+        floatGithubProjectConverter.getRepositories("Float");
+
+        verify(mockProjectsReader, VerificationModeFactory.times(0)).read();
     }
 }
