@@ -37,10 +37,12 @@ public class PullRequestOptions extends RangeOptions {
             description = "Repositories to retrieve data from (can\'t be used together with \"--projects\")")
     private List<String> repositories;
 
+    // TODO: remove after float integration
     @Parameter(names = {"--team", "-tu"},
             description = "Users to treat as team (company) internals")
     private List<String> teamUsers;
 
+    // TODO: remove after float integration
     @Parameter(names = {"--assigned", "-au"},
             description = "Users to treat as assigned to the projects or repositories")
     private List<String> assignedUsers;
