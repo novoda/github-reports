@@ -45,11 +45,17 @@ public class DbEventMergedCountQueryBuilder {
     }
 
     public SelectOrderByStep<Record3<BigDecimal, Long, String>> getStats() {
-        return getAllUserStats()
-                .union(getAverageExternalUserStats())
-                .union(getAverageTeamUserStats())
-                .union(getAverageAssignedUserStats())
-                .union(getAverageFilterUserStats());
+        SelectOrderByStep<Record3<BigDecimal, Long, String>> allUserStats = getAllUserStats();
+
+        if (parameters.isWithAverage()) {
+            allUserStats = allUserStats
+                    .union(getAverageExternalUserStats())
+                    .union(getAverageTeamUserStats())
+                    .union(getAverageAssignedUserStats())
+                    .union(getAverageFilterUserStats());
+        }
+
+        return allUserStats;
     }
 
     private SelectHavingConditionStep<Record3<BigDecimal, Long, String>> getAllUserStats() {
