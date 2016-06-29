@@ -22,29 +22,24 @@ public class PullRequestStatsParameters {
     private final EventDataLayer.PullRequestStatsGroupBy groupBy;
     private final boolean withAverage;
 
-    public static PullRequestStatsParameters from(DSLContext context,
-                                                  Date from,
-                                                  Date to,
-                                                  List<String> repositories,
-                                                  List<String> teamUsers,
-                                                  List<String> assignedUsers,
-                                                  List<String> filterUsers,
-                                                  EventDataLayer.PullRequestStatsGroupBy groupBy,
-                                                  boolean withAverage) {
+    public PullRequestStatsParameters(DSLContext context,
+                                      Date from,
+                                      Date to,
+                                      List<String> repositories,
+                                      List<String> teamUsers,
+                                      List<String> assignedUsers,
+                                      List<String> filterUsers,
+                                      EventDataLayer.PullRequestStatsGroupBy groupBy,
+                                      boolean withAverage) {
 
-        Set<String> repositoriesSet = listToSet(repositories);
-        Set<String> teamUsersSet = listToSet(teamUsers);
-        Set<String> projectUsersSet = listToSet(assignedUsers);
-        Set<String> filterUsersSet = listToSet(filterUsers);
-
-        return new PullRequestStatsParameters(
+        this(
                 context,
                 from,
                 to,
-                repositoriesSet,
-                teamUsersSet,
-                projectUsersSet,
-                filterUsersSet,
+                listToSet(repositories),
+                listToSet(teamUsers),
+                listToSet(assignedUsers),
+                listToSet(filterUsers),
                 groupBy,
                 withAverage
         );
@@ -57,19 +52,6 @@ public class PullRequestStatsParameters {
         Set<String> set = new HashSet<>(list.size());
         set.addAll(list);
         return set;
-    }
-
-    public static PullRequestStatsParameters from(DSLContext context,
-                                                  Date from,
-                                                  Date to,
-                                                  Set<String> repositories,
-                                                  Set<String> teamUsers,
-                                                  Set<String> projectUsers,
-                                                  Set<String> filterUsers,
-                                                  EventDataLayer.PullRequestStatsGroupBy groupBy,
-                                                  boolean withAverage) {
-
-        return new PullRequestStatsParameters(context, from, to, repositories, teamUsers, projectUsers, filterUsers, groupBy, withAverage);
     }
 
     private PullRequestStatsParameters(DSLContext context,

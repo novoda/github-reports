@@ -60,7 +60,7 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
             Connection connection = getNewConnection();
             DSLContext create = getNewDSLContext(connection);
 
-            PullRequestStatsParameters parameters = PullRequestStatsParameters.from(
+            PullRequestStatsParameters parameters = new PullRequestStatsParameters(
                     create,
                     from,
                     to,
