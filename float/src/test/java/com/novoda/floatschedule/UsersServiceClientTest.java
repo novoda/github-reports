@@ -9,10 +9,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.verification.VerificationModeFactory;
 
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -42,5 +44,23 @@ public class UsersServiceClientTest {
                 .subscribe(testSubscriber);
 
         testSubscriber.assertValues("pouco valor", "muito valor");
+    }
+
+    @Test
+    public void givenThereIsNoContent_whenGettingAllTheGithubUsernames_thenTheContentIsRead() throws Exception {
+        when(mockUsersReader.hasContent()).thenReturn(false);
+
+        usersServiceClient.getAllGithubUsers();
+
+        verify(mockUsersReader, VerificationModeFactory.times(1)).read();
+    }
+
+    @Test
+    public void givenThereIsContent_whenGettingAllTheGithubUsernames_thenTheContentIsNotReadAgain() throws Exception {
+        when(mockUsersReader.hasContent()).thenReturn(true);
+
+        usersServiceClient.getAllGithubUsers();
+
+        verify(mockUsersReader, VerificationModeFactory.times(0)).read();
     }
 }
