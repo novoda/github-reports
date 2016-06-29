@@ -72,7 +72,7 @@ public class FloatGithubUserConverterTest {
     }
 
     @Test
-    public void givenUsersWereAlreadyRead_whenGettingTheGithubUsernameAgain_thenContentIsReadOnlyOnce() throws Exception {
+    public void givenUsersWereAlreadyRead_whenGettingTheGithubUsernameAgain_thenContentIsNotReadAgain() throws Exception {
         when(mockUsersReader.hasContent()).thenReturn(true);
 
         floatGithubUserConverter.getGithubUser("float pirata");
@@ -90,7 +90,7 @@ public class FloatGithubUserConverterTest {
     }
 
     @Test
-    public void givenUsersWereAlreadyRead_whenGettingTheFloatUsernameAgain_thenContentIsReadOnlyOnce() throws Exception {
+    public void givenUsersWereAlreadyRead_whenGettingTheFloatUsernameAgain_thenContentIsNotReadAgain() throws Exception {
         when(mockUsersReader.hasContent()).thenReturn(true);
 
         floatGithubUserConverter.getFloatUser("github meirinho");
