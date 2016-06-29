@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class FloatGithubProjectConverter {
 
@@ -23,18 +24,12 @@ public class FloatGithubProjectConverter {
     String getFloatProject(String repositoryName) throws IOException, NoMatchFoundException {
         readIfNeeded();
 
-        final String[] match = { null };
-        projectsReader.getContent().entrySet()
+        return projectsReader.getContent().entrySet()
                 .stream()
                 .filter(entry -> repositoryIsInRepositoriesOfProject(repositoryName, entry))
                 .findFirst()
-                .ifPresent(entry -> match[0] = entry.getKey());
-
-        if (match[0] == null) {
-            throw new NoMatchFoundException(repositoryName);
-        }
-
-        return match[0];
+                .map(Map.Entry::getKey)
+                .orElseThrow((Supplier<RuntimeException>) () -> new NoMatchFoundException(repositoryName));
     }
 
     private boolean repositoryIsInRepositoriesOfProject(String githubRepositoryName, Map.Entry<String, List<String>> projectWithRepositoryNames) {
