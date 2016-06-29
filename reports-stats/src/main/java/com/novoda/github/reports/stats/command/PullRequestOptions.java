@@ -15,16 +15,16 @@ public class PullRequestOptions extends RangeOptions {
     PullRequestOptions(List<String> repositories,
                        List<String> projects,
                        List<String> teamUsers,
-                       List<String> projectUsers,
-                       List<String> users,
+                       List<String> assignedUsers,
+                       List<String> filterUsers,
                        PullRequestOptionsGroupBy groupBy,
                        boolean withAverage) {
 
         this.projects = projects;
         this.repositories = repositories;
         this.teamUsers = teamUsers;
-        this.projectUsers = projectUsers;
-        this.users = users;
+        this.assignedUsers = assignedUsers;
+        this.filterUsers = filterUsers;
         this.groupBy = groupBy;
         this.withAverage = withAverage;
     }
@@ -37,17 +37,17 @@ public class PullRequestOptions extends RangeOptions {
             description = "Repositories to retrieve data from (can\'t be used together with \"--projects\")")
     private List<String> repositories;
 
-    @Parameter(names = {"--team-users", "-tu"},
+    @Parameter(names = {"--team", "-tu"},
             description = "Users to treat as team (company) internals")
     private List<String> teamUsers;
 
-    @Parameter(names = {"--project-users", "-pu"},
-            description = "Users to treat as project internals")
-    private List<String> projectUsers;
+    @Parameter(names = {"--assigned", "-au"},
+            description = "Users to treat as assigned to the projects or repositories")
+    private List<String> assignedUsers;
 
     @Parameter(names = {"--users", "-u"},
             description = "Users to filter on")
-    private List<String> users;
+    private List<String> filterUsers;
 
     @Parameter(names = {"--group-by", "-g"},
             description = "Whether to add user average for every group",
@@ -70,12 +70,12 @@ public class PullRequestOptions extends RangeOptions {
         return teamUsers;
     }
 
-    public List<String> getProjectUsers() {
-        return projectUsers;
+    public List<String> getAssignedUsers() {
+        return assignedUsers;
     }
 
-    public List<String> getUsers() {
-        return users;
+    public List<String> getFilterUsers() {
+        return filterUsers;
     }
 
     public PullRequestOptionsGroupBy getGroupBy() {

@@ -28,8 +28,8 @@ public class PullRequestCommandHandler implements CommandHandler<PullRequestStat
                     options.getTo(),
                     repositoriesFromProjects,
                     options.getTeamUsers(),
-                    options.getProjectUsers(),
-                    options.getUsers(),
+                    options.getAssignedUsers(),
+                    options.getFilterUsers(),
                     convertToGroupBy(options.getGroupBy()),
                     options.withAverage()
             );

@@ -43,8 +43,8 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
                                      Date to,
                                      List<String> repositories,
                                      List<String> teamUsers,
-                                     List<String> projectUsers,
-                                     List<String> users,
+                                     List<String> assignedUsers,
+                                     List<String> filterUsers,
                                      PullRequestStatsGroupBy groupBy,
                                      boolean withAverage) throws DataLayerException {
 
