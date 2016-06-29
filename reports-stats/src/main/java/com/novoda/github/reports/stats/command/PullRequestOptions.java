@@ -37,11 +37,11 @@ public class PullRequestOptions extends RangeOptions {
             description = "Repositories to retrieve data from (can\'t be used together with \"--projects\")")
     private List<String> repositories;
 
-    @Parameter(names = {"--teamUsers", "-tu"},
+    @Parameter(names = {"--team-users", "-tu"},
             description = "Users to treat as team (company) internals")
     private List<String> teamUsers;
 
-    @Parameter(names = {"--projectUsers", "-pu"},
+    @Parameter(names = {"--project-users", "-pu"},
             description = "Users to treat as project internals")
     private List<String> projectUsers;
 
