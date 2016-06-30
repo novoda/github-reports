@@ -45,19 +45,12 @@ public class FloatGithubProjectConverter {
     public List<String> getRepositories(String floatProject) throws IOException, NoMatchFoundException {
         readIfNeeded();
 
-        @SuppressWarnings("unchecked") // it's safe 'cause we're only using the array here, we know the types
-        final List<String>[] match = new List[]{ null };
-        projectsReader.getContent().entrySet()
+        return projectsReader.getContent().entrySet()
                 .stream()
                 .filter(byProjectHavingRepositories(floatProject))
                 .findFirst()
-                .ifPresent(entry -> match[0] = entry.getValue());
-
-        if (match[0] == null) {
-            throw new NoMatchFoundException(floatProject);
-        }
-
-        return match[0];
+                .map(Map.Entry::getValue)
+                .orElseThrow((Supplier<RuntimeException>) () -> new NoMatchFoundException(floatProject));
     }
 
     private Predicate<Map.Entry<String, List<String>>> byProjectHavingRepositories(String floatProject) {
