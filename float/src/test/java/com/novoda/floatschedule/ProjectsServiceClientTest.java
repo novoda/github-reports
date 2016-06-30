@@ -49,7 +49,7 @@ public class ProjectsServiceClientTest {
     }
 
     @Test
-    public void givenThereIsNoContent_whenGettingAllTheFloatProjectnames_thenTheContentIsRead() throws Exception {
+    public void givenThereIsNoContent_whenGettingAllTheFloatProjectNames_thenTheContentIsRead() throws Exception {
         when(mockProjectsReader.hasContent()).thenReturn(false);
 
         projectsServiceClient.getAllFloatProjectNames();
@@ -58,7 +58,7 @@ public class ProjectsServiceClientTest {
     }
 
     @Test
-    public void givenThereIsContent_whenGettingAllTheFloatProjectnames_thenTheContentIsNotReadAgain() throws Exception {
+    public void givenThereIsContent_whenGettingAllTheFloatProjectNames_thenTheContentIsNotReadAgain() throws Exception {
         when(mockProjectsReader.hasContent()).thenReturn(true);
 
         projectsServiceClient.getAllFloatProjectNames();
