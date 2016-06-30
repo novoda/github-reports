@@ -21,7 +21,7 @@ public class FloatGithubProjectConverter {
         this.projectsReader = projectsReader;
     }
 
-    String getFloatProject(String repositoryName) throws IOException, NoMatchFoundException {
+    public String getFloatProject(String repositoryName) throws IOException, NoMatchFoundException {
         readIfNeeded();
 
         return projectsReader.getContent().entrySet()
