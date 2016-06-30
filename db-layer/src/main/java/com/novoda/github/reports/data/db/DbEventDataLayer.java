@@ -76,10 +76,16 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
             DbEventCountQueryBuilder mergedPrs = DbEventCountQueryBuilder.forMergedCount(parameters, userQueryBuilder);
             DbEventCountQueryBuilder openedPrs = DbEventCountQueryBuilder.forOpenedCount(parameters, userQueryBuilder);
             DbEventCountQueryBuilder otherPeopleCommentsOnUserPrs = DbEventCountQueryBuilder.forOtherPeopleComments(parameters, userQueryBuilder);
+            DbEventCountQueryBuilder commentsOtherPeoplePrs = DbEventCountQueryBuilder.forCommentsOtherPeople(parameters, userQueryBuilder);
+            DbEventCountQueryBuilder commentsOwnPrs = DbEventCountQueryBuilder.forCommentsOwn(parameters, userQueryBuilder);
+            DbEventCountQueryBuilder commentsAnyPrs = DbEventCountQueryBuilder.forCommentsAny(parameters, userQueryBuilder);
 
             SelectOrderByStep<Record4<BigDecimal, Long, String, String>> mergedQuery = mergedPrs.getStats();
             SelectOrderByStep<Record4<BigDecimal, Long, String, String>> openedQuery = openedPrs.getStats();
             SelectOrderByStep<Record4<BigDecimal, Long, String, String>> otherPeopleCommentsQuery = otherPeopleCommentsOnUserPrs.getStats();
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsOtherPeopleQuery = commentsOtherPeoplePrs.getStats();
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsOwnQuery = commentsOwnPrs.getStats();
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsAnyQuery = commentsAnyPrs.getStats();
 
             // TODO: remove after getting all stats, this is only needed for debug purposes
             String mergedSql = mergedQuery.getSQL(ParamType.INLINED);
@@ -88,6 +94,12 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
             System.out.println(openedSql);
             String otherPeopleCommentsSql = otherPeopleCommentsQuery.getSQL(ParamType.INLINED);
             System.out.println(otherPeopleCommentsSql);
+            String commentsOtherPeopleSql = commentsOtherPeopleQuery.getSQL(ParamType.INLINED);
+            System.out.println(commentsOtherPeopleSql);
+            String commentsOwnSql = commentsOwnQuery.getSQL(ParamType.INLINED);
+            System.out.println(commentsOwnSql);
+            String commentsAnySql = commentsAnyQuery.getSQL(ParamType.INLINED);
+            System.out.println(commentsAnySql);
 
         } catch (SQLException e) {
             throw new DataLayerException(e);
