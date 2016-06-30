@@ -3,6 +3,7 @@ package com.novoda.github.reports.data.model;
 import com.google.auto.value.AutoValue;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AutoValue
 public abstract class PullRequestStats implements Stats {
@@ -13,17 +14,18 @@ public abstract class PullRequestStats implements Stats {
         return new AutoValue_PullRequestStats.Builder();
     }
 
-    @Override
-    public String describeStats() {
-        // TODO describe statistics
-        return null;
-    }
-
     @AutoValue.Builder
     public static abstract class Builder {
-        abstract Builder groups(List<PullRequestStatsGroup> groups);
+        public abstract Builder groups(List<PullRequestStatsGroup> groups);
 
-        abstract PullRequestStats build();
+        public abstract PullRequestStats build();
+    }
+
+    @Override
+    public String describeStats() {
+        return groups().stream()
+                .map(PullRequestStatsGroup::describeStats)
+                .collect(Collectors.joining("\n"));
     }
 
 }
