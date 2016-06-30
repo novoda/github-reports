@@ -1,5 +1,6 @@
 package com.novoda.floatschedule;
 
+import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
@@ -33,18 +34,30 @@ public class AssignmentServiceClientTest {
     @Mock
     private FloatGithubUserConverter mockFloatGithubUserConverter;
 
+    @Mock
+    private FloatGithubProjectConverter mockFloatGithubProjectConverter;
+
     @InjectMocks
     private AssignmentServiceClient assignmentServiceClient;
+
+    private TestSubscriber<String> testSubscriber;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
+
+        testSubscriber = new TestSubscriber<>();
 
         List<Task> tasks = Arrays.asList(givenATask("proj1", "persA"), givenATask("proj1", "persD"), givenATask("proj2", "persB"),
                                          givenATask("proj3", "persC"), givenATask("proj4", "persA"));
 
         givenTasks(tasks);
         givenGithubUsersFor(tasks);
+
+        when(mockFloatGithubProjectConverter.getFloatProject("repoX")).thenReturn("proj1");
+        when(mockFloatGithubProjectConverter.getFloatProject("repoY")).thenReturn("proj2");
+        when(mockFloatGithubProjectConverter.getFloatProject("repoZ")).thenReturn("proj3");
+        when(mockFloatGithubProjectConverter.getFloatProject("repoK")).thenReturn("proj1");
     }
 
     private void givenTasks(List<Task> tasks) {
@@ -73,9 +86,28 @@ public class AssignmentServiceClientTest {
     }
 
     @Test
+    public void givenTasksAndUsers_whenGettingGithubUsernamesForARepository_thenTheCorrectUsernameIsEmitted() {
+
+        assignmentServiceClient.getGithubUsernamesAssignedToRepositories(Collections.singletonList("repoZ"))
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValues("persC_github");
+    }
+
+    @Test
+    public void givenTasksAndUsers_whenGettingGithubUsernamesForRepositories_thenTheCorrectUsernamesAreEmittedWithoutDuplicates() {
+
+        assignmentServiceClient.getGithubUsernamesAssignedToRepositories(Arrays.asList("repoX", "repoZ", "repoK"))
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertValues("persA_github", "persD_github", "persC_github");
+    }
+
+    @Test
     public void givenTasksAndUsers_whenGettingGithubUsernamesForAProject_thenTheCorrectUsernameIsEmitted()  {
 
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         assignmentServiceClient.getGithubUsernamesAssignedToProjects(Collections.singletonList("proj2"))
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
@@ -86,7 +118,6 @@ public class AssignmentServiceClientTest {
     @Test
     public void givenTasksAndUsers_whenGettingGithubUsernamesForProjects_thenTheCorrectUsernamesAreEmittedWithoutDuplicates() {
 
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         assignmentServiceClient.getGithubUsernamesAssignedToProjects(Arrays.asList("proj1", "proj4"))
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
@@ -97,7 +128,6 @@ public class AssignmentServiceClientTest {
     @Test
     public void givenTasksAndUsers_whenGettingGithubUsernamesForANonExistentProject_thenTheNothingIsEmitted() {
 
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         assignmentServiceClient.getGithubUsernamesAssignedToProjects(Collections.singletonList("proj88"))
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
