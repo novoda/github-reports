@@ -194,36 +194,36 @@ public class DbEventCountQueryBuilder {
     private SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereAuthorOwnerConstraintIsRespectedAndDateIsInRange(
             SelectJoinStep<Record4<BigDecimal, Long, String, String>> select) {
 
-        SelectConditionStep<Record4<BigDecimal, Long, String, String>> where = select.where(trueCondition());
+        SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereClause = select.where(trueCondition());
 
-        where = andOwnerAuthorConstraintIsRespected(where);
-        where = andDateIsInRange(where);
+        whereClause = andOwnerAuthorConstraintIsRespected(whereClause);
+        whereClause = andDateIsInRange(whereClause);
 
-        return where;
+        return whereClause;
     }
 
     private SelectConditionStep<Record4<BigDecimal, Long, String, String>> andOwnerAuthorConstraintIsRespected(
-            SelectConditionStep<Record4<BigDecimal, Long, String, String>> where) {
+            SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereClause) {
 
         if (ownerAuthorConstraint == OwnerAuthor.MUST_BE_SAME) {
-            where = where.and(EVENT.AUTHOR_USER_ID.eq(EVENT.OWNER_USER_ID));
+            whereClause = whereClause.and(EVENT.AUTHOR_USER_ID.eq(EVENT.OWNER_USER_ID));
         } else if (ownerAuthorConstraint == OwnerAuthor.MUST_BE_DIFFERENT) {
-            where = where.and(EVENT.AUTHOR_USER_ID.ne(EVENT.OWNER_USER_ID));
+            whereClause = whereClause.and(EVENT.AUTHOR_USER_ID.ne(EVENT.OWNER_USER_ID));
         }
-        return where;
+        return whereClause;
     }
 
     private SelectConditionStep<Record4<BigDecimal, Long, String, String>> andDateIsInRange(
-            SelectConditionStep<Record4<BigDecimal, Long, String, String>> where) {
+            SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereClause) {
 
-        return where.and(conditionalBetween(EVENT.DATE, parameters.getFrom(), parameters.getTo()));
+        return whereClause.and(conditionalBetween(EVENT.DATE, parameters.getFrom(), parameters.getTo()));
     }
 
     private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> groupByFieldHavingSpecificEventId(
-            SelectConditionStep<Record4<BigDecimal, Long, String, String>> where,
+            SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereClause,
             Field<String> groupField) {
 
-        return where
+        return whereClause
                 .groupBy(EVENT.EVENT_TYPE_ID, userIdFieldCountTarget, groupField)
                 .having(EVENT.EVENT_TYPE_ID.eq(eventIdForCount));
     }
