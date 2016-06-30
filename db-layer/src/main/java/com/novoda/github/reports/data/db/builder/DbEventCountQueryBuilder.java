@@ -18,14 +18,12 @@ import org.jooq.SelectOrderByStep;
 import org.jooq.Table;
 import org.jooq.TableField;
 
-import static com.novoda.github.reports.data.db.DatabaseHelper.MERGED_PRS_ID;
-import static com.novoda.github.reports.data.db.DatabaseHelper.OPENED_PRS_ID;
-import static com.novoda.github.reports.data.db.DatabaseHelper.conditionalBetween;
+import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.Tables.*;
 import static com.novoda.github.reports.data.db.builder.DbEventUserQueryBuilder.USER_TYPE_FIELD;
 import static org.jooq.impl.DSL.*;
 
-public class DbEventCountForAuthorQueryBuilder {
+public class DbEventCountQueryBuilder {
 
     private static final Field<String> GROUP_SELECTOR_FIELD = field("date_group", String.class);
     private static final String GROUP_SELECTOR_SEPARATOR = "-";
@@ -38,30 +36,37 @@ public class DbEventCountForAuthorQueryBuilder {
     private static final String FILTER_USERS_TABLE = "filter_users";
 
     private static final Field<Integer> QUANTITY_FIELD = field("quantity", Integer.class);
+    private static final Field<Integer> USER_FIELD = field("user_id", Integer.class);
 
     private final PullRequestStatsParameters parameters;
     private final DbEventUserQueryBuilder userQueryBuilder;
     private final Integer eventIdForCount;
+    private final TableField<EventRecord, Long> userIdFieldCountTarget;
+    private final OwnerAuthor ownerAuthorConstraint;
 
-    public static DbEventCountForAuthorQueryBuilder newMergedCountQueryBuilderInstance(PullRequestStatsParameters parameters,
-                                                                                       DbEventUserQueryBuilder userQueryBuilder) {
-
-        return new DbEventCountForAuthorQueryBuilder(parameters, userQueryBuilder, MERGED_PRS_ID);
+    public static DbEventCountQueryBuilder forMergedCount(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
+        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, MERGED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
     }
 
-    public static DbEventCountForAuthorQueryBuilder newOpenedCountQueryBuilderInstance(PullRequestStatsParameters parameters,
-                                                                                       DbEventUserQueryBuilder userQueryBuilder) {
-
-        return new DbEventCountForAuthorQueryBuilder(parameters, userQueryBuilder, OPENED_PRS_ID);
+    public static DbEventCountQueryBuilder forOpenedCount(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
+        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, OPENED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
     }
 
-    private DbEventCountForAuthorQueryBuilder(PullRequestStatsParameters parameters,
-                                              DbEventUserQueryBuilder userQueryBuilder,
-                                              Integer eventIdForCount) {
+    public static DbEventCountQueryBuilder forOtherPeopleComments(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
+        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.OWNER_USER_ID, OwnerAuthor.MUST_BE_DIFFERENT);
+    }
+
+    private DbEventCountQueryBuilder(PullRequestStatsParameters parameters,
+                                     DbEventUserQueryBuilder userQueryBuilder,
+                                     Integer eventIdForCount,
+                                     TableField<EventRecord, Long> userIdFieldCountTarget,
+                                     OwnerAuthor ownerAuthorConstraint) {
 
         this.parameters = parameters;
         this.userQueryBuilder = userQueryBuilder;
         this.eventIdForCount = eventIdForCount;
+        this.userIdFieldCountTarget = userIdFieldCountTarget;
+        this.ownerAuthorConstraint = ownerAuthorConstraint;
     }
 
     public SelectOrderByStep<Record4<BigDecimal, Long, String, String>> getStats() {
@@ -111,13 +116,18 @@ public class DbEventCountForAuthorQueryBuilder {
         return getAverageUserStats(filterUserStats, DbEventUserQueryBuilder.USER_FILTER_ID);
     }
 
-    private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> getUserStatsForRelevantUsers(Table<Record3<Long, String, String>> table) {
+    private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> getUserStatsForRelevantUsers(Table<Record3<Long, String, String>> userTable) {
         Field<String> groupField = getGroupFieldForMySQLOnly(parameters.getGroupBy());
 
         SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCount = selectCountEventsGroupBy(groupField);
-        SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCountForRelevantUsers = innerJoinRelevantUsers(selectCount, table);
-        SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereRepoAndDateMatch = whereRepoMatchesAndDateIsInRange(selectCountForRelevantUsers);
-        SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> havingSpecificEvents = groupByFieldHavingSpecificEventId(whereRepoAndDateMatch, groupField);
+        SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCountForRelevantUsers = innerJoinRelevantUsers(selectCount, userTable);
+        SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCountForRelevantRepos = innerJoinMatchingRepos(selectCountForRelevantUsers);
+
+        SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereDateAndOwnerUserConstraintMatch =
+                whereAuthorOwnerConstraintIsRespectedAndDateIsInRange(selectCountForRelevantRepos);
+
+        SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> havingSpecificEvents =
+                groupByFieldHavingSpecificEventId(whereDateAndOwnerUserConstraintMatch, groupField);
 
         return havingSpecificEvents;
     }
@@ -149,40 +159,72 @@ public class DbEventCountForAuthorQueryBuilder {
 
     private SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCountEventsGroupBy(Field<String> groupField) {
         return parameters.getContext()
-                .select(count(EVENT.EVENT_TYPE_ID).cast(BigDecimal.class).as(QUANTITY_FIELD), EVENT.AUTHOR_USER_ID, USER_TYPE_FIELD, groupField)
+                .select(
+                        count(EVENT.EVENT_TYPE_ID).cast(BigDecimal.class).as(QUANTITY_FIELD),
+                        userIdFieldCountTarget.as(USER_FIELD),
+                        USER_TYPE_FIELD,
+                        groupField
+                )
                 .from(EVENT);
     }
 
-    private SelectJoinStep<Record4<BigDecimal, Long, String, String>> innerJoinRelevantUsers(SelectJoinStep<Record4<BigDecimal, Long, String, String>> select,
-                                                                                             Table<Record3<Long, String, String>> table) {
+    private SelectJoinStep<Record4<BigDecimal, Long, String, String>> innerJoinRelevantUsers(
+            SelectJoinStep<Record4<BigDecimal, Long, String, String>> select,
+            Table<Record3<Long, String, String>> table) {
 
         select = select
                 .innerJoin(table)
-                .on(EVENT.AUTHOR_USER_ID.eq(table.field(USER._ID)));
+                .on(userIdFieldCountTarget.eq(table.field(USER._ID)));
         return select;
     }
 
-    private SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereRepoMatchesAndDateIsInRange(
+    private SelectJoinStep<Record4<BigDecimal, Long, String, String>> innerJoinMatchingRepos(
             SelectJoinStep<Record4<BigDecimal, Long, String, String>> select) {
 
-        SelectConditionStep<Record4<BigDecimal, Long, String, String>> where = select.where(trueCondition());
-
         if (!parameters.getRepositories().isEmpty()) {
-            where = select
+            return select
                     .innerJoin(REPOSITORY)
                     .on(REPOSITORY._ID.eq(EVENT.REPOSITORY_ID))
-                    .where(REPOSITORY.NAME.in(parameters.getRepositories()));
+                    .and(REPOSITORY.NAME.in(parameters.getRepositories()));
         }
 
-        return where.and(conditionalBetween(EVENT.DATE, parameters.getFrom(), parameters.getTo()));
+        return select;
+    }
+
+    private SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereAuthorOwnerConstraintIsRespectedAndDateIsInRange(
+            SelectJoinStep<Record4<BigDecimal, Long, String, String>> select) {
+
+        SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereClause = select.where(trueCondition());
+
+        whereClause = andOwnerAuthorConstraintIsRespected(whereClause);
+        whereClause = andDateIsInRange(whereClause);
+
+        return whereClause;
+    }
+
+    private SelectConditionStep<Record4<BigDecimal, Long, String, String>> andOwnerAuthorConstraintIsRespected(
+            SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereClause) {
+
+        if (ownerAuthorConstraint == OwnerAuthor.MUST_BE_SAME) {
+            whereClause = whereClause.and(EVENT.AUTHOR_USER_ID.eq(EVENT.OWNER_USER_ID));
+        } else if (ownerAuthorConstraint == OwnerAuthor.MUST_BE_DIFFERENT) {
+            whereClause = whereClause.and(EVENT.AUTHOR_USER_ID.ne(EVENT.OWNER_USER_ID));
+        }
+        return whereClause;
+    }
+
+    private SelectConditionStep<Record4<BigDecimal, Long, String, String>> andDateIsInRange(
+            SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereClause) {
+
+        return whereClause.and(conditionalBetween(EVENT.DATE, parameters.getFrom(), parameters.getTo()));
     }
 
     private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> groupByFieldHavingSpecificEventId(
-            SelectConditionStep<Record4<BigDecimal, Long, String, String>> where,
+            SelectConditionStep<Record4<BigDecimal, Long, String, String>> whereClause,
             Field<String> groupField) {
 
-        return where
-                .groupBy(EVENT.EVENT_TYPE_ID, EVENT.AUTHOR_USER_ID, groupField)
+        return whereClause
+                .groupBy(EVENT.EVENT_TYPE_ID, userIdFieldCountTarget, groupField)
                 .having(EVENT.EVENT_TYPE_ID.eq(eventIdForCount));
     }
 
@@ -193,7 +235,7 @@ public class DbEventCountForAuthorQueryBuilder {
         return parameters.getContext()
                 .select(
                         avg(QUANTITY_FIELD).as(QUANTITY_FIELD),
-                        val(averageUserId).as(EVENT.AUTHOR_USER_ID),
+                        val(averageUserId).as(USER_FIELD),
                         USER_TYPE_FIELD,
                         GROUP_SELECTOR_FIELD
                 )
