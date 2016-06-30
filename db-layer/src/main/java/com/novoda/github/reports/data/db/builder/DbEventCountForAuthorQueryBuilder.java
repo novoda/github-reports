@@ -37,7 +37,7 @@ public class DbEventCountForAuthorQueryBuilder {
     private static final String ASSIGNED_USERS_TABLE = "assigned_users";
     private static final String FILTER_USERS_TABLE = "filter_users";
 
-    private static final Field<Integer> COUNT_FIELD = field("count_field", Integer.class);
+    private static final Field<Integer> QUANTITY_FIELD = field("quantity", Integer.class);
 
     private final PullRequestStatsParameters parameters;
     private final DbEventUserQueryBuilder userQueryBuilder;
@@ -149,7 +149,7 @@ public class DbEventCountForAuthorQueryBuilder {
 
     private SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCountEventsGroupBy(Field<String> groupField) {
         return parameters.getContext()
-                .select(count(EVENT.EVENT_TYPE_ID).cast(BigDecimal.class).as(COUNT_FIELD), EVENT.AUTHOR_USER_ID, USER_TYPE_FIELD, groupField)
+                .select(count(EVENT.EVENT_TYPE_ID).cast(BigDecimal.class).as(QUANTITY_FIELD), EVENT.AUTHOR_USER_ID, USER_TYPE_FIELD, groupField)
                 .from(EVENT);
     }
 
@@ -192,7 +192,7 @@ public class DbEventCountForAuthorQueryBuilder {
 
         return parameters.getContext()
                 .select(
-                        avg(COUNT_FIELD).as(COUNT_FIELD),
+                        avg(QUANTITY_FIELD).as(QUANTITY_FIELD),
                         val(averageUserId).as(EVENT.AUTHOR_USER_ID),
                         USER_TYPE_FIELD,
                         GROUP_SELECTOR_FIELD
