@@ -33,10 +33,10 @@ class FloatServiceClient {
         return new FloatServiceClient(floatGithubUserConverter, floatGithubProjectConverter, peopleServiceClient, taskServiceClient);
     }
 
-    FloatServiceClient(FloatGithubUserConverter floatGithubUserConverter,
-                       FloatGithubProjectConverter floatGithubProjectConverter,
-                       PeopleServiceClient peopleServiceClient,
-                       TaskServiceClient taskServiceClient) {
+    private FloatServiceClient(FloatGithubUserConverter floatGithubUserConverter,
+                               FloatGithubProjectConverter floatGithubProjectConverter,
+                               PeopleServiceClient peopleServiceClient,
+                               TaskServiceClient taskServiceClient) {
 
         this.floatGithubUserConverter = floatGithubUserConverter;
         this.floatGithubProjectConverter = floatGithubProjectConverter;

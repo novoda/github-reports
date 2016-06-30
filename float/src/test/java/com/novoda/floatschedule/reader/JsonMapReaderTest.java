@@ -1,4 +1,4 @@
-package com.novoda.floatschedule.convert;
+package com.novoda.floatschedule.reader;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;

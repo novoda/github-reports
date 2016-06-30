@@ -1,41 +1,35 @@
 package com.novoda.floatschedule.convert;
 
+import com.novoda.floatschedule.reader.ProjectsReader;
+
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class FloatGithubProjectConverter {
 
-    private final JsonMapReader<Map<String, List<String>>> jsonMapReader;
-    private Map<String, List<String>> projectToRepositories;
+    private final ProjectsReader projectsReader;
 
     public static FloatGithubProjectConverter newInstance() {
-        JsonMapReader<Map<String, List<String>>> jsonMapReader = JsonMapReader.newStringToListOfStringsInstance();
-        return new FloatGithubProjectConverter(jsonMapReader);
+        return new FloatGithubProjectConverter(ProjectsReader.newInstance());
     }
 
-    FloatGithubProjectConverter(JsonMapReader<Map<String, List<String>>> jsonMapReader) {
-        this.jsonMapReader = jsonMapReader;
+    private FloatGithubProjectConverter(ProjectsReader projectsReader) {
+        this.projectsReader = projectsReader;
     }
 
     String getFloatProject(String repositoryName) throws IOException, NoMatchFoundException {
         readIfNeeded();
 
-        final String[] match = { null };
-        projectToRepositories.entrySet()
+        return projectsReader.getContent().entrySet()
                 .stream()
                 .filter(entry -> repositoryIsInRepositoriesOfProject(repositoryName, entry))
                 .findFirst()
-                .ifPresent(entry -> match[0] = entry.getKey());
-
-        if (match[0] == null) {
-            throw new NoMatchFoundException(repositoryName);
-        }
-
-        return match[0];
+                .map(Map.Entry::getKey)
+                .orElseThrow((Supplier<RuntimeException>) () -> new NoMatchFoundException(repositoryName));
     }
 
     private boolean repositoryIsInRepositoriesOfProject(String githubRepositoryName, Map.Entry<String, List<String>> projectWithRepositoryNames) {
@@ -51,38 +45,23 @@ public class FloatGithubProjectConverter {
     public List<String> getRepositories(String floatProject) throws IOException, NoMatchFoundException {
         readIfNeeded();
 
-        @SuppressWarnings("unchecked") // it's safe 'cause we're only using the array here, we know the types
-        final List<String>[] match = new List[]{ null };
-        projectToRepositories.entrySet()
+        return projectsReader.getContent().entrySet()
                 .stream()
                 .filter(byProjectHavingRepositories(floatProject))
                 .findFirst()
-                .ifPresent(entry -> match[0] = entry.getValue());
-
-        if (match[0] == null) {
-            throw new NoMatchFoundException(floatProject);
-        }
-
-        return match[0];
+                .map(Map.Entry::getValue)
+                .orElseThrow((Supplier<RuntimeException>) () -> new NoMatchFoundException(floatProject));
     }
 
     private Predicate<Map.Entry<String, List<String>>> byProjectHavingRepositories(String floatProject) {
         return entry -> floatProject.toLowerCase(Locale.UK).contains(entry.getKey().toLowerCase(Locale.UK));
     }
 
-    private boolean fileContentsAlreadyRead() {
-        return projectToRepositories != null;
-    }
-
     private void readIfNeeded() throws IOException {
-        if (fileContentsAlreadyRead()) {
+        if (projectsReader.hasContent()) {
             return;
         }
-        try {
-            projectToRepositories = jsonMapReader.readFromResource("projects.json");
-        } catch (URISyntaxException | IOException e) {
-            throw new IOException("Could not read users from file.");
-        }
+        projectsReader.read();
     }
 
 }
