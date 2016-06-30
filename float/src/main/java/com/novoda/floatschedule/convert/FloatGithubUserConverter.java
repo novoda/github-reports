@@ -3,6 +3,8 @@ package com.novoda.floatschedule.convert;
 import com.novoda.floatschedule.reader.UsersReader;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class FloatGithubUserConverter {
 
@@ -19,18 +21,11 @@ public class FloatGithubUserConverter {
     public String getFloatUser(String githubUsername) throws IOException, NoMatchFoundException {
         readIfNeeded();
 
-        final String[] match = { null };
-        usersReader.getContent().forEach((floatName, githubName) -> {
-            if (githubName.equalsIgnoreCase(githubUsername)) {
-                match[0] = floatName;
-            }
-        });
-
-        if (match[0] == null) {
-            throw new NoMatchFoundException(githubUsername);
-        }
-
-        return match[0];
+        return usersReader.getContent().entrySet().stream()
+                .filter(entry -> entry.getValue().equalsIgnoreCase(githubUsername))
+                .findFirst()
+                .map(Map.Entry::getKey)
+                .orElseThrow((Supplier<RuntimeException>) () -> new NoMatchFoundException(githubUsername));
     }
 
     public String getGithubUser(String floatName) throws IOException, NoMatchFoundException {
