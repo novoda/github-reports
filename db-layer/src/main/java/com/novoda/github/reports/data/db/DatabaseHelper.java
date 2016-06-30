@@ -27,10 +27,10 @@ public class DatabaseHelper {
     }
 
     public static final Integer OPENED_ISSUES_ID = 100;
-    public static final Integer OPENED_PRS_ID = 200;
+    public static final Integer OPENED_PULL_REQUESTS_ID = 200;
     public static final Integer COMMENTED_ISSUES_ID = 102;
-    public static final Integer COMMENTED_PRS_ID = 202;
-    public static final Integer MERGED_PRS_ID = 205;
+    public static final Integer COMMENTED_PULL_REQUESTS_ID = 202;
+    public static final Integer MERGED_PULL_REQUESTS_ID = 205;
 
     static final String EVENTS_COUNT = "events_count";
     static final String REPOSITORIES_COUNT = "repositories_count";
@@ -76,11 +76,11 @@ public class DatabaseHelper {
                 BigInteger value = record.get(EVENTS_COUNT, BigInteger.class);
                 if (key.equals(OPENED_ISSUES_ID)) {
                     numberOfOpenedIssues = value;
-                } else if (key.equals(OPENED_PRS_ID)) {
+                } else if (key.equals(OPENED_PULL_REQUESTS_ID)) {
                     numberOfOpenedPullRequests = value;
-                } else if (key.equals(COMMENTED_ISSUES_ID) || key.equals(COMMENTED_PRS_ID)) {
+                } else if (key.equals(COMMENTED_ISSUES_ID) || key.equals(COMMENTED_PULL_REQUESTS_ID)) {
                     numberOfCommentedIssues = numberOfCommentedIssues.add(value);
-                } else if (key.equals(MERGED_PRS_ID)) {
+                } else if (key.equals(MERGED_PULL_REQUESTS_ID)) {
                     numberOfMergedPullRequests = value;
                 } else {
                     numberOfOtherEvents = numberOfOtherEvents.add(value);
