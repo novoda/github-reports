@@ -106,7 +106,7 @@ public class DbUserDataLayer extends DbDataLayer<User, UserRecord> implements Us
                 .on(USER_OWNER_ON_CONDITION)
                 .where(betweenCondition)
                 .and(repoCondition)
-                .and(EVENT.EVENT_TYPE_ID.in(COMMENTED_ISSUES_ID, COMMENTED_PRS_ID))
+                .and(EVENT.EVENT_TYPE_ID.in(COMMENTED_ISSUES_ID, COMMENTED_PULL_REQUESTS_ID))
                 // user must be the owner of the event
                 .and(ownerCondition)
                 // but the owner and the author can't be the same (only retrieve other people's comments)
