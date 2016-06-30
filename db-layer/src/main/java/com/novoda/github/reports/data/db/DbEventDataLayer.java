@@ -73,12 +73,12 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
             );
 
             DbEventUserQueryBuilder userQueryBuilder = new DbEventUserQueryBuilder(parameters);
-            DbEventCountQueryBuilder mergedCountQueryBuilder = DbEventCountQueryBuilder.forMergedCount(parameters, userQueryBuilder);
-            DbEventCountQueryBuilder openedCountQueryBuilder = DbEventCountQueryBuilder.forOpenedCount(parameters, userQueryBuilder);
+            DbEventCountQueryBuilder mergedPrs = DbEventCountQueryBuilder.forMergedCount(parameters, userQueryBuilder);
+            DbEventCountQueryBuilder openedPrs = DbEventCountQueryBuilder.forOpenedCount(parameters, userQueryBuilder);
             DbEventCountQueryBuilder otherPeopleCommentsOnUserPrs = DbEventCountQueryBuilder.forOtherPeopleComments(parameters, userQueryBuilder);
 
-            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> mergedQuery = mergedCountQueryBuilder.getStats();
-            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> openedQuery = openedCountQueryBuilder.getStats();
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> mergedQuery = mergedPrs.getStats();
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> openedQuery = openedPrs.getStats();
             SelectOrderByStep<Record4<BigDecimal, Long, String, String>> otherPeopleCommentsQuery = otherPeopleCommentsOnUserPrs.getStats();
 
             // TODO: remove after getting all stats, this is only needed for debug purposes
