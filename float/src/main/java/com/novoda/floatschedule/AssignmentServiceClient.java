@@ -31,11 +31,15 @@ public class AssignmentServiceClient {
 
     public Observable<String> getGithubUsernamesAssignedToProjects(List<String> floatProjectNames) {
             return taskServiceClient.getTasks(NOVODA_BIG_BANG, NUMBER_OF_WEEKS, NO_PERSON_ID)
-                    .filter(task -> floatProjectNames.contains(task.getProjectName()))
+                    .filter(byProjectNameIn(floatProjectNames))
                     .map(Task::getPersonName)
                     .map(this::toGithubUsername)
                     .filter(notNull())
                     .distinct();
+    }
+
+    private Func1<Task, Boolean> byProjectNameIn(List<String> floatProjectNames) {
+        return task -> floatProjectNames.contains(task.getProjectName());
     }
 
     private String toGithubUsername(String floatUsername) {
