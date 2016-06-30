@@ -56,6 +56,18 @@ public class DbEventCountQueryBuilder {
         return new DbEventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.OWNER_USER_ID, OwnerAuthor.MUST_BE_DIFFERENT);
     }
 
+    public static DbEventCountQueryBuilder forCommentsOtherPeople(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
+        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.MUST_BE_DIFFERENT);
+    }
+
+    public static DbEventCountQueryBuilder forCommentsOwn(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
+        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.MUST_BE_SAME);
+    }
+
+    public static DbEventCountQueryBuilder forCommentsAny(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
+        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
+    }
+
     private DbEventCountQueryBuilder(PullRequestStatsParameters parameters,
                                      DbEventUserQueryBuilder userQueryBuilder,
                                      Integer eventIdForCount,
