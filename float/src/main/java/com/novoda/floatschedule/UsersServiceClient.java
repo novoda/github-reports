@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import rx.Observable;
 
-public class UsersServiceClient {
+class UsersServiceClient {
 
     private final UsersReader usersReader;
 
