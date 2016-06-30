@@ -26,9 +26,15 @@ public class DatabaseHelper {
         LogHelper.turnOffJooqAd();
     }
 
+    public static final Integer OPENED_ISSUES_ID = 100;
+    public static final Integer OPENED_PRS_ID = 200;
+    public static final Integer COMMENTED_ISSUES_ID = 102;
+    public static final Integer COMMENTED_PRS_ID = 202;
+    public static final Integer MERGED_PRS_ID = 205;
+
     static final String EVENTS_COUNT = "events_count";
     static final String REPOSITORIES_COUNT = "repositories_count";
-    private static final String PEOPLE_COUNT = "people_count";
+    static final String PEOPLE_COUNT = "people_count";
 
     static final TableField<EventRecord, Integer> SELECT_EVENT_TYPE = EVENT.EVENT_TYPE_ID;
     static final Field<Integer> SELECT_PEOPLE_COUNT = countDistinct(EVENT.AUTHOR_USER_ID).as(PEOPLE_COUNT);
@@ -36,12 +42,6 @@ public class DatabaseHelper {
     static final Field<Integer> SELECT_REPOSITORIES_COUNT = countDistinct(EVENT.REPOSITORY_ID).as(REPOSITORIES_COUNT);
 
     static final Condition EVENT_REPOSITORY_JOIN_ON_CONDITION = EVENT.REPOSITORY_ID.eq(REPOSITORY._ID);
-
-    static final Integer OPENED_ISSUES_ID = 100;
-    static final Integer OPENED_PRS_ID = 200;
-    static final Integer COMMENTED_ISSUES_ID = 102;
-    static final Integer COMMENTED_PRS_ID = 202;
-    public static final Integer MERGED_PRS_ID = 205;
 
     private static final byte FALSE_BYTE = 0;
     private static final byte TRUE_BYTE = 1;
