@@ -2,6 +2,8 @@ package com.novoda.github.reports.data.model;
 
 import com.google.auto.value.AutoValue;
 
+import java.math.BigDecimal;
+
 @AutoValue
 public abstract class PullRequestStatsUser {
 
@@ -9,61 +11,63 @@ public abstract class PullRequestStatsUser {
         return new AutoValue_PullRequestStatsUser.Builder();
     }
 
-    abstract Long id();
+    public abstract Long id();
 
     abstract String username();
 
-    abstract Long mergedPrs();
+    abstract BigDecimal mergedPrs();
 
-    abstract Long openedPrs();
+    abstract BigDecimal openedPrs();
 
-    abstract Long otherPeopleCommentsOnUserPrs();
+    abstract BigDecimal otherPeopleCommentsOnUserPrs();
 
-    abstract Long userCommentsOnOtherPeoplePrs();
+    abstract BigDecimal userCommentsOnOtherPeoplePrs();
 
-    abstract Long commentsOnAllPrs();
+    abstract BigDecimal commentsOnAllPrs();
 
-    abstract Long commentsOnOwnPrs();
+    abstract BigDecimal commentsOnOwnPrs();
+
+    abstract BigDecimal averageOtherPeopleCommentsOnUserPrs();
+
+    abstract BigDecimal averageUserCommentsOnMergedPrs();
 
     abstract UserType type();
 
-    public Long getAverageOtherPeopleCommentsOnUserPrs() {
-        return otherPeopleCommentsOnUserPrs() / openedPrs();
-    }
-
-    public Long getAverageUserCommentsOnMergedPrs() {
-        return userCommentsOnOtherPeoplePrs() / mergedPrs();
-    }
+    public abstract String toString();
 
     @AutoValue.Builder
     public static abstract class Builder {
 
-        abstract Builder id(Long id);
+        public abstract Builder id(Long id);
 
-        abstract Builder username(String username);
+        public abstract Builder username(String username);
 
-        abstract Builder mergedPrs(Long mergedPrs);
+        public abstract Builder mergedPrs(BigDecimal mergedPrs);
 
-        abstract Builder openedPrs(Long openedPrs);
+        public abstract Builder openedPrs(BigDecimal openedPrs);
 
-        abstract Builder otherPeopleCommentsOnUserPrs(Long otherPeopleCommentsOnUserPrs);
+        public abstract Builder otherPeopleCommentsOnUserPrs(BigDecimal otherPeopleCommentsOnUserPrs);
 
-        abstract Builder userCommentsOnOtherPeoplePrs(Long userCommentsOnOtherPeoplePrs);
+        public abstract Builder userCommentsOnOtherPeoplePrs(BigDecimal userCommentsOnOtherPeoplePrs);
 
-        abstract Builder commentsOnAllPrs(Long commentsOnAllPrs);
+        public abstract Builder commentsOnAllPrs(BigDecimal commentsOnAllPrs);
 
-        abstract Builder commentsOnOwnPrs(Long commentsOnOwnPrs);
+        public abstract Builder commentsOnOwnPrs(BigDecimal commentsOnOwnPrs);
 
-        abstract Builder type(UserType type);
+        public abstract Builder averageOtherPeopleCommentsOnUserPrs(BigDecimal averageOtherPeopleCommentsOnUserPrs);
 
-        abstract PullRequestStatsUser build();
+        public abstract Builder averageUserCommentsOnMergedPrs(BigDecimal averageUserCommentsOnMergedPrs);
+
+        public abstract Builder type(UserType type);
+
+        public abstract PullRequestStatsUser build();
 
     }
 
     public enum UserType {
         EXTERNAL,
         TEAM,
-        PROJECT,
+        ASSIGNED,
         FILTER
     }
 
