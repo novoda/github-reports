@@ -1,11 +1,9 @@
 package com.novoda.github.reports.data.db.builder;
 
-import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.db.PullRequestStatsParameters;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 import org.jooq.Field;
 import org.jooq.Record3;
@@ -19,24 +17,21 @@ import org.jooq.Table;
 import org.jooq.TableField;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.*;
+import static com.novoda.github.reports.data.db.PullRequestStatsParameters.GROUP_SELECTOR_FIELD;
 import static com.novoda.github.reports.data.db.Tables.*;
 import static com.novoda.github.reports.data.db.builder.DbEventUserQueryBuilder.USER_TYPE_FIELD;
 import static org.jooq.impl.DSL.*;
 
 public class DbEventCountQueryBuilder {
 
-    private static final Field<String> GROUP_SELECTOR_FIELD = field("date_group", String.class);
-    private static final String GROUP_SELECTOR_SEPARATOR = "-";
-    private static final String NULL_SELECTOR = null;
+    public static final Field<BigDecimal> QUANTITY_FIELD = field("quantity", BigDecimal.class);
+    public static final Field<Long> USER_FIELD = field("user_id", Long.class);
 
     private static final String ALL_RELEVANT_USERS_TABLE = "all_relevant_users";
     private static final String EXTERNAL_USERS_TABLE = "external_users";
     private static final String TEAM_USERS_TABLE = "team_users";
     private static final String ASSIGNED_USERS_TABLE = "assigned_users";
     private static final String FILTER_USERS_TABLE = "filter_users";
-
-    private static final Field<Integer> QUANTITY_FIELD = field("quantity", Integer.class);
-    private static final Field<Integer> USER_FIELD = field("user_id", Integer.class);
 
     private final PullRequestStatsParameters parameters;
     private final DbEventUserQueryBuilder userQueryBuilder;
@@ -129,7 +124,7 @@ public class DbEventCountQueryBuilder {
     }
 
     private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> getUserStatsForRelevantUsers(Table<Record3<Long, String, String>> userTable) {
-        Field<String> groupField = getGroupFieldForMySQLOnly(parameters.getGroupBy());
+        Field<String> groupField = parameters.getGroupFieldForMySQLOnly();
 
         SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCount = selectCountEventsGroupBy(groupField);
         SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCountForRelevantUsers = innerJoinRelevantUsers(selectCount, userTable);
@@ -142,31 +137,6 @@ public class DbEventCountQueryBuilder {
                 groupByFieldHavingSpecificEventId(whereDateAndOwnerUserConstraintMatch, groupField);
 
         return havingSpecificEvents;
-    }
-
-    private Field<String> getGroupFieldForMySQLOnly(EventDataLayer.PullRequestStatsGroupBy groupBy) {
-        Field<String> groupField = year(EVENT.DATE).concat(GROUP_SELECTOR_SEPARATOR);
-
-        if (groupBy == EventDataLayer.PullRequestStatsGroupBy.MONTH) {
-            groupField = groupField.concat(month(EVENT.DATE));
-        } else if (groupBy == EventDataLayer.PullRequestStatsGroupBy.WEEK) {
-            groupField = groupField.concat(week(EVENT.DATE));
-        } else {
-            groupField = val(NULL_SELECTOR);
-        }
-
-        return groupField.as(GROUP_SELECTOR_FIELD);
-    }
-
-    /**
-     * Formats a date field retrieving the week number in the date year (1-52).
-     * This method is currently implemented for MySQL and may not work on other DBMSs.
-     *
-     * @param date The date field to format
-     * @return A {@link String} representing the week number of the date field.
-     */
-    private Field<String> week(TableField<EventRecord, Timestamp> date) {
-        return field("DATE_FORMAT({0}, \"%Y" + GROUP_SELECTOR_SEPARATOR + "%v\")", String.class, date);
     }
 
     private SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCountEventsGroupBy(Field<String> groupField) {
