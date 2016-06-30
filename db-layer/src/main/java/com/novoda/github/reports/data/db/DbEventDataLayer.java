@@ -2,7 +2,7 @@ package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
-import com.novoda.github.reports.data.db.builder.DbEventCountForAuthorQueryBuilder;
+import com.novoda.github.reports.data.db.builder.DbEventCountQueryBuilder;
 import com.novoda.github.reports.data.db.builder.DbEventUserQueryBuilder;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
 import com.novoda.github.reports.data.model.Event;
@@ -73,19 +73,21 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
             );
 
             DbEventUserQueryBuilder userQueryBuilder = new DbEventUserQueryBuilder(parameters);
-            DbEventCountForAuthorQueryBuilder mergedCountQueryBuilder = DbEventCountForAuthorQueryBuilder
-                    .newMergedCountQueryBuilderInstance(parameters, userQueryBuilder);
-            DbEventCountForAuthorQueryBuilder openedCountQueryBuilder = DbEventCountForAuthorQueryBuilder
-                    .newOpenedCountQueryBuilderInstance(parameters, userQueryBuilder);
+            DbEventCountQueryBuilder mergedCountQueryBuilder = DbEventCountQueryBuilder.forMergedCount(parameters, userQueryBuilder);
+            DbEventCountQueryBuilder openedCountQueryBuilder = DbEventCountQueryBuilder.forOpenedCount(parameters, userQueryBuilder);
+            DbEventCountQueryBuilder otherPeopleCommentsOnUserPrs = DbEventCountQueryBuilder.forOtherPeopleComments(parameters, userQueryBuilder);
 
             SelectOrderByStep<Record4<BigDecimal, Long, String, String>> mergedQuery = mergedCountQueryBuilder.getStats();
             SelectOrderByStep<Record4<BigDecimal, Long, String, String>> openedQuery = openedCountQueryBuilder.getStats();
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> otherPeopleCommentsQuery = otherPeopleCommentsOnUserPrs.getStats();
 
             // TODO: remove after getting all stats, this is only needed for debug purposes
             String mergedSql = mergedQuery.getSQL(ParamType.INLINED);
             System.out.println(mergedSql);
             String openedSql = openedQuery.getSQL(ParamType.INLINED);
             System.out.println(openedSql);
+            String otherPeopleCommentsSql = otherPeopleCommentsQuery.getSQL(ParamType.INLINED);
+            System.out.println(otherPeopleCommentsSql);
 
         } catch (SQLException e) {
             throw new DataLayerException(e);
