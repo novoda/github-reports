@@ -1,4 +1,4 @@
-package com.novoda.floatschedule.convert;
+package com.novoda.floatschedule.reader;
 
 import com.google.gson.Gson;
 
@@ -35,7 +35,7 @@ class JsonMapReader<T> {
         return new JsonMapReader<>(new Gson(), mapClass);
     }
 
-    JsonMapReader(Gson gson, Class<T> classOfT) {
+    private JsonMapReader(Gson gson, Class<T> classOfT) {
         this.gson = gson;
         this.classOfT = classOfT;
     }
