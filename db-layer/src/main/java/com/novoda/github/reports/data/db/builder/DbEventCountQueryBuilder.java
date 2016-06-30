@@ -45,15 +45,15 @@ public class DbEventCountQueryBuilder {
     private final OwnerAuthor ownerAuthorConstraint;
 
     public static DbEventCountQueryBuilder forMergedCount(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
-        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, MERGED_PRS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
+        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, MERGED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
     }
 
     public static DbEventCountQueryBuilder forOpenedCount(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
-        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, OPENED_PRS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
+        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, OPENED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
     }
 
     public static DbEventCountQueryBuilder forOtherPeopleComments(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
-        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PRS_ID, EVENT.OWNER_USER_ID, OwnerAuthor.MUST_BE_DIFFERENT);
+        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.OWNER_USER_ID, OwnerAuthor.MUST_BE_DIFFERENT);
     }
 
     private DbEventCountQueryBuilder(PullRequestStatsParameters parameters,
