@@ -23,8 +23,14 @@ public class TaskServiceClient {
         return getTasks(null, null, null);
     }
 
-    public Observable<Task> getTasks(String date, Integer numberOfWeeks, Integer personId) {
-        return floatApiService.getTasks(date, numberOfWeeks, personId)
+    /**
+     * Get tasks (assignments) from the float api.
+     * @param startDate assignments starting after this date. its format is YYYY-MM-dd
+     * @param numberOfWeeks number of weeks to search up to, starting on startDate
+     * @param personId the person id to target, if any
+     */
+    public Observable<Task> getTasks(String startDate, Integer numberOfWeeks, Integer personId) {
+        return floatApiService.getTasks(startDate, numberOfWeeks, personId)
                 .map(Response::body)
                 .map(Assignments::getAssignments)
                 .flatMapIterable(assignments -> assignments)
