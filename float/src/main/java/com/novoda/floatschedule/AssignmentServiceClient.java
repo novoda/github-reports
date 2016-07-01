@@ -52,8 +52,8 @@ public class AssignmentServiceClient {
             return floatGithubProjectConverter.getFloatProjects(repositoryName);
         } catch (IOException e) {
             e.printStackTrace();
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
     }
 
     /**
@@ -65,7 +65,7 @@ public class AssignmentServiceClient {
             return taskServiceClient.getTasks(startDate, numberOfWeeks, NO_PERSON_ID)
                     .filter(byProjectNameIn(floatProjectNames))
                     .map(Task::getPersonName)
-                    .map(this::toGithubUsername)
+                    .map(this::toGithubUsernameOrNull)
                     .filter(notNull())
                     .distinct();
     }
@@ -74,13 +74,13 @@ public class AssignmentServiceClient {
         return task -> floatProjectNames.contains(task.getProjectName());
     }
 
-    private String toGithubUsername(String floatUsername) {
+    private String toGithubUsernameOrNull(String floatUsername) {
         try {
             return floatGithubUserConverter.getGithubUser(floatUsername);
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     private Func1<String, Boolean> notNull() {
