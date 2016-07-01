@@ -57,6 +57,7 @@ public class AssignmentServiceClientTest {
         givenGithubUsersFor(tasks);
 
         when(mockFloatGithubProjectConverter.getFloatProject("repoX")).thenReturn("proj1");
+        when(mockFloatGithubProjectConverter.getFloatProject("repoX")).thenReturn("proj2");
         when(mockFloatGithubProjectConverter.getFloatProject("repoY")).thenReturn("proj2");
         when(mockFloatGithubProjectConverter.getFloatProject("repoZ")).thenReturn("proj3");
         when(mockFloatGithubProjectConverter.getFloatProject("repoK")).thenReturn("proj1");
@@ -72,6 +73,18 @@ public class AssignmentServiceClientTest {
         when(aTask.getProjectName()).thenReturn(projectName);
         when(aTask.getPersonName()).thenReturn(personName);
         return aTask;
+    }
+
+    private void givenRepositories(List<Task> tasks) {
+        tasks.forEach(task -> givenARepository(task.getProjectName()));
+    }
+
+    private void givenARepository(String projectName) {
+        try {
+            when(mockFloatGithubProjectConverter.getFloatProject(projectName + "_github")).thenReturn(projectName);
+        } catch (IOException e) {
+            // nothing
+        }
     }
 
     private void givenGithubUsersFor(List<Task> tasks) {
@@ -105,7 +118,7 @@ public class AssignmentServiceClientTest {
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
-        testSubscriber.assertValues("persA_github", "persD_github", "persC_github");
+        testSubscriber.assertValues("persA_github", "persD_github", "persB_github", "persC_github");
     }
 
     @Test
