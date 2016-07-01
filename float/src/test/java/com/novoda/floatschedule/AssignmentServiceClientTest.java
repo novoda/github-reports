@@ -1,13 +1,16 @@
 package com.novoda.floatschedule;
 
+import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -26,9 +29,12 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AssignmentServiceClientTest {
 
-    private static final String ANY_START_DATE = "2014-01-01";
+    private static final Date ANY_START_DATE = Date.from(Instant.now());
     private static final Integer ANY_NUMBER_OF_WEEKS = 40;
     private static final Integer NO_PERSON_ID = null;
+
+    @Mock
+    private FloatDateConverter floatDateConverter;
 
     @Mock
     private TaskServiceClient mockTaskServiceClient;
@@ -47,6 +53,8 @@ public class AssignmentServiceClientTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
+
+        when(floatDateConverter.toFloatDateFormat(ANY_START_DATE)).thenReturn("2014-01-01");
 
         testSubscriber = new TestSubscriber<>();
 
