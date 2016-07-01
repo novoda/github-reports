@@ -6,8 +6,8 @@ import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import rx.Observable;
@@ -42,19 +42,18 @@ public class AssignmentServiceClient {
 
     private List<String> getFloatProjectNamesFrom(List<String> repositoryNames) {
         return repositoryNames.stream()
-                .map(this::getFloatProjectName)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(repositoryName -> getFloatProjectNames(repositoryName).stream())
+                .distinct()
                 .collect(Collectors.toList());
     }
 
-    private Optional<String> getFloatProjectName(String repositoryName) {
+    private List<String> getFloatProjectNames(String repositoryName) {
         try {
-            return Optional.of(floatGithubProjectConverter.getFloatProject(repositoryName));
+            return floatGithubProjectConverter.getFloatProjects(repositoryName);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return Optional.empty();
+        return Collections.emptyList();
     }
 
     /**
