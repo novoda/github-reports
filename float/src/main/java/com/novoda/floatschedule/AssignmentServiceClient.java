@@ -15,8 +15,6 @@ import rx.functions.Func1;
 
 public class AssignmentServiceClient {
 
-    private static final String NOVODA_BIG_BANG = "YYYY-MM-dd";
-    private static final int NUMBER_OF_WEEKS = 0;
     private static final Integer NO_PERSON_ID = null;
 
     private final TaskServiceClient taskServiceClient;
@@ -32,9 +30,14 @@ public class AssignmentServiceClient {
         this.floatGithubProjectConverter = floatGithubProjectConverter;
     }
 
-    public Observable<String> getGithubUsernamesAssignedToRepositories(List<String> repositoryNames) {
+    /**
+     * @param repositoryNames names of repositories to search
+     * @param startDate assignments starting after this date. its format is YYYY-MM-dd
+     * @param numberOfWeeks number of weeks to search up to, starting on startDate
+     */
+    public Observable<String> getGithubUsernamesAssignedToRepositories(List<String> repositoryNames, String startDate, int numberOfWeeks) {
         List<String> floatProjectNames = getFloatProjectNamesFrom(repositoryNames);
-        return getGithubUsernamesAssignedToProjects(floatProjectNames);
+        return getGithubUsernamesAssignedToProjects(floatProjectNames, startDate, numberOfWeeks);
     }
 
     private List<String> getFloatProjectNamesFrom(List<String> repositoryNames) {
@@ -54,8 +57,13 @@ public class AssignmentServiceClient {
         return Optional.empty();
     }
 
-    public Observable<String> getGithubUsernamesAssignedToProjects(List<String> floatProjectNames) {
-            return taskServiceClient.getTasks(NOVODA_BIG_BANG, NUMBER_OF_WEEKS, NO_PERSON_ID)
+    /**
+     * @param floatProjectNames names of the projects to search
+     * @param startDate assignments starting after this date. its format is YYYY-MM-dd
+     * @param numberOfWeeks number of weeks to search up to, starting on startDate
+     */
+    public Observable<String> getGithubUsernamesAssignedToProjects(List<String> floatProjectNames, String startDate, int numberOfWeeks) {
+            return taskServiceClient.getTasks(startDate, numberOfWeeks, NO_PERSON_ID)
                     .filter(byProjectNameIn(floatProjectNames))
                     .map(Task::getPersonName)
                     .map(this::toGithubUsername)
