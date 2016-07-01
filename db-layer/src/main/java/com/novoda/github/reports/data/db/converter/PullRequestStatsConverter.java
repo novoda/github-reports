@@ -22,7 +22,8 @@ public class PullRequestStatsConverter {
 
     public PullRequestStats convert(Map<String, ? extends Result<? extends Record>> recordsMap) {
 
-        List<PullRequestStatsGroup> groups = recordsMap.entrySet().stream()
+        List<PullRequestStatsGroup> groups = recordsMap.entrySet()
+                .stream()
                 .map(group -> convertGroup(group.getKey(), group.getValue()))
                 .collect(Collectors.toList());
 
