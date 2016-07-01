@@ -26,6 +26,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AssignmentServiceClientTest {
 
+    private static final String ANY_START_DATE = "2014-01-01";
+    private static final Integer ANY_NUMBER_OF_WEEKS = 40;
     private static final Integer NO_PERSON_ID = null;
 
     @Mock
@@ -88,7 +90,7 @@ public class AssignmentServiceClientTest {
     @Test
     public void givenTasksAndUsers_whenGettingGithubUsernamesForARepository_thenTheCorrectUsernameIsEmitted() {
 
-        assignmentServiceClient.getGithubUsernamesAssignedToRepositories(Collections.singletonList("repoZ"))
+        assignmentServiceClient.getGithubUsernamesAssignedToRepositories(Collections.singletonList("repoZ"), ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
@@ -98,7 +100,9 @@ public class AssignmentServiceClientTest {
     @Test
     public void givenTasksAndUsers_whenGettingGithubUsernamesForRepositories_thenTheCorrectUsernamesAreEmittedWithoutDuplicates() {
 
-        assignmentServiceClient.getGithubUsernamesAssignedToRepositories(Arrays.asList("repoX", "repoZ", "repoK"))
+        assignmentServiceClient.getGithubUsernamesAssignedToRepositories(Arrays.asList("repoX", "repoZ", "repoK"),
+                                                                         ANY_START_DATE,
+                                                                         ANY_NUMBER_OF_WEEKS)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
@@ -108,7 +112,7 @@ public class AssignmentServiceClientTest {
     @Test
     public void givenTasksAndUsers_whenGettingGithubUsernamesForAProject_thenTheCorrectUsernameIsEmitted()  {
 
-        assignmentServiceClient.getGithubUsernamesAssignedToProjects(Collections.singletonList("proj2"))
+        assignmentServiceClient.getGithubUsernamesAssignedToProjects(Collections.singletonList("proj2"), ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
@@ -118,7 +122,7 @@ public class AssignmentServiceClientTest {
     @Test
     public void givenTasksAndUsers_whenGettingGithubUsernamesForProjects_thenTheCorrectUsernamesAreEmittedWithoutDuplicates() {
 
-        assignmentServiceClient.getGithubUsernamesAssignedToProjects(Arrays.asList("proj1", "proj4"))
+        assignmentServiceClient.getGithubUsernamesAssignedToProjects(Arrays.asList("proj1", "proj4"), ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
@@ -128,7 +132,7 @@ public class AssignmentServiceClientTest {
     @Test
     public void givenTasksAndUsers_whenGettingGithubUsernamesForANonExistentProject_thenTheNothingIsEmitted() {
 
-        assignmentServiceClient.getGithubUsernamesAssignedToProjects(Collections.singletonList("proj88"))
+        assignmentServiceClient.getGithubUsernamesAssignedToProjects(Collections.singletonList("proj88"), ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
