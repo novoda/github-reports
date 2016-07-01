@@ -2,29 +2,30 @@ package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
-import com.novoda.github.reports.data.db.builder.DbEventCountQueryBuilder;
-import com.novoda.github.reports.data.db.builder.DbEventUserQueryBuilder;
+import com.novoda.github.reports.data.db.builder.DbEventStatsQueryBuilder;
+import com.novoda.github.reports.data.db.converter.PullRequestStatsConverter;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.PullRequestStats;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.jooq.DSLContext;
 import org.jooq.InsertOnDuplicateSetMoreStep;
-import org.jooq.Record4;
-import org.jooq.SelectOrderByStep;
-import org.jooq.conf.ParamType;
+import org.jooq.Record;
+import org.jooq.Result;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.dateToTimestamp;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
 
 public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements EventDataLayer {
+
+    private final PullRequestStatsConverter converter;
 
     public static DbEventDataLayer newInstance(ConnectionManager connectionManager) {
         return new DbEventDataLayer(connectionManager);
@@ -32,6 +33,7 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
 
     private DbEventDataLayer(ConnectionManager connectionManager) {
         super(connectionManager);
+        converter = new PullRequestStatsConverter();
     }
 
     @Override
@@ -54,7 +56,8 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
                                      List<String> assignedUsers,
                                      List<String> filterUsers,
                                      PullRequestStatsGroupBy groupBy,
-                                     boolean withAverage) throws DataLayerException {
+                                     boolean withAverage)
+            throws DataLayerException {
 
         try {
             Connection connection = getNewConnection();
@@ -71,41 +74,16 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
                     groupBy,
                     withAverage
             );
+            DbEventStatsQueryBuilder statsQueryBuilder = DbEventStatsQueryBuilder.newInstance(parameters);
 
-            DbEventUserQueryBuilder userQueryBuilder = new DbEventUserQueryBuilder(parameters);
-            DbEventCountQueryBuilder mergedPrs = DbEventCountQueryBuilder.forMergedCount(parameters, userQueryBuilder);
-            DbEventCountQueryBuilder openedPrs = DbEventCountQueryBuilder.forOpenedCount(parameters, userQueryBuilder);
-            DbEventCountQueryBuilder otherPeopleCommentsOnUserPrs = DbEventCountQueryBuilder.forOtherPeopleComments(parameters, userQueryBuilder);
-            DbEventCountQueryBuilder commentsOtherPeoplePrs = DbEventCountQueryBuilder.forCommentsOtherPeople(parameters, userQueryBuilder);
-            DbEventCountQueryBuilder commentsOwnPrs = DbEventCountQueryBuilder.forCommentsOwn(parameters, userQueryBuilder);
-            DbEventCountQueryBuilder commentsAnyPrs = DbEventCountQueryBuilder.forCommentsAny(parameters, userQueryBuilder);
+            Map<String, ? extends Result<? extends Record>> groupedStats = statsQueryBuilder.getStats();
 
-            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> mergedQuery = mergedPrs.getStats();
-            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> openedQuery = openedPrs.getStats();
-            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> otherPeopleCommentsQuery = otherPeopleCommentsOnUserPrs.getStats();
-            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsOtherPeopleQuery = commentsOtherPeoplePrs.getStats();
-            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsOwnQuery = commentsOwnPrs.getStats();
-            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsAnyQuery = commentsAnyPrs.getStats();
-
-            // TODO: remove after getting all stats, this is only needed for debug purposes
-            String mergedSql = mergedQuery.getSQL(ParamType.INLINED);
-            System.out.println(mergedSql);
-            String openedSql = openedQuery.getSQL(ParamType.INLINED);
-            System.out.println(openedSql);
-            String otherPeopleCommentsSql = otherPeopleCommentsQuery.getSQL(ParamType.INLINED);
-            System.out.println(otherPeopleCommentsSql);
-            String commentsOtherPeopleSql = commentsOtherPeopleQuery.getSQL(ParamType.INLINED);
-            System.out.println(commentsOtherPeopleSql);
-            String commentsOwnSql = commentsOwnQuery.getSQL(ParamType.INLINED);
-            System.out.println(commentsOwnSql);
-            String commentsAnySql = commentsAnyQuery.getSQL(ParamType.INLINED);
-            System.out.println(commentsAnySql);
+            return converter.convert(groupedStats);
 
         } catch (SQLException e) {
             throw new DataLayerException(e);
         }
 
-        return null;
     }
 
 }
