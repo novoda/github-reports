@@ -89,16 +89,16 @@ public class PullRequestStatsConverter {
     }
 
     private PullRequestStatsUser.UserType convertUserType(String userType) {
-        if (userType.equals(USER_EXTERNAL)) {
+        if (USER_EXTERNAL.equals(userType)) {
             return PullRequestStatsUser.UserType.EXTERNAL;
         }
-        if (userType.equals(USER_TEAM)) {
+        if (USER_TEAM.equals(userType)) {
             return PullRequestStatsUser.UserType.TEAM;
         }
-        if (userType.equals(USER_ASSIGNED)) {
+        if (USER_ASSIGNED.equals(userType)) {
             return PullRequestStatsUser.UserType.ASSIGNED;
         }
-        if (userType.equals(USER_FILTER)) {
+        if (USER_FILTER.equals(userType)) {
             return FILTER;
         }
 
