@@ -41,7 +41,7 @@ public abstract class PullRequestStatsGroup implements Stats {
 
         public abstract Builder teamAverage(@Nullable PullRequestStatsUser teamAverage);
 
-        public abstract Builder assignedAverage(@Nullable PullRequestStatsUser projectAverage);
+        public abstract Builder assignedAverage(@Nullable PullRequestStatsUser assignedAverage);
 
         public abstract Builder filterAverage(@Nullable PullRequestStatsUser filterAverage);
 
