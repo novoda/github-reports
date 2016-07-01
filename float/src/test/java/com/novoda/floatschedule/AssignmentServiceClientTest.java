@@ -63,7 +63,6 @@ public class AssignmentServiceClientTest {
     }
 
     private void givenTasks(List<Task> tasks) {
-
         Observable<Task> mockTasksObservable = Observable.from(tasks);
         when(mockTaskServiceClient.getTasks(anyString(), anyInt(), eq(NO_PERSON_ID))).thenReturn(mockTasksObservable);
     }
