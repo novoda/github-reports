@@ -84,6 +84,6 @@ public class AssignmentServiceClient {
     }
 
     private Func1<String, Boolean> notNull() {
-        return githubUsername -> githubUsername != null;
+        return string -> string != null;
     }
 }
