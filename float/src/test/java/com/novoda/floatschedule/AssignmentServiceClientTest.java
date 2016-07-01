@@ -51,16 +51,15 @@ public class AssignmentServiceClientTest {
         testSubscriber = new TestSubscriber<>();
 
         List<Task> tasks = Arrays.asList(givenATask("proj1", "persA"), givenATask("proj1", "persD"), givenATask("proj2", "persB"),
-                                         givenATask("proj3", "persC"), givenATask("proj4", "persA"));
+                                         givenATask("proj3", "persC"), givenATask("proj4", "persA"), givenATask("proj5", "persE"));
 
         givenTasks(tasks);
         givenGithubUsersFor(tasks);
 
-        when(mockFloatGithubProjectConverter.getFloatProject("repoX")).thenReturn("proj1");
-        when(mockFloatGithubProjectConverter.getFloatProject("repoX")).thenReturn("proj2");
-        when(mockFloatGithubProjectConverter.getFloatProject("repoY")).thenReturn("proj2");
-        when(mockFloatGithubProjectConverter.getFloatProject("repoZ")).thenReturn("proj3");
-        when(mockFloatGithubProjectConverter.getFloatProject("repoK")).thenReturn("proj1");
+        when(mockFloatGithubProjectConverter.getFloatProjects("repoX")).thenReturn(Arrays.asList("proj1", "proj5"));
+        when(mockFloatGithubProjectConverter.getFloatProjects("repoY")).thenReturn(Collections.singletonList("proj2"));
+        when(mockFloatGithubProjectConverter.getFloatProjects("repoZ")).thenReturn(Collections.singletonList("proj3"));
+        when(mockFloatGithubProjectConverter.getFloatProjects("repoK")).thenReturn(Collections.singletonList("proj1"));
     }
 
     private void givenTasks(List<Task> tasks) {
@@ -73,18 +72,6 @@ public class AssignmentServiceClientTest {
         when(aTask.getProjectName()).thenReturn(projectName);
         when(aTask.getPersonName()).thenReturn(personName);
         return aTask;
-    }
-
-    private void givenRepositories(List<Task> tasks) {
-        tasks.forEach(task -> givenARepository(task.getProjectName()));
-    }
-
-    private void givenARepository(String projectName) {
-        try {
-            when(mockFloatGithubProjectConverter.getFloatProject(projectName + "_github")).thenReturn(projectName);
-        } catch (IOException e) {
-            // nothing
-        }
     }
 
     private void givenGithubUsersFor(List<Task> tasks) {
@@ -118,7 +105,7 @@ public class AssignmentServiceClientTest {
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
-        testSubscriber.assertValues("persA_github", "persD_github", "persB_github", "persC_github");
+        testSubscriber.assertValues("persA_github", "persD_github", "persC_github", "persE_github");
     }
 
     @Test
