@@ -76,7 +76,7 @@ public class DbEventStatsQueryBuilder {
     private DbEventStatsQueryBuilder(PullRequestStatsParameters parameters,
                                      DbEventUserQueryBuilder userQueryBuilder,
                                      DbEventCountQueryBuilder mergedPrsQueryBuilder,
-                                     DbEventCountQueryBuilder openedPrs,
+                                     DbEventCountQueryBuilder openedPrsQueryBuilder,
                                      DbEventCountQueryBuilder otherPeopleCommentsOnUserPrsQueryBuilder,
                                      DbEventCountQueryBuilder commentsOtherPeoplePrsQueryBuilder,
                                      DbEventCountQueryBuilder commentsOwnPrsQueryBuilder,
@@ -85,7 +85,7 @@ public class DbEventStatsQueryBuilder {
         this.parameters = parameters;
         this.userQueryBuilder = userQueryBuilder;
         this.mergedPrsQueryBuilder = mergedPrsQueryBuilder;
-        this.openedPrsQueryBuilder = openedPrs;
+        this.openedPrsQueryBuilder = openedPrsQueryBuilder;
         this.otherPeopleCommentsOnUserPrsQueryBuilder = otherPeopleCommentsOnUserPrsQueryBuilder;
         this.commentsOtherPeoplePrsQueryBuilder = commentsOtherPeoplePrsQueryBuilder;
         this.commentsOwnPrsQueryBuilder = commentsOwnPrsQueryBuilder;
