@@ -1,5 +1,6 @@
 package com.novoda.floatschedule;
 
+import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
@@ -7,6 +8,7 @@ import com.novoda.floatschedule.task.TaskServiceClient;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,14 +19,17 @@ public class AssignmentServiceClient {
 
     private static final Integer NO_PERSON_ID = null;
 
+    private final FloatDateConverter floatDateConverter;
     private final TaskServiceClient taskServiceClient;
     private final FloatGithubUserConverter floatGithubUserConverter;
     private final FloatGithubProjectConverter floatGithubProjectConverter;
 
-    AssignmentServiceClient(TaskServiceClient taskServiceClient,
+    AssignmentServiceClient(FloatDateConverter floatDateConverter,
+                            TaskServiceClient taskServiceClient,
                             FloatGithubUserConverter floatGithubUserConverter,
                             FloatGithubProjectConverter floatGithubProjectConverter) {
 
+        this.floatDateConverter = floatDateConverter;
         this.taskServiceClient = taskServiceClient;
         this.floatGithubUserConverter = floatGithubUserConverter;
         this.floatGithubProjectConverter = floatGithubProjectConverter;
@@ -35,7 +40,7 @@ public class AssignmentServiceClient {
      * @param startDate assignments starting after this date. its format is YYYY-MM-dd
      * @param numberOfWeeks number of weeks to search up to, starting on startDate
      */
-    public Observable<String> getGithubUsernamesAssignedToRepositories(List<String> repositoryNames, String startDate, int numberOfWeeks) {
+    public Observable<String> getGithubUsernamesAssignedToRepositories(List<String> repositoryNames, Date startDate, int numberOfWeeks) {
         List<String> floatProjectNames = getFloatProjectNamesFrom(repositoryNames);
         return getGithubUsernamesAssignedToProjects(floatProjectNames, startDate, numberOfWeeks);
     }
@@ -61,13 +66,14 @@ public class AssignmentServiceClient {
      * @param startDate assignments starting after this date. its format is YYYY-MM-dd
      * @param numberOfWeeks number of weeks to search up to, starting on startDate
      */
-    public Observable<String> getGithubUsernamesAssignedToProjects(List<String> floatProjectNames, String startDate, int numberOfWeeks) {
-            return taskServiceClient.getTasks(startDate, numberOfWeeks, NO_PERSON_ID)
-                    .filter(byProjectNameIn(floatProjectNames))
-                    .map(Task::getPersonName)
-                    .map(this::toGithubUsernameOrNull)
-                    .filter(notNull())
-                    .distinct();
+    public Observable<String> getGithubUsernamesAssignedToProjects(List<String> floatProjectNames, Date startDate, int numberOfWeeks) {
+        String date = floatDateConverter.toFloatDateFormat(startDate);
+        return taskServiceClient.getTasks(date, numberOfWeeks, NO_PERSON_ID)
+                .filter(byProjectNameIn(floatProjectNames))
+                .map(Task::getPersonName)
+                .map(this::toGithubUsernameOrNull)
+                .filter(notNull())
+                .distinct();
     }
 
     private Func1<Task, Boolean> byProjectNameIn(List<String> floatProjectNames) {
