@@ -30,7 +30,7 @@ public class FloatGithubProjectConverter {
                 .filter(entry -> repositoryIsInRepositoriesOfProject(repositoryName, entry))
                 .map(Map.Entry::getKey)
                 .distinct()
-                .filter(projectName -> projectName != null)
+                .filter(notNull())
                 .collect(Collectors.toList());
 
         if (projects.isEmpty()) {
@@ -50,19 +50,18 @@ public class FloatGithubProjectConverter {
         return githubProjects -> githubProjects.toLowerCase(Locale.UK).contains(githubRepositoryName.toLowerCase(Locale.UK));
     }
 
+    private Predicate<String> notNull() {
+        return projectName -> projectName != null;
+    }
+
     public List<String> getRepositories(String floatProject) throws IOException, NoMatchFoundException {
         readIfNeeded();
-
         return projectsReader.getContent().entrySet()
                 .stream()
                 .filter(byProjectHavingRepositories(floatProject))
                 .findFirst()
                 .map(Map.Entry::getValue)
-                .orElseThrow((Supplier<RuntimeException>) () -> new NoMatchFoundException(floatProject));
-    }
-
-    private Predicate<Map.Entry<String, List<String>>> byProjectHavingRepositories(String floatProject) {
-        return entry -> floatProject.toLowerCase(Locale.UK).contains(entry.getKey().toLowerCase(Locale.UK));
+                .orElseThrow(noMatchFoundException(floatProject));
     }
 
     private void readIfNeeded() throws IOException {
@@ -72,4 +71,11 @@ public class FloatGithubProjectConverter {
         projectsReader.read();
     }
 
+    private Predicate<Map.Entry<String, List<String>>> byProjectHavingRepositories(String floatProject) {
+        return entry -> floatProject.toLowerCase(Locale.UK).contains(entry.getKey().toLowerCase(Locale.UK));
+    }
+
+    private Supplier<RuntimeException> noMatchFoundException(String floatProject) {
+        return () -> new NoMatchFoundException(floatProject);
+    }
 }
