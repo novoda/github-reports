@@ -25,10 +25,6 @@ public class TaskServiceClient {
         this.floatDateConverter = floatDateConverter;
     }
 
-    public Observable<Task> getTasks() {
-        return getTasks(null, null, null);
-    }
-
     public Observable<Task> getTasks(Date startDate, Integer numberOfWeeks, Integer personId) {
         String date = floatDateConverter.toFloatDateFormat(startDate);
         return floatApiService.getTasks(date, numberOfWeeks, personId)
