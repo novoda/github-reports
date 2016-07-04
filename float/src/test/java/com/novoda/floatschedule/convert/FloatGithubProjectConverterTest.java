@@ -3,11 +3,11 @@ package com.novoda.floatschedule.convert;
 import com.novoda.floatschedule.reader.ProjectsReader;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hamcrest.text.IsEqualIgnoringCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.internal.verification.VerificationModeFactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -36,21 +35,31 @@ public class FloatGithubProjectConverterTest {
 
         projectToRepositories = new HashMap<>(1);
         projectToRepositories.put("Float", Arrays.asList("repo1", "repo2"));
+        projectToRepositories.put("Flutua", Collections.singletonList("repo2"));
+        projectToRepositories.put("Nada", Collections.singletonList("repo3"));
         when(mockProjectsReader.getContent()).thenReturn(projectToRepositories);
+    }
+
+    @Test
+    public void givenProjectsWereRead_whenGettingTheFloatProjectNamesForARepository_thenReturnsMatch() throws Exception {
+
+        List<String> actual = floatGithubProjectConverter.getFloatProjects("repo2");
+
+        assertEquals(Arrays.asList("Float", "Flutua"), actual);
     }
 
     @Test
     public void givenProjectsWereRead_whenGettingTheFloatProjectNameForARepository_thenReturnsMatch() throws Exception {
 
-        String actual = floatGithubProjectConverter.getFloatProject("repo2");
+        List<String> actual = floatGithubProjectConverter.getFloatProjects("repo3");
 
-        assertThat("float", IsEqualIgnoringCase.equalToIgnoringCase(actual));
+        assertEquals(Collections.singletonList("Nada"), actual);
     }
 
     @Test(expected = NoMatchFoundException.class)
     public void givenWereReadButThereIsNoMatch_whenGettingTheFloatProjectNameForARepository_thenThrowsException() throws Exception {
 
-        floatGithubProjectConverter.getFloatProject("repo420");
+        floatGithubProjectConverter.getFloatProjects("repo420");
     }
 
     @Test
@@ -71,7 +80,7 @@ public class FloatGithubProjectConverterTest {
     public void givenProjectsWereNotRead_whenGettingTheFloatProjectName_thenContentIsRead() throws Exception {
         when(mockProjectsReader.hasContent()).thenReturn(false);
 
-        floatGithubProjectConverter.getFloatProject("repo2");
+        floatGithubProjectConverter.getFloatProjects("repo2");
 
         verify(mockProjectsReader).read();
     }
@@ -80,7 +89,7 @@ public class FloatGithubProjectConverterTest {
     public void givenProjectsWereAlreadyRead_whenGettingTheFloatProjectNameAgain_thenContentIsNotReadAgain() throws Exception {
         when(mockProjectsReader.hasContent()).thenReturn(true);
 
-        floatGithubProjectConverter.getFloatProject("repo2");
+        floatGithubProjectConverter.getFloatProjects("repo2");
 
         verify(mockProjectsReader, VerificationModeFactory.times(0)).read();
     }
