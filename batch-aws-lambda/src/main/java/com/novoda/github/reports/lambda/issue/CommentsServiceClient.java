@@ -12,7 +12,6 @@ import com.novoda.github.reports.service.issue.IssueService;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
-import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 
 import rx.Observable;
 import rx.functions.Func3;
@@ -34,10 +33,8 @@ public class CommentsServiceClient {
         return new CommentsServiceClient(issueService, dateConverter, persistRepositoryIssueEventsTransformer);
     }
 
-    public static CommentsServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
-                                                    DatabaseCredentialsReader databaseCredentialsReader) {
-
-        IssueService issueService = GithubIssueService.newInstance(githubCredentialsReader);
+    public static CommentsServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
+        IssueService issueService = GithubIssueService.newInstance();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssueEvent> persistRepositoryIssueEventsTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);

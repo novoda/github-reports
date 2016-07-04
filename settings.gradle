@@ -1,9 +1,18 @@
 // common module
 include ':core'
+
 // Database access layer
 include ':db-layer'
+
+// network (http) layer
+include ':network'
+
 // Github API
-include ':service'
+include ':github'
+
+// Float API
+include ':float'
+
 // Generic batch behaviour, must be implemented
 include ':batch'
 
@@ -16,3 +25,4 @@ include ':reports-batch'
 
 // query CLI
 include ':reports-stats'
+
