@@ -25,7 +25,7 @@ public class FloatGithubUserConverter {
                 .filter(byGithubUsername(githubUsername))
                 .findFirst()
                 .map(Map.Entry::getKey)
-                .orElseThrow(createNoMatchFoundException(githubUsername));
+                .orElseThrow(noMatchFoundException(githubUsername));
     }
 
     private void readIfNeeded() throws IOException {
@@ -39,7 +39,7 @@ public class FloatGithubUserConverter {
         return entry -> entry.getValue().equalsIgnoreCase(githubUsername);
     }
 
-    private Supplier<RuntimeException> createNoMatchFoundException(String username) {
+    private Supplier<RuntimeException> noMatchFoundException(String username) {
         return () -> new NoMatchFoundException(username);
     }
 
@@ -50,7 +50,7 @@ public class FloatGithubUserConverter {
                 .filter(byFloatUsername(floatName))
                 .findFirst()
                 .map(Map.Entry::getValue)
-                .orElseThrow(createNoMatchFoundException(floatName));
+                .orElseThrow(noMatchFoundException(floatName));
     }
 
     private Predicate<Map.Entry<String, String>> byFloatUsername(String floatName) {
