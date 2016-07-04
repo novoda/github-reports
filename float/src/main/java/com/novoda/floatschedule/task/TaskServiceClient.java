@@ -29,12 +29,6 @@ public class TaskServiceClient {
         return getTasks(null, null, null);
     }
 
-    /**
-     * Get tasks (assignments) from the float api.
-     * @param startDate assignments starting after this date. its format is YYYY-MM-dd
-     * @param numberOfWeeks number of weeks to search up to, starting on startDate
-     * @param personId the person id to target, if any
-     */
     public Observable<Task> getTasks(Date startDate, Integer numberOfWeeks, Integer personId) {
         String date = floatDateConverter.toFloatDateFormat(startDate);
         return floatApiService.getTasks(date, numberOfWeeks, personId)

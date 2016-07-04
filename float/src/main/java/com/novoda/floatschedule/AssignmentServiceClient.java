@@ -38,11 +38,6 @@ public class AssignmentServiceClient {
         this.floatGithubProjectConverter = floatGithubProjectConverter;
     }
 
-    /**
-     * @param repositoryNames names of repositories to search
-     * @param startDate assignments starting after this date. its format is YYYY-MM-dd
-     * @param numberOfWeeks number of weeks to search up to, starting on startDate
-     */
     public Observable<String> getGithubUsernamesAssignedToRepositories(List<String> repositoryNames, Date startDate, int numberOfWeeks) {
         List<String> floatProjectNames = getFloatProjectNamesFrom(repositoryNames);
         return getGithubUsernamesAssignedToProjects(floatProjectNames, startDate, numberOfWeeks);
