@@ -71,7 +71,7 @@ public class AssignmentServiceClient {
         return taskServiceClient.getTasks(date, numberOfWeeks, NO_PERSON_ID)
                 .filter(byProjectNameIn(floatProjectNames))
                 .map(Task::getPersonName)
-                .map(this::toGithubUsernameOrNull)
+                .map(toGithubUsernameOrNull())
                 .filter(notNull())
                 .distinct();
     }
@@ -80,13 +80,15 @@ public class AssignmentServiceClient {
         return task -> floatProjectNames.contains(task.getProjectName());
     }
 
-    private String toGithubUsernameOrNull(String floatUsername) {
-        try {
-            return floatGithubUserConverter.getGithubUser(floatUsername);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    private Func1<String, String> toGithubUsernameOrNull() {
+        return floatUsername -> {
+            try {
+                return floatGithubUserConverter.getGithubUser(floatUsername);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        };
     }
 
     private Func1<String, Boolean> notNull() {
