@@ -22,9 +22,16 @@ public class AssignmentServiceClient {
     private final FloatGithubUserConverter floatGithubUserConverter;
     private final FloatGithubProjectConverter floatGithubProjectConverter;
 
-    AssignmentServiceClient(TaskServiceClient taskServiceClient,
-                            FloatGithubUserConverter floatGithubUserConverter,
-                            FloatGithubProjectConverter floatGithubProjectConverter) {
+    public static AssignmentServiceClient newInstance() {
+        TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
+        FloatGithubUserConverter floatGithubUserConverter = FloatGithubUserConverter.newInstance();
+        FloatGithubProjectConverter floatGithubProjectConverter = FloatGithubProjectConverter.newInstance();
+        return new AssignmentServiceClient(taskServiceClient, floatGithubUserConverter, floatGithubProjectConverter);
+    }
+
+    private AssignmentServiceClient(TaskServiceClient taskServiceClient,
+                                    FloatGithubUserConverter floatGithubUserConverter,
+                                    FloatGithubProjectConverter floatGithubProjectConverter) {
 
         this.taskServiceClient = taskServiceClient;
         this.floatGithubUserConverter = floatGithubUserConverter;
