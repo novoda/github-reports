@@ -9,8 +9,10 @@ import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -22,15 +24,15 @@ import rx.Observable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FloatServiceClientTest {
 
-    private static final String ANY_START_DATE = "2014-03-24";
+    private static final Date ANY_START_DATE = Date.from(Instant.now());
     private static final int ANY_NUMBER_OF_WEEKS = 42;
     private static final int ANY_PERSON_ID = 23;
     private static final String ANY_FLOAT_USERNAME = "imbecil";
@@ -66,7 +68,7 @@ public class FloatServiceClientTest {
                                                                                                                ANY_OTHER_GITHUB_REPO_NAME));
     }
 
-    private void givenTasks(String startDate, int numberOfWeeks, int personId) {
+    private void givenTasks(Date startDate, int numberOfWeeks, int personId) {
         List<Task> tasks = Arrays.asList(givenATask("a"), givenATask("b"), givenATask("c"), givenATask(ANY_FLOAT_PROJECT_NAME));
         Observable<Task> mockTasksObservable = Observable.from(tasks);
         when(mockTaskServiceClient.getTasks(startDate, numberOfWeeks, personId)).thenReturn(mockTasksObservable);
@@ -106,7 +108,7 @@ public class FloatServiceClientTest {
     @Test
     public void givenPersonsAndTasks_whenGettingRepositoryNamesForGithubUserWithNoTasksAssigned_thenNoItemsAreEmitted() {
         Observable<Task> mockTasksObservable = Observable.from(Collections.emptyList());
-        when(mockTaskServiceClient.getTasks(anyString(), anyInt(), anyInt())).thenReturn(mockTasksObservable);
+        when(mockTaskServiceClient.getTasks(any(Date.class), anyInt(), anyInt())).thenReturn(mockTasksObservable);
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         floatServiceClient.getRepositoryNamesForFloatUser(ANY_FLOAT_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)

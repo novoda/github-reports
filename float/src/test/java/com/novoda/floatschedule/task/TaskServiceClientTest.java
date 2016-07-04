@@ -1,5 +1,6 @@
 package com.novoda.floatschedule.task;
 
+import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.network.FloatApiService;
 
 import java.util.Arrays;
@@ -24,6 +25,9 @@ public class TaskServiceClientTest {
     @Mock
     FloatApiService mockFloatApiService;
 
+    @Mock
+    FloatDateConverter mockFloatDateConverter;
+
     private TestSubscriber<Task> testSubscriber;
 
     private Observable<Response<Assignments>> apiObservable;
@@ -42,7 +46,7 @@ public class TaskServiceClientTest {
 
         testSubscriber = new TestSubscriber<>();
 
-        taskServiceClient = new TaskServiceClient(mockFloatApiService);
+        taskServiceClient = new TaskServiceClient(mockFloatApiService, mockFloatDateConverter);
 
         Assignment assignment = new Assignment(2014, Arrays.asList(tasks));
         Assignments assignments = new Assignments(Collections.singletonList(assignment));
