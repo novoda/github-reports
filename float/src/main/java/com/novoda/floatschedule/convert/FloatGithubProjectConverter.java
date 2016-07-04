@@ -61,7 +61,7 @@ public class FloatGithubProjectConverter {
                 .filter(byProjectHavingRepositories(floatProject))
                 .findFirst()
                 .map(Map.Entry::getValue)
-                .orElseThrow(createNoMatchFoundException(floatProject));
+                .orElseThrow(noMatchFoundException(floatProject));
     }
 
     private void readIfNeeded() throws IOException {
@@ -75,7 +75,7 @@ public class FloatGithubProjectConverter {
         return entry -> floatProject.toLowerCase(Locale.UK).contains(entry.getKey().toLowerCase(Locale.UK));
     }
 
-    private Supplier<RuntimeException> createNoMatchFoundException(String floatProject) {
+    private Supplier<RuntimeException> noMatchFoundException(String floatProject) {
         return () -> new NoMatchFoundException(floatProject);
     }
 }
