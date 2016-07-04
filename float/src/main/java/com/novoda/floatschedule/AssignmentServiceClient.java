@@ -59,11 +59,6 @@ public class AssignmentServiceClient {
         }
     }
 
-    /**
-     * @param floatProjectNames names of the projects to search
-     * @param startDate assignments starting after this date. its format is YYYY-MM-dd
-     * @param numberOfWeeks number of weeks to search up to, starting on startDate
-     */
     public Observable<String> getGithubUsernamesAssignedToProjects(List<String> floatProjectNames, Date startDate, int numberOfWeeks) {
         return taskServiceClient.getTasks(startDate, numberOfWeeks, NO_PERSON_ID)
                 .filter(byProjectNameIn(floatProjectNames))
