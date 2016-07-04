@@ -13,7 +13,6 @@ import com.novoda.github.reports.lambda.persistence.PersistOperator;
 import com.novoda.github.reports.service.persistence.ConnectionManagerContainer;
 import com.novoda.github.reports.service.persistence.converter.Converter;
 import com.novoda.github.reports.service.persistence.converter.RepositoryConverter;
-import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.service.repository.GithubRepositoryService;
 import com.novoda.github.reports.service.repository.RepositoryService;
@@ -36,10 +35,9 @@ public class RepositoriesServiceClient {
         return new RepositoriesServiceClient(repositoriesService, repoDataLayer, converter);
     }
 
-    public static RepositoriesServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
-                                                        DatabaseCredentialsReader databaseCredentialsReader) {
+    public static RepositoriesServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
 
-        RepositoryService repositoriesService = GithubRepositoryService.newInstance(githubCredentialsReader);
+        RepositoryService repositoriesService = GithubRepositoryService.newInstance();
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager(databaseCredentialsReader);
         DbDataLayer<Repository, RepositoryRecord> repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
         Converter<GithubRepository, Repository> converter = RepositoryConverter.newInstance();
