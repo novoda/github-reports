@@ -1,6 +1,5 @@
 package com.novoda.floatschedule;
 
-import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
@@ -19,27 +18,26 @@ public class AssignmentServiceClient {
 
     private static final Integer NO_PERSON_ID = null;
 
-    private final FloatDateConverter floatDateConverter;
     private final TaskServiceClient taskServiceClient;
     private final FloatGithubUserConverter floatGithubUserConverter;
     private final FloatGithubProjectConverter floatGithubProjectConverter;
 
-    AssignmentServiceClient(FloatDateConverter floatDateConverter,
-                            TaskServiceClient taskServiceClient,
-                            FloatGithubUserConverter floatGithubUserConverter,
-                            FloatGithubProjectConverter floatGithubProjectConverter) {
+    public static AssignmentServiceClient newInstance() {
+        TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
+        FloatGithubUserConverter floatGithubUserConverter = FloatGithubUserConverter.newInstance();
+        FloatGithubProjectConverter floatGithubProjectConverter = FloatGithubProjectConverter.newInstance();
+        return new AssignmentServiceClient(taskServiceClient, floatGithubUserConverter, floatGithubProjectConverter);
+    }
 
-        this.floatDateConverter = floatDateConverter;
+    private AssignmentServiceClient(TaskServiceClient taskServiceClient,
+                                    FloatGithubUserConverter floatGithubUserConverter,
+                                    FloatGithubProjectConverter floatGithubProjectConverter) {
+
         this.taskServiceClient = taskServiceClient;
         this.floatGithubUserConverter = floatGithubUserConverter;
         this.floatGithubProjectConverter = floatGithubProjectConverter;
     }
 
-    /**
-     * @param repositoryNames names of repositories to search
-     * @param startDate assignments starting after this date. its format is YYYY-MM-dd
-     * @param numberOfWeeks number of weeks to search up to, starting on startDate
-     */
     public Observable<String> getGithubUsernamesAssignedToRepositories(List<String> repositoryNames, Date startDate, int numberOfWeeks) {
         List<String> floatProjectNames = getFloatProjectNamesFrom(repositoryNames);
         return getGithubUsernamesAssignedToProjects(floatProjectNames, startDate, numberOfWeeks);
@@ -61,14 +59,8 @@ public class AssignmentServiceClient {
         }
     }
 
-    /**
-     * @param floatProjectNames names of the projects to search
-     * @param startDate assignments starting after this date. its format is YYYY-MM-dd
-     * @param numberOfWeeks number of weeks to search up to, starting on startDate
-     */
     public Observable<String> getGithubUsernamesAssignedToProjects(List<String> floatProjectNames, Date startDate, int numberOfWeeks) {
-        String date = floatDateConverter.toFloatDateFormat(startDate);
-        return taskServiceClient.getTasks(date, numberOfWeeks, NO_PERSON_ID)
+        return taskServiceClient.getTasks(startDate, numberOfWeeks, NO_PERSON_ID)
                 .filter(byProjectNameIn(floatProjectNames))
                 .map(Task::getPersonName)
                 .map(toGithubUsernameOrNull())

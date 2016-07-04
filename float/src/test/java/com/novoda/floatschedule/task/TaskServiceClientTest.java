@@ -1,9 +1,12 @@
 package com.novoda.floatschedule.task;
 
+import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.network.FloatApiService;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +24,15 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class TaskServiceClientTest {
 
+    private static final Date ANY_START_DATE = Date.from(Instant.now());
+    private static final Integer ANY_NUMBER_OF_WEEKS = 42;
+    private static final Integer ANY_PERSON_ID = 23;
+
     @Mock
     FloatApiService mockFloatApiService;
+
+    @Mock
+    FloatDateConverter mockFloatDateConverter;
 
     private TestSubscriber<Task> testSubscriber;
 
@@ -42,7 +52,9 @@ public class TaskServiceClientTest {
 
         testSubscriber = new TestSubscriber<>();
 
-        taskServiceClient = new TaskServiceClient(mockFloatApiService);
+        when(mockFloatDateConverter.toFloatDateFormat(ANY_START_DATE)).thenReturn("2014-09-11");
+
+        taskServiceClient = new TaskServiceClient(mockFloatApiService, mockFloatDateConverter);
 
         Assignment assignment = new Assignment(2014, Arrays.asList(tasks));
         Assignments assignments = new Assignments(Collections.singletonList(assignment));
@@ -53,9 +65,8 @@ public class TaskServiceClientTest {
     @Test
     public void givenApiReturnsTasks_whenQueryingForTasks_thenEachSingleTaskIsEmitted() {
         when(mockFloatApiService.getTasks(anyString(), anyInt(), anyInt())).thenReturn(apiObservable);
-        when(mockFloatApiService.getTasks(null, null, null)).thenReturn(apiObservable);
 
-        taskServiceClient.getTasks()
+        taskServiceClient.getTasks(ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_PERSON_ID)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
