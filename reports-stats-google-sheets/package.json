@@ -10,6 +10,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-eslint": "^3.0.1",
     "gulp-shell": "^0.5.2",
     "jasmine-core": "^2.4.1",
     "karma": "^0.13.22",
