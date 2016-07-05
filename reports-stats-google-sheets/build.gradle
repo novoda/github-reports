@@ -1,0 +1,18 @@
+plugins {
+    id 'com.moowork.gulp' version '0.13'
+    id 'com.moowork.node' version '0.13'
+}
+
+node {
+    version = '6.1.0'
+    download = true
+}
+
+gulp_test.dependsOn 'npmInstall'
+gulp_test.dependsOn 'installGulp'
+
+task test
+test.dependsOn 'gulp_test'
+
+task build
+build.dependsOn 'test'
