@@ -1,6 +1,6 @@
 package com.novoda.floatschedule.convert;
 
-import com.novoda.floatschedule.reader.UsersReader;
+import com.novoda.github.reports.reader.UsersReader;
 
 import java.util.HashMap;
 import java.util.Map;

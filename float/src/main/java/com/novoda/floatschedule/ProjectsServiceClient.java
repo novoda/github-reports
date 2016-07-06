@@ -1,12 +1,11 @@
 package com.novoda.floatschedule;
 
-import com.novoda.floatschedule.reader.ProjectsReader;
+import com.novoda.github.reports.reader.ProjectsReader;
+import rx.Observable;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import rx.Observable;
 
 class ProjectsServiceClient {
 
