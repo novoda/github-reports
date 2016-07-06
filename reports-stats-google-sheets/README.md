@@ -43,7 +43,7 @@ For the first time, you need to create a Google Apps Script project:
 5. Authenticate `gapps` following the [provided instructions](https://github.com/danthareja/node-google-apps-script#2-authenticate-gapps)
    using the credentials JSON you just downloaded
 6. Initialize the project using the ID of the Google Apps Script project we found at step 3
-   ([detailed instructions here(https://github.com/danthareja/node-google-apps-script#31-an-existing-apps-script-project)])
+   ([detailed instructions here](https://github.com/danthareja/node-google-apps-script#31-an-existing-apps-script-project))
 
 Now you're ready to develop on this project!
 
