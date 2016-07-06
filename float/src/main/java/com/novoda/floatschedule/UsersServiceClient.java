@@ -1,6 +1,6 @@
 package com.novoda.floatschedule;
 
-import com.novoda.floatschedule.reader.UsersReader;
+import com.novoda.github.reports.reader.UsersReader;
 
 import java.io.IOException;
 
