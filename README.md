@@ -16,6 +16,7 @@ Base modules allow for behaviour decomposition, each taking care of one specific
 * [`network`](network/README.md) cotains all the network (HTTP) components used to query API
 * [`github`](github/README.md) contains the components to query the Github API and persist the retrieved elements on the database
 * [`float`](float/README.md) contains all the components needed to query the Float API
+* [`web-service`](web-service/README.md) contains the endpoint handlers for Amazon AWS Gateway written as Lambdas
 
 ### Batch modules
 
