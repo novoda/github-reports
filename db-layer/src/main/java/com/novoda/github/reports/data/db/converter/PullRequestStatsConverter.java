@@ -52,7 +52,7 @@ public class PullRequestStatsConverter {
         PullRequestStatsUser assignedAverage = usersList.stream()
                 .filter(user -> Objects.equals(user.id(), USER_ASSIGNED_ID))
                 .findFirst()
-                .orElse(NO_AVERAGE_USER);;
+                .orElse(NO_AVERAGE_USER);
 
         return PullRequestStatsGroup.builder()
                 .name(groupName)
