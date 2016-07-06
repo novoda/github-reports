@@ -2,17 +2,12 @@ package com.novoda.github.reports.data.db;
 
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
-
-import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.TableField;
+
+import java.sql.Timestamp;
+import java.util.*;
 
 import static com.novoda.github.reports.data.db.Tables.EVENT;
 import static org.jooq.impl.DSL.*;
@@ -27,7 +22,7 @@ public class PullRequestStatsParameters {
     private final Date from;
     private final Date to;
     private final Set<String> repositories;
-    private final Set<String> teamUsers;
+    private final Set<String> organisationUsers;
     private final Set<String> assignedUsers;
     private final Set<String> filterUsers;
     private final EventDataLayer.PullRequestStatsGroupBy groupBy;
@@ -37,7 +32,7 @@ public class PullRequestStatsParameters {
                                       Date from,
                                       Date to,
                                       List<String> repositories,
-                                      List<String> teamUsers,
+                                      List<String> organisationUsers,
                                       List<String> assignedUsers,
                                       List<String> filterUsers,
                                       EventDataLayer.PullRequestStatsGroupBy groupBy,
@@ -48,9 +43,30 @@ public class PullRequestStatsParameters {
                 from,
                 to,
                 listToSet(repositories),
-                listToSet(teamUsers),
+                listToSet(organisationUsers),
                 listToSet(assignedUsers),
                 listToSet(filterUsers),
+                groupBy,
+                withAverage
+        );
+    }
+
+    public PullRequestStatsParameters(DSLContext context,
+                                      Date from,
+                                      Date to,
+                                      List<String> repositories,
+                                      List<String> organisationUsers,
+                                      EventDataLayer.PullRequestStatsGroupBy groupBy,
+                                      boolean withAverage) {
+
+        this(
+                context,
+                from,
+                to,
+                listToSet(repositories),
+                listToSet(organisationUsers),
+                Collections.emptySet(),
+                Collections.emptySet(),
                 groupBy,
                 withAverage
         );
@@ -69,7 +85,7 @@ public class PullRequestStatsParameters {
                                        Date from,
                                        Date to,
                                        Set<String> repositories,
-                                       Set<String> teamUsers,
+                                       Set<String> organisationUsers,
                                        Set<String> assignedUsers,
                                        Set<String> filterUsers,
                                        EventDataLayer.PullRequestStatsGroupBy groupBy,
@@ -79,7 +95,7 @@ public class PullRequestStatsParameters {
         this.from = from;
         this.to = to;
         this.repositories = repositories;
-        this.teamUsers = teamUsers;
+        this.organisationUsers = organisationUsers;
         this.assignedUsers = assignedUsers;
         this.filterUsers = filterUsers;
         this.groupBy = groupBy;
@@ -102,16 +118,32 @@ public class PullRequestStatsParameters {
         return repositories;
     }
 
-    public Set<String> getTeamUsers() {
-        return teamUsers;
+    public Set<String> getOrganisationUsers() {
+        return organisationUsers;
+    }
+
+    public boolean hasOrganisationUsers() {
+        return isSetWithValues(organisationUsers);
+    }
+
+    private boolean isSetWithValues(Set set) {
+        return !(set == null || set.isEmpty());
     }
 
     public Set<String> getAssignedUsers() {
         return assignedUsers;
     }
 
+    public boolean hasAssignedUsers() {
+        return isSetWithValues(assignedUsers);
+    }
+
     public Set<String> getFilterUsers() {
         return filterUsers;
+    }
+
+    public boolean hasFilterUsers() {
+        return isSetWithValues(filterUsers);
     }
 
     public EventDataLayer.PullRequestStatsGroupBy getGroupBy() {

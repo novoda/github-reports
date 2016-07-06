@@ -11,11 +11,18 @@ public interface EventDataLayer extends DataLayer<Event> {
     PullRequestStats getStats(Date from,
                               Date to,
                               List<String> repositories,
-                              List<String> teamUsers,
+                              List<String> organisationUsers,
                               List<String> assignedUsers,
                               List<String> filterUsers,
                               PullRequestStatsGroupBy groupBy,
                               boolean withAverage) throws DataLayerException;
+
+    PullRequestStats getOrganisationStats(Date from,
+                                          Date to,
+                                          List<String> repositories,
+                                          List<String> organisationUsers,
+                                          PullRequestStatsGroupBy groupBy,
+                                          boolean withAverage) throws DataLayerException;
 
     enum PullRequestStatsGroupBy {
         NONE,

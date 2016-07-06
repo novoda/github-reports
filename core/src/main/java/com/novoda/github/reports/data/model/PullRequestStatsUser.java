@@ -66,9 +66,8 @@ public abstract class PullRequestStatsUser {
 
     public enum UserType {
         EXTERNAL,
-        TEAM,
-        ASSIGNED,
-        FILTER
+        ORGANISATION,
+        ASSIGNED
     }
 
 }

@@ -1,23 +1,10 @@
 package com.novoda.github.reports.data.db.builder;
 
 import com.novoda.github.reports.data.db.PullRequestStatsParameters;
+import org.jooq.*;
 
 import java.math.BigDecimal;
 import java.util.Map;
-
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.Record1;
-import org.jooq.Record3;
-import org.jooq.Record4;
-import org.jooq.Result;
-import org.jooq.SelectConditionStep;
-import org.jooq.SelectJoinStep;
-import org.jooq.SelectOnConditionStep;
-import org.jooq.SelectOrderByStep;
-import org.jooq.SelectSeekStep2;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.conditionalBetween;
 import static com.novoda.github.reports.data.db.PullRequestStatsParameters.GROUP_SELECTOR_FIELD;
@@ -93,6 +80,7 @@ public class DbEventStatsQueryBuilder {
     }
 
     public Map<String, ? extends Result<? extends Record>> getStats() {
+        SelectOrderByStep<Record3<Long, String, String>> allUsers = userQueryBuilder.getAllUsersWithAverage();
 
         SelectOrderByStep<Record4<BigDecimal, Long, String, String>> mergedQuery = mergedPrsQueryBuilder.getStats();
         SelectOrderByStep<Record4<BigDecimal, Long, String, String>> openedQuery = openedPrsQueryBuilder.getStats();
@@ -101,7 +89,32 @@ public class DbEventStatsQueryBuilder {
         SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsOwnQuery = commentsOwnPrsQueryBuilder.getStats();
         SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsAnyQuery = commentsAnyPrsQueryBuilder.getStats();
 
-        SelectOrderByStep<Record3<Long, String, String>> allUsers = userQueryBuilder.getAllUsersWithAverage();
+        return getStatsForUsers(allUsers, mergedQuery, openedQuery, otherPeopleCommentsQuery, commentsOtherPeopleQuery, commentsOwnQuery, commentsAnyQuery);
+    }
+
+
+    public Map<String, ? extends Result<? extends Record>> getOrganisationStats() {
+        SelectOrderByStep<Record3<Long, String, String>> organisationUsers = userQueryBuilder.getOrganisationUsersWithAverage();
+
+        SelectOrderByStep<Record4<BigDecimal, Long, String, String>> mergedQuery = mergedPrsQueryBuilder.getOrganisationStats();
+        SelectOrderByStep<Record4<BigDecimal, Long, String, String>> openedQuery = openedPrsQueryBuilder.getOrganisationStats();
+        SelectOrderByStep<Record4<BigDecimal, Long, String, String>> otherPeopleCommentsQuery = otherPeopleCommentsOnUserPrsQueryBuilder.getOrganisationStats();
+        SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsOtherPeopleQuery = commentsOtherPeoplePrsQueryBuilder.getOrganisationStats();
+        SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsOwnQuery = commentsOwnPrsQueryBuilder.getOrganisationStats();
+        SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsAnyQuery = commentsAnyPrsQueryBuilder.getOrganisationStats();
+
+        return getStatsForUsers(organisationUsers, mergedQuery, openedQuery, otherPeopleCommentsQuery, commentsOtherPeopleQuery, commentsOwnQuery, commentsAnyQuery);
+    }
+
+    private Map<String, ? extends Result<? extends Record>> getStatsForUsers(
+            SelectOrderByStep<Record3<Long, String, String>> usersWithAverageUser,
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> mergedQuery,
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> openedQuery,
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> otherPeopleCommentsQuery,
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsOtherPeopleQuery,
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsOwnQuery,
+            SelectOrderByStep<Record4<BigDecimal, Long, String, String>> commentsAnyQuery) {
+
         SelectConditionStep<Record1<String>> dateGroups = selectDateGroups(parameters.getContext(), parameters);
 
         SelectJoinStep<? extends Record> select = selectUsers(
@@ -112,7 +125,7 @@ public class DbEventStatsQueryBuilder {
                 commentsOtherPeopleQuery,
                 commentsOwnQuery,
                 commentsAnyQuery,
-                allUsers,
+                usersWithAverageUser,
                 dateGroups
         );
         SelectOnConditionStep<? extends Record> allStats = leftJoinWithAllStats(
@@ -123,7 +136,7 @@ public class DbEventStatsQueryBuilder {
                 commentsOtherPeopleQuery,
                 commentsOwnQuery,
                 commentsAnyQuery,
-                allUsers,
+                usersWithAverageUser,
                 dateGroups
         );
         SelectSeekStep2<? extends Record, String, String> orderedStats = allStats.orderBy(GROUP_SELECTOR_FIELD, USER_NAME_FIELD);

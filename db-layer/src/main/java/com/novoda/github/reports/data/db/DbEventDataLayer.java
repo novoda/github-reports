@@ -7,6 +7,10 @@ import com.novoda.github.reports.data.db.converter.PullRequestStatsConverter;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.PullRequestStats;
+import org.jooq.DSLContext;
+import org.jooq.InsertOnDuplicateSetMoreStep;
+import org.jooq.Record;
+import org.jooq.Result;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,11 +18,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.jooq.DSLContext;
-import org.jooq.InsertOnDuplicateSetMoreStep;
-import org.jooq.Record;
-import org.jooq.Result;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.dateToTimestamp;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
@@ -52,7 +51,7 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
     public PullRequestStats getStats(Date from,
                                      Date to,
                                      List<String> repositories,
-                                     List<String> teamUsers,
+                                     List<String> organisationUsers,
                                      List<String> assignedUsers,
                                      List<String> filterUsers,
                                      PullRequestStatsGroupBy groupBy,
@@ -68,7 +67,7 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
                     from,
                     to,
                     repositories,
-                    teamUsers,
+                    organisationUsers,
                     assignedUsers,
                     filterUsers,
                     groupBy,
@@ -84,6 +83,39 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
             throw new DataLayerException(e);
         }
 
+    }
+
+    @Override
+    public PullRequestStats getOrganisationStats(Date from,
+                                                 Date to,
+                                                 List<String> repositories,
+                                                 List<String> organisationUsers,
+                                                 PullRequestStatsGroupBy groupBy,
+                                                 boolean withAverage)
+            throws DataLayerException {
+
+        try {
+            Connection connection = getNewConnection();
+            DSLContext create = getNewDSLContext(connection);
+
+            PullRequestStatsParameters parameters = new PullRequestStatsParameters(
+                    create,
+                    from,
+                    to,
+                    repositories,
+                    organisationUsers,
+                    groupBy,
+                    withAverage
+            );
+            DbEventStatsQueryBuilder statsQueryBuilder = DbEventStatsQueryBuilder.newInstance(parameters);
+
+            Map<String, ? extends Result<? extends Record>> groupedStats = statsQueryBuilder.getOrganisationStats();
+
+            return converter.convert(groupedStats);
+
+        } catch (SQLException e) {
+            throw new DataLayerException(e);
+        }
     }
 
 }
