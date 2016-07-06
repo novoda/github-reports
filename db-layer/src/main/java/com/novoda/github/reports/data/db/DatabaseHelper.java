@@ -3,17 +3,11 @@ package com.novoda.github.reports.data.db;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
 import com.novoda.github.reports.data.model.EventStats;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
+import org.jooq.*;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Date;
-
-import org.jooq.Condition;
-import org.jooq.Field;
-import org.jooq.Record1;
-import org.jooq.Record2;
-import org.jooq.Result;
-import org.jooq.TableField;
 
 import static com.novoda.github.reports.data.db.Tables.EVENT;
 import static com.novoda.github.reports.data.db.Tables.REPOSITORY;
@@ -117,5 +111,9 @@ class DatabaseHelper {
 
     static Byte boolToByte(boolean value) {
         return value ? TRUE_BYTE : FALSE_BYTE;
+    }
+
+    static boolean byteToBool(Byte value) {
+        return TRUE_BYTE == value;
     }
 }
