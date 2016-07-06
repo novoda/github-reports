@@ -31,4 +31,5 @@ dependencies {
 
 jar {
     exclude '*.json'
+    exclude '*.json.sample'
 }
