@@ -13,43 +13,24 @@ public class PullRequestOptions extends RangeOptions {
     }
 
     PullRequestOptions(List<String> repositories,
-                       List<String> projects,
-                       List<String> teamUsers,
-                       List<String> assignedUsers,
-                       List<String> filterUsers,
+                       List<String> organisationUsers,
                        PullRequestOptionsGroupBy groupBy,
                        boolean withAverage) {
 
-        this.projects = projects;
         this.repositories = repositories;
-        this.teamUsers = teamUsers;
-        this.assignedUsers = assignedUsers;
-        this.filterUsers = filterUsers;
+        this.organisationUsers = organisationUsers;
         this.groupBy = groupBy;
         this.withAverage = withAverage;
     }
 
-    @Parameter(names = {"--projects", "-p"},
-            description = "Projects to retrieve data from (can't be used together with \"--repositories\")")
-    private List<String> projects;
-
     @Parameter(names = {"--repositories", "--repos", "-r"},
-            description = "Repositories to retrieve data from (can\'t be used together with \"--projects\")")
+            description = "Repositories to retrieve data from")
     private List<String> repositories;
 
     // TODO: remove after float integration
-    @Parameter(names = {"--team", "-tu"},
-            description = "Users to treat as team (company) internals")
-    private List<String> teamUsers;
-
-    // TODO: remove after float integration
-    @Parameter(names = {"--assigned", "-au"},
-            description = "Users to treat as assigned to the projects or repositories")
-    private List<String> assignedUsers;
-
-    @Parameter(names = {"--users", "-u"},
-            description = "Users to filter on")
-    private List<String> filterUsers;
+    @Parameter(names = {"--organisation", "--org", "-o"},
+            description = "Users to treat as organisation (company) internals")
+    private List<String> organisationUsers;
 
     @Parameter(names = {"--group-by", "-g"},
             description = "Whether to add user average for every group",
@@ -60,24 +41,12 @@ public class PullRequestOptions extends RangeOptions {
             description = "Whether to add user average for every group")
     private boolean withAverage;
 
-    public List<String> getProjects() {
-        return projects;
-    }
-
     public List<String> getRepositories() {
         return repositories;
     }
 
-    public List<String> getTeamUsers() {
-        return teamUsers;
-    }
-
-    public List<String> getAssignedUsers() {
-        return assignedUsers;
-    }
-
-    public List<String> getFilterUsers() {
-        return filterUsers;
+    public List<String> getOrganisationUsers() {
+        return organisationUsers;
     }
 
     public PullRequestOptionsGroupBy getGroupBy() {
@@ -88,15 +57,4 @@ public class PullRequestOptions extends RangeOptions {
         return withAverage;
     }
 
-    public boolean hasRepositories() {
-        return isListNotEmpty(repositories);
-    }
-
-    public boolean hasProjects() {
-        return isListNotEmpty(projects);
-    }
-
-    private boolean isListNotEmpty(List<String> list) {
-        return list != null && !list.isEmpty();
-    }
 }
