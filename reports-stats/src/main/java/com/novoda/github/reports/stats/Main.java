@@ -1,20 +1,9 @@
 package com.novoda.github.reports.stats;
 
 import com.beust.jcommander.JCommander;
-import com.novoda.github.reports.data.db.ConnectionManager;
-import com.novoda.github.reports.data.db.DbConnectionManager;
-import com.novoda.github.reports.data.db.DbEventDataLayer;
-import com.novoda.github.reports.data.db.DbProjectDataLayer;
-import com.novoda.github.reports.data.db.DbRepoDataLayer;
-import com.novoda.github.reports.data.db.DbUserDataLayer;
-import com.novoda.github.reports.data.db.LogHelper;
+import com.novoda.github.reports.data.db.*;
 import com.novoda.github.reports.data.model.Stats;
-import com.novoda.github.reports.stats.command.OptionsNotValidException;
-import com.novoda.github.reports.stats.command.ProjectOptions;
-import com.novoda.github.reports.stats.command.PullRequestOptions;
-import com.novoda.github.reports.stats.command.PullRequestOptionsValidator;
-import com.novoda.github.reports.stats.command.RepoOptions;
-import com.novoda.github.reports.stats.command.UserOptions;
+import com.novoda.github.reports.stats.command.*;
 import com.novoda.github.reports.stats.handler.ProjectCommandHandler;
 import com.novoda.github.reports.stats.handler.PullRequestCommandHandler;
 import com.novoda.github.reports.stats.handler.RepoCommandHandler;
@@ -59,8 +48,6 @@ public class Main {
             ProjectCommandHandler handler = new ProjectCommandHandler(DbProjectDataLayer.newInstance(connectionManager));
             stats = handler.handle(projectOptions);
         } else if (command.equals(COMMAND_PULL_REQUEST)) {
-            PullRequestOptionsValidator validator = new PullRequestOptionsValidator();
-            validatePrOptions(prOptions, validator);
             PullRequestCommandHandler handler = new PullRequestCommandHandler(DbEventDataLayer.newInstance(connectionManager));
             stats = handler.handle(prOptions);
         } else {
@@ -68,13 +55,6 @@ public class Main {
         }
 
         System.out.println(stats.describeStats());
-    }
-
-    private void validatePrOptions(PullRequestOptions prOptions, PullRequestOptionsValidator validator) throws OptionsNotValidException {
-        boolean isValid = validator.validate(prOptions);
-        if (!isValid) {
-            throw new OptionsNotValidException("You can't specify both projects and repositories in the options.");
-        }
     }
 
     public static void main(String[] args) throws UnhandledCommandException, OptionsNotValidException {

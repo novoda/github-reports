@@ -1,19 +1,12 @@
 package com.novoda.github.reports.data.db.builder;
 
 import com.novoda.github.reports.data.db.PullRequestStatsParameters;
+import org.jooq.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.Record3;
-import org.jooq.Select;
-import org.jooq.SelectConditionStep;
-import org.jooq.SelectOnConditionStep;
-import org.jooq.SelectOrderByStep;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.conditionalBetween;
 import static com.novoda.github.reports.data.db.Tables.*;
@@ -21,22 +14,19 @@ import static org.jooq.impl.DSL.*;
 
 public class DbEventUserQueryBuilder {
 
-    public static final Long USER_EXTERNAL_ID = -4L;
-    public static final Long USER_TEAM_ID = -3L;
-    public static final Long USER_ASSIGNED_ID = -2L;
-    public static final Long USER_FILTER_ID = -1L;
+    public static final Long USER_EXTERNAL_ID = -3L;
+    public static final Long USER_ORGANISATION_ID = -2L;
+    public static final Long USER_ASSIGNED_ID = -1L;
 
     public static final Field<String> USER_TYPE_FIELD = field("user_type", String.class);
 
     public static final String USER_EXTERNAL = "EXTERNAL";
-    public static final String USER_TEAM = "TEAM";
+    public static final String USER_ORGANISATION = "ORGANISATION";
     public static final String USER_ASSIGNED = "ASSIGNED";
-    public static final String USER_FILTER = "FILTER";
 
     private static final Field<String> USER_TYPE_EXTERNAL = val(USER_EXTERNAL).as(USER_TYPE_FIELD);
-    private static final Field<String> USER_TYPE_TEAM = val(USER_TEAM).as(USER_TYPE_FIELD);
+    private static final Field<String> USER_TYPE_ORGANISATION = val(USER_ORGANISATION).as(USER_TYPE_FIELD);
     private static final Field<String> USER_TYPE_ASSIGNED = val(USER_ASSIGNED).as(USER_TYPE_FIELD);
-    private static final Field<String> USER_TYPE_FILTER = val(USER_FILTER).as(USER_TYPE_FIELD);
 
     private final PullRequestStatsParameters parameters;
 
@@ -46,16 +36,24 @@ public class DbEventUserQueryBuilder {
 
     SelectOrderByStep<Record3<Long, String, String>> getAllUsersWithAverage() {
         SelectOrderByStep<Record3<Long, String, String>> users = getExternalUsers()
-                .union(getTeamUsers())
-                .union(getAssignedUsers())
-                .union(getFilterUsers());
+                .union(getOrganisationUsers())
+                .union(getAssignedUsers());
 
         if (parameters.isWithAverage()) {
             users = users
                     .union(buildAverageUser(USER_EXTERNAL_ID, USER_EXTERNAL, USER_TYPE_EXTERNAL))
-                    .union(buildAverageUser(USER_TEAM_ID, USER_TEAM, USER_TYPE_TEAM))
-                    .union(buildAverageUser(USER_ASSIGNED_ID, USER_ASSIGNED, USER_TYPE_ASSIGNED))
-                    .union(buildAverageUser(USER_FILTER_ID, USER_FILTER, USER_TYPE_FILTER));
+                    .union(buildAverageUser(USER_ORGANISATION_ID, USER_ORGANISATION, USER_TYPE_ORGANISATION))
+                    .union(buildAverageUser(USER_ASSIGNED_ID, USER_ASSIGNED, USER_TYPE_ASSIGNED));
+        }
+
+        return users;
+    }
+
+    SelectOrderByStep<Record3<Long, String, String>> getOrganisationUsersWithAverage() {
+        SelectOrderByStep<Record3<Long, String, String>> users = getOrganisationUsers();
+
+        if (parameters.isWithAverage()) {
+            users = users.union(buildAverageUser(USER_ORGANISATION_ID, USER_ORGANISATION, USER_TYPE_ORGANISATION));
         }
 
         return users;
@@ -69,16 +67,15 @@ public class DbEventUserQueryBuilder {
         );
     }
 
-    public SelectOrderByStep<Record3<Long, String, String>> getAllUsers() {
+    SelectOrderByStep<Record3<Long, String, String>> getAllUsers() {
         return getExternalUsers()
-                .union(getTeamUsers())
-                .union(getAssignedUsers())
-                .union(getFilterUsers());
+                .union(getOrganisationUsers())
+                .union(getAssignedUsers());
     }
 
     SelectConditionStep<Record3<Long, String, String>> getExternalUsers() {
 
-        Set<String> usernameNotInSet = mergeSets(parameters.getTeamUsers(), parameters.getAssignedUsers(), parameters.getFilterUsers());
+        Set<String> usernameNotInSet = mergeSets(parameters.getOrganisationUsers(), parameters.getAssignedUsers());
 
         SelectOnConditionStep<Record3<Long, String, String>> select = parameters.getContext()
                 .selectDistinct(USER._ID, USER.USERNAME, USER_TYPE_EXTERNAL)
@@ -101,22 +98,17 @@ public class DbEventUserQueryBuilder {
         return where;
     }
 
-    SelectConditionStep<Record3<Long, String, String>> getTeamUsers() {
+    SelectConditionStep<Record3<Long, String, String>> getOrganisationUsers() {
         return getUsersWithUsername(
                 parameters.getContext(),
-                USER_TYPE_TEAM,
-                parameters.getTeamUsers(),
-                parameters.getAssignedUsers(),
-                parameters.getFilterUsers()
+                USER_TYPE_ORGANISATION,
+                parameters.getOrganisationUsers(),
+                parameters.getAssignedUsers()
         );
     }
 
     SelectConditionStep<Record3<Long, String, String>> getAssignedUsers() {
-        return getUsersWithUsername(parameters.getContext(), USER_TYPE_ASSIGNED, parameters.getAssignedUsers(), parameters.getFilterUsers());
-    }
-
-    SelectConditionStep<Record3<Long, String, String>> getFilterUsers() {
-        return getUsersWithUsername(parameters.getContext(), USER_TYPE_FILTER, parameters.getFilterUsers());
+        return getUsersWithUsername(parameters.getContext(), USER_TYPE_ASSIGNED, parameters.getAssignedUsers());
     }
 
     @SafeVarargs
