@@ -1,11 +1,10 @@
 package com.novoda.github.reports.data.model;
 
 import com.google.auto.value.AutoValue;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.jetbrains.annotations.Nullable;
 
 @AutoValue
 public abstract class PullRequestStatsGroup implements Stats {
@@ -22,13 +21,10 @@ public abstract class PullRequestStatsGroup implements Stats {
     abstract PullRequestStatsUser externalAverage();
 
     @Nullable
-    abstract PullRequestStatsUser teamAverage();
+    abstract PullRequestStatsUser organisationAverage();
 
     @Nullable
     abstract PullRequestStatsUser assignedAverage();
-
-    @Nullable
-    abstract PullRequestStatsUser filterAverage();
 
     @AutoValue.Builder
     public static abstract class Builder {
@@ -39,11 +35,9 @@ public abstract class PullRequestStatsGroup implements Stats {
 
         public abstract Builder externalAverage(@Nullable PullRequestStatsUser externalAverage);
 
-        public abstract Builder teamAverage(@Nullable PullRequestStatsUser teamAverage);
+        public abstract Builder organisationAverage(@Nullable PullRequestStatsUser organisationAverage);
 
         public abstract Builder assignedAverage(@Nullable PullRequestStatsUser assignedAverage);
-
-        public abstract Builder filterAverage(@Nullable PullRequestStatsUser filterAverage);
 
         public abstract PullRequestStatsGroup build();
 
@@ -56,13 +50,11 @@ public abstract class PullRequestStatsGroup implements Stats {
         String averages = String.format(
                 "\n" +
                         "AVERAGE EXTERNAL: \n%s\n" +
-                        "AVERAGE TEAM: \n%s\n" +
-                        "AVERAGE ASSIGNED: \n%s\n" +
-                        "AVERAGE FILTER: \n%s\n",
+                        "AVERAGE ORGANISATION: \n%s\n" +
+                        "AVERAGE ASSIGNED: \n%s\n",
                 externalAverage(),
-                teamAverage(),
-                assignedAverage(),
-                filterAverage()
+                organisationAverage(),
+                assignedAverage()
         );
 
         return users().stream()

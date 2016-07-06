@@ -3,18 +3,16 @@ package com.novoda.github.reports.data.db.converter;
 import com.novoda.github.reports.data.model.PullRequestStats;
 import com.novoda.github.reports.data.model.PullRequestStatsGroup;
 import com.novoda.github.reports.data.model.PullRequestStatsUser;
+import org.jooq.Record;
+import org.jooq.Result;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.jooq.Record;
-import org.jooq.Result;
-
 import static com.novoda.github.reports.data.db.builder.DbEventStatsQueryBuilder.*;
 import static com.novoda.github.reports.data.db.builder.DbEventUserQueryBuilder.*;
-import static com.novoda.github.reports.data.model.PullRequestStatsUser.UserType.FILTER;
 
 public class PullRequestStatsConverter {
 
@@ -48,25 +46,20 @@ public class PullRequestStatsConverter {
                 .findFirst()
                 .orElse(NO_AVERAGE_USER);
         PullRequestStatsUser teamAverage = usersList.stream()
-                .filter(user -> Objects.equals(user.id(), USER_TEAM_ID))
+                .filter(user -> Objects.equals(user.id(), USER_ORGANISATION_ID))
                 .findFirst()
                 .orElse(NO_AVERAGE_USER);
         PullRequestStatsUser assignedAverage = usersList.stream()
                 .filter(user -> Objects.equals(user.id(), USER_ASSIGNED_ID))
                 .findFirst()
-                .orElse(NO_AVERAGE_USER);
-        PullRequestStatsUser filterAverage = usersList.stream()
-                .filter(user -> Objects.equals(user.id(), USER_FILTER_ID))
-                .findFirst()
-                .orElse(NO_AVERAGE_USER);
+                .orElse(NO_AVERAGE_USER);;
 
         return PullRequestStatsGroup.builder()
                 .name(groupName)
                 .users(users)
                 .externalAverage(externalAverage)
-                .teamAverage(teamAverage)
+                .organisationAverage(teamAverage)
                 .assignedAverage(assignedAverage)
-                .filterAverage(filterAverage)
                 .build();
 
     }
@@ -92,14 +85,11 @@ public class PullRequestStatsConverter {
         if (USER_EXTERNAL.equals(userType)) {
             return PullRequestStatsUser.UserType.EXTERNAL;
         }
-        if (USER_TEAM.equals(userType)) {
-            return PullRequestStatsUser.UserType.TEAM;
+        if (USER_ORGANISATION.equals(userType)) {
+            return PullRequestStatsUser.UserType.ORGANISATION;
         }
         if (USER_ASSIGNED.equals(userType)) {
             return PullRequestStatsUser.UserType.ASSIGNED;
-        }
-        if (USER_FILTER.equals(userType)) {
-            return FILTER;
         }
 
         throw new IllegalArgumentException(String.format("No such user type \"%s\".", userType));
