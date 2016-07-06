@@ -1,21 +1,15 @@
 package com.novoda.floatschedule;
 
-import com.novoda.floatschedule.reader.ProjectsReader;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.novoda.github.reports.reader.ProjectsReader;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.verification.VerificationModeFactory;
-
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+
+import java.util.*;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
