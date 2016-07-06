@@ -53,7 +53,6 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
                                      List<String> repositories,
                                      List<String> organisationUsers,
                                      List<String> assignedUsers,
-                                     List<String> filterUsers,
                                      PullRequestStatsGroupBy groupBy,
                                      boolean withAverage)
             throws DataLayerException {
@@ -69,7 +68,6 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
                     repositories,
                     organisationUsers,
                     assignedUsers,
-                    filterUsers,
                     groupBy,
                     withAverage
             );

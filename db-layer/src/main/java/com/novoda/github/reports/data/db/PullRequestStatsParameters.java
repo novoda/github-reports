@@ -24,7 +24,6 @@ public class PullRequestStatsParameters {
     private final Set<String> repositories;
     private final Set<String> organisationUsers;
     private final Set<String> assignedUsers;
-    private final Set<String> filterUsers;
     private final EventDataLayer.PullRequestStatsGroupBy groupBy;
     private final boolean withAverage;
 
@@ -34,7 +33,6 @@ public class PullRequestStatsParameters {
                                       List<String> repositories,
                                       List<String> organisationUsers,
                                       List<String> assignedUsers,
-                                      List<String> filterUsers,
                                       EventDataLayer.PullRequestStatsGroupBy groupBy,
                                       boolean withAverage) {
 
@@ -45,7 +43,6 @@ public class PullRequestStatsParameters {
                 listToSet(repositories),
                 listToSet(organisationUsers),
                 listToSet(assignedUsers),
-                listToSet(filterUsers),
                 groupBy,
                 withAverage
         );
@@ -65,7 +62,6 @@ public class PullRequestStatsParameters {
                 to,
                 listToSet(repositories),
                 listToSet(organisationUsers),
-                Collections.emptySet(),
                 Collections.emptySet(),
                 groupBy,
                 withAverage
@@ -87,7 +83,6 @@ public class PullRequestStatsParameters {
                                        Set<String> repositories,
                                        Set<String> organisationUsers,
                                        Set<String> assignedUsers,
-                                       Set<String> filterUsers,
                                        EventDataLayer.PullRequestStatsGroupBy groupBy,
                                        boolean withAverage) {
 
@@ -97,7 +92,6 @@ public class PullRequestStatsParameters {
         this.repositories = repositories;
         this.organisationUsers = organisationUsers;
         this.assignedUsers = assignedUsers;
-        this.filterUsers = filterUsers;
         this.groupBy = groupBy;
         this.withAverage = withAverage;
     }
@@ -122,28 +116,8 @@ public class PullRequestStatsParameters {
         return organisationUsers;
     }
 
-    public boolean hasOrganisationUsers() {
-        return isSetWithValues(organisationUsers);
-    }
-
-    private boolean isSetWithValues(Set set) {
-        return !(set == null || set.isEmpty());
-    }
-
     public Set<String> getAssignedUsers() {
         return assignedUsers;
-    }
-
-    public boolean hasAssignedUsers() {
-        return isSetWithValues(assignedUsers);
-    }
-
-    public Set<String> getFilterUsers() {
-        return filterUsers;
-    }
-
-    public boolean hasFilterUsers() {
-        return isSetWithValues(filterUsers);
     }
 
     public EventDataLayer.PullRequestStatsGroupBy getGroupBy() {

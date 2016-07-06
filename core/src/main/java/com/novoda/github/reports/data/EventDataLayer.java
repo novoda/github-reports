@@ -13,7 +13,6 @@ public interface EventDataLayer extends DataLayer<Event> {
                               List<String> repositories,
                               List<String> organisationUsers,
                               List<String> assignedUsers,
-                              List<String> filterUsers,
                               PullRequestStatsGroupBy groupBy,
                               boolean withAverage) throws DataLayerException;
 
