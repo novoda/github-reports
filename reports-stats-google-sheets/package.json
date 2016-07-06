@@ -4,9 +4,9 @@
   "description": "Execute Github Reports statistics on Google Sheets.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test",
+    "upload": "gulp upload"
   },
-  "author": "",
   "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
     "gulp": "^3.9.1",
