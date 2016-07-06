@@ -1,0 +1,12 @@
+{
+  "globals": {
+    "Http": true,
+    "Reports": true,
+    "Sheet": true,
+    "Geometry": true,
+    "Main": true,
+    "UrlFetchApp": true,
+    "SpreadsheetApp": true,
+    "Logger": true
+  }
+}
