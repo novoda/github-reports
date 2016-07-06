@@ -5,18 +5,12 @@ import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.db.tables.records.RepositoryRecord;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
 import com.novoda.github.reports.data.model.Repository;
+import org.jooq.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
-
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.InsertOnDuplicateSetMoreStep;
-import org.jooq.Record1;
-import org.jooq.Record2;
-import org.jooq.Result;
-import org.jooq.Select;
+import java.util.List;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
@@ -85,6 +79,32 @@ public class DbRepoDataLayer extends DbDataLayer<Repository, RepositoryRecord> i
                 .on(EVENT_REPOSITORY_JOIN_ON_CONDITION)
                 .where(betweenCondition)
                 .and(repoCondition);
+    }
+
+    @Override
+    public List<Repository> getRepositories() throws DataLayerException {
+        Connection connection = null;
+        Result<Record3<Long, String, Byte>> repos;
+
+        try {
+            connection = getNewConnection();
+            DSLContext create = getNewDSLContext(connection);
+            repos = create
+                    .select(REPOSITORY._ID, REPOSITORY.NAME, REPOSITORY.PRIVATE)
+                    .from(REPOSITORY)
+                    .orderBy(REPOSITORY.NAME)
+                    .fetch();
+        } catch (SQLException e) {
+            throw new DataLayerException(e);
+        } finally {
+            attemptCloseConnection(connection);
+        }
+
+        return recordsToRepos(repos);
+    }
+
+    private List<Repository> recordsToRepos(Result<Record3<Long, String, Byte>> repos) {
+        return repos.map(repo -> Repository.create(repo.value1(), repo.value2(), byteToBool(repo.value3())));
     }
 
 }
