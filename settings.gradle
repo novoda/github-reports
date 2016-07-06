@@ -23,6 +23,6 @@ include ':batch-aws-lambda'
 // batch CLI
 include ':reports-batch'
 
-// query CLI
+// query interfaces
 include ':reports-stats'
-
+include ':reports-stats-google-sheets'
