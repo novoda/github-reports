@@ -75,7 +75,7 @@ public class DbEventUserQueryBuilder {
 
     SelectConditionStep<Record3<Long, String, String>> getExternalUsers() {
 
-        Set<String> usernameNotInSet = mergeSets(parameters.getOrganisationUsers(), parameters.getAssignedUsers(), parameters.getFilterUsers());
+        Set<String> usernameNotInSet = mergeSets(parameters.getOrganisationUsers(), parameters.getAssignedUsers());
 
         SelectOnConditionStep<Record3<Long, String, String>> select = parameters.getContext()
                 .selectDistinct(USER._ID, USER.USERNAME, USER_TYPE_EXTERNAL)
@@ -103,13 +103,12 @@ public class DbEventUserQueryBuilder {
                 parameters.getContext(),
                 USER_TYPE_ORGANISATION,
                 parameters.getOrganisationUsers(),
-                parameters.getAssignedUsers(),
-                parameters.getFilterUsers()
+                parameters.getAssignedUsers()
         );
     }
 
     SelectConditionStep<Record3<Long, String, String>> getAssignedUsers() {
-        return getUsersWithUsername(parameters.getContext(), USER_TYPE_ASSIGNED, parameters.getAssignedUsers(), parameters.getFilterUsers());
+        return getUsersWithUsername(parameters.getContext(), USER_TYPE_ASSIGNED, parameters.getAssignedUsers());
     }
 
     @SafeVarargs
