@@ -18,7 +18,6 @@ import com.novoda.github.reports.lambda.issue.IssuesServiceClient;
 import com.novoda.github.reports.lambda.pullrequest.ReviewCommentsServiceClient;
 import com.novoda.github.reports.lambda.repository.RepositoriesServiceClient;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
-import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,20 +71,13 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
     }
 
     private void init(Configuration configuration) {
-        GithubCredentialsReader githubCredentialsReader = buildGithubCredentialsReader(configuration);
         DatabaseCredentialsReader databaseCredentialsReader = buildDatabaseCredentialsReader(configuration);
 
-        repositoriesServiceClient = RepositoriesServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
-        issuesServiceClient = IssuesServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
-        eventsServiceClient = EventsServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
-        commentsServiceClient = CommentsServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
-        reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
-    }
-
-    private GithubCredentialsReader buildGithubCredentialsReader(Configuration configuration) {
-        Properties githubProperties = new Properties();
-        githubProperties.setProperty(GithubCredentialsReader.TOKEN_KEY, configuration.githubConfiguration().token());
-        return GithubCredentialsReader.newInstance(githubProperties);
+        repositoriesServiceClient = RepositoriesServiceClient.newInstance(databaseCredentialsReader);
+        issuesServiceClient = IssuesServiceClient.newInstance(databaseCredentialsReader);
+        eventsServiceClient = EventsServiceClient.newInstance(databaseCredentialsReader);
+        commentsServiceClient = CommentsServiceClient.newInstance(databaseCredentialsReader);
+        reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance(databaseCredentialsReader);
     }
 
     private DatabaseCredentialsReader buildDatabaseCredentialsReader(Configuration configuration) {

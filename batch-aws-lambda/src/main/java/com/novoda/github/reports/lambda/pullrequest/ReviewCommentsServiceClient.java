@@ -13,7 +13,6 @@ import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
-import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 import com.novoda.github.reports.service.pullrequest.GithubPullRequestService;
 import com.novoda.github.reports.service.pullrequest.PullRequestService;
 
@@ -37,10 +36,9 @@ public class ReviewCommentsServiceClient {
         return new ReviewCommentsServiceClient(pullRequestService, dateConverter, responseRepositoryIssueEventPersistTransformer);
     }
 
-    public static ReviewCommentsServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
-                                                          DatabaseCredentialsReader databaseCredentialsReader) {
+    public static ReviewCommentsServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
 
-        PullRequestService pullRequestService = GithubPullRequestService.newInstance(githubCredentialsReader);
+        PullRequestService pullRequestService = GithubPullRequestService.newInstance();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
