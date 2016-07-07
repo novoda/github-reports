@@ -10,7 +10,6 @@ import com.novoda.github.reports.service.issue.GithubIssueService;
 import com.novoda.github.reports.service.issue.IssueService;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
-import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 
 import rx.Observable;
 
@@ -32,10 +31,8 @@ public class IssuesServiceClient {
         return new IssuesServiceClient(issueService, dateConverter, responseRepositoryIssuePersistTransformer);
     }
 
-    public static IssuesServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
-                                                  DatabaseCredentialsReader databaseCredentialsReader) {
-
-        IssueService issueService = GithubIssueService.newInstance(githubCredentialsReader);
+    public static IssuesServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
+        IssueService issueService = GithubIssueService.newInstance();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssue> responseRepositoryIssuePersistTransformer =
                 ResponseRepositoryIssuePersistTransformer.newInstance(databaseCredentialsReader);
