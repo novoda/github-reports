@@ -68,10 +68,10 @@ public class DbProjectRepoDataLayerTest {
     public void givenHandledEvents_whenConvertingRecordsToEventStats_thenReturnsProperStats() {
         Result<Record2<Integer, Integer>> events = givenEmptyEvents();
         Record2<Integer, Integer> openedIssuesRecord = buildNewEventRecord(OPENED_ISSUES_ID, 1);
-        Record2<Integer, Integer> openedPrsRecord = buildNewEventRecord(OPENED_PRS_ID, 2);
+        Record2<Integer, Integer> openedPrsRecord = buildNewEventRecord(OPENED_PULL_REQUESTS_ID, 2);
         Record2<Integer, Integer> commentedIssuesRecord = buildNewEventRecord(COMMENTED_ISSUES_ID, 4);
-        Record2<Integer, Integer> commentedPrsRecord = buildNewEventRecord(COMMENTED_PRS_ID, 5);
-        Record2<Integer, Integer> mergedPrsRecord = buildNewEventRecord(MERGED_PRS_ID, 7);
+        Record2<Integer, Integer> commentedPrsRecord = buildNewEventRecord(COMMENTED_PULL_REQUESTS_ID, 5);
+        Record2<Integer, Integer> mergedPrsRecord = buildNewEventRecord(MERGED_PULL_REQUESTS_ID, 7);
         events.addAll(Arrays.asList(
                 openedIssuesRecord,
                 openedPrsRecord,
