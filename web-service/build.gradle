@@ -30,6 +30,7 @@ dependencies {
 
 jar {
     exclude '*.credentials.sample'
+    exclude '*.json.sample'
 }
 
 task zip(type: Zip) {
@@ -43,7 +44,8 @@ task zip(type: Zip) {
 
 // TODO: add more lambdas here
 def lambdasMap = [
-        'GetRepositoriesAction': 'github-reports-repositories-get'
+        'GetRepositoriesAction': 'github-reports-repositories-get',
+        'GetOrganisationUsersAction': 'github-reports-users-organisation-get'
 ]
 
 task uploadActionLambdas(group: 'aws')
