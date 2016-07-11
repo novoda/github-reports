@@ -16,7 +16,7 @@ public class PullRequestStatsParameters {
 
     public static final Field<String> GROUP_SELECTOR_FIELD = field("date_group", String.class);
     private static final String GROUP_SELECTOR_SEPARATOR = "-";
-    private static final String NULL_SELECTOR = null;
+    private static final String ALL_TIME_SELECTOR = "ALL";
 
     private final DSLContext context;
     private final Date from;
@@ -136,7 +136,7 @@ public class PullRequestStatsParameters {
         } else if (groupBy == EventDataLayer.PullRequestStatsGroupBy.WEEK) {
             groupField = groupField.concat(week(EVENT.DATE));
         } else {
-            groupField = val(NULL_SELECTOR);
+            groupField = val(ALL_TIME_SELECTOR);
         }
 
         return groupField.as(GROUP_SELECTOR_FIELD);
