@@ -73,7 +73,7 @@ lambdasMap.each { key, value ->
         zipFile = zip.archivePath
         handler = "com.novoda.github.reports.web.lambda.${key}::handleRequest"
         runtime = Runtime.Java8
-        memorySize = 256
+        memorySize = 512
         timeout = 30
     }
     uploadActionLambdas.dependsOn uploadLambdaTask
