@@ -1,7 +1,6 @@
 package com.novoda.github.reports.service.network;
 
-import java.io.IOException;
-
+import okhttp3.*;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -9,10 +8,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import okhttp3.Interceptor;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.Response;
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -62,6 +58,7 @@ public class RateLimitHandlerInterceptorTest {
                 .code(code)
                 .protocol(ANY_PROTOCOL)
                 .request(ANY_REQUEST)
+                .body(ResponseBody.create(MediaType.parse("application/json"), "[\"banana\", \"apple\"]"))
                 .build();
     }
 
