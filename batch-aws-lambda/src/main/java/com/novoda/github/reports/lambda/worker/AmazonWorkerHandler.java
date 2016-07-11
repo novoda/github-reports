@@ -1,15 +1,11 @@
 package com.novoda.github.reports.lambda.worker;
 
 import com.novoda.github.reports.batch.MessageNotSupportedException;
-import com.novoda.github.reports.batch.aws.queue.AmazonGetCommentsQueueMessage;
-import com.novoda.github.reports.batch.aws.queue.AmazonGetEventsQueueMessage;
-import com.novoda.github.reports.batch.aws.queue.AmazonGetIssuesQueueMessage;
-import com.novoda.github.reports.batch.aws.queue.AmazonGetRepositoriesQueueMessage;
-import com.novoda.github.reports.batch.aws.queue.AmazonGetReviewCommentsQueueMessage;
-import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
+import com.novoda.github.reports.batch.aws.queue.*;
 import com.novoda.github.reports.batch.configuration.Configuration;
 import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
 import com.novoda.github.reports.batch.logger.Logger;
+import com.novoda.github.reports.batch.worker.TemporaryNetworkException;
 import com.novoda.github.reports.batch.worker.WorkerHandler;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.issue.CommentsServiceClient;
@@ -18,12 +14,12 @@ import com.novoda.github.reports.lambda.issue.IssuesServiceClient;
 import com.novoda.github.reports.lambda.pullrequest.ReviewCommentsServiceClient;
 import com.novoda.github.reports.lambda.repository.RepositoriesServiceClient;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
+import rx.Observable;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import rx.Observable;
 
 class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
@@ -41,7 +37,7 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
     @Override
     public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage)
-            throws RateLimitEncounteredException, MessageNotSupportedException {
+            throws RateLimitEncounteredException, MessageNotSupportedException, TemporaryNetworkException {
 
         init(configuration);
 
@@ -90,12 +86,20 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
     }
 
     private ArrayList<AmazonQueueMessage> collectDerivedMessagesFrom(Observable<AmazonQueueMessage> nextMessagesObservable)
-            throws RateLimitEncounteredException {
+            throws RateLimitEncounteredException, TemporaryNetworkException {
 
-        return nextMessagesObservable
-                .collect(ArrayList<AmazonQueueMessage>::new, ArrayList::add)
-                .toBlocking()
-                .first();
+        try {
+            return nextMessagesObservable
+                    .collect(ArrayList<AmazonQueueMessage>::new, ArrayList::add)
+                    .toBlocking()
+                    .first();
+        } catch (RuntimeException exception) {
+            Throwable cause = exception.getCause();
+            if (cause instanceof SocketTimeoutException) {
+                throw new TemporaryNetworkException(cause);
+            }
+            throw exception;
+        }
     }
 
 }

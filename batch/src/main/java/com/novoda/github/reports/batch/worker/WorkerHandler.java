@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface WorkerHandler<M extends QueueMessage> {
 
-    List<M> handleQueueMessage(Configuration configuration, M queueMessage) throws RateLimitEncounteredException, MessageNotSupportedException;
+    List<M> handleQueueMessage(Configuration configuration, M queueMessage)
+            throws RateLimitEncounteredException, MessageNotSupportedException, TemporaryNetworkException;
 
 }
