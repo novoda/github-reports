@@ -25,7 +25,7 @@ public class PullRequestStatsParameters {
     private final Set<String> organisationUsers;
     private final Set<String> assignedUsers;
     private final EventDataLayer.PullRequestStatsGroupBy groupBy;
-    private final boolean withAverage;
+    private final Boolean withAverage;
 
     public PullRequestStatsParameters(DSLContext context,
                                       Date from,
@@ -34,7 +34,7 @@ public class PullRequestStatsParameters {
                                       List<String> organisationUsers,
                                       List<String> assignedUsers,
                                       EventDataLayer.PullRequestStatsGroupBy groupBy,
-                                      boolean withAverage) {
+                                      Boolean withAverage) {
 
         this(
                 context,
@@ -54,7 +54,7 @@ public class PullRequestStatsParameters {
                                       List<String> repositories,
                                       List<String> organisationUsers,
                                       EventDataLayer.PullRequestStatsGroupBy groupBy,
-                                      boolean withAverage) {
+                                      Boolean withAverage) {
 
         this(
                 context,
@@ -84,7 +84,7 @@ public class PullRequestStatsParameters {
                                        Set<String> organisationUsers,
                                        Set<String> assignedUsers,
                                        EventDataLayer.PullRequestStatsGroupBy groupBy,
-                                       boolean withAverage) {
+                                       Boolean withAverage) {
 
         this.context = context;
         this.from = from;
@@ -124,7 +124,7 @@ public class PullRequestStatsParameters {
         return groupBy;
     }
 
-    public boolean isWithAverage() {
+    public Boolean isWithAverage() {
         return withAverage;
     }
 
