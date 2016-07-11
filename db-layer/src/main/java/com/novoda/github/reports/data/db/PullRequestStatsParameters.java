@@ -124,8 +124,8 @@ public class PullRequestStatsParameters {
         return groupBy;
     }
 
-    public Boolean isWithAverage() {
-        return withAverage;
+    public boolean isWithAverage() {
+        return withAverage != null && withAverage;
     }
 
     public Field<String> getGroupFieldForMySQLOnly() {
