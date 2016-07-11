@@ -57,10 +57,10 @@ task zip(type: Zip) {
     exclude '*.sample'
 }
 
-// TODO: add more lambdas here
 def lambdasMap = [
         'GetRepositoriesAction': 'github-reports-repositories-get',
-        'GetOrganisationUsersAction': 'github-reports-users-organisation-get'
+        'GetOrganisationUsersAction': 'github-reports-users-organisation-get',
+        'GetPullRequestStatsAction': 'github-reports-stats-pr-get'
 ]
 
 task uploadActionLambdas(group: 'aws')
