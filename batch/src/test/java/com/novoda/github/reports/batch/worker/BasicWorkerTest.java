@@ -232,7 +232,7 @@ public class BasicWorkerTest {
             MessageConverterException,
             com.novoda.github.reports.batch.MessageNotSupportedException,
             WorkerOperationFailedException,
-            TemporaryNetworkException {
+            RetriableNetworkException {
 
         Queue<QueueMessage> queue = givenAnyQueue();
         when(workerHandler.handleQueueMessage(eq(configuration), any(QueueMessage.class))).thenThrow(Exception.class);
@@ -326,7 +326,7 @@ public class BasicWorkerTest {
     public void givenFailingNetwork_whenDoWork_thenRescheduleImmediately() throws
             EmptyQueueException,
             MessageConverterException,
-            TemporaryNetworkException,
+            RetriableNetworkException,
             MessageNotSupportedException,
             WorkerOperationFailedException,
             WorkerStartException {
@@ -342,7 +342,7 @@ public class BasicWorkerTest {
     public void givenFailingNetwork_whenDoWork_thenDoNotNotifyError() throws
             EmptyQueueException,
             MessageConverterException,
-            TemporaryNetworkException,
+            RetriableNetworkException,
             MessageNotSupportedException,
             WorkerOperationFailedException,
             WorkerStartException,
@@ -355,9 +355,14 @@ public class BasicWorkerTest {
         verifyNoErrorNotified();
     }
 
-    private void givenValidQueueAndFailingNetwork() throws EmptyQueueException, MessageConverterException, MessageNotSupportedException, TemporaryNetworkException {
+    private void givenValidQueueAndFailingNetwork() throws
+            EmptyQueueException,
+            MessageConverterException,
+            MessageNotSupportedException,
+            RetriableNetworkException {
+
         givenAnyQueue();
-        TemporaryNetworkException networkException = new TemporaryNetworkException(new SocketTimeoutException());
+        RetriableNetworkException networkException = new RetriableNetworkException(new SocketTimeoutException());
         when(workerHandler.handleQueueMessage(eq(configuration), any(QueueMessage.class)))
                 .thenThrow(networkException);
     }

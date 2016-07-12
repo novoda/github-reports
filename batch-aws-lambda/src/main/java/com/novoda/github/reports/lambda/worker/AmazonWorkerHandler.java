@@ -5,7 +5,7 @@ import com.novoda.github.reports.batch.aws.queue.*;
 import com.novoda.github.reports.batch.configuration.Configuration;
 import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
 import com.novoda.github.reports.batch.logger.Logger;
-import com.novoda.github.reports.batch.worker.TemporaryNetworkException;
+import com.novoda.github.reports.batch.worker.RetriableNetworkException;
 import com.novoda.github.reports.batch.worker.WorkerHandler;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.issue.CommentsServiceClient;
@@ -37,7 +37,7 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
     @Override
     public List<AmazonQueueMessage> handleQueueMessage(Configuration configuration, AmazonQueueMessage queueMessage)
-            throws RateLimitEncounteredException, MessageNotSupportedException, TemporaryNetworkException {
+            throws RateLimitEncounteredException, MessageNotSupportedException, RetriableNetworkException {
 
         init(configuration);
 
@@ -86,7 +86,7 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
     }
 
     private ArrayList<AmazonQueueMessage> collectDerivedMessagesFrom(Observable<AmazonQueueMessage> nextMessagesObservable)
-            throws RateLimitEncounteredException, TemporaryNetworkException {
+            throws RateLimitEncounteredException, RetriableNetworkException {
 
         try {
             return nextMessagesObservable
@@ -96,7 +96,7 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
         } catch (RuntimeException exception) {
             Throwable cause = exception.getCause();
             if (cause instanceof SocketTimeoutException) {
-                throw new TemporaryNetworkException(cause);
+                throw new RetriableNetworkException(cause);
             }
             throw exception;
         }
