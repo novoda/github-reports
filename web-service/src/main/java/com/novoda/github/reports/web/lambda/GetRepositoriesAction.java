@@ -22,7 +22,11 @@ public class GetRepositoriesAction implements RequestHandler<Void, List<String>>
     @Override
     public List<String> handleRequest(Void input, Context context) {
         try {
-            return repoDataLayer.getRepositories().stream().map(Repository::name).collect(Collectors.toList());
+            return repoDataLayer
+                    .getRepositories()
+                    .stream()
+                    .map(Repository::name)
+                    .collect(Collectors.toList());
         } catch (DataLayerException e) {
             throw new RuntimeException(e);
         }

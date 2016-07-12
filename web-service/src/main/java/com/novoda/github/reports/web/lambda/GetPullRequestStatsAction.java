@@ -37,7 +37,11 @@ public class GetPullRequestStatsAction implements RequestStreamHandler {
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
         Reader reader = new InputStreamReader(input);
         GetPullRequestStatsRequest request = gson.fromJson(reader, GetPullRequestStatsRequest.class);
-        List<String> users = userServiceClient.getAllGithubUsers().toList().toBlocking().first();
+        List<String> users = userServiceClient
+                .getAllGithubUsers()
+                .toList()
+                .toBlocking()
+                .first();
 
         try {
             PullRequestStats organisationStats = eventDataLayer.getOrganisationStats(
