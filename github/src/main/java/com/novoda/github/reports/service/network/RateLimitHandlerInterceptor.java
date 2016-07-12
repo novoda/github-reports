@@ -1,11 +1,11 @@
 package com.novoda.github.reports.service.network;
 
-import java.io.IOException;
-import java.util.Date;
-
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import java.io.IOException;
+import java.util.Date;
 
 class RateLimitHandlerInterceptor implements Interceptor {
 
@@ -35,6 +35,7 @@ class RateLimitHandlerInterceptor implements Interceptor {
         if (response.code() == HTTP_STATUS_CODE_UNAUTHORIZED && remainingCount <= 0) {
             long resetTime = rateLimitResetRepository.getNextResetTime();
             Date resetDate = new Date(resetTime);
+            response.close();
             throw new RateLimitEncounteredException("Rate limit encountered, retry at " + resetDate.toString(), resetDate);
         }
 
