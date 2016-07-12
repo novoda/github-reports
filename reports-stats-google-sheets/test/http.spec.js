@@ -68,10 +68,10 @@ describe('Http', function() {
 
     it('should add a string array to the url', function() {
       var result = http.getUrlWithQuery(anyUrl, {
-        someStringArray: ['see', 'you', 'in', 'another', 'life', 'brother']
+        someStringArray: ['see', 'you', 'in', 'another', 'life', 'brotha']
       });
 
-      var expected = anyUrl + '?someStringArray=["see","you","in","another","life","brother"]';
+      var expected = anyUrl + '?someStringArray=["see","you","in","another","life","brotha"]';
       expect(result).toEqual(expected);
     });
 
