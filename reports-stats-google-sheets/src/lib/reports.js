@@ -3,7 +3,7 @@
 /* exported Reports */
 function Reports(http) {
 
-  var API_BASE = 'http://private-96ce1-githubreportsapi.apiary-mock.com/';
+  var API_BASE = 'https://t6lqw400oe.execute-api.us-east-1.amazonaws.com/api/';
   var API_REPOS = 'repositories';
   var API_STATS_PR = 'stats/pr';
 
