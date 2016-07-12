@@ -34,7 +34,9 @@ function Main(reports, geometry, dataSheet, inputSheet, statsSheet) {
     var userToLine = userToLineFn(group);
     var lines = group.users.map(userToLine);
 
-    lines.push(userToLine(group.organisationAverage));
+    if (group.organisationAverage) {
+      lines.push(userToLine(group.organisationAverage));
+    }
 
     return lines;
   }
