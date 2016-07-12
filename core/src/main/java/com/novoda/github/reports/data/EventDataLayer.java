@@ -14,14 +14,14 @@ public interface EventDataLayer extends DataLayer<Event> {
                               List<String> organisationUsers,
                               List<String> assignedUsers,
                               PullRequestStatsGroupBy groupBy,
-                              boolean withAverage) throws DataLayerException;
+                              Boolean withAverage) throws DataLayerException;
 
     PullRequestStats getOrganisationStats(Date from,
                                           Date to,
                                           List<String> repositories,
                                           List<String> organisationUsers,
                                           PullRequestStatsGroupBy groupBy,
-                                          boolean withAverage) throws DataLayerException;
+                                          Boolean withAverage) throws DataLayerException;
 
     enum PullRequestStatsGroupBy {
         NONE,
