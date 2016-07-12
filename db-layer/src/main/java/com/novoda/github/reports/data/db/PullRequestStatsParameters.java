@@ -132,9 +132,12 @@ public class PullRequestStatsParameters {
         Field<String> groupField = year(EVENT.DATE).concat(GROUP_SELECTOR_SEPARATOR);
 
         if (groupBy == EventDataLayer.PullRequestStatsGroupBy.MONTH) {
-            groupField = groupField.concat(month(EVENT.DATE));
+            Field<String> month = cast(month(EVENT.DATE), String.class);
+            Field<String> paddedMonth = leftPad(month);
+            groupField = groupField.concat(paddedMonth);
         } else if (groupBy == EventDataLayer.PullRequestStatsGroupBy.WEEK) {
-            groupField = groupField.concat(week(EVENT.DATE));
+            Field<String> paddedWeek = leftPad(week(EVENT.DATE));
+            groupField = groupField.concat(paddedWeek);
         } else {
             groupField = val(ALL_TIME_SELECTOR);
         }
@@ -151,5 +154,9 @@ public class PullRequestStatsParameters {
      */
     private Field<String> week(TableField<EventRecord, Timestamp> date) {
         return field("DATE_FORMAT({0}, \"%v\")", String.class, date);
+    }
+
+    private Field<String> leftPad(Field<String> field) {
+        return lpad(field, 2, "0");
     }
 }
