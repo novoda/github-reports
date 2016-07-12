@@ -22,6 +22,7 @@ dependencies {
     compileOnly 'com.google.auto.value:auto-value:1.2'
     apt 'com.google.auto.value:auto-value:1.2'
 
+    compile 'io.reactivex:rxjava:1.1.5'
     compile 'org.jetbrains:annotations:15.0'
     compile 'com.google.code.gson:gson:2.7'
 
@@ -31,4 +32,5 @@ dependencies {
 
 jar {
     exclude '*.json'
+    exclude '*.json.sample'
 }
