@@ -150,6 +150,6 @@ public class PullRequestStatsParameters {
      * @return A {@link String} representing the week number of the date field.
      */
     private Field<String> week(TableField<EventRecord, Timestamp> date) {
-        return field("DATE_FORMAT({0}, \"%Y" + GROUP_SELECTOR_SEPARATOR + "%v\")", String.class, date);
+        return field("DATE_FORMAT({0}, \"%v\")", String.class, date);
     }
 }
