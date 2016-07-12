@@ -1,21 +1,14 @@
-package com.novoda.floatschedule;
-
-import com.novoda.floatschedule.reader.ProjectsReader;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package com.novoda.github.reports.reader;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.verification.VerificationModeFactory;
-
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+
+import java.util.*;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,10 +33,10 @@ public class ProjectsServiceClientTest {
     }
 
     @Test
-    public void givenThereIsContent_whenGettingAllTheFloatProjectNames_thenTheyAreEmitted() throws Exception {
+    public void givenThereIsContent_whenGettingAllTheProjectNames_thenTheyAreEmitted() throws Exception {
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        projectsServiceClient.getAllFloatProjectNames()
+        projectsServiceClient.getAllProjectNames()
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
@@ -51,25 +44,25 @@ public class ProjectsServiceClientTest {
     }
 
     @Test
-    public void givenThereIsNoContent_whenGettingAllTheFloatProjectNames_thenTheContentIsRead() throws Exception {
+    public void givenThereIsNoContent_whenGettingAllTheProjectNames_thenTheContentIsRead() throws Exception {
         when(mockProjectsReader.hasContent()).thenReturn(false);
 
-        projectsServiceClient.getAllFloatProjectNames();
+        projectsServiceClient.getAllProjectNames();
 
         verify(mockProjectsReader).read();
     }
 
     @Test
-    public void givenThereIsContent_whenGettingAllTheFloatProjectNames_thenTheContentIsNotReadAgain() throws Exception {
+    public void givenThereIsContent_whenGettingAllTheProjectNames_thenTheContentIsNotReadAgain() throws Exception {
         when(mockProjectsReader.hasContent()).thenReturn(true);
 
-        projectsServiceClient.getAllFloatProjectNames();
+        projectsServiceClient.getAllProjectNames();
 
         verify(mockProjectsReader, VerificationModeFactory.times(0)).read();
     }
 
     @Test
-    public void givenThereIsContent_whenGettingRepositoryNamesForFloatProjects_thenTheNamesAreEmitted() throws Exception {
+    public void givenThereIsContent_whenGettingRepositoryNamesForProjects_thenTheNamesAreEmitted() throws Exception {
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         projectsServiceClient.getAllGithubRepositoryNames(Collections.singletonList("trabalho"))
@@ -80,7 +73,7 @@ public class ProjectsServiceClientTest {
     }
 
     @Test
-    public void givenThereIsContent_whenGettingRepositoryNamesForFloatProjects_thenTheNamesAreEmittedWithoutDuplicates() throws Exception {
+    public void givenThereIsContent_whenGettingRepositoryNamesForProjects_thenTheNamesAreEmittedWithoutDuplicates() throws Exception {
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         projectsServiceClient.getAllGithubRepositoryNames(Arrays.asList("projecto", "empreendimento"))
@@ -91,7 +84,7 @@ public class ProjectsServiceClientTest {
     }
 
     @Test
-    public void givenThereIsNoContent_whenGettingRepositoryNamesForFloatProjects_thenTheContentIsRead() throws Exception {
+    public void givenThereIsNoContent_whenGettingRepositoryNamesForProjects_thenTheContentIsRead() throws Exception {
         when(mockProjectsReader.hasContent()).thenReturn(false);
 
         projectsServiceClient.getAllGithubRepositoryNames(Collections.singletonList("empreendimento"));
@@ -100,7 +93,7 @@ public class ProjectsServiceClientTest {
     }
 
     @Test
-    public void givenThereIsNoContent_whenGettingRepositoryNamesForFloatProjects_thenTheContentIsNotReadAgain() throws Exception {
+    public void givenThereIsNoContent_whenGettingRepositoryNamesForProjects_thenTheContentIsNotReadAgain() throws Exception {
         when(mockProjectsReader.hasContent()).thenReturn(true);
 
         projectsServiceClient.getAllGithubRepositoryNames(Collections.singletonList("empreendimento"));

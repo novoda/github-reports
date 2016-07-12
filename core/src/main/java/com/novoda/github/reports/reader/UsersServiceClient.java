@@ -1,20 +1,22 @@
-package com.novoda.floatschedule;
-
-import com.novoda.floatschedule.reader.UsersReader;
-
-import java.io.IOException;
+package com.novoda.github.reports.reader;
 
 import rx.Observable;
 
-class UsersServiceClient {
+import java.io.IOException;
+
+public class UsersServiceClient {
 
     private final UsersReader usersReader;
 
-    UsersServiceClient(UsersReader usersReader) {
+    public static UsersServiceClient newInstance() {
+        return new UsersServiceClient(UsersReader.newInstance());
+    }
+
+    private UsersServiceClient(UsersReader usersReader) {
         this.usersReader = usersReader;
     }
 
-    Observable<String> getAllGithubUsers() {
+    public Observable<String> getAllGithubUsers() {
         try {
             readIfNeeded();
             return Observable.from(usersReader.getContent().values());

@@ -1,11 +1,11 @@
-package com.novoda.floatschedule.reader;
-
-import java.util.HashMap;
-import java.util.Map;
+package com.novoda.github.reports.reader;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;

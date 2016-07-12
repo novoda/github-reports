@@ -119,6 +119,8 @@ public class BasicWorker<
             handleRateLimitEncounteredException(configuration, rateLimitError);
         } catch (QueueOperationFailedException queueOperationFail) {
             handleQueueOperationFailedException(configuration, queueOperationFail);
+        } catch (RetriableNetworkException networkOperationFail) {
+            handleNetworkOperationFailedException(configuration, networkOperationFail);
         } catch (Throwable anyOtherError) {
             handleAnyOtherException(configuration, anyOtherError);
         }
@@ -206,6 +208,14 @@ public class BasicWorker<
         logger.error("A queue operation failed:\n%s", e);
 
         notifyError(configuration, e);
+        rescheduleImmediately(configuration);
+    }
+
+    private void handleNetworkOperationFailedException(C configuration, RetriableNetworkException e)
+            throws WorkerStartException, NotifierOperationFailedException {
+
+        logger.warn("A network operation failed:\n%s", e);
+
         rescheduleImmediately(configuration);
     }
 

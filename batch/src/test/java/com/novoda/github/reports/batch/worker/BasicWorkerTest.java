@@ -1,5 +1,6 @@
 package com.novoda.github.reports.batch.worker;
 
+import com.novoda.github.reports.batch.MessageNotSupportedException;
 import com.novoda.github.reports.batch.alarm.Alarm;
 import com.novoda.github.reports.batch.alarm.AlarmService;
 import com.novoda.github.reports.batch.configuration.Configuration;
@@ -8,23 +9,18 @@ import com.novoda.github.reports.batch.logger.Logger;
 import com.novoda.github.reports.batch.notifier.Notifier;
 import com.novoda.github.reports.batch.notifier.NotifierOperationFailedException;
 import com.novoda.github.reports.batch.notifier.NotifierService;
-import com.novoda.github.reports.batch.queue.EmptyQueueException;
-import com.novoda.github.reports.batch.queue.MessageConverterException;
-import com.novoda.github.reports.batch.queue.Queue;
-import com.novoda.github.reports.batch.queue.QueueMessage;
-import com.novoda.github.reports.batch.queue.QueueOperationFailedException;
-import com.novoda.github.reports.batch.queue.QueueService;
+import com.novoda.github.reports.batch.queue.*;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
 import com.novoda.github.reports.util.SystemClock;
-
-import java.time.Instant;
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.net.SocketTimeoutException;
+import java.time.Instant;
+import java.util.Date;
 
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Matchers.any;
@@ -231,10 +227,12 @@ public class BasicWorkerTest {
         verifyNoRescheduleImmediately();
     }
 
-    private Queue<QueueMessage> givenAnyQueueAndErroringWorkerHandler_whenDoWork() throws EmptyQueueException,
+    private Queue<QueueMessage> givenAnyQueueAndErroringWorkerHandler_whenDoWork() throws
+            EmptyQueueException,
             MessageConverterException,
             com.novoda.github.reports.batch.MessageNotSupportedException,
-            WorkerOperationFailedException {
+            WorkerOperationFailedException,
+            RetriableNetworkException {
 
         Queue<QueueMessage> queue = givenAnyQueue();
         when(workerHandler.handleQueueMessage(eq(configuration), any(QueueMessage.class))).thenThrow(Exception.class);
@@ -322,6 +320,51 @@ public class BasicWorkerTest {
         doThrow(WorkerStartException.class).when(workerService).startWorker(any());
 
         worker.doWork(configuration);
+    }
+
+    @Test
+    public void givenFailingNetwork_whenDoWork_thenRescheduleImmediately() throws
+            EmptyQueueException,
+            MessageConverterException,
+            RetriableNetworkException,
+            MessageNotSupportedException,
+            WorkerOperationFailedException,
+            WorkerStartException {
+
+        givenValidQueueAndFailingNetwork();
+
+        worker.doWork(configuration);
+
+        verifyRescheduleImmediately();
+    }
+
+    @Test
+    public void givenFailingNetwork_whenDoWork_thenDoNotNotifyError() throws
+            EmptyQueueException,
+            MessageConverterException,
+            RetriableNetworkException,
+            MessageNotSupportedException,
+            WorkerOperationFailedException,
+            WorkerStartException,
+            NotifierOperationFailedException {
+
+        givenValidQueueAndFailingNetwork();
+
+        worker.doWork(configuration);
+
+        verifyNoErrorNotified();
+    }
+
+    private void givenValidQueueAndFailingNetwork() throws
+            EmptyQueueException,
+            MessageConverterException,
+            MessageNotSupportedException,
+            RetriableNetworkException {
+
+        givenAnyQueue();
+        RetriableNetworkException networkException = new RetriableNetworkException(new SocketTimeoutException());
+        when(workerHandler.handleQueueMessage(eq(configuration), any(QueueMessage.class)))
+                .thenThrow(networkException);
     }
 
     @Test
