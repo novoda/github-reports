@@ -28,7 +28,10 @@ To build and deploy all lambdas, run the `uploadActionLambdas` Gradle task.
 
 #### Create REST API
 
-To create the REST API, launch the following:
+You can create the REST API with the [AWS Web UI](https://console.aws.amazon.com/apigateway), by adding resources and
+methods manually, or you can do it with the AWS CLI.
+
+To create the REST API with the AWS CLI, launch the following:
 
 ```shell
 aws apigateway create-rest-api --name "Github Reports API"
