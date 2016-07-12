@@ -11,7 +11,10 @@ function Sheet(name, geometry) {
 
   Sheet.prototype.getValueAsDate = function(row, col) {
     var date = this.getValue(row, col);
-    return date.toISOString();
+    if (date instanceof Date) {
+      return date.toISOString();
+    }                     
+    return null;
   };
 
   Sheet.prototype.getColumnValues = function(startRow, col) {
