@@ -20,6 +20,9 @@ include ':batch'
 include ':batch-aws'
 include ':batch-aws-lambda'
 
+// Web Service for AWS Lambda / Gateway
+include ':web-service'
+
 // batch CLI
 include ':reports-batch'
 
