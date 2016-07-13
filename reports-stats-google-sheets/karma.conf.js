@@ -16,6 +16,7 @@ module.exports = function(config) {
     files: [
       'src/lib/**/*.js',
       'test/**/*.js',
+      'bower_components/es6-promise/promise.js',
       'node_modules/lodash/lodash.js'
     ],
 

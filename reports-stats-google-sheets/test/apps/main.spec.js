@@ -15,6 +15,10 @@ describe('Main', function() {
     main = new Main(mockReports, mockGeometry, mockDataSheet, mockInputSheet, mockStatsSheet);
   });
 
+  var spyOnAndReturnPromise = function(object, methodName, resolvedValue) {
+    spyOn(object, methodName).and.returnValue(Promise.resolve(resolvedValue));
+  };
+
   describe('PR stats', function() {
 
     beforeEach(function() {
@@ -60,41 +64,47 @@ describe('Main', function() {
       };
 
       var statsFromHttp = {groups: [group1, group2]};
-      spyOn(mockReports, 'getPrStats').and.returnValue(statsFromHttp);
+      spyOnAndReturnPromise(mockReports, 'getPrStats', statsFromHttp);
     });
 
     describe('getPrStats', function() {
 
-      it('should get the stats from the reports library', function() {
-        main.getPrStats();
+      it('should get the stats from the reports library', function(done) {
+        main.getPrStats().then(done);
 
         expect(mockReports.getPrStats).toHaveBeenCalled();
       });
 
-      it('should transform each group into an array', function() {
-        var actual = main.getPrStats();
-
-        expect(actual.length).toBe(2);
-        expect(actual[0] instanceof Array).toBe(true);
-        expect(actual[1] instanceof Array).toBe(true);
+      it('should transform each group into an array', function(done) {
+        main.getPrStats()
+          .then(function(actual) {
+            expect(actual.length).toBe(2);
+            expect(actual[0] instanceof Array).toBe(true);
+            expect(actual[1] instanceof Array).toBe(true);
+          })
+          .then(done);
       });
 
-      it('should transform each group into an array with the right number of elements', function() {
-        var actual = main.getPrStats();
-
-        expect(actual[0].length).toBe(6);
-        expect(actual[1].length).toBe(3);
+      it('should transform each group into an array with the right number of elements', function(done) {
+        main.getPrStats()
+          .then(function(actual) {
+            expect(actual[0].length).toBe(6);
+            expect(actual[1].length).toBe(3);
+          })
+          .then(done);
       });
 
-      it('should transform each group into an array of arrays having the same first element', function() {
-        var actual = main.getPrStats();
-
-        actual[0].forEach(function(user) {
-          expect(user[0]).toBe('2016-05');
-        });
-        actual[1].forEach(function(user) {
-          expect(user[0]).toBe('2016-06');
-        });
+      it('should transform each group into an array of arrays having the same first element', function(done) {
+        return main.getPrStats()
+          .then(function(actual) {
+            actual[0].forEach(function(user) {
+              expect(user[0]).toBe('2016-05');
+            });
+            actual[1].forEach(function(user) {
+              expect(user[0]).toBe('2016-06');
+            });
+          })
+          .then(done);
       });
 
     });
@@ -133,7 +143,7 @@ describe('Main', function() {
           throw new Error('Unexpected range in getColumnValues');
         });
 
-        spyOn(main, 'getPrStats');
+        spyOnAndReturnPromise(main, 'getPrStats', []);
         main.updatePrStats();
 
         expect(main.getPrStats).toHaveBeenCalledWith(
@@ -141,16 +151,20 @@ describe('Main', function() {
         );
       });
 
-      it('should clear the stats sheet', function() {
-        main.updatePrStats();
-
-        expect(mockStatsSheet.clear).toHaveBeenCalled();
+      it('should clear the stats sheet', function(done) {
+        main.updatePrStats()
+          .then(function() {
+            expect(mockStatsSheet.clear).toHaveBeenCalled();
+          })
+          .then(done);
       });
 
-      it('should flatten the results from getPrStats and set them into the stats sheet', function() {
-        main.updatePrStats();
-
-        expect(mockStatsSheet.setValues).toHaveBeenCalledWith(1, 1, 9, 11, jasmine.any(Array));
+      it('should flatten the results from getPrStats and set them into the stats sheet', function(done) {
+        main.updatePrStats()
+          .then(function() {
+            expect(mockStatsSheet.setValues).toHaveBeenCalledWith(1, 1, 9, 11, jasmine.any(Array));
+          })
+          .then(done);
       });
 
     });
@@ -160,20 +174,22 @@ describe('Main', function() {
   describe('updateAll', function() {
 
     beforeEach(function() {
-      spyOn(mockReports, 'getRepositories').and.returnValue([]);
+      spyOnAndReturnPromise(mockReports, 'getRepositories', []);
     });
 
-    it('should call all the relevant endpoints', function() {
-      main.updateAll();
+    it('should call all the relevant endpoints', function(done) {
+      main.updateAll().then(done);
 
       expect(mockReports.getRepositories).toHaveBeenCalled();
     });
 
-    it('should set returned data in the data sheet', function() {
-      main.updateAll();
-
-      expect(mockDataSheet.setValues).toHaveBeenCalledTimes(1);
-      expect(mockDataSheet.setValues).toHaveBeenCalledWith(2, 1, 0, 1, []);
+    it('should set returned data in the data sheet', function(done) {
+      main.updateAll()
+        .then(function() {
+          expect(mockDataSheet.setValues).toHaveBeenCalledTimes(1);
+          expect(mockDataSheet.setValues).toHaveBeenCalledWith(2, 1, 0, 1, []);
+        })
+        .then(done);
     });
 
   });
