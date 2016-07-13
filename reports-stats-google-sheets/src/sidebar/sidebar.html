@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.6.1/chosen.min.css">
+    <style type="text/css">
+        form {
+            padding: 10px;
+        }
+
+        div.control-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        div.control-group.row {
+            flex-direction: row;
+        }
+
+        div.control-group > label {
+            font-weight: bold;
+        }
+
+        .large {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<form>
+    <div class="control-group">
+        <label for="date-from">From date</label>
+        <input type="date" id="date-from" class="large">
+    </div>
+    <div class="control-group">
+        <label for="date-to">To date</label>
+        <input type="date" id="date-to" class="large">
+    </div>
+    <div class="control-group">
+        <label for="select-repos">Repositories</label>
+        <select multiple id="select-repos" class="large" data-placeholder="Repositories to filter on">
+            <option>github-reports</option>
+            <option>all-4</option>
+            <option>merlin</option>
+        </select>
+    </div>
+    <div class="control-group">
+        <label for="select-group-by">Group by</label>
+        <select id="select-group-by" class="large">
+            <option value="NONE">None</option>
+            <option value="MONTH">Month</option>
+            <option value="WEEK">Week</option>
+        </select>
+    </div>
+    <div class="control-group row">
+        <input type="checkbox" id="check-with-average">
+        <label for="check-with-average" class="large">With average</label>
+    </div>
+
+    <div class="control-group row">
+        <input type="submit" id="get-pr-stats" value="Get PR stats!" class="action large">
+    </div>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.6.1/chosen.jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(function() {
+        function initRepositoriesSelect() {
+            $('#select-repos').chosen();
+            // TODO: fetch repositories
+        }
+
+        function initGetPrStatsButton() {
+            $('#get-pr-stats').on('click', function(event) {
+                event.preventDefault();
+                getPrStats();
+            });
+        }
+
+        function getPrStats() {
+            // TODO: start search
+        }
+
+        initRepositoriesSelect();
+        initGetPrStatsButton();
+    });
+</script>
+</body>
+</html>
