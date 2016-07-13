@@ -42,7 +42,8 @@ For the first time, you need to create a Google Apps Script project:
    to download the credentials JSON
 5. Authenticate `gapps` following the [provided instructions](https://github.com/danthareja/node-google-apps-script#2-authenticate-gapps)
    using the credentials JSON you just downloaded
-6. Initialize the project using the ID of the Google Apps Script project we found at step 3
+6. Initialize the project using the ID of the Google Apps Script project we found at step 3 and the `-s` parameter set
+   to the `build` directory
    ([detailed instructions here](https://github.com/danthareja/node-google-apps-script#31-an-existing-apps-script-project))
 
 Now you're ready to develop on this project!
@@ -54,7 +55,8 @@ The available Gulp tasks are:
 * `karma`, runs all the tests (specs) in the codebase using PhantomJS (you can re-configure it for any other browser)
   and generates code coverage as an HTML website and as a Cobertura XML file
 * `test`, runs `lint` and `karma` in parallel
-* `upload`, executes the tests and then uploads the new project files to Google Drive
+* `build`, executes the tests and builds the uploadable project
+* `upload`, builds the project and then uploads it to Google Drive
 
 For example, to run the tests, execute the following in your command line:
 
