@@ -9,6 +9,8 @@
     "SpreadsheetApp": true,
     "Logger": true,
     "HtmlService": true,
-    "DocumentApp": true
+    "DocumentApp": true,
+    "Promise": true,
+    "Utilities": true
   }
 }
