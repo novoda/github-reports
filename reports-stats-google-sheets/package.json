@@ -9,6 +9,7 @@
   },
   "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
+    "bower": "^1.7.9",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.2",
     "gulp-eslint": "^3.0.1",
