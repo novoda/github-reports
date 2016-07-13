@@ -19,4 +19,14 @@ $(function() {
 
   initRepositoriesSelect();
   initGetPrStatsButton();
+
+  var queryStringifier = new QueryStringifier();
+  var http = new WebHttp(queryStringifier);
+  var reports = new Reports(http);
+
+  reports.getRepositories()
+    .then(function(data) {
+      console.log(data);
+    });
+
 });
