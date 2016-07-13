@@ -25,8 +25,8 @@ $(function() {
   var reports = new Reports(http);
 
   reports.getRepositories()
-    .then(function(data) {
-      console.log(data);
+    .then(function() {
+      // TODO: do stuff here
     });
 
 });
