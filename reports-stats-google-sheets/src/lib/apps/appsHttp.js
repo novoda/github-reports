@@ -7,7 +7,7 @@ function AppsHttp() {
     var encodedUrl = encodeURI(this.getUrlWithQuery(url, query));
     var response = UrlFetchApp.fetch(encodedUrl);
     var json = response.getContentText();
-    return JSON.parse(json);
+    return Promise.resolve(JSON.parse(json));
   };
 
   AppsHttp.prototype.getUrlWithQuery = function(url, query) {

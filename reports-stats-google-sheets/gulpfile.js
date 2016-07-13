@@ -6,6 +6,7 @@ var eslint = require('gulp-eslint');
 var Karma = require('karma').Server;
 var inject = require('gulp-inject');
 var clean = require('gulp-clean');
+var bowerFiles = require('main-bower-files');
 
 gulp.task('lint', function() {
   return gulp.src(['src/**/*.js'])
@@ -24,12 +25,17 @@ gulp.task('karma', function(done) {
 gulp.task('test', ['lint', 'karma']);
 
 gulp.task('clean-sidebar', function() {
-  gulp.src('build/sidebar', {read: false})
+  return gulp.src('build/sidebar', {read: false})
     .pipe(clean());
 });
 
 gulp.task('clean-lib', function() {
-  gulp.src('build/lib', {read: false})
+  return gulp.src(['build/lib', 'build/*.js'], {read: false})
+    .pipe(clean());
+});
+
+gulp.task('clean-bower', function() {
+  return gulp.src('build/bower_components', {read: false})
     .pipe(clean());
 });
 
@@ -55,7 +61,7 @@ var transformContentsCss = function(filePath, file) {
 
 gulp.task('build-sidebar', ['test', 'clean-sidebar'], function() {
   return gulp
-    .src('src/sidebar/sidebar.html', {base: './src'})
+    .src('src/sidebar/sidebar.html', {base: './src/sidebar'})
     .pipe(inject(gulp.src('src/lib/common/**/*.js'), {
       starttag: '<!-- inject:lib/common:{{ext}} -->',
       transform: transformContentsJs
@@ -68,10 +74,14 @@ gulp.task('build-sidebar', ['test', 'clean-sidebar'], function() {
       starttag: '<!-- inject:css -->',
       transform: transformContentsCss
     }))
-    .pipe(gulp.dest('build/'));
+    .pipe(inject(gulp.src(bowerFiles()), {
+      starttag: '<!-- inject:bower:{{ext}} -->',
+      transform: transformContentsJs
+    }))
+    .pipe(gulp.dest('build/sidebar'));
 });
 
-gulp.task('build-lib', ['test', 'clean-lib'], function() {
+gulp.task('copy-lib', ['test', 'clean-lib'], function() {
   return gulp
     .src([
       'src/*.js',
@@ -83,6 +93,14 @@ gulp.task('build-lib', ['test', 'clean-lib'], function() {
     .pipe(gulp.dest('build/'));
 });
 
-gulp.task('build', ['build-sidebar', 'build-lib']);
+gulp.task('bower', ['clean-bower'], function() {
+   return gulp
+     .src(bowerFiles(), {
+       base: './bower_components'
+     })
+     .pipe(gulp.dest('build/bower_components'))
+});
+
+gulp.task('build', ['build-sidebar', 'copy-lib', 'bower']);
 
 gulp.task('upload', ['build'], shell.task(['gapps upload']));
