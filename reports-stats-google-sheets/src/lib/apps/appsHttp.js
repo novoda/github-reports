@@ -1,16 +1,16 @@
 'use strict';
 
-/* exported Http */
-function Http() {
+/* exported AppsHttp */
+function AppsHttp() {
 
-  Http.prototype.fetch = function(url, query) {
+  AppsHttp.prototype.fetch = function(url, query) {
     var encodedUrl = encodeURI(this.getUrlWithQuery(url, query));
     var response = UrlFetchApp.fetch(encodedUrl);
     var json = response.getContentText();
     return JSON.parse(json);
   };
 
-  Http.prototype.getUrlWithQuery = function(url, query) {
+  AppsHttp.prototype.getUrlWithQuery = function(url, query) {
     var parts = Object
       .keys(query || {})
       .map(function(key) {
