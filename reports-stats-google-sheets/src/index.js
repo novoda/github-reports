@@ -2,7 +2,7 @@
 
 /* exported onOpen, onInstall, updateData, updatePrStats, createMenu, showSidebar */
 
-var http = new Http();
+var http = new AppsHttp();
 var reports = new Reports(http);
 var geometry = new Geometry();
 var dataSheet = new Sheet('_data', geometry);

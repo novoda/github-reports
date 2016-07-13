@@ -4,29 +4,10 @@
     <base target="_top">
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.6.1/chosen.min.css">
-    <style type="text/css">
-        form {
-            padding: 10px;
-        }
 
-        div.control-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 10px;
-        }
-
-        div.control-group.row {
-            flex-direction: row;
-        }
-
-        div.control-group > label {
-            font-weight: bold;
-        }
-
-        .large {
-            flex: 1;
-        }
-    </style>
+    <!-- inject:css -->
+    <link rel="stylesheet" href="sidebar.css">
+    <!-- endinject -->
 </head>
 <body>
 <form>
@@ -67,27 +48,14 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.6.1/chosen.jquery.min.js"></script>
 
-<script type="text/javascript">
-    $(function() {
-        function initRepositoriesSelect() {
-            $('#select-repos').chosen();
-            // TODO: fetch repositories
-        }
+<!-- inject:lib/web:js -->
+<script src="../lib/web/webHttp.js"></script>
+<script src="../lib/web/pageController.js"></script>
+<!-- endinject -->
 
-        function initGetPrStatsButton() {
-            $('#get-pr-stats').on('click', function(event) {
-                event.preventDefault();
-                getPrStats();
-            });
-        }
+<!-- inject:lib/common:js -->
+<script src="../lib/common/reports.js"></script>
+<!-- endinject -->
 
-        function getPrStats() {
-            // TODO: start search
-        }
-
-        initRepositoriesSelect();
-        initGetPrStatsButton();
-    });
-</script>
 </body>
 </html>

@@ -5,7 +5,7 @@ describe('Main', function() {
   var mockHttp, mockReports, mockGeometry, mockDataSheet, mockInputSheet, mockStatsSheet, main;
 
   beforeEach(function() {
-    mockHttp = new MockHttp();
+    mockHttp = new AppsMockHttp();
     mockReports = new Reports(mockHttp);
     mockDataSheet = new MockSheet();
     mockInputSheet = new MockSheet();

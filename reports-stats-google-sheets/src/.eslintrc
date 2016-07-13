@@ -1,6 +1,6 @@
 {
   "globals": {
-    "Http": true,
+    "AppsHttp": true,
     "Reports": true,
     "Sheet": true,
     "Geometry": true,

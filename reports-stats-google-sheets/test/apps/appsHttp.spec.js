@@ -1,11 +1,11 @@
 'use strict';
 
-describe('Http', function() {
+describe('AppsHttp', function() {
 
   var http, anyUrl;
 
   beforeEach(function() {
-    http = new Http();
+    http = new AppsHttp();
     anyUrl = 'https://api.novoda.com';
   });
 
