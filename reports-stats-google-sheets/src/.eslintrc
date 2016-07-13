@@ -7,6 +7,8 @@
     "Main": true,
     "UrlFetchApp": true,
     "SpreadsheetApp": true,
-    "Logger": true
+    "Logger": true,
+    "HtmlService": true,
+    "DocumentApp": true
   }
 }
