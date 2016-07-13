@@ -1,5 +1,6 @@
 {
   "globals": {
-    "$": true
+    "$": true,
+    "WebHttp": true
   }
 }
