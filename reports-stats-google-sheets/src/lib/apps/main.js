@@ -24,7 +24,11 @@ function Main(reports, geometry, dataSheet, inputSheet, statsSheet) {
   }
 
   function updateRepositories() {
-    setColumnValues(SHEET_DATA_REPOSITORIES_COLUMN, reports.getRepositories());
+    return reports.getRepositories()
+      .then(function(repos) {
+        setColumnValues(SHEET_DATA_REPOSITORIES_COLUMN, repos);
+        return repos;
+      });
   }
 
   function userToLineFn(group) {
@@ -57,8 +61,10 @@ function Main(reports, geometry, dataSheet, inputSheet, statsSheet) {
   }
 
   Main.prototype.getPrStats = function(from, to, repos, groupBy, withAverage) {
-    var stats = reports.getPrStats(from, to, repos, groupBy, withAverage);
-    return stats.groups.map(groupToLines);
+    return reports.getPrStats(from, to, repos, groupBy, withAverage)
+      .then(function(stats) {
+        return stats.groups.map(groupToLines);
+      });
   };
 
   Main.prototype.updatePrStats = function() {
@@ -67,15 +73,17 @@ function Main(reports, geometry, dataSheet, inputSheet, statsSheet) {
     var repos = inputSheet.getColumnValues(SHEET_INPUT_FIRST_ROW, SHEET_INPUT_REPOSITORIES_COLUMN);
     var groupBy = inputSheet.getValue(SHEET_INPUT_FIRST_ROW, SHEET_INPUT_GROUP_BY_COLUMN);
     var withAverage = inputSheet.getValue(SHEET_INPUT_FIRST_ROW, SHEET_INPUT_WITH_AVERAGE_COLUMN);
-    
-    var stats = this.getPrStats(from, to, repos, groupBy, withAverage);
-    var lines = [].concat.apply([], stats);
-    statsSheet.clear();
-    statsSheet.setValues(SHEET_STATS_FIRST_ROW, SHEET_STATS_FIRST_COLUMN, lines.length, STATS_USER_ATTRIBUTE_QTY, lines);
+
+    return this.getPrStats(from, to, repos, groupBy, withAverage)
+      .then(function(stats) {
+        var lines = [].concat.apply([], stats);
+        statsSheet.clear();
+        statsSheet.setValues(SHEET_STATS_FIRST_ROW, SHEET_STATS_FIRST_COLUMN, lines.length, STATS_USER_ATTRIBUTE_QTY, lines);
+      });
   };
 
   Main.prototype.updateAll = function() {
-    updateRepositories();
+    return updateRepositories();
   };
 
 }

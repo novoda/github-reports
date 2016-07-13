@@ -8,7 +8,19 @@ node {
     download = true
 }
 
+task bowerInstall(type: NodeTask) {
+    script = file('node_modules/bower/bin/bower')
+    args = ["--config.storage.cache=${gradle.getGradleUserHomeDir()}/caches/bower/cache",
+            "--config.storage.packages=${gradle.getGradleUserHomeDir()}/caches/bower/packages",
+            "--config.storage.registry=${gradle.getGradleUserHomeDir()}/caches/bower/registry",
+            'install']
+    inputs.files file('bower.json')
+    outputs.files file('bower_components')
+    dependsOn 'npmInstall'
+}
+
 gulp_test.dependsOn 'npmInstall'
+gulp_test.dependsOn 'bowerInstall'
 gulp_test.dependsOn 'installGulp'
 
 task test
