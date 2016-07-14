@@ -17,8 +17,20 @@ $(function() {
     // TODO: start search
   }
 
+  function initSelectAllButton() {
+    $('#select-all-repos').on('click', function(event) {
+      event.preventDefault();
+      selectAll();
+    });
+  }
+
+  function selectAll() {
+    // TODO
+  }
+
   initRepositoriesSelect();
   initGetPrStatsButton();
+  initSelectAllButton();
 
   var queryStringifier = new QueryStringifier();
   var http = new WebHttp(queryStringifier);
@@ -26,7 +38,7 @@ $(function() {
 
   reports.getRepositories()
     .then(function() {
-      // TODO: do stuff here
+      // TODO: do stuff here -- get and populate teh list of repos
     });
 
 });
