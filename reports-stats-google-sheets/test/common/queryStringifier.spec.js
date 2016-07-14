@@ -1,36 +1,36 @@
 'use strict';
 
-describe('AppsHttp', function() {
+describe('QueryStringifier', function() {
 
-  var http, anyUrl;
+  var queryStringifier, anyUrl;
 
   beforeEach(function() {
-    http = new AppsHttp();
+    queryStringifier = new QueryStringifier();
     anyUrl = 'https://api.novoda.com';
   });
 
   describe('getUrlWithQuery', function() {
 
     it('should not change the URL with empty query', function() {
-      var result = http.getUrlWithQuery(anyUrl, {});
+      var result = queryStringifier.getUrlWithQuery(anyUrl, {});
 
       expect(result).toEqual(anyUrl);
     });
 
     it('should not change the URL with null query', function() {
-      var result = http.getUrlWithQuery(anyUrl, null);
+      var result = queryStringifier.getUrlWithQuery(anyUrl, null);
 
       expect(result).toEqual(anyUrl);
     });
 
     it('should not change the URL with undefined query', function() {
-      var result = http.getUrlWithQuery(anyUrl, undefined);
+      var result = queryStringifier.getUrlWithQuery(anyUrl, undefined);
 
       expect(result).toEqual(anyUrl);
     });
 
     it('should add basic strings to the url', function() {
-      var result = http.getUrlWithQuery(anyUrl, {
+      var result = queryStringifier.getUrlWithQuery(anyUrl, {
         some: 'string',
         another: 'string'
       });
@@ -40,7 +40,7 @@ describe('AppsHttp', function() {
     });
 
     it('should add a date to the url', function() {
-      var result = http.getUrlWithQuery(anyUrl, {
+      var result = queryStringifier.getUrlWithQuery(anyUrl, {
         someDate: new Date(Date.UTC(2016, 0, 1, 0, 0, 0, 0))
       });
 
@@ -49,7 +49,7 @@ describe('AppsHttp', function() {
     });
 
     it('should add a number to the url', function() {
-      var result = http.getUrlWithQuery(anyUrl, {
+      var result = queryStringifier.getUrlWithQuery(anyUrl, {
         someNumber: 42
       });
 
@@ -58,7 +58,7 @@ describe('AppsHttp', function() {
     });
 
     it('should add a number array to the url', function() {
-      var result = http.getUrlWithQuery(anyUrl, {
+      var result = queryStringifier.getUrlWithQuery(anyUrl, {
         someNumberArray: [4, 8, 15, 16, 23, 42]
       });
 
@@ -67,7 +67,7 @@ describe('AppsHttp', function() {
     });
 
     it('should add a string array to the url', function() {
-      var result = http.getUrlWithQuery(anyUrl, {
+      var result = queryStringifier.getUrlWithQuery(anyUrl, {
         someStringArray: ['see', 'you', 'in', 'another', 'life', 'brotha']
       });
 
@@ -76,7 +76,7 @@ describe('AppsHttp', function() {
     });
 
     it('should add a mixed number and string array to the url', function() {
-      var result = http.getUrlWithQuery(anyUrl, {
+      var result = queryStringifier.getUrlWithQuery(anyUrl, {
         someMixedArray: ['answer', 'is', 42, '!']
       });
 

@@ -2,7 +2,8 @@
 
 /* exported onOpen, onInstall, updateData, updatePrStats, createMenu, showSidebar, setTimeout */
 
-var http = new AppsHttp();
+var stringifier = new QueryStringifier();
+var http = new AppsHttp(stringifier);
 var reports = new Reports(http);
 var geometry = new Geometry();
 var dataSheet = new Sheet('_data', geometry);
