@@ -16,6 +16,10 @@ div.control-group > label {
     font-weight: bold;
 }
 
-.large {
+.small {
     flex: 1;
+}
+
+.large {
+    flex: 15;
 }
