@@ -1,6 +1,14 @@
 {
+  "env": {
+    "browser": true,
+    "jquery": true
+  },
   "globals": {
-    "$": true,
-    "WebHttp": true
+    "WebHttp": true,
+    "ReportsExecutor": true,
+    "google": true
+  },
+  "rules": {
+    "no-console": 0
   }
 }

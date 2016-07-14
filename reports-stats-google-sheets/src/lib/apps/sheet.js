@@ -1,9 +1,9 @@
 'use strict';
 
 /* exported Sheet */
-function Sheet(name, geometry) {
+function Sheet(sheet, geometry) {
 
-  this.sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
+  this.sheet = sheet;
 
   Sheet.prototype.getValue = function(row, col) {
     return this.sheet.getSheetValues(row, col, 1, 1)[0][0];
@@ -28,6 +28,10 @@ function Sheet(name, geometry) {
 
   Sheet.prototype.clear = function() {
     this.sheet.clear();
+  };
+
+  Sheet.prototype.setName = function(name) {
+    this.sheet.setName(name);
   };
 
 }
