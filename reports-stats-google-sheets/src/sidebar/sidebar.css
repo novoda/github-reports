@@ -19,8 +19,14 @@ div.control-group > label {
 /* override the styling by chosen, use auto width */
 div.control-group > .chosen-container {
     width: auto !important;
+    flex: 1;
+}
+
+div.control-group > .chosen-container ul.chosen-choices {
+    max-height: 200px;
+    overflow-y: auto;
 }
 
 .large {
-    flex: 1;
+    flex: 15;
 }

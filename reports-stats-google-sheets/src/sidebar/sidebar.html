@@ -19,14 +19,17 @@
         <label for="date-to">To date</label>
         <input type="date" id="date-to" class="large">
     </div>
+
     <div class="control-group">
         <label for="select-repos">Repositories</label>
-        <select multiple id="select-repos" class="large" data-placeholder="Repositories to filter on">
-            <option>github-reports</option>
-            <option>all-4</option>
-            <option>merlin</option>
-        </select>
+        <div class="control-group row">
+            <select multiple id="select-repos" data-placeholder="Repositories to filter on">
+            </select>
+            <input type="button" id="select-all-repos" class="action" value="Select all">
+            <input type="button" id="clear-all-repos" value="Clear">
+        </div>
     </div>
+
     <div class="control-group">
         <label for="select-group-by">Group by</label>
         <select id="select-group-by" class="large">
