@@ -1,0 +1,19 @@
+{
+  "globals": {
+    "QueryStringifier": true,
+    "AppsHttp": true,
+    "Reports": true,
+    "Spreadsheet": true,
+    "Sheet": true,
+    "Geometry": true,
+    "Main": true,
+    "UrlFetchApp": true,
+    "SpreadsheetApp": true,
+    "Logger": true,
+    "HtmlService": true,
+    "DocumentApp": true,
+    "Promise": true,
+    "Utilities": true,
+    "Range": true
+  }
+}
