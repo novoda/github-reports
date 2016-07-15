@@ -1,0 +1,11 @@
+{
+  "env": {
+    "jasmine": true
+  },
+  "globals": {
+    "Geometry": true,
+    "Reports": true,
+    "MockHttp": true,
+    "MockSheet": true
+  }
+}

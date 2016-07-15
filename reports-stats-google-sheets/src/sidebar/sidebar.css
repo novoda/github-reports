@@ -1,0 +1,32 @@
+form {
+    padding: 10px;
+}
+
+div.control-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+div.control-group.row {
+    flex-direction: row;
+}
+
+div.control-group > label {
+    font-weight: bold;
+}
+
+/* override the styling by chosen, use auto width */
+div.control-group > .chosen-container {
+    width: auto !important;
+    flex: 1;
+}
+
+div.control-group > .chosen-container ul.chosen-choices {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.large {
+    flex: 15;
+}

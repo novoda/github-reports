@@ -1,0 +1,16 @@
+{
+  "name": "reports-stats-google-sheets",
+  "description": "Execute Github Reports statistics on Google Sheets.",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/novoda/github-reports",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "es6-promise": "^3.2.2"
+  }
+}
