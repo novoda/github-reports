@@ -3,8 +3,6 @@
 /* exported AppsMockHttp */
 function AppsMockHttp() {
 
-  AppsMockHttp.prototype.fetch = jasmine.createSpy('fetch');
-
-  AppsMockHttp.prototype.fetch = jasmine.createSpy('getUrlWithQuery');
+  return jasmine.createSpyObj('appsMockHttp', ['fetch', 'getUrlWithQuery']);
 
 }

@@ -16,6 +16,11 @@ div.control-group > label {
     font-weight: bold;
 }
 
+/* override the styling by chosen, use auto width */
+div.control-group > .chosen-container {
+    width: auto !important;
+}
+
 .small {
     flex: 1;
 }
