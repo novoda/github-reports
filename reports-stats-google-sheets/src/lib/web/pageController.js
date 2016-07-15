@@ -13,15 +13,23 @@ $(function() {
   var fromInput = $('input#date-from');
   var toInput = $('input#date-to');
   var reposSelect = $('select#select-repos');
-  var allRepos = reposSelect.find('option');
+  var allRepos = [];
+  var clearButton = $('input#clear-all-repos');
   var groupBySelect = $('select#select-group-by');
   var withAverageCheck = $('input#check-with-average');
   var getPrButton = $('input#get-pr-stats');
   var allInputs = $('input, select');
 
   function initRepositoriesSelect() {
-    // TODO: fetch repositories
-    reposSelect.chosen();
+    reports.getRepositories()
+      .then(function(repos) {
+        repos.forEach(function(repo) {
+          var option = $('<option value="' + repo + '">' + repo + '</option>');
+          reposSelect.append(option);
+          allRepos.push(option);
+        });
+        reposSelect.chosen();
+      });
   }
 
   function initGetPrStatsButton() {
@@ -47,7 +55,7 @@ $(function() {
 
   function showLoading() {
     allInputs.prop('disabled', true);
-    reposSelect.trigger('chosen:updated');
+    refreshSelectedRepos();
     getPrButton.val(getRandomLoadingMessage());
   }
 
@@ -58,37 +66,43 @@ $(function() {
 
   function showNotLoading() {
     allInputs.prop('disabled', false);
-    reposSelect.trigger('chosen:updated');
+    refreshSelectedRepos();
     getPrButton.val(GET_PR_STATS);
   }
 
   function initSelectAllButton() {
-    $('#select-all-repos').on('click', function(event) {
-      event.preventDefault();
-      selectAll();
-    });
+    $('#select-all-repos').on('click', selectAll);
   }
 
   function selectAll() {
-    allRepos.each(function(i, option) {
+    allRepos.forEach(function(option) {
       var prev = reposSelect.val() || [];
       reposSelect.val(prev.concat($(option).val()));
-      reposSelect.trigger('chosen:updated');
     });
+    refreshSelectedRepos();
   }
 
-  initRepositoriesSelect();
-  initGetPrStatsButton();
-  initSelectAllButton();
+  function initClearAllButton() {
+    clearButton.on('click', clearAll);
+  }
+
+  function clearAll() {
+    reposSelect.val([]);
+    refreshSelectedRepos();
+  }
+
+  function refreshSelectedRepos() {
+    reposSelect.trigger('chosen:updated');
+  }
 
   var queryStringifier = new QueryStringifier();
   var http = new WebHttp(queryStringifier);
   var reports = new Reports(http);
   var reportsExecutor = new ReportsExecutor();
 
-  reports.getRepositories()
-    .then(function() {
-      // TODO: do stuff here -- get and populate teh list of repos
-    });
+  initRepositoriesSelect();
+  initGetPrStatsButton();
+  initSelectAllButton();
+  initClearAllButton();
 
 });
