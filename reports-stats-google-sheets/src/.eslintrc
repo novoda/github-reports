@@ -3,6 +3,7 @@
     "QueryStringifier": true,
     "AppsHttp": true,
     "Reports": true,
+    "Spreadsheet": true,
     "Sheet": true,
     "Geometry": true,
     "Main": true,

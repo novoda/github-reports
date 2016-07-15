@@ -1,53 +1,46 @@
 'use strict';
 
-/* exported onOpen, onInstall, updateData, updatePrStats, createMenu, showSidebar, setTimeout */
+/* exported onInstall, onOpen, createMenu, createSidebars, showSidebarPrStats, showPrStats, setTimeout */
 
 var stringifier = new QueryStringifier();
 var http = new AppsHttp(stringifier);
 var reports = new Reports(http);
 var geometry = new Geometry();
-var dataSheet = new Sheet('_data', geometry);
-var inputSheet = new Sheet('Input', geometry);
-var statsSheet = new Sheet('Stats', geometry);
+var spreadsheet = new Spreadsheet(geometry);
 
-// polyfill to make the promise library work in non-windowed environments]]
-function setTimeout(fn, timeout) {
-  Utilities.sleep(timeout);
-  fn();
-}
-
-var main = new Main(reports, geometry, dataSheet, inputSheet, statsSheet);
-
-var ui = SpreadsheetApp.getUi();
-var sidebar = HtmlService.createHtmlOutputFromFile('sidebar')
-  .setTitle('Github Reports')
-  .setSandboxMode(HtmlService.SandboxMode.IFRAME);
-
-function onOpen() {
-  createMenu();
-  showSidebar();
-}
-
-function createMenu() {
-  ui.createMenu('Github Reports')
-    .addItem('Update data', 'updateData')
-    .addItem('Update PR stats', 'updatePrStats')
-    .addItem('Show sidebar', 'showSidebar')
-    .addToUi();
-}
-
-function showSidebar() {
-  ui.showSidebar(sidebar);
-}
+var main = new Main(reports, spreadsheet);
+var SIDEBAR_PR_STATS_NAME = 'PR_STATS';
 
 function onInstall() {
   onOpen();
 }
 
-function updateData() {
-  main.updateAll();
+function onOpen() {
+  createMenu();
+  createSidebars();
+  showSidebarPrStats();
 }
 
-function updatePrStats() {
-  main.updatePrStats();
+function createMenu() {
+  spreadsheet.createMenu('Github Reports', {
+    'Pull Request Stats': 'showSidebarPrStats'
+  });
+}
+
+function createSidebars() {
+  spreadsheet.createSidebar(SIDEBAR_PR_STATS_NAME, 'PR Stats', 'sidebar');
+}
+
+function showSidebarPrStats() {
+  spreadsheet.showSidebar(SIDEBAR_PR_STATS_NAME);
+}
+
+function showPrStats(from, to, repositories, groupBy, withAverage, requestISODate) {
+  return main.showPrStats(from, to, repositories, groupBy, withAverage, requestISODate);
+}
+
+// polyfill to make the promise library work in non-windowed environments]]
+function setTimeout(fn, timeout) {
+  Utilities.sleep(timeout);
+  fn();
 }

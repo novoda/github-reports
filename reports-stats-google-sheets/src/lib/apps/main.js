@@ -1,34 +1,22 @@
 'use strict';
 
 /* exported Main */
-function Main(reports, geometry, dataSheet, inputSheet, statsSheet) {
+function Main(reports, spreadsheet) {
 
-  var SHEET_DATA_FIRST_ROW = 2;
-  var SHEET_DATA_REPOSITORIES_COLUMN = 1;
-
-  var SHEET_INPUT_FIRST_ROW = 2;
-  var SHEET_INPUT_FROM_COLUMN = 1;
-  var SHEET_INPUT_TO_COLUMN = 2;
-  var SHEET_INPUT_REPOSITORIES_COLUMN = 3;
-  var SHEET_INPUT_GROUP_BY_COLUMN = 4;
-  var SHEET_INPUT_WITH_AVERAGE_COLUMN = 5;
-
-  var SHEET_STATS_FIRST_ROW = 1;
+  var SHEET_STATS_FIRST_ROW = 2;
   var SHEET_STATS_FIRST_COLUMN = 1;
 
   var STATS_USER_ATTRIBUTE_QTY = 11;
 
-  function setColumnValues(column, array) {
-    var matrix = geometry.arrayToColumnRange(array);
-    dataSheet.setValues(SHEET_DATA_FIRST_ROW, column, matrix.length, 1, matrix);
-  }
+  function groupToLines(group) {
+    var userToLine = userToLineFn(group);
+    var lines = group.users.map(userToLine);
 
-  function updateRepositories() {
-    return reports.getRepositories()
-      .then(function(repos) {
-        setColumnValues(SHEET_DATA_REPOSITORIES_COLUMN, repos);
-        return repos;
-      });
+    if (group.organisationAverage) {
+      lines.push(userToLine(group.organisationAverage));
+    }
+
+    return lines;
   }
 
   function userToLineFn(group) {
@@ -49,41 +37,47 @@ function Main(reports, geometry, dataSheet, inputSheet, statsSheet) {
     };
   }
 
-  function groupToLines(group) {
-    var userToLine = userToLineFn(group);
-    var lines = group.users.map(userToLine);
-
-    if (group.organisationAverage) {
-      lines.push(userToLine(group.organisationAverage));
-    }
-
-    return lines;
+  function buildNewSheetName(requestISODate) {
+    var requestDate = new Date(requestISODate);
+    return 'PR Stats ' +
+      requestDate.getFullYear() + '-' + padTens(requestDate.getMonth()) + '-' + padTens(requestDate.getDay()) + ' ' +
+      padTens(requestDate.getHours()) + ':' + padTens(requestDate.getMinutes()) + ':' + padTens(requestDate.getSeconds());
   }
 
-  Main.prototype.getPrStats = function(from, to, repos, groupBy, withAverage) {
+  function padTens(value) {
+    return leftPad('00', value);
+  }
+
+  function leftPad(mask, value) {
+    var str = value.toString();
+    return mask.substring(0, mask.length - str.length) + str;
+  }
+
+  Main.prototype.showPrStats = function(from, to, repos, groupBy, withAverage, requestISODate) {
     return reports.getPrStats(from, to, repos, groupBy, withAverage)
       .then(function(stats) {
         return stats.groups.map(groupToLines);
-      });
-  };
-
-  Main.prototype.updatePrStats = function() {
-    var from = inputSheet.getValueAsDate(SHEET_INPUT_FIRST_ROW, SHEET_INPUT_FROM_COLUMN);
-    var to = inputSheet.getValueAsDate(SHEET_INPUT_FIRST_ROW, SHEET_INPUT_TO_COLUMN);
-    var repos = inputSheet.getColumnValues(SHEET_INPUT_FIRST_ROW, SHEET_INPUT_REPOSITORIES_COLUMN);
-    var groupBy = inputSheet.getValue(SHEET_INPUT_FIRST_ROW, SHEET_INPUT_GROUP_BY_COLUMN);
-    var withAverage = inputSheet.getValue(SHEET_INPUT_FIRST_ROW, SHEET_INPUT_WITH_AVERAGE_COLUMN);
-
-    return this.getPrStats(from, to, repos, groupBy, withAverage)
+      })
       .then(function(stats) {
-        var lines = [].concat.apply([], stats);
+        return [].concat.apply([], stats);
+      })
+      .then(function(lines) {
+        var statsSheet = spreadsheet.createNewSheet(buildNewSheetName(requestISODate));
         statsSheet.clear();
-        statsSheet.setValues(SHEET_STATS_FIRST_ROW, SHEET_STATS_FIRST_COLUMN, lines.length, STATS_USER_ATTRIBUTE_QTY, lines);
+        statsSheet.setValues(
+          SHEET_STATS_FIRST_ROW,
+          SHEET_STATS_FIRST_COLUMN,
+          lines.length,
+          STATS_USER_ATTRIBUTE_QTY,
+          lines
+        );
+        return lines;
+      })['catch'](
+      // awful hax because Google Apps Script uses the stupidest AST parser or whatevs
+      // see https://github.com/stefanpenner/es6-promise#usage-in-ie9
+      function(error) {
+        spreadsheet.showAlert('Error', 'There was an error while executing the request:\n' + error);
       });
-  };
-
-  Main.prototype.updateAll = function() {
-    return updateRepositories();
   };
 
 }
