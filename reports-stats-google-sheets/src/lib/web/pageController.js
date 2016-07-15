@@ -13,6 +13,7 @@ $(function() {
   var fromInput = $('input#date-from');
   var toInput = $('input#date-to');
   var reposSelect = $('select#select-repos');
+  var allRepos = reposSelect.find('option');
   var groupBySelect = $('select#select-group-by');
   var withAverageCheck = $('input#check-with-average');
   var getPrButton = $('input#get-pr-stats');
@@ -69,10 +70,10 @@ $(function() {
   }
 
   function selectAll() {
-    $('select#select-repos').find('option').each(function(i, option) {
-      var prev = $('select#select-repos').val() || [];
-      $('select#select-repos').val(prev.concat($(option).val()));
-      $('select#select-repos').trigger('chosen:updated');
+    allRepos.each(function(i, option) {
+      var prev = reposSelect.val() || [];
+      reposSelect.val(prev.concat($(option).val()));
+      reposSelect.trigger('chosen:updated');
     });
   }
 
