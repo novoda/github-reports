@@ -8,13 +8,13 @@ import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
 
-public class WeeksCalculatorTest {
+public class NumberOfWeeksCalculatorTest {
 
-    private WeeksCalculator weeksCalculator;
+    private NumberOfWeeksCalculator numberOfWeeksCalculator;
 
     @Before
     public void setUp() {
-        weeksCalculator = new WeeksCalculator();
+        numberOfWeeksCalculator = new NumberOfWeeksCalculator();
     }
 
     @Test
@@ -22,7 +22,7 @@ public class WeeksCalculatorTest {
         Date startDate = getDate(2016, Calendar.JULY, 4);
         Date endDate = getDate(2016, Calendar.JULY, 11);
 
-        int actual = weeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
 
         assertEquals(1, actual);
     }
@@ -32,7 +32,7 @@ public class WeeksCalculatorTest {
         Date startDate = getDate(2016, Calendar.JULY, 8);
         Date endDate = getDate(2016, Calendar.JULY, 11);
 
-        int actual = weeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
 
         assertEquals(0, actual);
     }
@@ -42,7 +42,7 @@ public class WeeksCalculatorTest {
         Date startDate = getDate(2016, Calendar.JULY, 5);
         Date endDate = getDate(2016, Calendar.JULY, 26);
 
-        int actual = weeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
 
         assertEquals(3, actual);
     }
@@ -52,7 +52,7 @@ public class WeeksCalculatorTest {
         Date startDate = getDate(2016, Calendar.JULY, 5);
         Date endDate = getDate(2016, Calendar.JUNE, 28);
 
-        int actual = weeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
 
         assertEquals(-1, actual);
     }
