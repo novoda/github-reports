@@ -13,6 +13,7 @@
     "HtmlService": true,
     "DocumentApp": true,
     "Promise": true,
-    "Utilities": true
+    "Utilities": true,
+    "Range": true
   }
 }

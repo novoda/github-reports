@@ -1,13 +1,13 @@
 'use strict';
 
 $(function() {
-  var GET_PR_STATS = "Get PR stats!";
+  var GET_PR_STATS = 'Get PR stats!';
   var LOADING = [
-    "Loading your stats...",
-    "Hold on while we grab your stats...",
-    "Hang on tight, stats are coming.",
-    "Shipping stats, please prepare docks...",
-    "OH MY GOD LOADING SO MUCH GITHUB"
+    'Loading your stats...',
+    'Hold on while we grab your stats...',
+    'Hang on tight, stats are coming.',
+    'Shipping stats, please prepare docks...',
+    'OH MY GOD LOADING SO MUCH GITHUB'
   ];
 
   var fromInput = $('input#date-from');

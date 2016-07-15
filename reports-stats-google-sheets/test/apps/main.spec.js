@@ -36,8 +36,12 @@ describe('Main', function() {
       mockSpreadsheet.createNewSheet.and.returnValue(mockSheet);
     });
 
+    var showPrStatsWithGroupBy = function(groupBy) {
+      return main.showPrStats(ANY_START_DATE, ANY_END_DATE, ANY_REPOSITORIES, groupBy, ANY_WITH_AVERAGE);
+    };
+
     var showPrStats = function() {
-      return main.showPrStats(ANY_START_DATE, ANY_END_DATE, ANY_REPOSITORIES, ANY_GROUP_BY, ANY_WITH_AVERAGE);
+      return showPrStatsWithGroupBy(ANY_GROUP_BY);
     };
 
     describe('on success', function() {
@@ -99,7 +103,7 @@ describe('Main', function() {
       it('should concatenate each group into a single array', function(done) {
         showPrStats()
           .then(function(actual) {
-            expect(actual.length).toBe(9);
+            expect(actual.length).toBe(13);
           })
           .then(done);
       });
@@ -107,10 +111,10 @@ describe('Main', function() {
       it('should return an ordered array whose grouped elements have the same first element', function(done) {
         showPrStats()
           .then(function(actual) {
-            actual.slice(0, 6).forEach(function(user) {
+            actual.slice(0, 8).forEach(function(user) {
               expect(user[0]).toBe('2016-05');
             });
-            actual.slice(6, 9).forEach(function(user) {
+            actual.slice(8, 13).forEach(function(user) {
               expect(user[0]).toBe('2016-06');
             });
           })
@@ -133,10 +137,109 @@ describe('Main', function() {
           .then(done);
       });
 
+      it('should set the header into the stats sheet', function(done) {
+        showPrStats()
+          .then(function() {
+            expect(mockSheet.setValues).toHaveBeenCalledWith(1, 1, 1, 11, jasmine.any(Array));
+          })
+          .then(done);
+      });
+
+      it('should make the header line bold', function(done) {
+        showPrStats()
+          .then(function() {
+            expect(mockSheet.setBold).toHaveBeenCalledWith(1, 1, 1, 11);
+          })
+          .then(done);
+      });
+
+      it('should make the first two columns bold', function(done) {
+        showPrStats()
+          .then(function() {
+            expect(mockSheet.setBold).toHaveBeenCalledWith(2, 1, 13, 2);
+          })
+          .then(done);
+      });
+
+      it('should align the header cells to center and middle', function(done) {
+        showPrStats()
+          .then(function() {
+            expect(mockSheet.alignToCenterMiddle).toHaveBeenCalledWith(1, 1, 1, 11);
+          })
+          .then(done);
+      });
+
+      it('should make the header text wrap', function(done) {
+        showPrStats()
+          .then(function() {
+            expect(mockSheet.setWrap).toHaveBeenCalledWith(1, 1, 1, 11, true);
+          })
+          .then(done);
+      });
+
+      it('should freeze the first row and the first two columns', function(done) {
+        showPrStats()
+          .then(function() {
+            expect(mockSheet.setFrozenRows).toHaveBeenCalledWith(1);
+            expect(mockSheet.setFrozenColumns).toHaveBeenCalledWith(2);
+          })
+          .then(done);
+      });
+
+      it('should set the bottom border for every group', function(done) {
+        showPrStats()
+          .then(function() {
+            expect(mockSheet.setBottomBorder).toHaveBeenCalledWith(9, 1, 1, 11);
+            expect(mockSheet.setBottomBorder).toHaveBeenCalledWith(14, 1, 1, 11);
+          })
+          .then(done);
+      });
+
+      it('should set a background for all averages in every group', function(done) {
+        showPrStats()
+          .then(function() {
+            expect(mockSheet.setBackground).toHaveBeenCalledWith(7, 1, 3, 11, jasmine.any(String));
+            expect(mockSheet.setBackground).toHaveBeenCalledWith(12, 1, 3, 11, jasmine.any(String));
+          })
+          .then(done);
+      });
+
+      var groupInHeaderTester = function(group) {
+        return {
+          asymmetricMatch: function(actual) {
+            return actual[0][0] === group;
+          }
+        };
+      };
+
+      it('should set the group header as "Year-Month" into the stats sheet', function(done) {
+        showPrStatsWithGroupBy('MONTH')
+          .then(function() {
+            expect(mockSheet.setValues).toHaveBeenCalledWith(1, 1, 1, 11, groupInHeaderTester('Year-Month'));
+          })
+          .then(done);
+      });
+
+      it('should set the group header as "Year-Week" into the stats sheet', function(done) {
+        showPrStatsWithGroupBy('WEEK')
+          .then(function() {
+            expect(mockSheet.setValues).toHaveBeenCalledWith(1, 1, 1, 11, groupInHeaderTester('Year-Week'));
+          })
+          .then(done);
+      });
+
+      it('should set an empty group header as into the stats sheet', function(done) {
+        showPrStatsWithGroupBy('ANYTHING_ELSE')
+          .then(function() {
+            expect(mockSheet.setValues).toHaveBeenCalledWith(1, 1, 1, 11, groupInHeaderTester(''));
+          })
+          .then(done);
+      });
+
       it('should set the results into the stats sheet', function(done) {
         showPrStats()
           .then(function(results) {
-            expect(mockSheet.setValues).toHaveBeenCalledWith(2, 1, 9, 11, results);
+            expect(mockSheet.setValues).toHaveBeenCalledWith(2, 1, 13, 11, results);
           })
           .then(done);
       });
