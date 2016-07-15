@@ -25,7 +25,11 @@ $(function() {
   }
 
   function selectAll() {
-    // TODO
+    $('select#select-repos').find('option').each(function(i, option) {
+      var prev = $('select#select-repos').val() || [];
+      $('select#select-repos').val(prev.concat($(option).val()));
+      $('select#select-repos').trigger('chosen:updated');
+    });
   }
 
   initRepositoriesSelect();
