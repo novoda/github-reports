@@ -9,6 +9,8 @@ function Main(reports, spreadsheet) {
 
   var STATS_USER_ATTRIBUTE_QTY = 11;
 
+  var AVERAGE_ROW_BACKGROUND_COLOR = '#8dc5db';
+
   function groupToLines(group) {
     var userToLine = userToLineFn(group);
     var lines = group.users.map(userToLine);
@@ -160,7 +162,7 @@ function Main(reports, spreadsheet) {
         SHEET_STATS_FIRST_COLUMN,
         averages,
         STATS_USER_ATTRIBUTE_QTY,
-        '#8dc5db'
+        AVERAGE_ROW_BACKGROUND_COLOR
       );
       rowAccumulator += group.users.length + averages;
     });
