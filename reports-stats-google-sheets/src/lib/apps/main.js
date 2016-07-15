@@ -3,6 +3,7 @@
 /* exported Main */
 function Main(reports, spreadsheet) {
 
+  var SHEET_STATS_HEADER_ROW = 1;
   var SHEET_STATS_FIRST_ROW = 2;
   var SHEET_STATS_FIRST_COLUMN = 1;
 
@@ -37,6 +38,29 @@ function Main(reports, spreadsheet) {
     };
   }
 
+  function buildStatsHeader(groupBy) {
+    var groupHeader = '';
+    if (groupBy === 'MONTH') {
+      groupHeader = 'Year-Month';
+    } else if (groupBy === 'WEEK') {
+      groupHeader = 'Year-Week';
+    }
+
+    return [
+      groupHeader,
+      'Username',
+      'Merged PRs',
+      'Opened PRs',
+      'Other people comments on user\'s PRs',
+      'User comments on other people\'s PRs',
+      'Comments on all PRs',
+      'Comments on own PRs',
+      'Average of other people\'s comments on users\'s PRs',
+      'Average of user comments on merged PRs',
+      'User type'
+    ];
+  }
+
   function buildNewSheetName(requestISODate) {
     var requestDate = new Date(requestISODate);
     return 'PR Stats ' +
@@ -64,6 +88,14 @@ function Main(reports, spreadsheet) {
       .then(function(lines) {
         var statsSheet = spreadsheet.createNewSheet(buildNewSheetName(requestISODate));
         statsSheet.clear();
+        var header = [buildStatsHeader(groupBy)];
+        statsSheet.setValues(
+          SHEET_STATS_HEADER_ROW,
+          SHEET_STATS_FIRST_COLUMN,
+          header.length,
+          STATS_USER_ATTRIBUTE_QTY,
+          header
+        );
         statsSheet.setValues(
           SHEET_STATS_FIRST_ROW,
           SHEET_STATS_FIRST_COLUMN,
