@@ -36,8 +36,12 @@ describe('Main', function() {
       mockSpreadsheet.createNewSheet.and.returnValue(mockSheet);
     });
 
+    var showPrStatsWithGroupBy = function(groupBy) {
+      return main.showPrStats(ANY_START_DATE, ANY_END_DATE, ANY_REPOSITORIES, groupBy, ANY_WITH_AVERAGE);
+    };
+
     var showPrStats = function() {
-      return main.showPrStats(ANY_START_DATE, ANY_END_DATE, ANY_REPOSITORIES, ANY_GROUP_BY, ANY_WITH_AVERAGE);
+      return showPrStatsWithGroupBy(ANY_GROUP_BY);
     };
 
     describe('on success', function() {
@@ -129,6 +133,46 @@ describe('Main', function() {
         showPrStats()
           .then(function() {
             expect(mockSheet.clear).toHaveBeenCalled();
+          })
+          .then(done);
+      });
+
+      it('should set the header into the stats sheet', function(done) {
+        showPrStats()
+          .then(function() {
+            expect(mockSheet.setValues).toHaveBeenCalledWith(1, 1, 1, 11, jasmine.any(Array));
+          })
+          .then(done);
+      });
+
+      var groupInHeaderTester = function(group) {
+        return {
+          asymmetricMatch: function(actual) {
+            return actual[0][0] === group;
+          }
+        };
+      };
+
+      it('should set the group header as "Year-Month" into the stats sheet', function(done) {
+        showPrStatsWithGroupBy('MONTH')
+          .then(function() {
+            expect(mockSheet.setValues).toHaveBeenCalledWith(1, 1, 1, 11, groupInHeaderTester('Year-Month'));
+          })
+          .then(done);
+      });
+
+      it('should set the group header as "Year-Week" into the stats sheet', function(done) {
+        showPrStatsWithGroupBy('WEEK')
+          .then(function() {
+            expect(mockSheet.setValues).toHaveBeenCalledWith(1, 1, 1, 11, groupInHeaderTester('Year-Week'));
+          })
+          .then(done);
+      });
+
+      it('should set an empty group header as into the stats sheet', function(done) {
+        showPrStatsWithGroupBy('ANYTHING_ELSE')
+          .then(function() {
+            expect(mockSheet.setValues).toHaveBeenCalledWith(1, 1, 1, 11, groupInHeaderTester(''));
           })
           .then(done);
       });
