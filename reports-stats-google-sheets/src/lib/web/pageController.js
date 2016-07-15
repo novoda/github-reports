@@ -13,6 +13,7 @@ $(function() {
   var fromInput = $('input#date-from');
   var toInput = $('input#date-to');
   var reposSelect = $('select#select-repos');
+  var selectAllButton = $('#select-all-repos');
   var clearButton = $('input#clear-all-repos');
   var groupBySelect = $('select#select-group-by');
   var withAverageCheck = $('input#check-with-average');
@@ -71,7 +72,7 @@ $(function() {
   }
 
   function initSelectAllButton() {
-    $('#select-all-repos').on('click', selectAll);
+    selectAllButton.on('click', selectAll);
   }
 
   function selectAll() {
