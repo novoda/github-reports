@@ -22,6 +22,11 @@ div.control-group > .chosen-container {
     flex: 1;
 }
 
+div.control-group > .chosen-container ul.chosen-choices {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
 .large {
     flex: 15;
 }
