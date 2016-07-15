@@ -13,12 +13,12 @@ $(function() {
   var fromInput = $('input#date-from');
   var toInput = $('input#date-to');
   var reposSelect = $('select#select-repos');
-  var allRepos = [];
   var clearButton = $('input#clear-all-repos');
   var groupBySelect = $('select#select-group-by');
   var withAverageCheck = $('input#check-with-average');
   var getPrButton = $('input#get-pr-stats');
   var allInputs = $('input, select');
+  var allRepos = [];
 
   function initRepositoriesSelect() {
     reports.getRepositories()
