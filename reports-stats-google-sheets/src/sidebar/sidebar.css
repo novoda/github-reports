@@ -19,9 +19,6 @@ div.control-group > label {
 /* override the styling by chosen, use auto width */
 div.control-group > .chosen-container {
     width: auto !important;
-}
-
-.small {
     flex: 1;
 }
 
