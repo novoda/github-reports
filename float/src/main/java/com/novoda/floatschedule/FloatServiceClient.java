@@ -72,10 +72,11 @@ class FloatServiceClient {
         return Collections.emptyList();
     }
 
-    private Observable<Task> getTasksFor(String floatUsername, Date startDate, int numberOfWeeks) {
+    Observable<Task> getTasksFor(String floatUsername, Date startDate, int numberOfWeeks) {
         return peopleServiceClient.getPersons()
                 .filter(byFloatUsername(floatUsername))
-                .flatMap(toTasks(startDate, numberOfWeeks));
+                .flatMap(toTasks(startDate, numberOfWeeks))
+                .filter(excludingHolidays());
     }
 
     private Func1<Person, Boolean> byFloatUsername(String floatUsername) {
@@ -84,5 +85,9 @@ class FloatServiceClient {
 
     private Func1<Person, Observable<? extends Task>> toTasks(Date startDate, int numberOfWeeks) {
         return person -> taskServiceClient.getTasks(startDate, numberOfWeeks, person.getId());
+    }
+
+    private Func1<Task, Boolean> excludingHolidays() {
+        return task -> task.getName() != null && !(task.getName().contains("holiday") || task.getName().contains("Holiday"));
     }
 }
