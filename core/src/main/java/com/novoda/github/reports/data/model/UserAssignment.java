@@ -4,6 +4,7 @@ import com.google.auto.value.AutoValue;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +13,8 @@ import java.util.stream.Collectors;
 public abstract class UserAssignment implements Stats {
 
     public static Builder builder() {
-        return new AutoValue_UserAssignment.Builder();
+        return new AutoValue_UserAssignment.Builder()
+                .contributions(Collections.emptyList());
     }
 
     @Nullable
