@@ -33,6 +33,10 @@ public class Task {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getProjectName() {
         return projectName;
     }
@@ -43,6 +47,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return name + "@" + projectName + " (" + clientName + ") [" + id + "], " + personName;
+        return name + "@" + projectName + " (" + clientName + ") [" + id + "], " + personName + ", from " + startDate + " to " + endDate;
     }
 }
