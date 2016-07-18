@@ -7,6 +7,8 @@ import com.novoda.github.reports.data.db.converter.PullRequestStatsConverter;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.PullRequestStats;
+import com.novoda.github.reports.data.model.UserAssignments;
+import com.novoda.github.reports.data.model.UserAssignmentsStats;
 import org.jooq.DSLContext;
 import org.jooq.InsertOnDuplicateSetMoreStep;
 import org.jooq.Record;
@@ -114,6 +116,13 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
         } catch (SQLException e) {
             throw new DataLayerException(e);
         }
+    }
+
+    @Override
+    public UserAssignmentsStats getUserAssignmentsStats(Map<String, List<UserAssignments>> usersAssignments)
+            throws DataLayerException {
+
+        return null;
     }
 
 }

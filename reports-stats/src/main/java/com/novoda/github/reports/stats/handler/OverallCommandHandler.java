@@ -1,7 +1,7 @@
 package com.novoda.github.reports.stats.handler;
 
 import com.novoda.github.reports.data.EventDataLayer;
-import com.novoda.github.reports.data.model.UserAssignment;
+import com.novoda.github.reports.data.model.UserAssignmentsContributions;
 import com.novoda.github.reports.data.model.UserAssignmentsStats;
 import com.novoda.github.reports.data.model.UserContribution;
 import com.novoda.github.reports.stats.command.OverallOptions;
@@ -41,25 +41,25 @@ public class OverallCommandHandler implements CommandHandler<UserAssignmentsStat
                 .closedIssues(BigDecimal.ZERO)
                 .build();
 
-        UserAssignment bananaAssignment = UserAssignment.builder()
-                .assignedProject("banana")
+        UserAssignmentsContributions bananaAssignment = UserAssignmentsContributions.builder()
+                .assignedRepositories(Collections.singletonList("banana"))
                 .assignmentStart(new GregorianCalendar(2016, 0, 1).getTime())
                 .assignmentEnd(new GregorianCalendar(2016, 5, 30).getTime())
                 .contributions(Arrays.asList(bananaContribution, anotherContribution))
                 .build();
 
-        UserAssignment anotherAssignment = UserAssignment.builder()
-                .assignedProject("another")
+        UserAssignmentsContributions anotherAssignment = UserAssignmentsContributions.builder()
+                .assignedRepositories(Collections.singletonList("another"))
                 .assignmentStart(new GregorianCalendar(2016, 6, 1).getTime())
                 .contributions(Collections.singletonList(anotherContribution))
                 .build();
 
-        Map<String, List<UserAssignment>> assignments = new HashMap<>();
+        Map<String, List<UserAssignmentsContributions>> assignments = new HashMap<>();
         assignments.put("frapontillo", Arrays.asList(bananaAssignment, anotherAssignment));
         assignments.put("takecare", Collections.singletonList(bananaAssignment));
 
         return UserAssignmentsStats.builder()
-                .userAssignments(assignments)
+                .userAssignmentsContributions(assignments)
                 .build();
     }
 
