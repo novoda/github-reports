@@ -1,7 +1,7 @@
 package com.novoda.floatschedule.convert;
 
 import java.time.LocalDate;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -16,17 +16,29 @@ public class NumberOfWeeksCalculator {
     public int getNumberOfWeeksIn(Date startDateInclusive, Date endDateInclusive) {
         LocalDate start = getLocalDateFrom(startDateInclusive);
         LocalDate end = getLocalDateFrom(endDateInclusive).plusDays(1);
-        Period period = Period.between(start, end);
-        float numberOfDays = period.getDays() / NUMBER_OF_DAYS_IN_WEEK;
-        return (int) Math.ceil(numberOfDays);
+        long numberOfDays = ChronoUnit.DAYS.between(start, end);
+        return (int) getNumberOfWeeksInDays(numberOfDays);
     }
 
     private LocalDate getLocalDateFrom(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return LocalDate.of(calendar.get(Calendar.YEAR),
-                            calendar.get(Calendar.MONTH),
+                            getMonthFrom(calendar),
                             calendar.get(Calendar.DAY_OF_MONTH));
+    }
+
+    private int getMonthFrom(Calendar calendar) {
+        return calendar.get(Calendar.MONTH) + 1;
+    }
+
+    private double getNumberOfWeeksInDays(long numberOfDays) {
+        float numberOfWeeks =  numberOfDays / NUMBER_OF_DAYS_IN_WEEK;
+        return ceilIgnoringSign(numberOfWeeks);
+    }
+
+    private double ceilIgnoringSign(double value) {
+        return value > 0 ? Math.ceil(value) : -Math.ceil(-value);
     }
 
 }
