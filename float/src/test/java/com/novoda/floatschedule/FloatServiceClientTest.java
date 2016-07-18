@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +25,7 @@ import rx.Observable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
+import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -35,11 +37,24 @@ public class FloatServiceClientTest {
     private static final Date ANY_START_DATE = Date.from(Instant.now());
     private static final int ANY_NUMBER_OF_WEEKS = 42;
     private static final int ANY_PERSON_ID = 23;
+
     private static final String ANY_FLOAT_USERNAME = "imbecil";
     private static final String ANY_GITHUB_USERNAME = "palerma";
     private static final String ANY_FLOAT_PROJECT_NAME = "palerma";
     private static final String ANY_GITHUB_REPO_NAME = "lixo";
     private static final String ANY_OTHER_GITHUB_REPO_NAME = "nojo";
+
+    private static final Person ANY_PERSON = givenAPerson(ANY_PERSON_ID, ANY_FLOAT_USERNAME);
+    private static final Person ANY_OTHER_PERSON = givenAPerson(13, "outro palerma");
+    private static final Person YET_ANOTHER_PERSON = givenAPerson(74, "camelo");
+
+    private static final Task ANY_TASK = givenATask("get down", ANY_FLOAT_PROJECT_NAME, ANY_PERSON);
+    private static final Task ANY_OTHER_TASK = givenATask("party", "xxx", ANY_OTHER_PERSON);
+    private static final Task YET_ANOTHER_TASK = givenATask("have cereal", "xxx", YET_ANOTHER_PERSON);
+    private static final Task ONE_MORE_TASK = givenATask("and party", "another float project", ANY_PERSON);
+    private static final Task HOLIDAYS_TASK = givenATask("Holidays", "Holiday / Sick Leave", ANY_PERSON);
+
+    private static final List<Task> ANY_TASKS = Arrays.asList(ANY_TASK, ANY_OTHER_TASK, YET_ANOTHER_TASK, ONE_MORE_TASK, HOLIDAYS_TASK);
 
     @Mock
     private FloatGithubUserConverter mockFloatGithubUserConverter;
@@ -68,34 +83,36 @@ public class FloatServiceClientTest {
                                                                                                                ANY_OTHER_GITHUB_REPO_NAME));
     }
 
-    private void givenTasks(Date startDate, int numberOfWeeks, int personId) {
-        List<Task> tasks = Arrays.asList(givenATask("a"), givenATask("b"), givenATask("c"), givenATask(ANY_FLOAT_PROJECT_NAME));
-        Observable<Task> mockTasksObservable = Observable.from(tasks);
-        when(mockTaskServiceClient.getTasks(startDate, numberOfWeeks, personId)).thenReturn(mockTasksObservable);
-    }
-
-    private Task givenATask(String projectName) {
+    private static Task givenATask(String taskName, String projectName, Person person) {
         Task aTask = mock(Task.class);
         when(aTask.getProjectName()).thenReturn(projectName);
+        when(aTask.getName()).thenReturn(taskName);
+        String name = person.getName();
+        when(aTask.getPersonName()).thenReturn(name);
         return aTask;
     }
 
     private void givenPersons() {
-        List<Person> persons = Arrays.asList(givenAPerson(1, "um"), givenAPerson(2, "dois"), givenAPerson(ANY_PERSON_ID, ANY_FLOAT_USERNAME));
+        List<Person> persons = Arrays.asList(ANY_PERSON, ANY_OTHER_PERSON, YET_ANOTHER_PERSON);
         Observable<Person> mockPersonsObservable = Observable.from(persons);
         when(mockPeopleServiceClient.getPersons()).thenReturn(mockPersonsObservable);
     }
 
-    private Person givenAPerson(int id, String name) {
+    private static Person givenAPerson(int id, String name) {
         Person aPerson = mock(Person.class);
         when(aPerson.getId()).thenReturn(id);
         when(aPerson.getName()).thenReturn(name);
         return aPerson;
     }
 
+    private void givenTasks(List<Task> tasks) {
+        Observable<Task> mockTasksObservable = Observable.from(tasks);
+        when(mockTaskServiceClient.getTasks(any(Date.class), anyInt(), anyInt())).thenReturn(mockTasksObservable);
+    }
+
     @Test
     public void givenPersonsAndTasks_whenGettingRepositoryNamesForFloatUser_thenTheExpectedRepositoryNamesAreEmitted() {
-        givenTasks(ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_PERSON_ID);
+        givenTasks(ANY_TASKS);
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         floatServiceClient.getRepositoryNamesForFloatUser(ANY_FLOAT_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
@@ -122,7 +139,7 @@ public class FloatServiceClientTest {
     public void givenPersonsAndTasks_whenGettingRepositoryNamesForGithubUser_thenTheExpectedRepositoryNamesAreEmitted()
             throws IOException, NoMatchFoundException {
 
-        givenTasks(ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_PERSON_ID);
+        givenTasks(ANY_TASKS);
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         floatServiceClient.getRepositoryNamesForGithubUser(ANY_GITHUB_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
@@ -130,5 +147,46 @@ public class FloatServiceClientTest {
                 .subscribe(testSubscriber);
 
         testSubscriber.assertReceivedOnNext(Arrays.asList(ANY_GITHUB_REPO_NAME, ANY_OTHER_GITHUB_REPO_NAME));
+    }
+
+    @Test
+    public void givenPersonsAndTasks_whenGettingTasksForFloatUser_thenWeOnlyGetTasksForThatUser() throws Exception {
+        givenTasks(Arrays.asList(ANY_TASK, ONE_MORE_TASK));
+
+        TestSubscriber<Task> testSubscriber = new TestSubscriber<>();
+        floatServiceClient.getTasksFor(ANY_FLOAT_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(testSubscriber);
+        List<Task> actualTasks = testSubscriber.getOnNextEvents();
+
+        assertTasksAreExpected(Arrays.asList(ANY_TASK, ONE_MORE_TASK), actualTasks);
+    }
+
+    @Test
+    public void givenPersonsAndTasks_whenGettingTasksForFloatUser_thenWeOnlyGetTasksThatAreNotHolidays() throws Exception {
+        givenTasks(ANY_TASKS);
+
+        TestSubscriber<Task> testSubscriber = new TestSubscriber<>();
+        floatServiceClient.getTasksFor(ANY_FLOAT_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(testSubscriber);
+        List<Task> actualTasks = testSubscriber.getOnNextEvents();
+
+        assertTasksDoNotHaveHolidays(actualTasks);
+    }
+
+    private void assertTasksDoNotHaveHolidays(List<Task> actualTasks) {
+        List<Task> expectedTasks = ANY_TASKS
+                .stream()
+                .filter(task -> !task.getName().contains("Holiday"))
+                .collect(Collectors.toList());
+        assertTasksAreExpected(expectedTasks, actualTasks);
+    }
+
+    private void assertTasksAreExpected(List<Task> expectedTasks, List<Task> actualTasks) {
+        assertEquals(expectedTasks.size(), actualTasks.size());
+        for (int i = 0; i < expectedTasks.size(); i++) {
+            assertEquals(expectedTasks.get(i).getName(), actualTasks.get(i).getName());
+        }
     }
 }
