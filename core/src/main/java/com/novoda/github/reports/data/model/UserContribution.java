@@ -4,11 +4,19 @@ import com.google.auto.value.AutoValue;
 
 import java.math.BigDecimal;
 
+import static java.math.BigDecimal.ZERO;
+
 @AutoValue
 public abstract class UserContribution implements Stats {
 
     public static Builder builder() {
-        return new AutoValue_UserContribution.Builder();
+        return new AutoValue_UserContribution.Builder()
+                .comments(ZERO)
+                .openedPullRequests(ZERO)
+                .mergedPullRequests(ZERO)
+                .closedPullRequests(ZERO)
+                .openedIssues(ZERO)
+                .closedIssues(ZERO);
     }
 
     abstract String project();
