@@ -40,8 +40,23 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
     @Override
     InsertOnDuplicateSetMoreStep<EventRecord> buildUpdateOrInsertListQuery(DSLContext create, Event element) {
         Timestamp date = dateToTimestamp(element.date());
-        return create.insertInto(EVENT, EVENT._ID, EVENT.REPOSITORY_ID, EVENT.AUTHOR_USER_ID, EVENT.OWNER_USER_ID, EVENT.EVENT_TYPE_ID, EVENT.DATE)
-                .values(element.id(), element.repositoryId(), element.authorUserId(), element.ownerUserId(), element.eventType().getValue(), date)
+        return create.insertInto(
+                EVENT,
+                EVENT._ID,
+                EVENT.REPOSITORY_ID,
+                EVENT.AUTHOR_USER_ID,
+                EVENT.OWNER_USER_ID,
+                EVENT.EVENT_TYPE_ID,
+                EVENT.DATE
+        )
+                .values(
+                        element.id(),
+                        element.repositoryId(),
+                        element.authorUserId(),
+                        element.ownerUserId(),
+                        element.eventType().getValue(),
+                        date
+                )
                 .onDuplicateKeyUpdate()
                 .set(EVENT.AUTHOR_USER_ID, element.authorUserId())
                 .set(EVENT.OWNER_USER_ID, element.ownerUserId())
