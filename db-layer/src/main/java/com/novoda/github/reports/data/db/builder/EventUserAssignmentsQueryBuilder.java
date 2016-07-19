@@ -42,7 +42,6 @@ public class EventUserAssignmentsQueryBuilder {
     public SelectHavingStep<? extends Record> getStats() throws DataLayerException {
 
         try {
-
             SelectJoinStep<? extends Record> select = selectFields();
             SelectOnConditionStep<? extends Record> withUsers = leftJoinUser(select);
             SelectOnConditionStep<? extends Record> withUsersAndEvents = leftJoinEvent(withUsers);
@@ -50,7 +49,6 @@ public class EventUserAssignmentsQueryBuilder {
             SelectHavingStep<? extends Record> query = groupByAll(withUsersAndEventsAndRepositories);
 
             return query;
-
         } catch (NoUserAssignmentsException e) {
             throw new DataLayerException(e);
         }
