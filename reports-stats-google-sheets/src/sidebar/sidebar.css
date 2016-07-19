@@ -27,6 +27,10 @@ div.control-group > .chosen-container ul.chosen-choices {
     overflow-y: auto;
 }
 
+.flex-1 {
+    flex: 1;
+}
+
 .large {
     flex: 15;
 }
