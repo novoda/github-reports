@@ -48,6 +48,16 @@ public class NumberOfWeeksCalculatorTest {
     }
 
     @Test
+    public void givenStartAndEndDatesWithALeapDayInBetween_whenCalculatingNumberOfWeeks_thenItIsTheCorrectNumber() {
+        Date startDate = getDate(2016, Calendar.FEBRUARY, 22);
+        Date endDate = getDate(2016, Calendar.MARCH, 7);
+
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+
+        assertEquals(3, actual);
+    }
+
+    @Test
     public void givenAStartDateOnAMondayAndEndDateOnNextMonday_whenCalculatingNumberOfWeeks_thenItIsTwoWeeks() {
         Date startDate = getDate(2016, Calendar.JULY, 4);
         Date endDate = getDate(2016, Calendar.JULY, 11);
