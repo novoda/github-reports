@@ -3,7 +3,6 @@ package com.novoda.github.reports.data.db.builder;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.db.UserAssignmentsStatsParameters;
 import com.novoda.github.reports.data.model.UserAssignments;
-import org.jetbrains.annotations.NotNull;
 import org.jooq.*;
 
 import java.sql.Timestamp;
@@ -96,14 +95,12 @@ public class EventUserAssignmentsQueryBuilder {
                 .orElseThrow(NoUserAssignmentsException::new);
     }
 
-    @NotNull
     private Function<String, Stream<SelectSelectStep<Record4<Timestamp, Timestamp, String, String>>>> toUserAssignmentQueries() {
         return username -> parameters.getUsersAssignments().get(username)
                 .stream()
                 .map(toUserAssignmentQuery(username));
     }
 
-    @NotNull
     private Function<UserAssignments, SelectSelectStep<Record4<Timestamp, Timestamp, String, String>>> toUserAssignmentQuery(String username) {
         return userAssignment -> {
             String repositoriesSet = makeAssignedRepositoriesSet(userAssignment);
@@ -121,7 +118,7 @@ public class EventUserAssignmentsQueryBuilder {
         return userAssignment.assignedRepositories().stream().collect(Collectors.joining(","));
     }
 
-    private @NotNull Collector<
+    private Collector<
             SelectOrderByStep<Record4<Timestamp, Timestamp, String, String>>,
             ?,
             Optional<SelectOrderByStep<Record4<Timestamp, Timestamp, String, String>>>> toUnion() {
