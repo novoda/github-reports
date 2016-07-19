@@ -2,12 +2,10 @@ package com.novoda.github.reports.data.model;
 
 import com.google.auto.value.AutoValue;
 
-import java.math.BigDecimal;
-
-import static java.math.BigDecimal.ZERO;
-
 @AutoValue
 public abstract class UserContribution implements Stats {
+
+    private static final Integer ZERO = 0;
 
     public static Builder builder() {
         return new AutoValue_UserContribution.Builder()
@@ -21,17 +19,17 @@ public abstract class UserContribution implements Stats {
 
     abstract String project();
 
-    abstract BigDecimal comments();
+    abstract Integer comments();
 
-    abstract BigDecimal openedPullRequests();
+    abstract Integer openedPullRequests();
 
-    abstract BigDecimal mergedPullRequests();
+    abstract Integer mergedPullRequests();
 
-    abstract BigDecimal closedPullRequests();
+    abstract Integer closedPullRequests();
 
-    abstract BigDecimal openedIssues();
+    abstract Integer openedIssues();
 
-    abstract BigDecimal closedIssues();
+    abstract Integer closedIssues();
 
     @Override
     public String describeStats() {
@@ -58,17 +56,21 @@ public abstract class UserContribution implements Stats {
 
         public abstract Builder project(String project);
 
-        public abstract Builder comments(BigDecimal comments);
+        public abstract Builder comments(Integer comments);
 
-        public abstract Builder openedPullRequests(BigDecimal openedPullRequests);
+        public abstract Builder openedPullRequests(Integer openedPullRequests);
 
-        public abstract Builder mergedPullRequests(BigDecimal mergedPullRequests);
+        public abstract Builder mergedPullRequests(Integer mergedPullRequests);
 
-        public abstract Builder closedPullRequests(BigDecimal closedPullRequests);
+        public abstract Builder closedPullRequests(Integer closedPullRequests);
 
-        public abstract Builder openedIssues(BigDecimal openedIssues);
+        public abstract Builder openedIssues(Integer openedIssues);
 
-        public abstract Builder closedIssues(BigDecimal closedIssues);
+        public abstract Builder closedIssues(Integer closedIssues);
+
+        public Builder plusComments(Integer comments) {
+            return this.comments(build().comments() + comments);
+        }
 
         public abstract UserContribution build();
 

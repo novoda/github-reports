@@ -9,10 +9,10 @@ import java.math.BigDecimal;
 import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.PullRequestStatsParameters.GROUP_SELECTOR_FIELD;
 import static com.novoda.github.reports.data.db.Tables.*;
-import static com.novoda.github.reports.data.db.builder.DbEventUserQueryBuilder.USER_TYPE_FIELD;
+import static com.novoda.github.reports.data.db.builder.EventUserQueryBuilder.USER_TYPE_FIELD;
 import static org.jooq.impl.DSL.*;
 
-public class DbEventCountQueryBuilder {
+public class EventCountQueryBuilder {
 
     public static final Field<BigDecimal> QUANTITY_FIELD = field("quantity", BigDecimal.class);
     public static final Field<Long> USER_FIELD = field("user_id", Long.class);
@@ -23,40 +23,40 @@ public class DbEventCountQueryBuilder {
     private static final String ASSIGNED_USERS_TABLE = "assigned_users";
 
     private final PullRequestStatsParameters parameters;
-    private final DbEventUserQueryBuilder userQueryBuilder;
+    private final EventUserQueryBuilder userQueryBuilder;
     private final Integer eventIdForCount;
     private final TableField<EventRecord, Long> userIdFieldCountTarget;
     private final OwnerAuthor ownerAuthorConstraint;
 
-    public static DbEventCountQueryBuilder forMergedCount(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
-        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, MERGED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
+    public static EventCountQueryBuilder forMergedCount(PullRequestStatsParameters parameters, EventUserQueryBuilder userQueryBuilder) {
+        return new EventCountQueryBuilder(parameters, userQueryBuilder, MERGED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
     }
 
-    public static DbEventCountQueryBuilder forOpenedCount(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
-        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, OPENED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
+    public static EventCountQueryBuilder forOpenedCount(PullRequestStatsParameters parameters, EventUserQueryBuilder userQueryBuilder) {
+        return new EventCountQueryBuilder(parameters, userQueryBuilder, OPENED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
     }
 
-    public static DbEventCountQueryBuilder forOtherPeopleComments(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
-        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.OWNER_USER_ID, OwnerAuthor.MUST_BE_DIFFERENT);
+    public static EventCountQueryBuilder forOtherPeopleComments(PullRequestStatsParameters parameters, EventUserQueryBuilder userQueryBuilder) {
+        return new EventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.OWNER_USER_ID, OwnerAuthor.MUST_BE_DIFFERENT);
     }
 
-    public static DbEventCountQueryBuilder forCommentsOtherPeople(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
-        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.MUST_BE_DIFFERENT);
+    public static EventCountQueryBuilder forCommentsOtherPeople(PullRequestStatsParameters parameters, EventUserQueryBuilder userQueryBuilder) {
+        return new EventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.MUST_BE_DIFFERENT);
     }
 
-    public static DbEventCountQueryBuilder forCommentsOwn(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
-        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.MUST_BE_SAME);
+    public static EventCountQueryBuilder forCommentsOwn(PullRequestStatsParameters parameters, EventUserQueryBuilder userQueryBuilder) {
+        return new EventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.MUST_BE_SAME);
     }
 
-    public static DbEventCountQueryBuilder forCommentsAny(PullRequestStatsParameters parameters, DbEventUserQueryBuilder userQueryBuilder) {
-        return new DbEventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
+    public static EventCountQueryBuilder forCommentsAny(PullRequestStatsParameters parameters, EventUserQueryBuilder userQueryBuilder) {
+        return new EventCountQueryBuilder(parameters, userQueryBuilder, COMMENTED_PULL_REQUESTS_ID, EVENT.AUTHOR_USER_ID, OwnerAuthor.NO_CONSTRAINT);
     }
 
-    private DbEventCountQueryBuilder(PullRequestStatsParameters parameters,
-                                     DbEventUserQueryBuilder userQueryBuilder,
-                                     Integer eventIdForCount,
-                                     TableField<EventRecord, Long> userIdFieldCountTarget,
-                                     OwnerAuthor ownerAuthorConstraint) {
+    private EventCountQueryBuilder(PullRequestStatsParameters parameters,
+                                   EventUserQueryBuilder userQueryBuilder,
+                                   Integer eventIdForCount,
+                                   TableField<EventRecord, Long> userIdFieldCountTarget,
+                                   OwnerAuthor ownerAuthorConstraint) {
 
         this.parameters = parameters;
         this.userQueryBuilder = userQueryBuilder;
@@ -96,7 +96,7 @@ public class DbEventCountQueryBuilder {
     private SelectHavingStep<Record4<BigDecimal, Long, String, String>> getAverageExternalUserStats() {
         SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> externalUserStats = getExternalUserStats();
 
-        return getAverageUserStats(externalUserStats, DbEventUserQueryBuilder.USER_EXTERNAL_ID);
+        return getAverageUserStats(externalUserStats, EventUserQueryBuilder.USER_EXTERNAL_ID);
     }
 
     private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> getExternalUserStats() {
@@ -107,7 +107,7 @@ public class DbEventCountQueryBuilder {
     private SelectHavingStep<Record4<BigDecimal, Long, String, String>> getAverageOrganisationUserStats() {
         SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> organisationUserStats = getOrganisationUserStats();
 
-        return getAverageUserStats(organisationUserStats, DbEventUserQueryBuilder.USER_ORGANISATION_ID);
+        return getAverageUserStats(organisationUserStats, EventUserQueryBuilder.USER_ORGANISATION_ID);
     }
 
     private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> getOrganisationUserStats() {
@@ -118,7 +118,7 @@ public class DbEventCountQueryBuilder {
     private SelectHavingStep<Record4<BigDecimal, Long, String, String>> getAverageAssignedUserStats() {
         SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> assignedUserStats = getAssignedUserStats();
 
-        return getAverageUserStats(assignedUserStats, DbEventUserQueryBuilder.USER_ASSIGNED_ID);
+        return getAverageUserStats(assignedUserStats, EventUserQueryBuilder.USER_ASSIGNED_ID);
     }
 
     private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> getAssignedUserStats() {
