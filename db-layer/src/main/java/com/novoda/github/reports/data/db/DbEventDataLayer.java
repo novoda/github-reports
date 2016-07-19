@@ -7,8 +7,14 @@ import com.novoda.github.reports.data.db.builder.EventUserAssignmentsQueryBuilde
 import com.novoda.github.reports.data.db.converter.PullRequestStatsConverter;
 import com.novoda.github.reports.data.db.converter.UserAssignmentsStatsConverter;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
-import com.novoda.github.reports.data.model.*;
-import org.jooq.*;
+import com.novoda.github.reports.data.model.Event;
+import com.novoda.github.reports.data.model.PullRequestStats;
+import com.novoda.github.reports.data.model.UserAssignments;
+import com.novoda.github.reports.data.model.UserAssignmentsStats;
+import org.jooq.DSLContext;
+import org.jooq.InsertOnDuplicateSetMoreStep;
+import org.jooq.Record;
+import org.jooq.Result;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,6 +25,7 @@ import java.util.Map;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.dateToTimestamp;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
+import static com.novoda.github.reports.data.db.builder.EventUserAssignmentsQueryBuilder.USERNAME_FIELD;
 
 public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements EventDataLayer {
 
@@ -146,9 +153,12 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
             EventUserAssignmentsQueryBuilder userAssignmentsQueryBuilder = EventUserAssignmentsQueryBuilder
                     .newInstance(parameters);
 
-            SelectHavingStep<? extends Record> groupedStats = userAssignmentsQueryBuilder.getStats();
+            Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername =
+                    userAssignmentsQueryBuilder
+                            .getStats()
+                            .fetchGroups(USERNAME_FIELD);
 
-            return usersAssignmentsConverter.convert(groupedStats);
+            return usersAssignmentsConverter.convert(resultsGroupedByUsername);
 
         } catch (SQLException e) {
             throw new DataLayerException(e);

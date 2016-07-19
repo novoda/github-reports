@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
-import org.jooq.SelectHavingStep;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,9 +29,8 @@ public class UserAssignmentsStatsConverter {
             REPOSITORIES_ASSIGNED_FIELD
     };
 
-    public UserAssignmentsStats convert(SelectHavingStep<? extends Record> query) {
-        Map<String, List<UserAssignmentsContributions>> userAssignmentsContributions = query
-                .fetchGroups(USERNAME_FIELD)
+    public UserAssignmentsStats convert(Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername) {
+        Map<String, List<UserAssignmentsContributions>> userAssignmentsContributions = resultsGroupedByUsername
                 .entrySet()
                 .stream()
                 .map(valuesToSingleUserAssignmentsContributions())
