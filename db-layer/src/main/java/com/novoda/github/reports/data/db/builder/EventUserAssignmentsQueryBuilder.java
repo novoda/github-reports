@@ -104,10 +104,12 @@ public class EventUserAssignmentsQueryBuilder {
     private Function<UserAssignments, SelectSelectStep<Record4<Timestamp, Timestamp, String, String>>> toUserAssignmentQuery(String username) {
         return userAssignment -> {
             String repositoriesSet = makeAssignedRepositoriesSet(userAssignment);
+            Timestamp assignmentStartTimestamp = dateToTimestamp(userAssignment.assignmentStart());
+            Timestamp assignmentEndTimestamp = dateToTimestamp(userAssignment.assignmentEnd());
             return parameters.getContext()
                     .select(
-                            val(dateToTimestamp(userAssignment.assignmentStart())).as(DATE_FROM_FIELD),
-                            val(dateToTimestamp(userAssignment.assignmentEnd())).as(DATE_TO_FIELD),
+                            val(assignmentStartTimestamp).as(DATE_FROM_FIELD),
+                            val(assignmentEndTimestamp).as(DATE_TO_FIELD),
                             val(repositoriesSet).as(REPOSITORIES_ASSIGNED_FIELD),
                             val(username).as(USERNAME_FIELD)
                     );
