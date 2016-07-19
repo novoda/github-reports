@@ -1,6 +1,6 @@
 'use strict';
 
-/* exported onInstall, onOpen, createMenu, createSidebars, showSidebarPrStats, showPrStats, setTimeout */
+/* exported onInstall, onOpen, createMenu, createAndShowSidebarPrStats, showPrStats, setTimeout */
 
 var stringifier = new QueryStringifier();
 var http = new AppsHttp(stringifier);
@@ -17,21 +17,17 @@ function onInstall() {
 
 function onOpen() {
   createMenu();
-  createSidebars();
-  showSidebarPrStats();
+  createAndShowSidebarPrStats();
 }
 
 function createMenu() {
   spreadsheet.createMenu('Github Reports', {
-    'Pull Request Stats': 'showSidebarPrStats'
+    'Pull Request Stats': 'createAndShowSidebarPrStats'
   });
 }
 
-function createSidebars() {
+function createAndShowSidebarPrStats() {
   spreadsheet.createSidebar(SIDEBAR_PR_STATS_NAME, 'PR Stats', 'sidebar');
-}
-
-function showSidebarPrStats() {
   spreadsheet.showSidebar(SIDEBAR_PR_STATS_NAME);
 }
 
