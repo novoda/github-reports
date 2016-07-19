@@ -8,6 +8,7 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
 
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -43,22 +44,18 @@ public class UserAssignmentsStatsConverter {
     }
 
     @NotNull
-    private Function<Map.Entry<String, ? extends Result<? extends Record>>, ImmutableMapEntry<String, List<UserAssignmentsContributions>>> valuesToSingleUserAssignmentsContributions() {
-        return singleUserStats -> new ImmutableMapEntry<String, List<UserAssignmentsContributions>>() {
-            @Override
-            public String getKey() {
-                return singleUserStats.getKey();
-            }
-
-            @Override
-            public List<UserAssignmentsContributions> getValue() {
-                return singleUserStats.getValue()
-                        .intoGroups(singleUserGroupingFields)
-                        .entrySet()
-                        .stream()
-                        .map(toSingleUserAssignmentsContributions())
-                        .collect(Collectors.toList());
-            }
+    private Function<Map.Entry<String, ? extends Result<? extends Record>>, AbstractMap.SimpleImmutableEntry<String, List<UserAssignmentsContributions>>> valuesToSingleUserAssignmentsContributions() {
+        return singleUserStats -> {
+            List<UserAssignmentsContributions> contributions = singleUserStats.getValue()
+                    .intoGroups(singleUserGroupingFields)
+                    .entrySet()
+                    .stream()
+                    .map(toSingleUserAssignmentsContributions())
+                    .collect(Collectors.toList());
+            return new AbstractMap.SimpleImmutableEntry<>(
+                    singleUserStats.getKey(),
+                    contributions
+            );
         };
     }
 
