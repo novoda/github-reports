@@ -1,4 +1,5 @@
 package com.novoda.github.reports.data.db.builder;
 
-public class NoUserAssignmentsException extends Exception {
+class NoUserAssignmentsException extends Exception {
+    // thrown when there is no user-assignment mapping
 }
