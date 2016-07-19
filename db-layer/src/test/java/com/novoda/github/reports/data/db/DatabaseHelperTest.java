@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 public class DatabaseHelperTest {
 
-    private static final Date NULL_DATE = null;
+    private static final Date NO_DATE = null;
 
     @Test
     public void givenFullRange_whenConditionalBetween_thenReturnsFullRangeCondition() {
@@ -44,7 +44,7 @@ public class DatabaseHelperTest {
     public void givenRightRange_whenConditionalBetween_thenReturnsRightRangeCondition() {
         Timestamp to = new Timestamp(new GregorianCalendar(2015, 11, 31).getTime().getTime());
 
-        Condition actualCondition = DatabaseHelper.conditionalBetween(EVENT.DATE, NULL_DATE, to);
+        Condition actualCondition = DatabaseHelper.conditionalBetween(EVENT.DATE, NO_DATE, to);
 
         assertEquals(actualCondition.toString(), "(\n" +
                 "  \"reports\".\"event\".\"date\" is not null\n" +
@@ -54,7 +54,7 @@ public class DatabaseHelperTest {
 
     @Test
     public void givenNoRange_whenConditionalBetween_thenReturnsSimpleNotNullCondition() {
-        Condition actualCondition = DatabaseHelper.conditionalBetween(EVENT.DATE, NULL_DATE, NULL_DATE);
+        Condition actualCondition = DatabaseHelper.conditionalBetween(EVENT.DATE, NO_DATE, NO_DATE);
 
         assertEquals(actualCondition.toString(), "\"reports\".\"event\".\"date\" is not null");
     }
