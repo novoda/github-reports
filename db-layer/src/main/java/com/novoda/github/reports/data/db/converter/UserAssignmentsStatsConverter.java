@@ -3,7 +3,6 @@ package com.novoda.github.reports.data.db.converter;
 import com.novoda.github.reports.data.model.UserAssignmentsContributions;
 import com.novoda.github.reports.data.model.UserAssignmentsStats;
 import com.novoda.github.reports.data.model.UserContribution;
-import org.jetbrains.annotations.NotNull;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -43,7 +42,6 @@ public class UserAssignmentsStatsConverter {
                 .build();
     }
 
-    @NotNull
     private Function<Map.Entry<String, ? extends Result<? extends Record>>, AbstractMap.SimpleImmutableEntry<String, List<UserAssignmentsContributions>>> valuesToSingleUserAssignmentsContributions() {
         return singleUserStats -> {
             List<UserAssignmentsContributions> contributions = singleUserStats.getValue()
@@ -59,7 +57,6 @@ public class UserAssignmentsStatsConverter {
         };
     }
 
-    @NotNull
     private Function<Map.Entry<Record, ? extends Result<? extends Record>>, UserAssignmentsContributions> toSingleUserAssignmentsContributions() {
         return singleUserMultipleRepositoriesStats -> {
             Result<? extends Record> multipleRepositoriesStats = singleUserMultipleRepositoriesStats.getValue();
@@ -76,7 +73,6 @@ public class UserAssignmentsStatsConverter {
         };
     }
 
-    @NotNull
     private List<UserContribution> aggregateIntoUserContributions(Result<? extends Record> multipleRepositoriesStats) {
         return multipleRepositoriesStats
                 .stream()
@@ -88,14 +84,12 @@ public class UserAssignmentsStatsConverter {
                 .collect(Collectors.toList());
     }
 
-    @NotNull
     private Collector<Record, ?, Map<String, List<Record>>> groupByRepositoryWorkedOn() {
         return Collectors.groupingBy(
                 record -> record.getValue(REPOSITORY_WORKED_NAME_FIELD)
         );
     }
 
-    @NotNull
     private Function<Map.Entry<String, List<Record>>, UserContribution.Builder> toUserContributionBuilder() {
         return singleUserSingleRepositoryStats ->
                 singleUserSingleRepositoryStats.getValue()
@@ -107,12 +101,10 @@ public class UserAssignmentsStatsConverter {
                         );
     }
 
-    @NotNull
     private Supplier<UserContribution.Builder> supplyBuilder(Map.Entry<String, List<Record>> singleUserSingleRepositoryStats) {
         return () -> UserContribution.builder().project(singleUserSingleRepositoryStats.getKey());
     }
 
-    @NotNull
     private BiConsumer<UserContribution.Builder, Record> accumulateRecordsIntoBuilder() {
         return (builder, record) -> {
             Integer eventTypeId = record.getValue(EVENT.EVENT_TYPE_ID);
@@ -133,14 +125,12 @@ public class UserAssignmentsStatsConverter {
         };
     }
 
-    @NotNull
     private BiConsumer<UserContribution.Builder, UserContribution.Builder> doNotCombine() {
         return (builder, builder2) -> {
             throw new IllegalStateException("Combining Builders is not supported.");
         };
     }
 
-    @NotNull
     private List<String> splitAssignedRepositories(Record groupingKeys) {
         return Arrays.asList(groupingKeys.getValue(REPOSITORIES_ASSIGNED_FIELD).split(","));
     }
