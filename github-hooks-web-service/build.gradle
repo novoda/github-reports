@@ -32,6 +32,10 @@ dependencies {
     compile project(':core')
     compile project(':github')
 
+    compileOnly 'com.google.auto.value:auto-value:1.2'
+    apt 'com.google.auto.value:auto-value:1.2'
+    apt 'com.ryanharter.auto.value:auto-value-gson:0.3.1'
+
     compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
     compile 'com.amazonaws:aws-lambda-java-events:1.3.0'
 
@@ -73,5 +77,3 @@ lambdasMap.each { key, value ->
     }
     uploadHooksLambdas.dependsOn uploadLambdaTask
 }
-
-
