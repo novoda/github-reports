@@ -24,8 +24,6 @@ import java.util.stream.Collectors;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @SuppressWarnings("Duplicates")
@@ -104,12 +102,7 @@ public class FloatServiceClientTest {
     }
 
     private static Task givenATask(String taskName, String projectName, Person person) {
-        Task aTask = mock(Task.class);
-        when(aTask.getProjectName()).thenReturn(projectName);
-        when(aTask.getName()).thenReturn(taskName);
-        String name = person.getName();
-        when(aTask.getPersonName()).thenReturn(name);
-        return aTask;
+        return new Task(taskName, person.getName(), projectName);
     }
 
     private void givenPersons() {
