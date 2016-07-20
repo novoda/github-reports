@@ -12,6 +12,7 @@ import rx.internal.util.UtilityFunctions;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 
 public class FloatServiceClient {
 
@@ -140,19 +141,23 @@ public class FloatServiceClient {
     Map<String, String> mapFloatToGithubUsernames(List<String> githubUsernames) throws GithubToFloatUserMatchNotFoundException {
         return githubUsernames
                 .stream()
-                .map(githubUsername -> {
-                    try {
-                        String floatUsername = floatGithubUserConverter.getFloatUser(githubUsername);
-                        return new AbstractMap.SimpleImmutableEntry<>(floatUsername, githubUsername);
-                    } catch (IOException e) {
-                        throw new GithubToFloatUserMatchNotFoundException(e);
-                    }
-                })
+                .map(githubToFloatUsername())
                 .collect(
                         HashMap::new,
                         (map, entry) -> map.put(entry.getKey(), entry.getValue()),
                         (stringStringHashMap, stringStringHashMap2) -> {}
                 );
+    }
+
+    private Function<String, AbstractMap.SimpleImmutableEntry<String, String>> githubToFloatUsername() {
+        return githubUsername -> {
+            try {
+                String floatUsername = floatGithubUserConverter.getFloatUser(githubUsername);
+                return new AbstractMap.SimpleImmutableEntry<>(floatUsername, githubUsername);
+            } catch (IOException e) {
+                throw new GithubToFloatUserMatchNotFoundException(e);
+            }
+        };
     }
 
     private Func1<Person, Map.Entry<String, List<Task>>> personToGithubUserWithTasksEntry(Date startDate,
