@@ -1,7 +1,7 @@
 package com.novoda.github.reports.stats.handler;
 
 import com.novoda.floatschedule.FloatServiceClient;
-import com.novoda.floatschedule.convert.FloatGithubUserConverter;
+import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.model.UserAssignments;
@@ -21,15 +21,15 @@ public class OverallCommandHandler implements CommandHandler<UserAssignmentsStat
 
     private final EventDataLayer eventDataLayer;
     private final FloatServiceClient floatServiceClient;
-    private final FloatGithubUserConverter floatGithubUserConverter;
+    private final FloatDateConverter floatDateConverter;
 
     public OverallCommandHandler(EventDataLayer eventDataLayer,
                                  FloatServiceClient floatServiceClient,
-                                 FloatGithubUserConverter floatGithubUserConverter) {
+                                 FloatDateConverter floatDateConverter) {
 
         this.eventDataLayer = eventDataLayer;
         this.floatServiceClient = floatServiceClient;
-        this.floatGithubUserConverter = floatGithubUserConverter;
+        this.floatDateConverter = floatDateConverter;
     }
 
     @Override
