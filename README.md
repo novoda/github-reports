@@ -18,6 +18,7 @@ Base modules allow for behaviour decomposition, each taking care of one specific
   database
 * [`float`](float/README.md) contains all the components needed to query the Float API
 * [`web-service`](web-service/README.md) contains the endpoint handlers for Amazon AWS Gateway written as Lambdas
+* [`hooks-service`](hooks-service/README.md) contains the the components used to receive and parse Github webhook notifications.
 
 ### Batch modules
 
