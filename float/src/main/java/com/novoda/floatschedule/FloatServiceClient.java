@@ -89,7 +89,7 @@ public class FloatServiceClient {
         return person -> personHasFloatUsername(person, floatUsername);
     }
 
-    private Func1<Person, Observable<? extends Task>> toTasks(Date startDate, Integer numberOfWeeks) {
+    private Func1<Person, Observable<Task>> toTasks(Date startDate, Integer numberOfWeeks) {
         return person -> taskServiceClient.getTasks(startDate, numberOfWeeks, person.getId());
     }
 
