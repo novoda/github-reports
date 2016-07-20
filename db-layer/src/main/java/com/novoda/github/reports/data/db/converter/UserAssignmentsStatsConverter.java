@@ -77,7 +77,7 @@ public class UserAssignmentsStatsConverter {
     private List<UserContribution> aggregateIntoUserContributions(Result<? extends Record> multipleRepositoriesStats) {
         return multipleRepositoriesStats
                 .stream()
-                .filter(removeNonContributionRecords())
+                .filter(byRemovingNonContributionRecords())
                 .collect(groupByRepositoryWorkedOn())
                 .entrySet()
                 .stream()
@@ -86,7 +86,7 @@ public class UserAssignmentsStatsConverter {
                 .collect(Collectors.toList());
     }
 
-    private Predicate<Record> removeNonContributionRecords() {
+    private Predicate<Record> byRemovingNonContributionRecords() {
         return record -> record.getValue(REPOSITORY_WORKED_NAME_FIELD) != null;
     }
 
