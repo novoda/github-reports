@@ -24,7 +24,7 @@ public class NumberOfWeeksCalculatorTest {
         Date startDate = getDate(2016, Calendar.JULY, 4);
         Date endDate = getDate(2016, Calendar.JULY, 10);
 
-        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
 
         assertEquals(1, actual);
     }
@@ -34,7 +34,7 @@ public class NumberOfWeeksCalculatorTest {
         Date startDate = getDate(2016, Calendar.JANUARY, 30);
         Date endDate = getDate(2016, Calendar.JULY, 5);
 
-        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
 
         assertEquals(23, actual);
     }
@@ -44,7 +44,7 @@ public class NumberOfWeeksCalculatorTest {
         Date startDate = getDate(2016, Calendar.DECEMBER, 25);
         Date endDate = getDate(2017, Calendar.JANUARY, 30);
 
-        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
 
         assertEquals(6, actual);
     }
@@ -54,7 +54,7 @@ public class NumberOfWeeksCalculatorTest {
         Date startDate = getDate(2016, Calendar.FEBRUARY, 22);
         Date endDate = getDate(2016, Calendar.MARCH, 7);
 
-        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
 
         assertEquals(3, actual);
     }
@@ -64,7 +64,7 @@ public class NumberOfWeeksCalculatorTest {
         Date startDate = getDate(2016, Calendar.JULY, 4);
         Date endDate = getDate(2016, Calendar.JULY, 11);
 
-        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
 
         assertEquals(2, actual);
     }
@@ -74,7 +74,7 @@ public class NumberOfWeeksCalculatorTest {
         Date startDate = getDate(2016, Calendar.JULY, 8);
         Date endDate = getDate(2016, Calendar.JULY, 11);
 
-        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
 
         assertEquals(1, actual);
     }
@@ -84,7 +84,7 @@ public class NumberOfWeeksCalculatorTest {
         Date startDate = getDate(2016, Calendar.JULY, 5);
         Date endDate = getDate(2016, Calendar.JULY, 26);
 
-        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
 
         assertEquals(4, actual);
     }
@@ -94,7 +94,7 @@ public class NumberOfWeeksCalculatorTest {
         Date startDate = getDate(2016, Calendar.JULY, 5);
         Date endDate = getDate(2016, Calendar.JUNE, 28);
 
-        int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        int actual = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
 
         assertEquals(-1, actual);
     }
@@ -103,7 +103,7 @@ public class NumberOfWeeksCalculatorTest {
     public void givenStartDateAndNoEndDate_whenCalculatingNumberOfWeeks_thenItIsNull() {
         Date startDate = getDate(2016, Calendar.JULY, 20);
 
-        Integer actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, NO_DATE);
+        Integer actual = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, NO_DATE);
 
         assertEquals(null, actual);
     }
@@ -112,7 +112,7 @@ public class NumberOfWeeksCalculatorTest {
     public void givenNoStartDateAndEndDate_whenCalculatingNumberOfWeeks_thenItIsNull() {
         Date endDate = getDate(2016, Calendar.AUGUST, 20);
 
-        Integer actual = numberOfWeeksCalculator.getNumberOfWeeksIn(NO_DATE, endDate);
+        Integer actual = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(NO_DATE, endDate);
 
         assertEquals(null, actual);
     }
@@ -120,7 +120,7 @@ public class NumberOfWeeksCalculatorTest {
     @Test
     public void givenNoStartDateAndNoEndDate_whenCalculatingNumberOfWeeks_thenItIsNull() {
 
-        Integer actual = numberOfWeeksCalculator.getNumberOfWeeksIn(NO_DATE, NO_DATE);
+        Integer actual = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(NO_DATE, NO_DATE);
 
         assertEquals(null, actual);
     }

@@ -10,10 +10,13 @@ public class NumberOfWeeksCalculator {
     private static final float NUMBER_OF_DAYS_IN_WEEK = 7f;
 
     /**
-     * @return the number of weeks from start date to end date, rounded up. this means that, as an example, if there are 9 days in-between the
-     * start and end dates, you'll get 2 weeks as a result.
+     * @param startDateInclusive The start date of the range, can be null
+     * @param endDateInclusive   The end date of the range, can be null
+     * @return the number of weeks from start date to end date, rounded up. This means that, as an example, if there are
+     * 9 days in-between the start and end dates, you'll get 2 weeks as a result. If any of the start or end date is
+     * null, then the number of weeks is null.
      */
-    public Integer getNumberOfWeeksIn(Date startDateInclusive, Date endDateInclusive) {
+    public Integer getNumberOfWeeksOrNullIn(Date startDateInclusive, Date endDateInclusive) {
         if (startDateInclusive == null || endDateInclusive == null) {
             return null;
         }
@@ -27,8 +30,8 @@ public class NumberOfWeeksCalculator {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return LocalDate.of(calendar.get(Calendar.YEAR),
-                            getMonthFrom(calendar),
-                            calendar.get(Calendar.DAY_OF_MONTH));
+                getMonthFrom(calendar),
+                calendar.get(Calendar.DAY_OF_MONTH));
     }
 
     private int getMonthFrom(Calendar calendar) {
@@ -36,7 +39,7 @@ public class NumberOfWeeksCalculator {
     }
 
     private Integer getNumberOfWeeksInDays(long numberOfDays) {
-        float numberOfWeeks =  numberOfDays / NUMBER_OF_DAYS_IN_WEEK;
+        float numberOfWeeks = numberOfDays / NUMBER_OF_DAYS_IN_WEEK;
         return (int) ceilIgnoringSign(numberOfWeeks);
     }
 
