@@ -1,5 +1,5 @@
-hooks-service
-=============
+github-hooks-web-service
+========================
 
 _Web Service for the github webhooks to hit._
 
