@@ -1,14 +1,16 @@
 package com.novoda.floatschedule.convert;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import static junit.framework.TestCase.assertEquals;
 
 public class NumberOfWeeksCalculatorTest {
+
+    private static final Date NO_DATE = null;
 
     private NumberOfWeeksCalculator numberOfWeeksCalculator;
 
@@ -95,6 +97,32 @@ public class NumberOfWeeksCalculatorTest {
         int actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
 
         assertEquals(-1, actual);
+    }
+
+    @Test
+    public void givenStartDateAndNoEndDate_whenCalculatingNumberOfWeeks_thenItIsNull() {
+        Date startDate = getDate(2016, Calendar.JULY, 20);
+
+        Integer actual = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, NO_DATE);
+
+        assertEquals(null, actual);
+    }
+
+    @Test
+    public void givenNoStartDateAndEndDate_whenCalculatingNumberOfWeeks_thenItIsNull() {
+        Date endDate = getDate(2016, Calendar.AUGUST, 20);
+
+        Integer actual = numberOfWeeksCalculator.getNumberOfWeeksIn(NO_DATE, endDate);
+
+        assertEquals(null, actual);
+    }
+
+    @Test
+    public void givenNoStartDateAndNoEndDate_whenCalculatingNumberOfWeeks_thenItIsNull() {
+
+        Integer actual = numberOfWeeksCalculator.getNumberOfWeeksIn(NO_DATE, NO_DATE);
+
+        assertEquals(null, actual);
     }
 
     private Date getDate(int year, int calendarMonth, int dayOfMonth) {

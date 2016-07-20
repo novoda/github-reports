@@ -14,6 +14,9 @@ public class NumberOfWeeksCalculator {
      * start and end dates, you'll get 2 weeks as a result.
      */
     public int getNumberOfWeeksIn(Date startDateInclusive, Date endDateInclusive) {
+        if (startDateInclusive == null || endDateInclusive == null) {
+            return null;
+        }
         LocalDate start = getLocalDateFrom(startDateInclusive);
         LocalDate end = getLocalDateFrom(endDateInclusive).plusDays(1);
         long numberOfDays = ChronoUnit.DAYS.between(start, end);
