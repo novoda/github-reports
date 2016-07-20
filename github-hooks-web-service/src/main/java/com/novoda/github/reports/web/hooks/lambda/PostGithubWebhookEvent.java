@@ -2,33 +2,39 @@ package com.novoda.github.reports.web.hooks.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
-import java.util.Map;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 
-public class PostGithubWebhookEvent implements RequestHandler<Map<String, Object>, String> {
+public class PostGithubWebhookEvent implements RequestStreamHandler {
 
     @Override
-    public String handleRequest(Map<String, Object> input, Context context) {
+    public void handleRequest(InputStream input, OutputStream output, Context context) {
+
         LambdaLogger logger = context.getLogger();
-        logger.log("received : " + input);
-        return jsonHandler(input, context);
-    }
 
-    public String jsonHandler(Map<String, Object> data, Context context) {
-        LambdaLogger logger = context.getLogger();
-        logger.log("\n>>> function name: " + context.getFunctionName());
-        logger.log("\n>>> data: " + data);
-        return mapToString(data);
-    }
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
+                .create();
+        Reader reader = new InputStreamReader(input);
+        GithubWebhookEvent payload = gson.fromJson(reader, GithubWebhookEvent.class);
 
-    private String mapToString(Map<String, Object> data) {
-        final String[] result = {""};
-        data.forEach((s, o) -> result[0] += valueOrNull(s) + ", " + valueOrNull(o) + "\n");
-        return result[0];
-    }
+        String json = gson.toJson("{\"action\": \"" + payload.action() + "\"}");
+        logger.log(payload.toString());
 
-    private String valueOrNull(Object o) {
-        return o == null ? "[null]" : o.toString();
+        try (OutputStreamWriter writer = new OutputStreamWriter(output)) {
+            writer.write(json);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
