@@ -145,7 +145,7 @@ public class FloatServiceClient {
                 .collect(
                         HashMap::new,
                         (map, entry) -> map.put(entry.getKey(), entry.getValue()),
-                        (stringStringHashMap, stringStringHashMap2) -> {}
+                        (combineThis, withThis) -> {}
                 );
     }
 
