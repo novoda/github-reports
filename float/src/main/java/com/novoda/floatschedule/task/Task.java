@@ -45,6 +45,14 @@ public class Task {
         return personName;
     }
 
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
     @Override
     public String toString() {
         return name + "@" + projectName + " (" + clientName + ") [" + id + "], " + personName + ", from " + startDate + " to " + endDate;
