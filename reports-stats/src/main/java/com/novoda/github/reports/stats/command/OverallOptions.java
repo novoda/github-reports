@@ -11,4 +11,7 @@ public class OverallOptions extends RangeOptions {
     @Parameter(description = "Users to retrieve data for (leave empty for all)")
     private List<String> users;
 
+    public List<String> getUsers() {
+        return users;
+    }
 }

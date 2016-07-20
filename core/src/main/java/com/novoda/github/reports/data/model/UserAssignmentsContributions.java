@@ -4,24 +4,18 @@ import com.google.auto.value.AutoValue;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @AutoValue
-public abstract class UserAssignment implements Stats {
+public abstract class UserAssignmentsContributions implements UserAssignmentsBase, Stats {
 
     public static Builder builder() {
-        return new AutoValue_UserAssignment.Builder();
+        return new AutoValue_UserAssignmentsContributions.Builder()
+                .contributions(Collections.emptyList());
     }
-
-    @Nullable
-    abstract Date assignmentStart();
-
-    @Nullable
-    abstract Date assignmentEnd();
-
-    abstract String assignedProject();
 
     abstract List<UserContribution> contributions();
 
@@ -29,7 +23,7 @@ public abstract class UserAssignment implements Stats {
     public String describeStats() {
         return String.format(
                 "- \"%s\" (%s to %s), and worked on\n%s",
-                assignedProject(),
+                assignedRepositories().stream().collect(Collectors.joining(", ")),
                 dateToStringOrUnknown(assignmentStart()),
                 dateToStringOrUnknown(assignmentEnd()),
                 contributions().stream()
@@ -54,11 +48,11 @@ public abstract class UserAssignment implements Stats {
 
         public abstract Builder assignmentEnd(@Nullable Date assignmentEnd);
 
-        public abstract Builder assignedProject(String assignedProject);
+        public abstract Builder assignedRepositories(List<String> assignedRepositories);
 
         public abstract Builder contributions(List<UserContribution> contributions);
 
-        public abstract UserAssignment build();
+        public abstract UserAssignmentsContributions build();
 
     }
 }

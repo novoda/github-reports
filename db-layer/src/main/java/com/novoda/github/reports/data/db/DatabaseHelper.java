@@ -21,7 +21,9 @@ public class DatabaseHelper {
     }
 
     public static final Integer OPENED_ISSUES_ID = 100;
+    public static final Integer CLOSED_ISSUES_ID = 101;
     public static final Integer OPENED_PULL_REQUESTS_ID = 200;
+    public static final Integer CLOSED_PULL_REQUESTS_ID = 201;
     public static final Integer COMMENTED_ISSUES_ID = 102;
     public static final Integer COMMENTED_PULL_REQUESTS_ID = 202;
     public static final Integer MERGED_PULL_REQUESTS_ID = 205;
@@ -40,6 +42,15 @@ public class DatabaseHelper {
     private static final byte FALSE_BYTE = 0;
     private static final byte TRUE_BYTE = 1;
 
+    public static Condition conditionalBetween(TableField<?, Timestamp> field, Field<Timestamp> from, Field<Timestamp> to) {
+        Condition closedCondition = from.isNotNull().and(to.isNotNull()).and(field.between(from, to));
+        Condition openLeftCondition = from.isNull().and(to.isNotNull()).and(field.lessOrEqual(to));
+        Condition openRightCondition = from.isNotNull().and(to.isNull()).and(field.greaterOrEqual(from));
+        Condition openCondition = from.isNull().and(to.isNull());
+
+        return closedCondition.or(openLeftCondition).or(openRightCondition).or(openCondition);
+    }
+
     public static Condition conditionalBetween(TableField<?, Timestamp> field, Date from, Date to) {
         Condition condition = field.isNotNull();
         if (from != null) {
@@ -53,7 +64,10 @@ public class DatabaseHelper {
         return condition;
     }
 
-    static Timestamp dateToTimestamp(Date date) {
+    public static Timestamp dateToTimestamp(Date date) {
+        if (date == null) {
+            return null;
+        }
         return new Timestamp(date.getTime());
     }
 
