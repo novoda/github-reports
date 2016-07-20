@@ -1,4 +1,25 @@
+import com.amazonaws.services.lambda.model.Runtime
+import jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask
+
+buildscript {
+    dependencies {
+        classpath 'jp.classmethod.aws:gradle-aws-plugin:0.29'
+    }
+}
+
+plugins {
+    id 'net.ltgt.apt' version '0.6'
+}
+
 apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'jp.classmethod.aws.lambda'
+
+idea {
+    module {
+        generatedSourceDirs += project.file('build/generated/source/apt')
+    }
+}
 
 targetCompatibility = 1.8
 
@@ -17,3 +38,40 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.0.71-beta'
 }
+
+jar {
+    exclude '*.credentials.sample'
+    exclude '*.json.sample'
+}
+
+task zip(type: Zip) {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtime
+    }
+    exclude '*.sample'
+}
+
+
+def lambdasMap = [
+        'PostGithubWebhookEvent': 'github-reports-webhook-post'
+]
+
+task uploadHooksLambdas(group: 'aws')
+
+lambdasMap.each { key, value ->
+    String uploadLambdaTask = "upload${key}Lambda"
+    task(uploadLambdaTask, type: AWSLambdaMigrateFunctionTask, dependsOn: zip) {
+        functionName = value
+        role = "arn:aws:iam::${aws.accountId}:role/github-reports-ws-role"
+        zipFile = zip.archivePath
+        handler = "com.novoda.github.reports.web.hooks.lambda.${key}::handleRequest"
+        runtime = Runtime.Java8
+        memorySize = 256
+        timeout = 15
+    }
+    uploadHooksLambdas.dependsOn uploadLambdaTask
+}
+
+
