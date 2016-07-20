@@ -36,6 +36,15 @@ public class FloatDateConverterTest {
     }
 
     @Test
+    public void givenNullDate_whenConvertingToFloatFormat_thenItReturnsNullString() throws Exception {
+        Date date = null;
+
+        String actual = dateConverter.toFloatDateFormat(date);
+
+        assertNull(actual);
+    }
+
+    @Test
     public void givenValidDateAsString_whenConvertingFromFloatFormat_thenItConvertsAppropriately() throws InvalidFloatDateException {
         String date = "2016-07-20";
 

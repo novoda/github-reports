@@ -8,8 +8,12 @@ public class FloatDateConverter {
 
     private static final SimpleDateFormat FLOAT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final Date NO_DATE = null;
+    private static final String NO_STRING = null;
 
     public String toFloatDateFormat(Date date) {
+        if (date == null) {
+            return NO_STRING;
+        }
         return FLOAT_DATE_FORMAT.format(date);
     }
 
