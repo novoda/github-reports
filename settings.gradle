@@ -30,6 +30,5 @@ include ':reports-batch'
 include ':reports-stats'
 include ':reports-stats-google-sheets'
 
-// github webhooks handlers
-include ':hooks-service'
+include ':github-hooks-web-service'
 
