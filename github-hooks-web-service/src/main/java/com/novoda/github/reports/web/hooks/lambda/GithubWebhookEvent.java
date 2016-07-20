@@ -3,6 +3,10 @@ package com.novoda.github.reports.web.hooks.lambda;
 import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
+import com.novoda.github.reports.service.GithubUser;
+import com.novoda.github.reports.service.issue.GithubIssue;
+import com.novoda.github.reports.service.pullrequest.GithubPullRequest;
+import com.novoda.github.reports.service.repository.GithubRepository;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -17,10 +21,21 @@ public abstract class GithubWebhookEvent {
         return new AutoValue_GithubWebhookEvent.GsonTypeAdapter(gson);
     }
 
-    abstract String action();
+    abstract String action(); // TODO enum
+
+    abstract GithubUser sender();
 
     @Nullable
     abstract Integer number();
+
+    @Nullable
+    abstract GithubPullRequest pullRequest();
+
+    @Nullable
+    abstract GithubIssue issue();
+
+    @Nullable
+    abstract GithubRepository repository();
 
     @Override
     public String toString() {
@@ -33,6 +48,14 @@ public abstract class GithubWebhookEvent {
         abstract Builder action(String action);
 
         abstract Builder number(@Nullable Integer number);
+
+        abstract Builder sender(GithubUser sender);
+
+        abstract Builder pullRequest(@Nullable GithubPullRequest pullRequest);
+
+        abstract Builder issue(@Nullable GithubIssue issue);
+
+        abstract Builder repository(@Nullable GithubRepository repository);
 
         abstract GithubWebhookEvent build();
     }
