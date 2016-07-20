@@ -13,15 +13,15 @@ public abstract class UserAssignmentsStats implements Stats {
         return new AutoValue_UserAssignmentsStats.Builder();
     }
 
-    abstract Map<String, List<UserAssignment>> userAssignments();
+    abstract Map<String, List<UserAssignmentsContributions>> userAssignmentsContributions();
 
     @Override
     public String describeStats() {
-        Map<String, List<UserAssignment>> assignments = userAssignments();
+        Map<String, List<UserAssignmentsContributions>> assignments = userAssignmentsContributions();
         return assignments.keySet().stream()
                 .map(username -> username + " was assigned to:\n" +
                         assignments.get(username).stream()
-                                .map(UserAssignment::describeStats)
+                                .map(UserAssignmentsContributions::describeStats)
                                 .collect(Collectors.joining("\n")))
                 .collect(Collectors.joining("\n\n"));
     }
@@ -29,7 +29,8 @@ public abstract class UserAssignmentsStats implements Stats {
     @AutoValue.Builder
     public abstract static class Builder {
 
-        public abstract Builder userAssignments(Map<String, List<UserAssignment>> userAssignments);
+        public abstract Builder userAssignmentsContributions(
+                Map<String, List<UserAssignmentsContributions>> userAssignmentsContributions);
 
         public abstract UserAssignmentsStats build();
 

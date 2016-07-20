@@ -12,7 +12,7 @@ import static com.novoda.github.reports.data.db.DatabaseHelper.conditionalBetwee
 import static com.novoda.github.reports.data.db.Tables.*;
 import static org.jooq.impl.DSL.*;
 
-public class DbEventUserQueryBuilder {
+public class EventUserQueryBuilder {
 
     public static final Long USER_EXTERNAL_ID = -3L;
     public static final Long USER_ORGANISATION_ID = -2L;
@@ -30,7 +30,7 @@ public class DbEventUserQueryBuilder {
 
     private final PullRequestStatsParameters parameters;
 
-    DbEventUserQueryBuilder(PullRequestStatsParameters parameters) {
+    EventUserQueryBuilder(PullRequestStatsParameters parameters) {
         this.parameters = parameters;
     }
 
