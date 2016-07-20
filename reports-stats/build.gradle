@@ -35,4 +35,6 @@ jar {
     }
     exclude '*.credentials'
     exclude '*.credentials.sample'
+    exclude '*.json'
+    exclude '*.json.sample'
 }
