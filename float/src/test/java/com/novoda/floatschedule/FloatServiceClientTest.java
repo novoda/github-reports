@@ -117,10 +117,7 @@ public class FloatServiceClientTest {
     }
 
     private static Person givenAPerson(int id, String name) {
-        Person aPerson = mock(Person.class);
-        when(aPerson.getId()).thenReturn(id);
-        when(aPerson.getName()).thenReturn(name);
-        return aPerson;
+        return new Person(id, name);
     }
 
     private void givenTasks(List<Task> tasks) {
@@ -130,12 +127,11 @@ public class FloatServiceClientTest {
 
     private void givenTasks(List<Task> tasks, Person person) {
         Observable<Task> mockTasksObservable = Observable.from(tasks);
-        int id = person.getId();
         when(
                 mockTaskServiceClient.getTasks(
                         any(Date.class),
                         anyInt(),
-                        eq(id)
+                        eq(person.getId())
                 )
         ).thenReturn(mockTasksObservable);
     }
