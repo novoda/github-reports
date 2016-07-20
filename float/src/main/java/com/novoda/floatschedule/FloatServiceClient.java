@@ -70,7 +70,7 @@ public class FloatServiceClient {
                 .distinct();
     }
 
-    private List<String> getRepositoriesFor(Task task) {
+    public List<String> getRepositoriesFor(Task task) {
         try {
             return floatGithubProjectConverter.getRepositories(task.getProjectName());
         } catch (IOException | NoMatchFoundException e) {
@@ -79,7 +79,7 @@ public class FloatServiceClient {
         return Collections.emptyList();
     }
 
-    Observable<Task> getTasksForGithubUser(String githubUsername, Date startDate, Date endDate) {
+    public Observable<Task> getTasksForGithubUser(String githubUsername, Date startDate, Date endDate) {
         int numberOfWeeks = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
         return getTasksForGithubUsername(githubUsername, startDate, numberOfWeeks);
     }
