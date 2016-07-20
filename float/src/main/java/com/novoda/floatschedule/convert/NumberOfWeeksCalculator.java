@@ -13,14 +13,14 @@ public class NumberOfWeeksCalculator {
      * @return the number of weeks from start date to end date, rounded up. this means that, as an example, if there are 9 days in-between the
      * start and end dates, you'll get 2 weeks as a result.
      */
-    public int getNumberOfWeeksIn(Date startDateInclusive, Date endDateInclusive) {
+    public Integer getNumberOfWeeksIn(Date startDateInclusive, Date endDateInclusive) {
         if (startDateInclusive == null || endDateInclusive == null) {
             return null;
         }
         LocalDate start = getLocalDateFrom(startDateInclusive);
         LocalDate end = getLocalDateFrom(endDateInclusive).plusDays(1);
         long numberOfDays = ChronoUnit.DAYS.between(start, end);
-        return (int) getNumberOfWeeksInDays(numberOfDays);
+        return getNumberOfWeeksInDays(numberOfDays);
     }
 
     private LocalDate getLocalDateFrom(Date date) {
@@ -35,13 +35,14 @@ public class NumberOfWeeksCalculator {
         return calendar.get(Calendar.MONTH) + 1;
     }
 
-    private double getNumberOfWeeksInDays(long numberOfDays) {
+    private Integer getNumberOfWeeksInDays(long numberOfDays) {
         float numberOfWeeks =  numberOfDays / NUMBER_OF_DAYS_IN_WEEK;
         return ceilIgnoringSign(numberOfWeeks);
     }
 
-    private double ceilIgnoringSign(double value) {
-        return value > 0 ? Math.ceil(value) : -Math.ceil(-value);
+    private Integer ceilIgnoringSign(double value) {
+        double ceiledValue = value > 0 ? Math.ceil(value) : -Math.ceil(-value);
+        return (int) ceiledValue;
     }
 
 }
