@@ -3,6 +3,7 @@ package com.novoda.github.reports.web.hooks.lambda;
 import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.SerializedName;
 import com.novoda.github.reports.service.GithubUser;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.pullrequest.GithubPullRequest;
@@ -29,6 +30,7 @@ public abstract class GithubWebhookEvent {
     abstract Integer number();
 
     @Nullable
+    @SerializedName("pull_request")
     abstract GithubPullRequest pullRequest();
 
     @Nullable
