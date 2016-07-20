@@ -20,6 +20,7 @@ repositories {
 dependencies {
     compile project(':core')
     compile project(':db-layer')
+    compile project(':float')
 
     compile 'joda-time:joda-time:2.9.4'
     compile 'com.beust:jcommander:1.48'

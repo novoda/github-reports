@@ -1,6 +1,8 @@
 package com.novoda.github.reports.stats;
 
 import com.beust.jcommander.JCommander;
+import com.novoda.floatschedule.FloatServiceClient;
+import com.novoda.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.github.reports.data.db.*;
 import com.novoda.github.reports.data.model.Stats;
 import com.novoda.github.reports.stats.command.*;
@@ -51,7 +53,10 @@ public class Main {
             PullRequestCommandHandler handler = new PullRequestCommandHandler(DbEventDataLayer.newInstance(connectionManager));
             stats = handler.handle(prOptions);
         } else if (command.equals(COMMAND_OVERALL)) {
-            OverallCommandHandler handler = new OverallCommandHandler(DbEventDataLayer.newInstance(connectionManager));
+            DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
+            FloatServiceClient floatServiceClient = FloatServiceClient.newInstance();
+            FloatGithubUserConverter floatGithubUserConverter = FloatGithubUserConverter.newInstance();
+            OverallCommandHandler handler = new OverallCommandHandler(eventDataLayer, floatServiceClient, floatGithubUserConverter);
             stats = handler.handle(overallOptions);
         } else {
             throw new UnhandledCommandException(String.format("The command %s is not supported", command));

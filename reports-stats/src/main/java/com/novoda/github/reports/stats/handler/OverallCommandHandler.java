@@ -1,20 +1,35 @@
 package com.novoda.github.reports.stats.handler;
 
+import com.novoda.floatschedule.FloatServiceClient;
+import com.novoda.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.model.UserAssignments;
 import com.novoda.github.reports.data.model.UserAssignmentsStats;
 import com.novoda.github.reports.stats.command.OverallOptions;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class OverallCommandHandler implements CommandHandler<UserAssignmentsStats, OverallOptions> {
 
     private final EventDataLayer eventDataLayer;
+    private final FloatServiceClient floatServiceClient;
+    private final FloatGithubUserConverter floatGithubUserConverter;
 
-    public OverallCommandHandler(EventDataLayer eventDataLayer) {
+    public OverallCommandHandler(EventDataLayer eventDataLayer,
+                                 FloatServiceClient floatServiceClient,
+                                 FloatGithubUserConverter floatGithubUserConverter) {
+
         this.eventDataLayer = eventDataLayer;
+        this.floatServiceClient = floatServiceClient;
+        this.floatGithubUserConverter = floatGithubUserConverter;
     }
 
     @Override
