@@ -93,7 +93,7 @@ public class FloatServiceClientTest {
         when(mockFloatGithubProjectConverter.getRepositories(ANY_FLOAT_PROJECT_NAME)).thenReturn(Arrays.asList(ANY_GITHUB_REPO_NAME,
                 ANY_OTHER_GITHUB_REPO_NAME));
 
-        when(mockNumberOfWeeksCalculator.getNumberOfWeeksIn(ANY_START_DATE, ANY_END_DATE)).thenReturn(ANY_NUMBER_OF_WEEKS);
+        when(mockNumberOfWeeksCalculator.getNumberOfWeeksOrNullIn(ANY_START_DATE, ANY_END_DATE)).thenReturn(ANY_NUMBER_OF_WEEKS);
     }
 
     private void setUserConversion(String floatUsername, String githubUsername) throws IOException {

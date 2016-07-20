@@ -107,7 +107,7 @@ public class FloatServiceClient {
                                                                             Date startDate,
                                                                             Date endDate) {
 
-        Integer numberOfWeeks = numberOfWeeksCalculator.getNumberOfWeeksIn(startDate, endDate);
+        Integer numberOfWeeks = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
         return getTasksForGithubUsers(githubUsernames, startDate, numberOfWeeks);
     }
 
