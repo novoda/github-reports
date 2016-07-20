@@ -37,12 +37,11 @@ public class NumberOfWeeksCalculator {
 
     private Integer getNumberOfWeeksInDays(long numberOfDays) {
         float numberOfWeeks =  numberOfDays / NUMBER_OF_DAYS_IN_WEEK;
-        return ceilIgnoringSign(numberOfWeeks);
+        return (int) ceilIgnoringSign(numberOfWeeks);
     }
 
-    private Integer ceilIgnoringSign(double value) {
-        double ceiledValue = value > 0 ? Math.ceil(value) : -Math.ceil(-value);
-        return (int) ceiledValue;
+    private double ceilIgnoringSign(double value) {
+        return value > 0 ? Math.ceil(value) : -Math.ceil(-value);
     }
 
 }
