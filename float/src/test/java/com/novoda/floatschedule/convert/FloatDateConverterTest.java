@@ -41,7 +41,7 @@ public class FloatDateConverterTest {
 
         Date actual = dateConverter.fromFloatDateFormat(date);
 
-        Date expected = givenADate(2016, 6, 20);
+        Date expected = givenADate(2016, Calendar.JULY, 20);
 
         assertEquals(0, expected.compareTo(actual));
     }
