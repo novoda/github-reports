@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -90,15 +91,16 @@ public class FloatServiceClientTest {
         setUserConversion(ANY_OTHER_FLOAT_USERNAME, ANY_OTHER_GITHUB_USERNAME);
         setUserConversion(YET_ANOTHER_FLOAT_USERNAME, YET_ANOTHER_GITHUB_USERNAME);
 
-        when(mockFloatGithubProjectConverter.getRepositories(ANY_FLOAT_PROJECT_NAME)).thenReturn(Arrays.asList(ANY_GITHUB_REPO_NAME,
-                ANY_OTHER_GITHUB_REPO_NAME));
+        given(mockFloatGithubProjectConverter.getRepositories(ANY_FLOAT_PROJECT_NAME))
+                .willReturn(Arrays.asList(ANY_GITHUB_REPO_NAME, ANY_OTHER_GITHUB_REPO_NAME));
 
-        when(mockNumberOfWeeksCalculator.getNumberOfWeeksOrNullIn(ANY_START_DATE, ANY_END_DATE)).thenReturn(ANY_NUMBER_OF_WEEKS);
+        given(mockNumberOfWeeksCalculator.getNumberOfWeeksOrNullIn(ANY_START_DATE, ANY_END_DATE))
+                .willReturn(ANY_NUMBER_OF_WEEKS);
     }
 
     private void setUserConversion(String floatUsername, String githubUsername) throws IOException {
-        when(mockFloatGithubUserConverter.getGithubUser(floatUsername)).thenReturn(githubUsername);
-        when(mockFloatGithubUserConverter.getFloatUser(githubUsername)).thenReturn(floatUsername);
+        given(mockFloatGithubUserConverter.getGithubUser(floatUsername)).willReturn(githubUsername);
+        given(mockFloatGithubUserConverter.getFloatUser(githubUsername)).willReturn(floatUsername);
     }
 
     private static Task givenATask(String taskName, String projectName, Person person) {
@@ -113,7 +115,7 @@ public class FloatServiceClientTest {
     private void givenPersons() {
         List<Person> persons = Arrays.asList(ANY_PERSON, ANY_OTHER_PERSON, YET_ANOTHER_PERSON);
         Observable<Person> mockPersonsObservable = Observable.from(persons);
-        when(mockPeopleServiceClient.getPersons()).thenReturn(mockPersonsObservable);
+        given(mockPeopleServiceClient.getPersons()).willReturn(mockPersonsObservable);
     }
 
     private static Person givenAPerson(int id, String name) {
@@ -122,18 +124,18 @@ public class FloatServiceClientTest {
 
     private void givenTasks(List<Task> tasks) {
         Observable<Task> mockTasksObservable = Observable.from(tasks);
-        when(mockTaskServiceClient.getTasks(any(Date.class), anyInt(), anyInt())).thenReturn(mockTasksObservable);
+        given(mockTaskServiceClient.getTasks(any(Date.class), anyInt(), anyInt())).willReturn(mockTasksObservable);
     }
 
     private void givenTasks(List<Task> tasks, Person person) {
         Observable<Task> mockTasksObservable = Observable.from(tasks);
-        when(
+        given(
                 mockTaskServiceClient.getTasks(
                         any(Date.class),
                         anyInt(),
                         eq(person.getId())
                 )
-        ).thenReturn(mockTasksObservable);
+        ).willReturn(mockTasksObservable);
     }
 
     @Test
@@ -165,7 +167,7 @@ public class FloatServiceClientTest {
     @Test
     public void givenPersonsAndTasks_whenGettingRepositoryNamesForGithubUserWithNoTasksAssigned_thenNoItemsAreEmitted() {
         Observable<Task> mockTasksObservable = Observable.from(Collections.emptyList());
-        when(mockTaskServiceClient.getTasks(any(Date.class), anyInt(), anyInt())).thenReturn(mockTasksObservable);
+        given(mockTaskServiceClient.getTasks(any(Date.class), anyInt(), anyInt())).willReturn(mockTasksObservable);
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         floatServiceClient.getRepositoryNamesForFloatUser(ANY_FLOAT_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
@@ -240,7 +242,7 @@ public class FloatServiceClientTest {
     public void givenPersonsAndTasksAndFailingFloatUsernameLookup_whenGettingTasksForGithubUser_thenWeGetErroringObservable()
             throws IOException {
 
-        when(mockFloatGithubUserConverter.getFloatUser(ANY_GITHUB_USERNAME)).thenThrow(IOException.class);
+        given(mockFloatGithubUserConverter.getFloatUser(ANY_GITHUB_USERNAME)).willThrow(IOException.class);
 
         TestSubscriber<Task> testSubscriber = new TestSubscriber<>();
         floatServiceClient.getTasksForGithubUser(ANY_GITHUB_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
@@ -267,7 +269,7 @@ public class FloatServiceClientTest {
             throws IOException {
 
         String nonExistingGithubUsername = "this-user-does-not-exist-on-float";
-        when(mockFloatGithubUserConverter.getFloatUser(nonExistingGithubUsername)).thenThrow(IOException.class);
+        given(mockFloatGithubUserConverter.getFloatUser(nonExistingGithubUsername)).willThrow(IOException.class);
         List<String> githubUsernames = Arrays.asList(ANY_GITHUB_USERNAME, YET_ANOTHER_GITHUB_USERNAME, nonExistingGithubUsername);
 
         expectedException.expect(GithubToFloatUserMatchNotFoundException.class);
