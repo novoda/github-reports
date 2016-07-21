@@ -2,6 +2,7 @@ package com.novoda.github.reports.data.model;
 
 import com.google.auto.value.AutoValue;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -12,7 +13,11 @@ public abstract class AggregatedUserStats implements Stats {
     private static final String NEW_LINE = "\n";
 
     public static Builder builder() {
-        return new AutoValue_AggregatedUserStats.Builder();
+        return new AutoValue_AggregatedUserStats.Builder()
+                .assignedProjectsContributions(0)
+                .assignedProjectsStats(Collections.emptyMap())
+                .externalProjectsContributions(0)
+                .externalProjectsStats(Collections.emptyMap());
     }
 
     abstract Map<String, Integer> assignedProjectsStats();
