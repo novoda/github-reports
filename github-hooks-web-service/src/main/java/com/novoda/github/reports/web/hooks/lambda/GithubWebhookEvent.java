@@ -28,10 +28,6 @@ public abstract class GithubWebhookEvent {
     @Nullable
     abstract Integer number();
 
-    //@Nullable
-    //@SerializedName("pull_request")
-    //abstract GithubPullRequest pullRequest();
-
     @Nullable
     //@SerializedName(value = "issue", alternate = {"pull_request"}) // not working :(
     abstract GithubIssue issue();
@@ -57,7 +53,6 @@ public abstract class GithubWebhookEvent {
 
         abstract Builder sender(GithubUser sender);
 
-        //abstract Builder pullRequest(@Nullable GithubPullRequest pullRequest);
         abstract Builder pullRequest(@Nullable GithubIssue pullRequest);
 
         abstract Builder issue(@Nullable GithubIssue issue);
