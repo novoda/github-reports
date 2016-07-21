@@ -13,6 +13,7 @@ import rx.internal.util.UtilityFunctions;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class FloatServiceClient {
 
@@ -130,8 +131,12 @@ public class FloatServiceClient {
     private Func1<Person, Boolean> byFloatUsernames(Collection<String> floatUsernames) {
         return person -> floatUsernames
                 .stream()
-                .filter(floatUsername -> personHasFloatUsername(person, floatUsername))
+                .filter(byPersonName(person))
                 .count() > 0;
+    }
+
+    private Predicate<String> byPersonName(Person person) {
+        return floatUsername -> personHasFloatUsername(person, floatUsername);
     }
 
     private boolean personHasFloatUsername(Person person, String floatUsername) {
