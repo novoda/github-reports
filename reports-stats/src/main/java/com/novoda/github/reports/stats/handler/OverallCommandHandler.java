@@ -1,39 +1,46 @@
 package com.novoda.github.reports.stats.handler;
 
+import com.novoda.floatschedule.FloatServiceClient;
+import com.novoda.floatschedule.convert.FloatDateConverter;
+import com.novoda.floatschedule.task.Task;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.model.UserAssignments;
 import com.novoda.github.reports.data.model.UserAssignmentsStats;
 import com.novoda.github.reports.stats.command.OverallOptions;
+import rx.functions.Action2;
+import rx.functions.Func1;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class OverallCommandHandler implements CommandHandler<UserAssignmentsStats, OverallOptions> {
 
     private final EventDataLayer eventDataLayer;
+    private final FloatServiceClient floatServiceClient;
+    private final FloatDateConverter floatDateConverter;
 
-    public OverallCommandHandler(EventDataLayer eventDataLayer) {
+    public OverallCommandHandler(EventDataLayer eventDataLayer,
+                                 FloatServiceClient floatServiceClient,
+                                 FloatDateConverter floatDateConverter) {
+
         this.eventDataLayer = eventDataLayer;
+        this.floatServiceClient = floatServiceClient;
+        this.floatDateConverter = floatDateConverter;
     }
 
     @Override
     public UserAssignmentsStats handle(OverallOptions options) {
-
-        // TODO: get the real assignments using float
-        UserAssignments ptAssignment = UserAssignments.builder()
-                .assignedRepositories(Collections.singletonList("github-reports"))
-                .assignmentStart(new GregorianCalendar(2016, 0, 1).getTime())
-                .assignmentEnd(new GregorianCalendar(2016, 6, 31).getTime())
-                .build();
-
-        Map<String, List<UserAssignments>> usersAssignments = options.getUsers()
-                .stream()
-                .collect(Collectors.toMap(
-                        user -> user,
-                        // TODO: set the real assignments here
-                        user -> Collections.singletonList(ptAssignment)
-                ));
+        Map<String, List<UserAssignments>> usersAssignments = floatServiceClient
+                .getTasksForGithubUsers(options.getUsers(), options.getFrom(), options.getTo())
+                .map(tasksToUserAssignments())
+                .collect(
+                        HashMap<String, List<UserAssignments>>::new,
+                        putEntryInMap()
+                )
+                .toBlocking()
+                .first();
 
         try {
             return eventDataLayer.getUserAssignmentsStats(usersAssignments);
@@ -42,6 +49,35 @@ public class OverallCommandHandler implements CommandHandler<UserAssignmentsStat
         }
 
         return null;
+    }
+
+    private Func1<Map.Entry<String, List<Task>>, AbstractMap.SimpleImmutableEntry<String, List<UserAssignments>>> tasksToUserAssignments() {
+        return entry -> {
+            String key = entry.getKey();
+            List<UserAssignments> assignments = entry.getValue()
+                    .stream()
+                    .map(taskToUserAssignments())
+                    .collect(Collectors.toList());
+            return new AbstractMap.SimpleImmutableEntry<>(key, assignments);
+        };
+    }
+
+    private Function<Task, UserAssignments> taskToUserAssignments() {
+        return task -> {
+            Date assignmentStart = floatDateConverter.fromFloatDateFormatOrNoDate(task.getStartDate());
+            Date assignmentEnd = floatDateConverter.fromFloatDateFormatOrNoDate(task.getEndDate());
+            List<String> repositoriesForTask = floatServiceClient.getRepositoriesFor(task);
+
+            return UserAssignments.builder()
+                    .assignmentStart(assignmentStart)
+                    .assignmentEnd(assignmentEnd)
+                    .assignedRepositories(repositoriesForTask)
+                    .build();
+        };
+    }
+
+    private Action2<HashMap<String, List<UserAssignments>>, AbstractMap.SimpleImmutableEntry<String, List<UserAssignments>>> putEntryInMap() {
+        return (map, entry) -> map.put(entry.getKey(), entry.getValue());
     }
 
 }

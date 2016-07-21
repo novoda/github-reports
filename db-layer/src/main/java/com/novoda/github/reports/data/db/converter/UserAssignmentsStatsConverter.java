@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -76,12 +77,17 @@ public class UserAssignmentsStatsConverter {
     private List<UserContribution> aggregateIntoUserContributions(Result<? extends Record> multipleRepositoriesStats) {
         return multipleRepositoriesStats
                 .stream()
+                .filter(byRemovingNonContributionRecords())
                 .collect(groupByRepositoryWorkedOn())
                 .entrySet()
                 .stream()
                 .map(toUserContributionBuilder())
                 .map(UserContribution.Builder::build)
                 .collect(Collectors.toList());
+    }
+
+    private Predicate<Record> byRemovingNonContributionRecords() {
+        return record -> record.getValue(REPOSITORY_WORKED_NAME_FIELD) != null;
     }
 
     private Collector<Record, ?, Map<String, List<Record>>> groupByRepositoryWorkedOn() {

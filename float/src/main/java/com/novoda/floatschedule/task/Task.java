@@ -28,9 +28,15 @@ public class Task {
     @SerializedName("end_date")
     private String endDate;
 
-    Task(int id, String name) {
+    public Task(int id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public Task(String name, String personName, String projectName) {
+        this.name = name;
+        this.personName = personName;
+        this.projectName = projectName;
     }
 
     public String getName() {
@@ -43,6 +49,14 @@ public class Task {
 
     public String getPersonName() {
         return personName;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
     }
 
     @Override
