@@ -71,6 +71,7 @@ public class OverallCommandHandler implements CommandHandler<UserAssignmentsStat
             return UserAssignments.builder()
                     .assignmentStart(assignmentStart)
                     .assignmentEnd(assignmentEnd)
+                    .assignedProject(task.getProjectName())
                     .assignedRepositories(repositoriesForTask)
                     .build();
         };
