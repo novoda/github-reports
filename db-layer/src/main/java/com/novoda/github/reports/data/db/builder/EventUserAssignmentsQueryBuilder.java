@@ -21,6 +21,7 @@ public class EventUserAssignmentsQueryBuilder {
 
     public static final Field<Timestamp> DATE_FROM_FIELD = field("date_from", Timestamp.class);
     public static final Field<Timestamp> DATE_TO_FIELD = field("date_to", Timestamp.class);
+    public static final Field<String> PROJECT_ASSIGNED_FIELD = field("project_assigned", String.class);
     public static final Field<String> REPOSITORIES_ASSIGNED_FIELD = field("repositories_assigned", String.class);
     public static final Field<String> USERNAME_FIELD = field("user_username", String.class);
     public static final Field<String> REPOSITORY_WORKED_NAME_FIELD = field("repository_worked_name", String.class);
@@ -54,7 +55,7 @@ public class EventUserAssignmentsQueryBuilder {
         }
     }
 
-    private SelectJoinStep<Record8<String, Timestamp, Timestamp, String, String, Integer, Boolean, Integer>> selectFields()
+    private SelectJoinStep<Record9<String, Timestamp, Timestamp, String, String, String, Integer, Boolean, Integer>> selectFields()
             throws NoUserAssignmentsException {
 
         return parameters.getContext()
@@ -62,6 +63,7 @@ public class EventUserAssignmentsQueryBuilder {
                         USERNAME_FIELD,
                         DATE_FROM_FIELD,
                         DATE_TO_FIELD,
+                        PROJECT_ASSIGNED_FIELD,
                         REPOSITORIES_ASSIGNED_FIELD,
                         REPOSITORY.NAME.as(REPOSITORY_WORKED_NAME_FIELD),
                         EVENT.EVENT_TYPE_ID,
@@ -82,7 +84,7 @@ public class EventUserAssignmentsQueryBuilder {
         return field("FIND_IN_SET({0}, {1})", Integer.class, element, elementSet);
     }
 
-    private SelectOrderByStep<Record4<Timestamp, Timestamp, String, String>> userAssignments()
+    private SelectOrderByStep<Record5<Timestamp, Timestamp, String, String, String>> userAssignments()
             throws NoUserAssignmentsException {
 
         return parameters.getUsersAssignments()
@@ -93,13 +95,13 @@ public class EventUserAssignmentsQueryBuilder {
                 .orElseThrow(NoUserAssignmentsException::new);
     }
 
-    private Function<String, Stream<SelectSelectStep<Record4<Timestamp, Timestamp, String, String>>>> toUserAssignmentQueries() {
+    private Function<String, Stream<SelectSelectStep<Record5<Timestamp, Timestamp, String, String, String>>>> toUserAssignmentQueries() {
         return username -> parameters.getUsersAssignments().get(username)
                 .stream()
                 .map(toUserAssignmentQuery(username));
     }
 
-    private Function<UserAssignments, SelectSelectStep<Record4<Timestamp, Timestamp, String, String>>> toUserAssignmentQuery(String username) {
+    private Function<UserAssignments, SelectSelectStep<Record5<Timestamp, Timestamp, String, String, String>>> toUserAssignmentQuery(String username) {
         return userAssignment -> {
             String repositoriesSet = makeAssignedRepositoriesSet(userAssignment);
             Timestamp assignmentStartTimestamp = dateToTimestamp(userAssignment.assignmentStart());
@@ -108,6 +110,7 @@ public class EventUserAssignmentsQueryBuilder {
                     .select(
                             val(assignmentStartTimestamp).as(DATE_FROM_FIELD),
                             val(assignmentEndTimestamp).as(DATE_TO_FIELD),
+                            val(userAssignment.assignedProject()).as(PROJECT_ASSIGNED_FIELD),
                             val(repositoriesSet).as(REPOSITORIES_ASSIGNED_FIELD),
                             val(username).as(USERNAME_FIELD)
                     );
@@ -119,9 +122,9 @@ public class EventUserAssignmentsQueryBuilder {
     }
 
     private Collector<
-            SelectOrderByStep<Record4<Timestamp, Timestamp, String, String>>,
+            SelectOrderByStep<Record5<Timestamp, Timestamp, String, String, String>>,
             ?,
-            Optional<SelectOrderByStep<Record4<Timestamp, Timestamp, String, String>>>> toUnion() {
+            Optional<SelectOrderByStep<Record5<Timestamp, Timestamp, String, String, String>>>> toUnion() {
 
         return Collectors.reducing(SelectUnionStep::union);
     }
@@ -151,6 +154,7 @@ public class EventUserAssignmentsQueryBuilder {
                         USERNAME_FIELD,
                         DATE_FROM_FIELD,
                         DATE_TO_FIELD,
+                        PROJECT_ASSIGNED_FIELD,
                         REPOSITORIES_ASSIGNED_FIELD,
                         REPOSITORY_WORKED_NAME_FIELD,
                         EVENT.EVENT_TYPE_ID

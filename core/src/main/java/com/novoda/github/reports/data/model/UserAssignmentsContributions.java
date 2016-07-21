@@ -22,10 +22,11 @@ public abstract class UserAssignmentsContributions implements UserAssignmentsBas
     @Override
     public String describeStats() {
         return String.format(
-                "- \"%s\" (%s to %s), and worked on\n%s",
-                assignedRepositories().stream().collect(Collectors.joining(", ")),
+                "- \"%s\" from %s to %s (repos: %s), and worked on\n%s",
+                assignedProject(),
                 dateToStringOrUnknown(assignmentStart()),
                 dateToStringOrUnknown(assignmentEnd()),
+                assignedRepositories().stream().collect(Collectors.joining(", ")),
                 contributions().stream()
                         .map(UserContribution::describeStats)
                         .flatMap(s -> Arrays.stream(s.split("\\n")))
@@ -47,6 +48,8 @@ public abstract class UserAssignmentsContributions implements UserAssignmentsBas
         public abstract Builder assignmentStart(@Nullable Date assignmentStart);
 
         public abstract Builder assignmentEnd(@Nullable Date assignmentEnd);
+
+        public abstract Builder assignedProject(String assignedProject);
 
         public abstract Builder assignedRepositories(List<String> assignedRepositories);
 
