@@ -26,6 +26,7 @@ public class PostGithubWebhookEvent implements RequestStreamHandler {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
                 .create();
+
         Reader reader = new InputStreamReader(input);
         GithubWebhookEvent payload = gson.fromJson(reader, GithubWebhookEvent.class);
 
@@ -33,7 +34,7 @@ public class PostGithubWebhookEvent implements RequestStreamHandler {
         String json;
         if (pullRequest != null) {
             logger.log(pullRequest.toString());
-            pullRequest.setIsPullRequest(true);
+            pullRequest.setIsPullRequest(true); // @RUI the alternative to using this is a custom type adapter
             json = gson.toJson(pullRequest, GithubIssue.class);
         } else {
             logger.log("no pull request!");
