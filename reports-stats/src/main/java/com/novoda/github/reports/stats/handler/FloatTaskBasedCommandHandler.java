@@ -7,6 +7,7 @@ import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.model.Stats;
 import com.novoda.github.reports.data.model.UserAssignments;
+import com.novoda.github.reports.reader.UsersServiceClient;
 import com.novoda.github.reports.stats.command.FloatTaskBasedOptions;
 import rx.functions.Action2;
 import rx.functions.Func1;
@@ -21,21 +22,27 @@ abstract class FloatTaskBasedCommandHandler<T extends Stats, U extends FloatTask
     private final EventDataLayer eventDataLayer;
     private final FloatServiceClient floatServiceClient;
     private final FloatDateConverter floatDateConverter;
+    private final UsersServiceClient usersServiceClient;
 
     FloatTaskBasedCommandHandler(EventDataLayer eventDataLayer,
                                  FloatServiceClient floatServiceClient,
-                                 FloatDateConverter floatDateConverter) {
+                                 FloatDateConverter floatDateConverter,
+                                 UsersServiceClient usersServiceClient) {
 
         this.eventDataLayer = eventDataLayer;
         this.floatServiceClient = floatServiceClient;
         this.floatDateConverter = floatDateConverter;
+        this.usersServiceClient = usersServiceClient;
     }
 
     @Override
     public T handle(U options) {
         List<String> githubUsers = options.getUsers();
-        if (githubUsers.isEmpty()) {
-            // TODO: get all github users if list is empty
+        if (listIsNullOrEmpty(githubUsers)) {
+            githubUsers = usersServiceClient.getAllGithubUsers()
+                    .toList()
+                    .toBlocking()
+                    .first();
         }
 
         Map<String, List<UserAssignments>> usersAssignments = floatServiceClient
@@ -55,6 +62,10 @@ abstract class FloatTaskBasedCommandHandler<T extends Stats, U extends FloatTask
         }
 
         return null;
+    }
+
+    private boolean listIsNullOrEmpty(List<String> githubUsers) {
+        return githubUsers == null || githubUsers.isEmpty();
     }
 
     private Func1<Map.Entry<String, List<Task>>, AbstractMap.SimpleImmutableEntry<String, List<UserAssignments>>> tasksToUserAssignments() {
@@ -84,7 +95,7 @@ abstract class FloatTaskBasedCommandHandler<T extends Stats, U extends FloatTask
     }
 
     protected abstract T handleUserAssignments(Map<String, List<UserAssignments>> usersAssignments)
-    throws DataLayerException;
+            throws DataLayerException;
 
     private Action2<HashMap<String, List<UserAssignments>>, AbstractMap.SimpleImmutableEntry<String, List<UserAssignments>>> putEntryInMap() {
         return (map, entry) -> map.put(entry.getKey(), entry.getValue());

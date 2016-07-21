@@ -6,6 +6,7 @@ import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.model.UserAssignments;
 import com.novoda.github.reports.data.model.UserAssignmentsStats;
+import com.novoda.github.reports.reader.UsersServiceClient;
 import com.novoda.github.reports.stats.command.OverallOptions;
 
 import java.util.List;
@@ -15,9 +16,10 @@ public class OverallCommandHandler extends FloatTaskBasedCommandHandler<UserAssi
 
     public OverallCommandHandler(EventDataLayer eventDataLayer,
                                  FloatServiceClient floatServiceClient,
-                                 FloatDateConverter floatDateConverter) {
+                                 FloatDateConverter floatDateConverter,
+                                 UsersServiceClient usersServiceClient) {
 
-        super(eventDataLayer, floatServiceClient, floatDateConverter);
+        super(eventDataLayer, floatServiceClient, floatDateConverter, usersServiceClient);
     }
 
 
