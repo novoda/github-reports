@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.novoda.github.reports.service.GithubUser;
+import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.repository.GithubRepository;
 
@@ -39,6 +40,9 @@ public abstract class GithubWebhookEvent {
     @Nullable
     public abstract GithubRepository repository();
 
+    @Nullable
+    public abstract GithubComment comment();
+
     @Override
     public String toString() {
         return "action="+action()+" number="+number();
@@ -58,6 +62,8 @@ public abstract class GithubWebhookEvent {
         abstract Builder issue(@Nullable GithubIssue issue);
 
         abstract Builder repository(@Nullable GithubRepository repository);
+
+        abstract Builder comment(@Nullable GithubComment comment);
 
         abstract GithubWebhookEvent build();
     }
