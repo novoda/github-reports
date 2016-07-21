@@ -15,22 +15,20 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 
-public class PostGithubWebhookEvent implements RequestStreamHandler {
+public class PostGithubWebhookEventHandler implements RequestStreamHandler {
+
+    private Gson gson = new GsonBuilder()
+            .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
+            .create();
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) {
-
         LambdaLogger logger = context.getLogger();
         logger.log("starting...");
 
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
-                .create();
+        GithubWebhookEvent event = getGithubWebhookEvent(input);
 
-        Reader reader = new InputStreamReader(input);
-        GithubWebhookEvent payload = gson.fromJson(reader, GithubWebhookEvent.class);
-
-        GithubIssue pullRequest = payload.pullRequest();
+        GithubIssue pullRequest = event.pullRequest();
         String json;
         if (pullRequest != null) {
             logger.log(pullRequest.toString());
@@ -38,11 +36,20 @@ public class PostGithubWebhookEvent implements RequestStreamHandler {
             json = gson.toJson(pullRequest, GithubIssue.class);
         } else {
             logger.log("no pull request!");
-            json = gson.toJson("{\"action\": \"" + payload.action() + "\"}");
+            json = gson.toJson("{\"action\": \"" + event.action() + "\"}");
         }
-        logger.log(payload.toString());
+        logger.log(event.toString());
 
         logger.log("finishing up...");
+        writeToOutputForDebugging(output, json);
+    }
+
+    private GithubWebhookEvent getGithubWebhookEvent(InputStream input) {
+        Reader reader = new InputStreamReader(input);
+        return gson.fromJson(reader, GithubWebhookEvent.class);
+    }
+
+    private void writeToOutputForDebugging(OutputStream output, String json) {
         try (OutputStreamWriter writer = new OutputStreamWriter(output)) {
             writer.write(json);
             writer.close();
