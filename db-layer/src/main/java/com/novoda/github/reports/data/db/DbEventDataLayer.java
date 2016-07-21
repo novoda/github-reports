@@ -4,13 +4,11 @@ import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.db.builder.EventPullRequestQueryBuilder;
 import com.novoda.github.reports.data.db.builder.EventUserAssignmentsQueryBuilder;
+import com.novoda.github.reports.data.db.converter.AggregatedUserStatsConverter;
 import com.novoda.github.reports.data.db.converter.PullRequestStatsConverter;
 import com.novoda.github.reports.data.db.converter.UserAssignmentsStatsConverter;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
-import com.novoda.github.reports.data.model.Event;
-import com.novoda.github.reports.data.model.PullRequestStats;
-import com.novoda.github.reports.data.model.UserAssignments;
-import com.novoda.github.reports.data.model.UserAssignmentsStats;
+import com.novoda.github.reports.data.model.*;
 import org.jooq.DSLContext;
 import org.jooq.InsertOnDuplicateSetMoreStep;
 import org.jooq.Record;
@@ -31,18 +29,26 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
 
     private final PullRequestStatsConverter pullRequestStatsConverter;
     private final UserAssignmentsStatsConverter usersAssignmentsConverter;
+    private final AggregatedUserStatsConverter aggregatedUserStatsConverter;
 
     public static DbEventDataLayer newInstance(ConnectionManager connectionManager) {
-        return new DbEventDataLayer(connectionManager, new PullRequestStatsConverter(), new UserAssignmentsStatsConverter());
+        return new DbEventDataLayer(
+                connectionManager,
+                new PullRequestStatsConverter(),
+                new UserAssignmentsStatsConverter(),
+                new AggregatedUserStatsConverter()
+        );
     }
 
     private DbEventDataLayer(ConnectionManager connectionManager,
                              PullRequestStatsConverter pullRequestStatsConverter,
-                             UserAssignmentsStatsConverter userAssignmentsStatsConverter) {
+                             UserAssignmentsStatsConverter userAssignmentsStatsConverter,
+                             AggregatedUserStatsConverter aggregatedUserStatsConverter) {
 
         super(connectionManager);
         this.pullRequestStatsConverter = pullRequestStatsConverter;
         this.usersAssignmentsConverter = userAssignmentsStatsConverter;
+        this.aggregatedUserStatsConverter = aggregatedUserStatsConverter;
     }
 
     @Override
@@ -146,23 +152,44 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
             throws DataLayerException {
 
         try {
-            Connection connection = getNewConnection();
-            DSLContext create = getNewDSLContext(connection);
-
-            UserAssignmentsStatsParameters parameters = new UserAssignmentsStatsParameters(usersAssignments, create);
-            EventUserAssignmentsQueryBuilder userAssignmentsQueryBuilder = EventUserAssignmentsQueryBuilder
-                    .newInstance(parameters);
-
             Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername =
-                    userAssignmentsQueryBuilder
-                            .getStats()
-                            .fetchGroups(USERNAME_FIELD);
+                    getUserAssignmentsStatsGroupByUsername(usersAssignments);
 
             return usersAssignmentsConverter.convert(resultsGroupedByUsername);
 
         } catch (SQLException e) {
             throw new DataLayerException(e);
         }
+    }
+
+    @Override
+    public AggregatedStats getAggregatedUserAssignmentsStats(Map<String, List<UserAssignments>> usersAssignments)
+            throws DataLayerException {
+
+        try {
+            Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername =
+                    getUserAssignmentsStatsGroupByUsername(usersAssignments);
+
+            return aggregatedUserStatsConverter.convert(resultsGroupedByUsername);
+
+        } catch (SQLException e) {
+            throw new DataLayerException(e);
+        }
+    }
+
+    private Map<String, ? extends Result<? extends Record>> getUserAssignmentsStatsGroupByUsername(Map<String, List<UserAssignments>> usersAssignments)
+            throws SQLException, DataLayerException {
+
+        Connection connection = getNewConnection();
+        DSLContext create = getNewDSLContext(connection);
+
+        UserAssignmentsStatsParameters parameters = new UserAssignmentsStatsParameters(usersAssignments, create);
+        EventUserAssignmentsQueryBuilder userAssignmentsQueryBuilder = EventUserAssignmentsQueryBuilder
+                .newInstance(parameters);
+
+        return userAssignmentsQueryBuilder
+                .getStats()
+                .fetchGroups(USERNAME_FIELD);
     }
 
 }
