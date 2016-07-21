@@ -37,9 +37,9 @@ public class FloatDateConverterTest {
 
     @Test
     public void givenNullDate_whenConvertingToFloatFormat_thenItReturnsNullString() throws Exception {
-        Date date = null;
+        Date aNullDate = null;
 
-        String actual = dateConverter.toFloatDateFormat(date);
+        String actual = dateConverter.toFloatDateFormat(aNullDate);
 
         assertNull(actual);
     }
@@ -57,17 +57,17 @@ public class FloatDateConverterTest {
 
     @Test
     public void givenInvalidDateAsString_whenConvertingFromFloat_thenItThrowsInvalidFloatDateException() throws InvalidFloatDateException {
-        String date = "clearly-invalid-date-lol";
+        String anInvalidDateString = "clearly-invalid-date-lol";
 
         expectedException.expect(InvalidFloatDateException.class);
-        dateConverter.fromFloatDateFormat(date);
+        dateConverter.fromFloatDateFormat(anInvalidDateString);
     }
 
     @Test
     public void givenInvalidDateAsString_whenConvertingFromFloatOrNoDate_thenItReturnsNull() throws InvalidFloatDateException {
-        String date = "clearly-invalid-date-lol";
+        String anInvalidDateString = "clearly-invalid-date-lol";
 
-        Date actual = dateConverter.fromFloatDateFormatOrNoDate(date);
+        Date actual = dateConverter.fromFloatDateFormatOrNoDate(anInvalidDateString);
 
         assertNull(actual);
     }
