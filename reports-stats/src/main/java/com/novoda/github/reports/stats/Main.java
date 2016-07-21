@@ -5,6 +5,7 @@ import com.novoda.floatschedule.FloatServiceClient;
 import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.github.reports.data.db.*;
 import com.novoda.github.reports.data.model.Stats;
+import com.novoda.github.reports.reader.UsersServiceClient;
 import com.novoda.github.reports.stats.command.*;
 import com.novoda.github.reports.stats.handler.*;
 
@@ -59,13 +60,27 @@ public class Main {
             DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
             FloatServiceClient floatServiceClient = FloatServiceClient.newInstance();
             FloatDateConverter floatDateConverter = new FloatDateConverter();
-            OverallCommandHandler handler = new OverallCommandHandler(eventDataLayer, floatServiceClient, floatDateConverter);
+            UsersServiceClient usersServiceClient = UsersServiceClient.newInstance();
+
+            OverallCommandHandler handler = new OverallCommandHandler(
+                    eventDataLayer,
+                    floatServiceClient,
+                    floatDateConverter,
+                    usersServiceClient
+            );
             stats = handler.handle(overallOptions);
         } else if (command.equals(COMMAND_AGGREGATE)) {
             DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
             FloatServiceClient floatServiceClient = FloatServiceClient.newInstance();
             FloatDateConverter floatDateConverter = new FloatDateConverter();
-            AggregateCommandHandler handler = new AggregateCommandHandler(eventDataLayer, floatServiceClient, floatDateConverter);
+            UsersServiceClient usersServiceClient = UsersServiceClient.newInstance();
+
+            AggregateCommandHandler handler = new AggregateCommandHandler(
+                    eventDataLayer,
+                    floatServiceClient,
+                    floatDateConverter,
+                    usersServiceClient
+            );
             stats = handler.handle(aggregateOptions);
         } else {
             throw new UnhandledCommandException(String.format("The command %s is not supported", command));

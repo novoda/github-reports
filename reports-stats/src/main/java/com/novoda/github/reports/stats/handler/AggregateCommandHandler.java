@@ -6,6 +6,7 @@ import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.model.AggregatedStats;
 import com.novoda.github.reports.data.model.UserAssignments;
+import com.novoda.github.reports.reader.UsersServiceClient;
 import com.novoda.github.reports.stats.command.AggregateOptions;
 
 import java.util.List;
@@ -15,9 +16,10 @@ public class AggregateCommandHandler extends FloatTaskBasedCommandHandler<Aggreg
 
     public AggregateCommandHandler(EventDataLayer eventDataLayer,
                                    FloatServiceClient floatServiceClient,
-                                   FloatDateConverter floatDateConverter) {
+                                   FloatDateConverter floatDateConverter,
+                                   UsersServiceClient usersServiceClient) {
 
-        super(eventDataLayer, floatServiceClient, floatDateConverter);
+        super(eventDataLayer, floatServiceClient, floatDateConverter, usersServiceClient);
     }
 
     @Override
