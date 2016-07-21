@@ -2,6 +2,7 @@ package com.novoda.github.reports.data.db.converter;
 
 import com.novoda.github.reports.data.model.AggregatedStats;
 import com.novoda.github.reports.data.model.AggregatedUserStats;
+import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
 
@@ -50,25 +51,36 @@ public class AggregatedUserStatsConverter {
     private Function<Map.Entry<Boolean, ? extends Result<? extends Record>>, SimpleImmutableEntry<Boolean, Map<String, Integer>>> assignedOrExternalRecordsToMapEntries() {
         return assignedOrExternalEntries -> {
             Boolean isAssigned = assignedOrExternalEntries.getKey();
-            Map<String, Integer> projectSetStats = assignedOrExternalEntries.getValue()
-                    .intoGroups(PROJECT_ASSIGNED_FIELD)
+            Field<String> groupKey = getGroupingProjectOrRepositoryKey(isAssigned);
+
+            Map<String, Integer> projectOrRepositorySetStats = assignedOrExternalEntries.getValue()
+                    .intoGroups(groupKey)
                     .entrySet()
                     .stream()
-                    .map(projectRecordsToProjectCount())
+                    .map(projectOrRepositoryRecordsToCount())
                     .collect(toMap());
-            return new SimpleImmutableEntry<>(isAssigned, projectSetStats);
+
+            return new SimpleImmutableEntry<>(isAssigned, projectOrRepositorySetStats);
         };
     }
 
-    private Function<Map.Entry<String, ? extends Result<? extends Record>>, SimpleImmutableEntry<String, Integer>> projectRecordsToProjectCount() {
-        return projectStats -> {
-            Integer count = projectStats
+    private Field<String> getGroupingProjectOrRepositoryKey(Boolean isAssigned) {
+        return isAssigned ? PROJECT_ASSIGNED_FIELD : REPOSITORY_WORKED_NAME_FIELD;
+    }
+
+    private Function<Map.Entry<String, ? extends Result<? extends Record>>, SimpleImmutableEntry<String, Integer>> projectOrRepositoryRecordsToCount() {
+        return projectOrRepositoryStats -> {
+            Integer count = projectOrRepositoryStats
                     .getValue()
-                    .getValues(COUNT_EVENT_FIELD)
                     .stream()
+                    .map(toCountField())
                     .collect(Collectors.summingInt(value -> value));
-            return new SimpleImmutableEntry<>(projectStats.getKey(), count);
+            return new SimpleImmutableEntry<>(projectOrRepositoryStats.getKey(), count);
         };
+    }
+
+    private Function<? super Record, Integer> toCountField() {
+        return record -> record.getValue(COUNT_EVENT_FIELD);
     }
 
     private <K, V> Collector<SimpleImmutableEntry<K, V>, ?, Map<K, V>> toMap() {
@@ -85,8 +97,8 @@ public class AggregatedUserStatsConverter {
                 builder.assignedProjectsStats(projectsStats);
                 builder.assignedProjectsContributions(projectsTotalContributions);
             } else {
-                builder.externalProjectsStats(projectsStats);
-                builder.externalProjectsContributions(projectsTotalContributions);
+                builder.externalRepositoriesStats(projectsStats);
+                builder.externalRepositoriesContributions(projectsTotalContributions);
             }
         };
     }
