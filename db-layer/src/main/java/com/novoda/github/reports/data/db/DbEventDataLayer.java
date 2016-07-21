@@ -9,10 +9,7 @@ import com.novoda.github.reports.data.db.converter.PullRequestStatsConverter;
 import com.novoda.github.reports.data.db.converter.UserAssignmentsStatsConverter;
 import com.novoda.github.reports.data.db.tables.records.EventRecord;
 import com.novoda.github.reports.data.model.*;
-import org.jooq.DSLContext;
-import org.jooq.InsertOnDuplicateSetMoreStep;
-import org.jooq.Record;
-import org.jooq.Result;
+import org.jooq.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -153,7 +150,8 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
 
         try {
             Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername =
-                    getUserAssignmentsStatsGroupByUsername(usersAssignments);
+                    getUserAssignmentsStatsQuery(usersAssignments)
+                            .fetchGroups(USERNAME_FIELD);
 
             return usersAssignmentsConverter.convert(resultsGroupedByUsername);
 
@@ -168,7 +166,9 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
 
         try {
             Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername =
-                    getUserAssignmentsStatsGroupByUsername(usersAssignments);
+                    getUserAssignmentsStatsQuery(usersAssignments)
+                            .having(EVENT.EVENT_TYPE_ID.isNotNull())
+                            .fetchGroups(USERNAME_FIELD);
 
             return aggregatedUserStatsConverter.convert(resultsGroupedByUsername);
 
@@ -177,7 +177,7 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
         }
     }
 
-    private Map<String, ? extends Result<? extends Record>> getUserAssignmentsStatsGroupByUsername(Map<String, List<UserAssignments>> usersAssignments)
+    private SelectHavingStep<? extends Record> getUserAssignmentsStatsQuery(Map<String, List<UserAssignments>> usersAssignments)
             throws SQLException, DataLayerException {
 
         Connection connection = getNewConnection();
@@ -187,9 +187,7 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
         EventUserAssignmentsQueryBuilder userAssignmentsQueryBuilder = EventUserAssignmentsQueryBuilder
                 .newInstance(parameters);
 
-        return userAssignmentsQueryBuilder
-                .getStats()
-                .fetchGroups(USERNAME_FIELD);
+        return userAssignmentsQueryBuilder.getStats();
     }
 
 }
