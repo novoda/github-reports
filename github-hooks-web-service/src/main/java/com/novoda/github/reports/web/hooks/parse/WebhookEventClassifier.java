@@ -21,7 +21,7 @@ public class WebhookEventClassifier {
     public EventType classify(GithubWebhookEvent event) {
         return RULES.entrySet()
                 .stream()
-                .filter(entry -> entry.getValue().checkFor(event))
+                .filter(entry -> entry.getValue().check(event))
                 .findFirst()
                 .orElseThrow(supplyClassificationException())
                 .getKey();

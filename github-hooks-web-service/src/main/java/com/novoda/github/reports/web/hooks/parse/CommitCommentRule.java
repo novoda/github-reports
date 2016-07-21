@@ -4,7 +4,7 @@ import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
 
 class CommitCommentRule implements ClassificationRule {
     @Override
-    public boolean checkFor(GithubWebhookEvent event) {
+    public boolean check(GithubWebhookEvent event) {
         return event.comment() != null
                 && event.issue() == null
                 && event.pullRequest() == null;
