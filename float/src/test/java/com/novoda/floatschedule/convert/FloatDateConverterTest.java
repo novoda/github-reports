@@ -7,8 +7,8 @@ import org.junit.rules.ExpectedException;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.*;
 
 public class FloatDateConverterTest {
 
@@ -51,8 +51,7 @@ public class FloatDateConverterTest {
         Date actual = dateConverter.fromFloatDateFormat(date);
 
         Date expected = givenADate(2016, Calendar.JULY, 20);
-
-        assertEquals(0, expected.compareTo(actual));
+        assertThat(actual, equalTo(expected));
     }
 
     @Test
