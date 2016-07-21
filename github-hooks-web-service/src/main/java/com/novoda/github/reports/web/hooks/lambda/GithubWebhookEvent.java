@@ -21,23 +21,23 @@ public abstract class GithubWebhookEvent {
         return new AutoValue_GithubWebhookEvent.GsonTypeAdapter(gson);
     }
 
-    abstract String action(); // TODO enum
+    public abstract String action(); // TODO enum
 
-    abstract GithubUser sender();
+    public abstract GithubUser sender();
 
     @Nullable
-    abstract Integer number();
+    public abstract Integer number();
 
     @Nullable
     //@SerializedName(value = "issue", alternate = {"pull_request"}) // not working :(
-    abstract GithubIssue issue();
+    public abstract GithubIssue issue();
 
     @Nullable
     @SerializedName("pull_request")
-    abstract GithubIssue pullRequest();
+    public abstract GithubIssue pullRequest();
 
     @Nullable
-    abstract GithubRepository repository();
+    public abstract GithubRepository repository();
 
     @Override
     public String toString() {
