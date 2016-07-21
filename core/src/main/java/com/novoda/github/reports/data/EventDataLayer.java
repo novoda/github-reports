@@ -2,9 +2,12 @@ package com.novoda.github.reports.data;
 
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.PullRequestStats;
+import com.novoda.github.reports.data.model.UserAssignments;
+import com.novoda.github.reports.data.model.UserAssignmentsStats;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface EventDataLayer extends DataLayer<Event> {
 
@@ -28,6 +31,9 @@ public interface EventDataLayer extends DataLayer<Event> {
         WEEK,
         MONTH
     }
+
+    UserAssignmentsStats getUserAssignmentsStats(Map<String, List<UserAssignments>> usersAssignments)
+            throws DataLayerException;
 
 }
 

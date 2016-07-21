@@ -1,13 +1,12 @@
 package com.novoda.github.reports.stats;
 
 import com.beust.jcommander.JCommander;
+import com.novoda.floatschedule.FloatServiceClient;
+import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.github.reports.data.db.*;
 import com.novoda.github.reports.data.model.Stats;
 import com.novoda.github.reports.stats.command.*;
-import com.novoda.github.reports.stats.handler.ProjectCommandHandler;
-import com.novoda.github.reports.stats.handler.PullRequestCommandHandler;
-import com.novoda.github.reports.stats.handler.RepoCommandHandler;
-import com.novoda.github.reports.stats.handler.UserCommandHandler;
+import com.novoda.github.reports.stats.handler.*;
 
 public class Main {
 
@@ -19,18 +18,21 @@ public class Main {
     private static final String COMMAND_REPO = "repo";
     private static final String COMMAND_PROJECT = "project";
     private static final String COMMAND_PULL_REQUEST = "pr";
+    private static final String COMMAND_OVERALL = "overall";
 
     private void execute(String[] args) throws UnhandledCommandException, OptionsNotValidException {
         UserOptions userOptions = new UserOptions();
         RepoOptions repoOptions = new RepoOptions();
         ProjectOptions projectOptions = new ProjectOptions();
         PullRequestOptions prOptions = new PullRequestOptions();
+        OverallOptions overallOptions = new OverallOptions();
 
         JCommander commander = new JCommander();
         commander.addCommand(COMMAND_USER, userOptions);
         commander.addCommand(COMMAND_REPO, repoOptions);
         commander.addCommand(COMMAND_PROJECT, projectOptions);
         commander.addCommand(COMMAND_PULL_REQUEST, prOptions);
+        commander.addCommand(COMMAND_OVERALL, overallOptions);
 
         commander.parse(args);
         String command = commander.getParsedCommand();
@@ -50,6 +52,12 @@ public class Main {
         } else if (command.equals(COMMAND_PULL_REQUEST)) {
             PullRequestCommandHandler handler = new PullRequestCommandHandler(DbEventDataLayer.newInstance(connectionManager));
             stats = handler.handle(prOptions);
+        } else if (command.equals(COMMAND_OVERALL)) {
+            DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
+            FloatServiceClient floatServiceClient = FloatServiceClient.newInstance();
+            FloatDateConverter floatDateConverter = new FloatDateConverter();
+            OverallCommandHandler handler = new OverallCommandHandler(eventDataLayer, floatServiceClient, floatDateConverter);
+            stats = handler.handle(overallOptions);
         } else {
             throw new UnhandledCommandException(String.format("The command %s is not supported", command));
         }

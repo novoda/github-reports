@@ -37,6 +37,7 @@ public class FloatGithubProjectConverterTest {
         projectToRepositories.put("Float", Arrays.asList("repo1", "repo2"));
         projectToRepositories.put("Flutua", Collections.singletonList("repo2"));
         projectToRepositories.put("Nada", Collections.singletonList("repo3"));
+        projectToRepositories.put("Coisas", Collections.singletonList("repoCenas"));
         when(mockProjectsReader.getContent()).thenReturn(projectToRepositories);
     }
 
@@ -68,6 +69,14 @@ public class FloatGithubProjectConverterTest {
         List<String> actual = floatGithubProjectConverter.getRepositories("Float");
 
         assertEquals(projectToRepositories.get("Float"), actual);
+    }
+
+    @Test
+    public void givenProjectsWereRead_whenGettingRepositoriesForTheFloatProjectWithAComplex_thenReturnsMatch() throws Exception {
+
+        List<String> actual = floatGithubProjectConverter.getRepositories("Cenas: Scheduled (Coisas e tal)");
+
+        assertEquals(projectToRepositories.get("Coisas"), actual);
     }
 
     @Test(expected = NoMatchFoundException.class)

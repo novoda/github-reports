@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.novoda.github.reports.data.db.builder.DbEventStatsQueryBuilder.*;
-import static com.novoda.github.reports.data.db.builder.DbEventUserQueryBuilder.*;
+import static com.novoda.github.reports.data.db.builder.EventPullRequestQueryBuilder.*;
+import static com.novoda.github.reports.data.db.builder.EventUserQueryBuilder.*;
 
 public class PullRequestStatsConverter {
 
