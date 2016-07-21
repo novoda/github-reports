@@ -27,6 +27,7 @@ public class UserAssignmentsStatsConverter {
     private static final Field[] singleUserGroupingFields = new Field[]{
             DATE_FROM_FIELD,
             DATE_TO_FIELD,
+            PROJECT_ASSIGNED_FIELD,
             REPOSITORIES_ASSIGNED_FIELD
     };
 
@@ -67,6 +68,7 @@ public class UserAssignmentsStatsConverter {
             UserAssignmentsContributions.Builder builder = UserAssignmentsContributions.builder()
                     .assignmentStart(groupingKeys.getValue(DATE_FROM_FIELD))
                     .assignmentEnd(groupingKeys.getValue(DATE_TO_FIELD))
+                    .assignedProject(groupingKeys.getValue(PROJECT_ASSIGNED_FIELD))
                     .assignedRepositories(splitAssignedRepositories(groupingKeys))
                     .contributions(contributions);
 

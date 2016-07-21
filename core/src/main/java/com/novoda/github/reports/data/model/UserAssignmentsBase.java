@@ -11,6 +11,8 @@ interface UserAssignmentsBase {
 
     @Nullable Date assignmentEnd();
 
+    String assignedProject();
+
     List<String> assignedRepositories();
 
 }
