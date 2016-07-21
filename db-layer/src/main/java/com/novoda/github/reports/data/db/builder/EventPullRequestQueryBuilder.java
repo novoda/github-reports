@@ -10,12 +10,12 @@ import static com.novoda.github.reports.data.db.DatabaseHelper.conditionalBetwee
 import static com.novoda.github.reports.data.db.PullRequestStatsParameters.GROUP_SELECTOR_FIELD;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
 import static com.novoda.github.reports.data.db.Tables.USER;
-import static com.novoda.github.reports.data.db.builder.DbEventCountQueryBuilder.QUANTITY_FIELD;
-import static com.novoda.github.reports.data.db.builder.DbEventCountQueryBuilder.USER_FIELD;
-import static com.novoda.github.reports.data.db.builder.DbEventUserQueryBuilder.USER_TYPE_FIELD;
+import static com.novoda.github.reports.data.db.builder.EventCountQueryBuilder.QUANTITY_FIELD;
+import static com.novoda.github.reports.data.db.builder.EventCountQueryBuilder.USER_FIELD;
+import static com.novoda.github.reports.data.db.builder.EventUserQueryBuilder.USER_TYPE_FIELD;
 import static org.jooq.impl.DSL.field;
 
-public class DbEventStatsQueryBuilder {
+public class EventPullRequestQueryBuilder {
 
     public static final Field<Long> USER_ID_FIELD = field("user_id", Long.class);
     public static final Field<String> USER_NAME_FIELD = field("user_name", String.class);
@@ -31,24 +31,24 @@ public class DbEventStatsQueryBuilder {
     private static final BigDecimal DEFAULT_QUANTITY = BigDecimal.valueOf(0);
 
     private final PullRequestStatsParameters parameters;
-    private final DbEventUserQueryBuilder userQueryBuilder;
-    private final DbEventCountQueryBuilder mergedPrsQueryBuilder;
-    private final DbEventCountQueryBuilder openedPrsQueryBuilder;
-    private final DbEventCountQueryBuilder otherPeopleCommentsOnUserPrsQueryBuilder;
-    private final DbEventCountQueryBuilder commentsOtherPeoplePrsQueryBuilder;
-    private final DbEventCountQueryBuilder commentsOwnPrsQueryBuilder;
-    private final DbEventCountQueryBuilder commentsAnyPrsQueryBuilder;
+    private final EventUserQueryBuilder userQueryBuilder;
+    private final EventCountQueryBuilder mergedPrsQueryBuilder;
+    private final EventCountQueryBuilder openedPrsQueryBuilder;
+    private final EventCountQueryBuilder otherPeopleCommentsOnUserPrsQueryBuilder;
+    private final EventCountQueryBuilder commentsOtherPeoplePrsQueryBuilder;
+    private final EventCountQueryBuilder commentsOwnPrsQueryBuilder;
+    private final EventCountQueryBuilder commentsAnyPrsQueryBuilder;
 
-    public static DbEventStatsQueryBuilder newInstance(PullRequestStatsParameters parameters) {
-        DbEventUserQueryBuilder userQueryBuilder = new DbEventUserQueryBuilder(parameters);
-        DbEventCountQueryBuilder mergedPrsQueryBuilder = DbEventCountQueryBuilder.forMergedCount(parameters, userQueryBuilder);
-        DbEventCountQueryBuilder openedPrsQueryBuilder = DbEventCountQueryBuilder.forOpenedCount(parameters, userQueryBuilder);
-        DbEventCountQueryBuilder otherPeopleCommentsOnUserPrsQueryBuilder = DbEventCountQueryBuilder.forOtherPeopleComments(parameters, userQueryBuilder);
-        DbEventCountQueryBuilder commentsOtherPeoplePrsQueryBuilder = DbEventCountQueryBuilder.forCommentsOtherPeople(parameters, userQueryBuilder);
-        DbEventCountQueryBuilder commentsOwnPrsQueryBuilder = DbEventCountQueryBuilder.forCommentsOwn(parameters, userQueryBuilder);
-        DbEventCountQueryBuilder commentsAnyPrsQueryBuilder = DbEventCountQueryBuilder.forCommentsAny(parameters, userQueryBuilder);
+    public static EventPullRequestQueryBuilder newInstance(PullRequestStatsParameters parameters) {
+        EventUserQueryBuilder userQueryBuilder = new EventUserQueryBuilder(parameters);
+        EventCountQueryBuilder mergedPrsQueryBuilder = EventCountQueryBuilder.forMergedCount(parameters, userQueryBuilder);
+        EventCountQueryBuilder openedPrsQueryBuilder = EventCountQueryBuilder.forOpenedCount(parameters, userQueryBuilder);
+        EventCountQueryBuilder otherPeopleCommentsOnUserPrsQueryBuilder = EventCountQueryBuilder.forOtherPeopleComments(parameters, userQueryBuilder);
+        EventCountQueryBuilder commentsOtherPeoplePrsQueryBuilder = EventCountQueryBuilder.forCommentsOtherPeople(parameters, userQueryBuilder);
+        EventCountQueryBuilder commentsOwnPrsQueryBuilder = EventCountQueryBuilder.forCommentsOwn(parameters, userQueryBuilder);
+        EventCountQueryBuilder commentsAnyPrsQueryBuilder = EventCountQueryBuilder.forCommentsAny(parameters, userQueryBuilder);
 
-        return new DbEventStatsQueryBuilder(
+        return new EventPullRequestQueryBuilder(
                 parameters,
                 userQueryBuilder,
                 mergedPrsQueryBuilder,
@@ -60,14 +60,14 @@ public class DbEventStatsQueryBuilder {
         );
     }
 
-    private DbEventStatsQueryBuilder(PullRequestStatsParameters parameters,
-                                     DbEventUserQueryBuilder userQueryBuilder,
-                                     DbEventCountQueryBuilder mergedPrsQueryBuilder,
-                                     DbEventCountQueryBuilder openedPrsQueryBuilder,
-                                     DbEventCountQueryBuilder otherPeopleCommentsOnUserPrsQueryBuilder,
-                                     DbEventCountQueryBuilder commentsOtherPeoplePrsQueryBuilder,
-                                     DbEventCountQueryBuilder commentsOwnPrsQueryBuilder,
-                                     DbEventCountQueryBuilder commentsAnyPrsQueryBuilder) {
+    private EventPullRequestQueryBuilder(PullRequestStatsParameters parameters,
+                                         EventUserQueryBuilder userQueryBuilder,
+                                         EventCountQueryBuilder mergedPrsQueryBuilder,
+                                         EventCountQueryBuilder openedPrsQueryBuilder,
+                                         EventCountQueryBuilder otherPeopleCommentsOnUserPrsQueryBuilder,
+                                         EventCountQueryBuilder commentsOtherPeoplePrsQueryBuilder,
+                                         EventCountQueryBuilder commentsOwnPrsQueryBuilder,
+                                         EventCountQueryBuilder commentsAnyPrsQueryBuilder) {
 
         this.parameters = parameters;
         this.userQueryBuilder = userQueryBuilder;
