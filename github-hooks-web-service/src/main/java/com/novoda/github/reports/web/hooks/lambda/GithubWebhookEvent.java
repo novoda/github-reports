@@ -6,7 +6,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.novoda.github.reports.service.GithubUser;
 import com.novoda.github.reports.service.issue.GithubIssue;
-import com.novoda.github.reports.service.pullrequest.GithubPullRequest;
 import com.novoda.github.reports.service.repository.GithubRepository;
 
 import org.jetbrains.annotations.Nullable;
@@ -29,12 +28,17 @@ public abstract class GithubWebhookEvent {
     @Nullable
     abstract Integer number();
 
-    @Nullable
-    @SerializedName("pull_request")
-    abstract GithubPullRequest pullRequest();
+    //@Nullable
+    //@SerializedName("pull_request")
+    //abstract GithubPullRequest pullRequest();
 
     @Nullable
+    //@SerializedName(value = "issue", alternate = {"pull_request"}) // not working :(
     abstract GithubIssue issue();
+
+    @Nullable
+    @SerializedName("pull_request")
+    abstract GithubIssue pullRequest();
 
     @Nullable
     abstract GithubRepository repository();
@@ -53,7 +57,8 @@ public abstract class GithubWebhookEvent {
 
         abstract Builder sender(GithubUser sender);
 
-        abstract Builder pullRequest(@Nullable GithubPullRequest pullRequest);
+        //abstract Builder pullRequest(@Nullable GithubPullRequest pullRequest);
+        abstract Builder pullRequest(@Nullable GithubIssue pullRequest);
 
         abstract Builder issue(@Nullable GithubIssue issue);
 
