@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.novoda.github.reports.service.pullrequest.GithubPullRequest;
+import com.novoda.github.reports.service.issue.GithubIssue;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.IOException;
@@ -28,10 +28,11 @@ public class PostGithubWebhookEvent implements RequestStreamHandler {
         Reader reader = new InputStreamReader(input);
         GithubWebhookEvent payload = gson.fromJson(reader, GithubWebhookEvent.class);
 
-        String json = "{}";
-        GithubPullRequest pullRequest = payload.pullRequest();
+        GithubIssue pullRequest = payload.pullRequest();
+        String json;
         if (pullRequest != null) {
             logger.log(pullRequest.toString());
+            json = gson.toJson(pullRequest, GithubIssue.class);
         } else {
             logger.log("no pull request!");
             json = gson.toJson("{\"action\": \"" + payload.action() + "\"}");
