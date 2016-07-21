@@ -21,6 +21,7 @@ public class PostGithubWebhookEvent implements RequestStreamHandler {
     public void handleRequest(InputStream input, OutputStream output, Context context) {
 
         LambdaLogger logger = context.getLogger();
+        logger.log("starting...");
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
@@ -32,6 +33,7 @@ public class PostGithubWebhookEvent implements RequestStreamHandler {
         String json;
         if (pullRequest != null) {
             logger.log(pullRequest.toString());
+            pullRequest.setIsPullRequest(true);
             json = gson.toJson(pullRequest, GithubIssue.class);
         } else {
             logger.log("no pull request!");
@@ -39,6 +41,7 @@ public class PostGithubWebhookEvent implements RequestStreamHandler {
         }
         logger.log(payload.toString());
 
+        logger.log("finishing up...");
         try (OutputStreamWriter writer = new OutputStreamWriter(output)) {
             writer.write(json);
             writer.close();
