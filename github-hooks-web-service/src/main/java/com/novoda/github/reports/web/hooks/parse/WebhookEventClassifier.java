@@ -1,28 +1,34 @@
-package com.novoda.github.reports.web.hooks.lambda;
+package com.novoda.github.reports.web.hooks.parse;
 
 import com.novoda.github.reports.web.hooks.EventType;
+import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class WebhookEventClassifier {
 
-    // @RUI how can we clean this up?
-    // - extract to methods
-    // - have different classifiers (one for each type)?
+    private static final Map<EventType, ClassificationRule> RULES = new HashMap<>(5);
+    static {
+        RULES.put(EventType.COMMIT_COMMENT, new CommitCommentRule());
+        RULES.put(EventType.ISSUE, new IssueRule());
+        RULES.put(EventType.PULL_REQUEST, new PullRequestRule());
+        RULES.put(EventType.ISSUE_COMMENT, new IssueCommentRule());
+        RULES.put(EventType.REVIEW_COMMENT, new ReviewCommentRule());
+    }
 
     public EventType classify(GithubWebhookEvent event) {
-        if (event.comment() == null) {
-            if (event.issue() != null) {
-                return EventType.ISSUE;
-            } else if (event.pullRequest() != null) {
-                return EventType.PULL_REQUEST;
-            }
-        } else {
-            if (event.issue() != null) {
-                return EventType.ISSUE_COMMENT;
-            } else if (event.pullRequest() != null) {
-                return EventType.REVIEW_COMMENT;
-            }
-             return EventType.COMMIT_COMMENT;
-        }
-        throw new IllegalStateException("Unknown event type.");
+        return RULES.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().checkFor(event))
+                .findFirst()
+                .orElseThrow(supplyClassificationException())
+                .getKey();
     }
+
+    private Supplier<IllegalStateException> supplyClassificationException() {
+        return () -> new IllegalStateException("Unable to classify.");
+    }
+
 }
