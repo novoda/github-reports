@@ -1,10 +1,6 @@
 package com.novoda.floatschedule.convert;
 
 import com.novoda.github.reports.reader.UsersReader;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.hamcrest.text.IsEqualIgnoringCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,9 +8,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.verification.VerificationModeFactory;
 
+import java.io.IOException;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FloatGithubUserConverterTest {
@@ -31,7 +31,8 @@ public class FloatGithubUserConverterTest {
 
         Map<String, String> floatToGithubUserMap = new HashMap<>(1);
         floatToGithubUserMap.put("Float Pirata", "github meirinho");
-        when(mockUsersReader.getContent()).thenReturn(floatToGithubUserMap);
+        floatToGithubUserMap.put("Jack Pirata", "sparrow");
+        given(mockUsersReader.getContent()).willReturn(floatToGithubUserMap);
     }
 
     @Test
@@ -64,7 +65,7 @@ public class FloatGithubUserConverterTest {
 
     @Test
     public void givenUsersWereNotRead_whenGettingTheGithubUsername_thenContentIsRead() throws Exception {
-        when(mockUsersReader.hasContent()).thenReturn(false);
+        given(mockUsersReader.hasContent()).willReturn(false);
 
         floatGithubUserConverter.getGithubUser("float pirata");
 
@@ -73,7 +74,7 @@ public class FloatGithubUserConverterTest {
 
     @Test
     public void givenUsersWereAlreadyRead_whenGettingTheGithubUsernameAgain_thenContentIsNotReadAgain() throws Exception {
-        when(mockUsersReader.hasContent()).thenReturn(true);
+        given(mockUsersReader.hasContent()).willReturn(true);
 
         floatGithubUserConverter.getGithubUser("float pirata");
 
@@ -82,7 +83,7 @@ public class FloatGithubUserConverterTest {
 
     @Test
     public void givenUsersWereNotRead_whenGettingTheFloatUsername_thenContentIsRead() throws Exception {
-        when(mockUsersReader.hasContent()).thenReturn(false);
+        given(mockUsersReader.hasContent()).willReturn(false);
 
         floatGithubUserConverter.getFloatUser("github meirinho");
 
@@ -91,10 +92,29 @@ public class FloatGithubUserConverterTest {
 
     @Test
     public void givenUsersWereAlreadyRead_whenGettingTheFloatUsernameAgain_thenContentIsNotReadAgain() throws Exception {
-        when(mockUsersReader.hasContent()).thenReturn(true);
+        given(mockUsersReader.hasContent()).willReturn(true);
 
         floatGithubUserConverter.getFloatUser("github meirinho");
 
         verify(mockUsersReader, VerificationModeFactory.times(0)).read();
+    }
+    
+    @Test
+    public void givenUsersWhereRead_whenGettingGithubUsers_thenReturnAllUsers() throws IOException {
+        given(mockUsersReader.hasContent()).willReturn(true);
+
+        List<String> actualGithubUsers = floatGithubUserConverter.getGithubUsers();
+
+        assertEquals(Arrays.asList("github meirinho", "sparrow"), actualGithubUsers);
+    }
+
+    @Test
+    public void givenUsersWereReadAndHaveNoContent_whenGettingGithubUsers_thenReturnAllUsers() throws IOException {
+        given(mockUsersReader.hasContent()).willReturn(true);
+        given(mockUsersReader.getContent()).willReturn(Collections.emptyMap());
+
+        List<String> actualGithubUsers = floatGithubUserConverter.getGithubUsers();
+
+        assertEquals(Collections.emptyList(), actualGithubUsers);
     }
 }

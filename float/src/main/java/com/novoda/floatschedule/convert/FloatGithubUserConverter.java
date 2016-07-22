@@ -3,9 +3,11 @@ package com.novoda.floatschedule.convert;
 import com.novoda.github.reports.reader.UsersReader;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class FloatGithubUserConverter {
 
@@ -17,6 +19,15 @@ public class FloatGithubUserConverter {
 
     private FloatGithubUserConverter(UsersReader usersReader) {
         this.usersReader = usersReader;
+    }
+
+    public List<String> getGithubUsers() throws IOException {
+        readIfNeeded();
+        return usersReader.getContent()
+                .entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
     }
 
     public String getFloatUser(String githubUsername) throws IOException, NoMatchFoundException {
