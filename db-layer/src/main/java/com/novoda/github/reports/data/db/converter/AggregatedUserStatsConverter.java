@@ -74,13 +74,17 @@ public class AggregatedUserStatsConverter {
                     .getValue()
                     .stream()
                     .map(toCountField())
-                    .collect(Collectors.summingInt(value -> value));
+                    .collect(toSum());
             return new SimpleImmutableEntry<>(projectOrRepositoryStats.getKey(), count);
         };
     }
 
     private Function<? super Record, Integer> toCountField() {
         return record -> record.getValue(COUNT_EVENT_FIELD);
+    }
+
+    private Collector<Integer, ?, Integer> toSum() {
+        return Collectors.summingInt(value -> value);
     }
 
     private <K, V> Collector<SimpleImmutableEntry<K, V>, ?, Map<K, V>> toMap() {
