@@ -28,10 +28,11 @@ public abstract class AggregatedStats implements Stats {
 
     private Function<Map.Entry<String, AggregatedUserStats>, String> userEntryToString() {
         return userEntry -> String.format(
-                "- %s%s%s\n",
+                "- %s%s%s%s",
                 userEntry.getKey(),
                 NEW_LINE,
-                describeAggregatedUserStats(userEntry.getValue())
+                describeAggregatedUserStats(userEntry.getValue()),
+                NEW_LINE
         );
     }
 
