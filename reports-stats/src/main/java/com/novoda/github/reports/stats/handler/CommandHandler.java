@@ -4,8 +4,8 @@ import com.novoda.github.reports.stats.command.Options;
 import com.novoda.github.reports.data.model.Stats;
 
 @FunctionalInterface
-interface CommandHandler<T extends Stats, U extends Options> {
+interface CommandHandler<S extends Stats, O extends Options> {
 
-    T handle(U options);
+    S handle(O options);
 
 }
