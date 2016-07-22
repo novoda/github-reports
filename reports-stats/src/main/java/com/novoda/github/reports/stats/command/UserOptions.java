@@ -14,9 +14,6 @@ public class UserOptions extends RangeOptions {
     @Parameter(names = "--repo", description = "Name of the repository to retrieve data from")
     private String repository;
 
-    @Parameter(names = "--project", description = "Project name to retrieve data from")
-    private String project;
-
     public String getUser() {
         if (user != null && !user.isEmpty()) {
             return user.get(0);
@@ -28,7 +25,4 @@ public class UserOptions extends RangeOptions {
         return repository;
     }
 
-    public String getProject() {
-        return project;
-    }
 }
