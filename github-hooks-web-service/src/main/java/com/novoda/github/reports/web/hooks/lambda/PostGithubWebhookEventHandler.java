@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.novoda.github.reports.web.hooks.handler.HandlerRouter;
+import com.novoda.github.reports.web.hooks.handler.UnhandledEventException;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         GithubWebhookEvent event = getEventFrom(input);
         try {
             handlerRouter.route(event);
-        } catch (HandlerRouter.UnhandledEventException e) {
+        } catch (UnhandledEventException e) {
             e.printStackTrace();
         }
 

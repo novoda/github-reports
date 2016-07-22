@@ -7,6 +7,7 @@ import com.novoda.github.reports.web.hooks.parse.EventHandler;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class HandlerRouter {
 
@@ -26,16 +27,20 @@ public class HandlerRouter {
     public void route(GithubWebhookEvent event) throws UnhandledEventException {
         boolean eventWasNotHandled = handlers
                 .stream()
-                .noneMatch(eventHandler -> eventHandler.handle(event));
+                .noneMatch(handleEventIfPossible(event));
         if (eventWasNotHandled) {
             throw new UnhandledEventException(event);
         }
     }
 
-    public static class UnhandledEventException extends Exception {
-        public UnhandledEventException(GithubWebhookEvent event) {
-            super("Unhandled event: " + event.toString());
-        }
+    private Predicate<EventHandler> handleEventIfPossible(GithubWebhookEvent event) {
+        return eventHandler -> {
+            try {
+                return eventHandler.handle(event);
+            } catch (UnhandledEventException e) {
+                return false;
+            }
+        };
     }
 
 }
