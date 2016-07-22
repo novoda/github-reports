@@ -36,7 +36,8 @@ public abstract class AggregatedStats implements Stats {
     }
 
     private String describeAggregatedUserStats(AggregatedUserStats stats) {
-        return Arrays.stream(stats.describeStats().split(NEW_LINE))
+        return Arrays
+                .stream(stats.describeStats().split(NEW_LINE))
                 .map(s -> "  " + s)
                 .collect(Collectors.joining(NEW_LINE));
     }
