@@ -5,10 +5,10 @@ import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
 
 public class PullRequestExtractor implements PayloadExtractor<GithubIssue> {
     @Override
-    public GithubIssue extractFrom(GithubWebhookEvent event) {
+    public GithubIssue extractFrom(GithubWebhookEvent event) throws ExtractException {
         GithubIssue pullRequest = event.pullRequest();
         if (pullRequest == null) {
-            throw new IllegalStateException("Unable to get pull request from the event.");
+            throw new ExtractException(event);
         }
         pullRequest.setIsPullRequest(true);
         return pullRequest;
