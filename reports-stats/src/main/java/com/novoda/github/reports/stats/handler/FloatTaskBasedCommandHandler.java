@@ -45,15 +45,7 @@ abstract class FloatTaskBasedCommandHandler<S extends Stats, O extends FloatTask
                     .first();
         }
 
-        Map<String, List<UserAssignments>> usersAssignments = floatServiceClient
-                .getTasksForGithubUsers(githubUsers, options.getFrom(), options.getTo())
-                .map(tasksToUserAssignments())
-                .collect(
-                        HashMap<String, List<UserAssignments>>::new,
-                        putEntryInMap()
-                )
-                .toBlocking()
-                .first();
+        Map<String, List<UserAssignments>> usersAssignments = getUsersAssignmentsInDateRange(options, githubUsers);
 
         try {
             return handleUserAssignments(usersAssignments);
@@ -66,6 +58,18 @@ abstract class FloatTaskBasedCommandHandler<S extends Stats, O extends FloatTask
 
     private boolean listIsNullOrEmpty(List<String> githubUsers) {
         return githubUsers == null || githubUsers.isEmpty();
+    }
+
+    private HashMap<String, List<UserAssignments>> getUsersAssignmentsInDateRange(O options, List<String> githubUsers) {
+        return floatServiceClient
+                .getTasksForGithubUsers(githubUsers, options.getFrom(), options.getTo())
+                .map(tasksToUserAssignments())
+                .collect(
+                        HashMap<String, List<UserAssignments>>::new,
+                        putEntryInMap()
+                )
+                .toBlocking()
+                .first();
     }
 
     private Func1<Map.Entry<String, List<Task>>, AbstractMap.SimpleImmutableEntry<String, List<UserAssignments>>> tasksToUserAssignments() {
