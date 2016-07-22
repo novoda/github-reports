@@ -16,8 +16,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-abstract class FloatTaskBasedCommandHandler<T extends Stats, U extends FloatTaskBasedOptions>
-        implements CommandHandler<T, U> {
+abstract class FloatTaskBasedCommandHandler<S extends Stats, O extends FloatTaskBasedOptions>
+        implements CommandHandler<S, O> {
 
     private final EventDataLayer eventDataLayer;
     private final FloatServiceClient floatServiceClient;
@@ -36,7 +36,7 @@ abstract class FloatTaskBasedCommandHandler<T extends Stats, U extends FloatTask
     }
 
     @Override
-    public T handle(U options) {
+    public S handle(O options) {
         List<String> githubUsers = options.getUsers();
         if (listIsNullOrEmpty(githubUsers)) {
             githubUsers = usersServiceClient.getAllGithubUsers()
@@ -94,7 +94,7 @@ abstract class FloatTaskBasedCommandHandler<T extends Stats, U extends FloatTask
         };
     }
 
-    protected abstract T handleUserAssignments(Map<String, List<UserAssignments>> usersAssignments)
+    protected abstract S handleUserAssignments(Map<String, List<UserAssignments>> usersAssignments)
             throws DataLayerException;
 
     private Action2<HashMap<String, List<UserAssignments>>, AbstractMap.SimpleImmutableEntry<String, List<UserAssignments>>> putEntryInMap() {
