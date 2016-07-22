@@ -78,7 +78,7 @@ public class AggregatedUserStatsConverter {
                         .collect(toMap());
     }
 
-    private Field<String> getGroupingProjectOrRepositoryKey(Boolean isAssigned) {
+    private Field<String> getGroupingProjectOrRepositoryKey(boolean isAssigned) {
         return isAssigned ? PROJECT_ASSIGNED_FIELD : REPOSITORY_WORKED_NAME_FIELD;
     }
 
@@ -111,7 +111,7 @@ public class AggregatedUserStatsConverter {
 
     private BiConsumer<AggregatedUserStats.Builder, SimpleImmutableEntry<Boolean, Map<String, Integer>>> mapEntriesIntoAggregatedUserStats() {
         return (builder, assignedOrExternalStats) -> {
-            Boolean isAssigned = assignedOrExternalStats.getKey();
+            boolean isAssigned = assignedOrExternalStats.getKey();
             Map<String, Integer> projectsStats = assignedOrExternalStats.getValue();
             Integer projectsTotalContributions = sumMapValues(projectsStats);
 
