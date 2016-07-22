@@ -4,7 +4,6 @@ import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
 
 public interface EventHandler {
 
-    //void handle(T t, GithubWebhookEvent.Action action); // @RUI should action be on its own file?
-    void handle(GithubWebhookEvent event);
+    boolean handle(GithubWebhookEvent event);
 
 }
