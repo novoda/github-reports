@@ -3,6 +3,7 @@ package com.novoda.github.reports.stats;
 import com.beust.jcommander.JCommander;
 import com.novoda.floatschedule.FloatServiceClient;
 import com.novoda.floatschedule.convert.FloatDateConverter;
+import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.github.reports.data.db.*;
 import com.novoda.github.reports.data.model.Stats;
 import com.novoda.github.reports.reader.UsersServiceClient;
@@ -51,7 +52,9 @@ public class Main {
             RepoCommandHandler handler = new RepoCommandHandler(DbRepoDataLayer.newInstance(connectionManager));
             stats = handler.handle(repoOptions);
         } else if (command.equals(COMMAND_PROJECT)) {
-            ProjectCommandHandler handler = new ProjectCommandHandler(DbProjectDataLayer.newInstance(connectionManager));
+            FloatGithubProjectConverter floatGithubProjectConverter = FloatGithubProjectConverter.newInstance();
+            DbRepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
+            ProjectCommandHandler handler = new ProjectCommandHandler(repoDataLayer, floatGithubProjectConverter);
             stats = handler.handle(projectOptions);
         } else if (command.equals(COMMAND_PULL_REQUEST)) {
             PullRequestCommandHandler handler = new PullRequestCommandHandler(DbEventDataLayer.newInstance(connectionManager));
