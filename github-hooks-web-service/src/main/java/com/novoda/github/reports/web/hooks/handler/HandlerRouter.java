@@ -1,6 +1,7 @@
 package com.novoda.github.reports.web.hooks.handler;
 
 import com.novoda.github.reports.web.hooks.EventType;
+import com.novoda.github.reports.web.hooks.extract.WebhookPayloadExtractor;
 import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.parse.EventHandler;
 import com.novoda.github.reports.web.hooks.parse.WebhookEventClassifier;
@@ -20,14 +21,17 @@ public class HandlerRouter {
     }
 
     private WebhookEventClassifier eventClassifier;
+    private WebhookPayloadExtractor eventExtractor;
 
     public static HandlerRouter newInstance() {
         WebhookEventClassifier eventClassifier = new WebhookEventClassifier();
-        return new HandlerRouter(eventClassifier);
+        WebhookPayloadExtractor payloadExtractor = WebhookPayloadExtractor.newInstance();
+        return new HandlerRouter(eventClassifier, payloadExtractor);
     }
 
-    HandlerRouter(WebhookEventClassifier eventClassifier) {
+    public HandlerRouter(WebhookEventClassifier eventClassifier, WebhookPayloadExtractor eventExtractor) {
         this.eventClassifier = eventClassifier;
+        this.eventExtractor = eventExtractor;
     }
 
     public void route(GithubWebhookEvent event) {
@@ -42,7 +46,8 @@ public class HandlerRouter {
             throw new IllegalStateException("Could not find correct handler for the event.");
         }
 
-        eventHandler.handle(event);
+        //eventHandler.handle(event);
+        eventHandler.handle(event); // FIXME eventHandler.handle(eventExtractor.extract(event)) does not produce compiler error and "should"!
     }
 
 }
