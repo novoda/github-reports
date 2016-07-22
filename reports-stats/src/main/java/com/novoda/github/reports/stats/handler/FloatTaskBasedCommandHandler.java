@@ -73,13 +73,13 @@ abstract class FloatTaskBasedCommandHandler<S extends Stats, O extends FloatTask
     }
 
     private Func1<Map.Entry<String, List<Task>>, AbstractMap.SimpleImmutableEntry<String, List<UserAssignments>>> tasksToUserAssignments() {
-        return entry -> {
-            String key = entry.getKey();
-            List<UserAssignments> assignments = entry.getValue()
+        return usernameWithTasks -> {
+            String username = usernameWithTasks.getKey();
+            List<UserAssignments> assignments = usernameWithTasks.getValue()
                     .stream()
                     .map(taskToUserAssignments())
                     .collect(Collectors.toList());
-            return new AbstractMap.SimpleImmutableEntry<>(key, assignments);
+            return new AbstractMap.SimpleImmutableEntry<>(username, assignments);
         };
     }
 
