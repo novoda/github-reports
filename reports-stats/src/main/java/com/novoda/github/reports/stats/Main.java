@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.novoda.floatschedule.FloatServiceClient;
 import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
+import com.novoda.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.github.reports.data.db.*;
 import com.novoda.github.reports.data.model.Stats;
 import com.novoda.github.reports.reader.UsersServiceClient;
@@ -46,18 +47,22 @@ public class Main {
         ConnectionManager connectionManager = DbConnectionManager.newInstance();
 
         if (command.equals(COMMAND_USER)) {
-            UserCommandHandler handler = new UserCommandHandler(DbUserDataLayer.newInstance(connectionManager));
+            DbUserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
+            UserCommandHandler handler = new UserCommandHandler(userDataLayer);
             stats = handler.handle(userOptions);
         } else if (command.equals(COMMAND_REPO)) {
-            RepoCommandHandler handler = new RepoCommandHandler(DbRepoDataLayer.newInstance(connectionManager));
+            DbRepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
+            RepoCommandHandler handler = new RepoCommandHandler(repoDataLayer);
             stats = handler.handle(repoOptions);
         } else if (command.equals(COMMAND_PROJECT)) {
-            FloatGithubProjectConverter floatGithubProjectConverter = FloatGithubProjectConverter.newInstance();
             DbRepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
+            FloatGithubProjectConverter floatGithubProjectConverter = FloatGithubProjectConverter.newInstance();
             ProjectCommandHandler handler = new ProjectCommandHandler(repoDataLayer, floatGithubProjectConverter);
             stats = handler.handle(projectOptions);
         } else if (command.equals(COMMAND_PULL_REQUEST)) {
-            PullRequestCommandHandler handler = new PullRequestCommandHandler(DbEventDataLayer.newInstance(connectionManager));
+            DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
+            FloatGithubUserConverter floatGithubUserConverter = FloatGithubUserConverter.newInstance();
+            PullRequestCommandHandler handler = new PullRequestCommandHandler(eventDataLayer, floatGithubUserConverter);
             stats = handler.handle(prOptions);
         } else if (command.equals(COMMAND_OVERALL)) {
             DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
