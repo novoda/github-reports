@@ -80,13 +80,17 @@ public class AggregatedUserStatsConverter {
 
     private Function<Map.Entry<String, ? extends Result<? extends Record>>, SimpleImmutableEntry<String, Integer>> projectOrRepositoryRecordsToCount() {
         return projectOrRepositoryStats -> {
-            Integer count = projectOrRepositoryStats
-                    .getValue()
-                    .stream()
-                    .map(toCountField())
-                    .collect(toSum());
+            Integer count = sumCountField(projectOrRepositoryStats);
             return new SimpleImmutableEntry<>(projectOrRepositoryStats.getKey(), count);
         };
+    }
+
+    private Integer sumCountField(Map.Entry<String, ? extends Result<? extends Record>> projectOrRepositoryStats) {
+        return projectOrRepositoryStats
+                .getValue()
+                .stream()
+                .map(toCountField())
+                .collect(toSum());
     }
 
     private Function<? super Record, Integer> toCountField() {
