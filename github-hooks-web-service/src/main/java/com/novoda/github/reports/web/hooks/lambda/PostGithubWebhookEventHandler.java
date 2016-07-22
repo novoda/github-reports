@@ -24,7 +24,7 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
     private HandlerRouter handlerRouter;
 
     public PostGithubWebhookEventHandler() {
-        handlerRouter = new HandlerRouter();
+        handlerRouter = HandlerRouter.newInstance();
     }
 
     @Override

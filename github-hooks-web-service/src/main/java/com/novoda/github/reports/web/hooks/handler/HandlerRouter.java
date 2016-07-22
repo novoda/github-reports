@@ -10,10 +10,18 @@ import java.util.List;
 
 public class HandlerRouter {
 
-    private static final List<EventHandler> handlers = Collections.unmodifiableList(Arrays.asList(
-            // TODO more handlers
-            PullRequestHandler.newInstance(ConnectionManagerContainer.getConnectionManager())
-    ));
+    private final List<EventHandler> handlers;
+
+    public static HandlerRouter newInstance() {
+        return new HandlerRouter(Collections.unmodifiableList(Arrays.asList(
+                // TODO more handlers
+                PullRequestHandler.newInstance(ConnectionManagerContainer.getConnectionManager())
+        )));
+    }
+
+    HandlerRouter(List<EventHandler> handlers) {
+        this.handlers = handlers;
+    }
 
     public void route(GithubWebhookEvent event) throws UnhandledEventException {
         boolean eventWasNotHandled = handlers
