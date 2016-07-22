@@ -19,7 +19,7 @@ public class WebhookEventClassifier {
     }
 
     public EventType classify(GithubWebhookEvent event) {
-        return RULES.entrySet()
+        return RULES.entrySet() // TODO code for the possibility of more than one rule matching
                 .stream()
                 .filter(entry -> entry.getValue().check(event))
                 .findFirst()
