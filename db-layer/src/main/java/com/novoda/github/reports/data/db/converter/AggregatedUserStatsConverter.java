@@ -112,16 +112,10 @@ public class AggregatedUserStatsConverter {
     private BiConsumer<AggregatedUserStats.Builder, SimpleImmutableEntry<Boolean, Map<String, Integer>>> mapEntriesIntoAggregatedUserStats() {
         return (builder, assignedOrExternalStats) -> {
             boolean isAssigned = assignedOrExternalStats.getKey();
-            Map<String, Integer> projectsStats = assignedOrExternalStats.getValue();
-            Integer projectsTotalContributions = sumMapValues(projectsStats);
+            Map<String, Integer> stats = assignedOrExternalStats.getValue();
+            Integer totalContributions = sumMapValues(stats);
 
-            if (isAssigned) {
-                builder.assignedProjectsStats(projectsStats);
-                builder.assignedProjectsContributions(projectsTotalContributions);
-            } else {
-                builder.externalRepositoriesStats(projectsStats);
-                builder.externalRepositoriesContributions(projectsTotalContributions);
-            }
+            setStatsAndContributions(builder, isAssigned, stats, totalContributions);
         };
     }
 
@@ -130,6 +124,20 @@ public class AggregatedUserStatsConverter {
                 .entrySet()
                 .stream()
                 .collect(Collectors.summingInt(Map.Entry::getValue));
+    }
+
+    private void setStatsAndContributions(AggregatedUserStats.Builder builder,
+                                          boolean isAssigned,
+                                          Map<String, Integer> stats,
+                                          Integer totalContributions) {
+
+        if (isAssigned) {
+            builder.assignedProjectsStats(stats);
+            builder.assignedProjectsContributions(totalContributions);
+        } else {
+            builder.externalRepositoriesStats(stats);
+            builder.externalRepositoriesContributions(totalContributions);
+        }
     }
 
     private BiConsumer<AggregatedUserStats.Builder, AggregatedUserStats.Builder> noopMerger() {
