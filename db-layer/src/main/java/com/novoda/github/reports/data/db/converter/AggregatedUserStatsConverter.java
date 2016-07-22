@@ -18,14 +18,18 @@ import static com.novoda.github.reports.data.db.builder.EventUserAssignmentsQuer
 public class AggregatedUserStatsConverter {
 
     public AggregatedStats convert(Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername) {
-        Map<String, AggregatedUserStats> usersStats = resultsGroupedByUsername.entrySet()
-                .stream()
-                .map(userRecordToAggregatedUserStats())
-                .collect(toMap());
+        Map<String, AggregatedUserStats> usersStats = buildUserStatsMap(resultsGroupedByUsername);
 
         return AggregatedStats.builder()
                 .usersStats(usersStats)
                 .build();
+    }
+
+    private Map<String, AggregatedUserStats> buildUserStatsMap(Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername) {
+        return resultsGroupedByUsername.entrySet()
+                .stream()
+                .map(userRecordToAggregatedUserStats())
+                .collect(toMap());
     }
 
     private Function<Map.Entry<String, ? extends Result<? extends Record>>, SimpleImmutableEntry<String, AggregatedUserStats>> userRecordToAggregatedUserStats() {
