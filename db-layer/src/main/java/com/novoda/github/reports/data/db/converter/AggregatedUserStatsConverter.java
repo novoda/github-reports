@@ -130,6 +130,7 @@ public class AggregatedUserStatsConverter {
 
     private BiConsumer<AggregatedUserStats.Builder, AggregatedUserStats.Builder> noopMerger() {
         return (fromBuilder, toBuilder) -> {
+            // merging two builders is not needed
         };
     }
 
