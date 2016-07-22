@@ -6,9 +6,7 @@ import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.novoda.github.reports.service.issue.GithubIssue;
-import com.novoda.github.reports.web.hooks.EventType;
-import com.novoda.github.reports.web.hooks.parse.PullRequestParser;
-import com.novoda.github.reports.web.hooks.parse.WebhookEventClassifier;
+import com.novoda.github.reports.web.hooks.handler.HandlerRouter;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.IOException;
@@ -24,10 +22,10 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
             .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
             .create();
 
-    private WebhookEventClassifier eventClassifier;
+    private HandlerRouter handlerRouter;
 
     public PostGithubWebhookEventHandler() {
-        eventClassifier = new WebhookEventClassifier();
+        handlerRouter = HandlerRouter.newInstance();
     }
 
     @Override
@@ -35,18 +33,9 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         LambdaLogger logger = getLogger(context);
 
         GithubWebhookEvent event = getEventFrom(input);
-        EventType eventType = eventClassifier.classify(event);
-
-        if (eventType == EventType.PULL_REQUEST) {
-            PullRequestParser pullRequestParser = new PullRequestParser();
-            GithubIssue githubIssue = pullRequestParser.from(event).get();
-            // TODO persist
-        } else if (eventType == EventType.ISSUE) {
-            // TODO ...
-        }
+        handlerRouter.route(event);
 
         debug_logPullRequest(logger, event);
-
         logger.log(event.toString());
         debug_writeToOutputFor(output, event.toString());
     }
