@@ -6,6 +6,9 @@ import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.novoda.github.reports.service.issue.GithubIssue;
+import com.novoda.github.reports.web.hooks.EventType;
+import com.novoda.github.reports.web.hooks.parse.PullRequestParser;
+import com.novoda.github.reports.web.hooks.parse.WebhookEventClassifier;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.IOException;
@@ -21,13 +24,38 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
             .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
             .create();
 
+    private WebhookEventClassifier eventClassifier;
+
+    public PostGithubWebhookEventHandler() {
+        eventClassifier = new WebhookEventClassifier();
+    }
+
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) {
-        LambdaLogger logger = context.getLogger();
-        logger.log("starting...");
+        LambdaLogger logger = getLogger(context);
 
-        GithubWebhookEvent event = getGithubWebhookEvent(input);
+        GithubWebhookEvent event = getEventFrom(input);
+        EventType eventType = eventClassifier.classify(event);
 
+        if (eventType == EventType.PULL_REQUEST) {
+            PullRequestParser pullRequestParser = new PullRequestParser();
+            GithubIssue githubIssue = pullRequestParser.from(event).get();
+            // TODO persist
+        } else if (eventType == EventType.ISSUE) {
+            // TODO ...
+        }
+
+        debug_logPullRequest(logger, event);
+
+        logger.log(event.toString());
+        debug_writeToOutputFor(output, event.toString());
+    }
+
+    private LambdaLogger getLogger(Context context) {
+        return context == null ? System.out::println : context.getLogger();
+    }
+
+    private void debug_logPullRequest(LambdaLogger logger, GithubWebhookEvent event) {
         GithubIssue pullRequest = event.pullRequest();
         String json;
         if (pullRequest != null) {
@@ -38,18 +66,15 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
             logger.log("no pull request!");
             json = gson.toJson("{\"action\": \"" + event.action() + "\"}");
         }
-        logger.log(event.toString());
-
-        logger.log("finishing up...");
-        writeToOutputForDebugging(output, json);
+        logger.log(json);
     }
 
-    private GithubWebhookEvent getGithubWebhookEvent(InputStream input) {
+    private GithubWebhookEvent getEventFrom(InputStream input) {
         Reader reader = new InputStreamReader(input);
         return gson.fromJson(reader, GithubWebhookEvent.class);
     }
 
-    private void writeToOutputForDebugging(OutputStream output, String json) {
+    private void debug_writeToOutputFor(OutputStream output, String json) {
         try (OutputStreamWriter writer = new OutputStreamWriter(output)) {
             writer.write(json);
             writer.close();
