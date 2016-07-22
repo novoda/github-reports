@@ -56,15 +56,22 @@ public class AggregatedUserStatsConverter {
             Boolean isAssigned = assignedOrExternalEntries.getKey();
             Field<String> groupKey = getGroupingProjectOrRepositoryKey(isAssigned);
 
-            Map<String, Integer> projectOrRepositorySetStats = assignedOrExternalEntries.getValue()
-                    .intoGroups(groupKey)
-                    .entrySet()
-                    .stream()
-                    .map(projectOrRepositoryRecordsToCount())
-                    .collect(toMap());
+            Map<String, Integer> projectOrRepositorySetStats = buildProjectOrRepositorySetStatsFromRecords(
+                    groupKey,
+                    assignedOrExternalEntries.getValue()
+            );
 
             return new SimpleImmutableEntry<>(isAssigned, projectOrRepositorySetStats);
         };
+    }
+
+    private Map<String, Integer> buildProjectOrRepositorySetStatsFromRecords(Field<String> groupKey, Result<? extends Record> records) {
+        return records
+                        .intoGroups(groupKey)
+                        .entrySet()
+                        .stream()
+                        .map(projectOrRepositoryRecordsToCount())
+                        .collect(toMap());
     }
 
     private Field<String> getGroupingProjectOrRepositoryKey(Boolean isAssigned) {
