@@ -31,21 +31,24 @@ public class AggregatedUserStatsConverter {
     private Function<Map.Entry<String, ? extends Result<? extends Record>>, SimpleImmutableEntry<String, AggregatedUserStats>> userRecordToAggregatedUserStats() {
         return userStats -> {
             String username = userStats.getKey();
-            AggregatedUserStats aggregatedUserStats = userStats
-                    .getValue()
-                    .intoGroups(WAS_SCHEDULED_WORK_FIELD)
-                    .entrySet()
-                    .stream()
-                    .map(assignedOrExternalRecordsToMapEntries())
-                    .collect(
-                            AggregatedUserStats::builder,
-                            mapEntriesIntoAggregatedUserStats(),
-                            noopMerger()
-                    )
-                    .build();
+            AggregatedUserStats aggregatedUserStats = buildAggregatedUserStatsFromRecords(userStats.getValue());
 
             return new SimpleImmutableEntry<>(username, aggregatedUserStats);
         };
+    }
+
+    private AggregatedUserStats buildAggregatedUserStatsFromRecords(Result<? extends Record> userStats) {
+        return userStats
+                .intoGroups(WAS_SCHEDULED_WORK_FIELD)
+                .entrySet()
+                .stream()
+                .map(assignedOrExternalRecordsToMapEntries())
+                .collect(
+                        AggregatedUserStats::builder,
+                        mapEntriesIntoAggregatedUserStats(),
+                        noopMerger()
+                )
+                .build();
     }
 
     private Function<Map.Entry<Boolean, ? extends Result<? extends Record>>, SimpleImmutableEntry<Boolean, Map<String, Integer>>> assignedOrExternalRecordsToMapEntries() {
