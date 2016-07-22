@@ -19,6 +19,7 @@ public class Main {
     private static final String COMMAND_PROJECT = "project";
     private static final String COMMAND_PULL_REQUEST = "pr";
     private static final String COMMAND_OVERALL = "overall";
+    private static final String COMMAND_AGGREGATE = "aggregate";
 
     private void execute(String[] args) throws UnhandledCommandException, OptionsNotValidException {
         UserOptions userOptions = new UserOptions();
@@ -26,6 +27,7 @@ public class Main {
         ProjectOptions projectOptions = new ProjectOptions();
         PullRequestOptions prOptions = new PullRequestOptions();
         OverallOptions overallOptions = new OverallOptions();
+        AggregateOptions aggregateOptions = new AggregateOptions();
 
         JCommander commander = new JCommander();
         commander.addCommand(COMMAND_USER, userOptions);
@@ -33,6 +35,7 @@ public class Main {
         commander.addCommand(COMMAND_PROJECT, projectOptions);
         commander.addCommand(COMMAND_PULL_REQUEST, prOptions);
         commander.addCommand(COMMAND_OVERALL, overallOptions);
+        commander.addCommand(COMMAND_AGGREGATE, aggregateOptions);
 
         commander.parse(args);
         String command = commander.getParsedCommand();
@@ -58,6 +61,12 @@ public class Main {
             FloatDateConverter floatDateConverter = new FloatDateConverter();
             OverallCommandHandler handler = new OverallCommandHandler(eventDataLayer, floatServiceClient, floatDateConverter);
             stats = handler.handle(overallOptions);
+        } else if (command.equals(COMMAND_AGGREGATE)) {
+            DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
+            FloatServiceClient floatServiceClient = FloatServiceClient.newInstance();
+            FloatDateConverter floatDateConverter = new FloatDateConverter();
+            AggregateCommandHandler handler = new AggregateCommandHandler(eventDataLayer, floatServiceClient, floatDateConverter);
+            stats = handler.handle(aggregateOptions);
         } else {
             throw new UnhandledCommandException(String.format("The command %s is not supported", command));
         }
