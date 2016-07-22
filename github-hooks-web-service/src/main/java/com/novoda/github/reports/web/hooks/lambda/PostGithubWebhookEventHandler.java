@@ -5,7 +5,6 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.web.hooks.handler.HandlerRouter;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
@@ -25,7 +24,7 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
     private HandlerRouter handlerRouter;
 
     public PostGithubWebhookEventHandler() {
-        handlerRouter = HandlerRouter.newInstance();
+        handlerRouter = new HandlerRouter();
     }
 
     @Override
@@ -33,34 +32,23 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         LambdaLogger logger = getLogger(context);
 
         GithubWebhookEvent event = getEventFrom(input);
-        handlerRouter.route(event);
+        try {
+            handlerRouter.route(event);
+        } catch (HandlerRouter.UnhandledEventException e) {
+            e.printStackTrace();
+        }
 
-        debug_logPullRequest(logger, event);
         logger.log(event.toString());
         debug_writeToOutputFor(output, event.toString());
-    }
-
-    private LambdaLogger getLogger(Context context) {
-        return context == null ? System.out::println : context.getLogger();
-    }
-
-    private void debug_logPullRequest(LambdaLogger logger, GithubWebhookEvent event) {
-        GithubIssue pullRequest = event.pullRequest();
-        String json;
-        if (pullRequest != null) {
-            logger.log(pullRequest.toString());
-            pullRequest.setIsPullRequest(true); // @RUI the alternative to using this is a custom type adapter
-            json = gson.toJson(pullRequest, GithubIssue.class);
-        } else {
-            logger.log("no pull request!");
-            json = gson.toJson("{\"action\": \"" + event.action() + "\"}");
-        }
-        logger.log(json);
     }
 
     private GithubWebhookEvent getEventFrom(InputStream input) {
         Reader reader = new InputStreamReader(input);
         return gson.fromJson(reader, GithubWebhookEvent.class);
+    }
+
+    private LambdaLogger getLogger(Context context) {
+        return context == null ? System.out::println : context.getLogger();
     }
 
     private void debug_writeToOutputFor(OutputStream output, String json) {
