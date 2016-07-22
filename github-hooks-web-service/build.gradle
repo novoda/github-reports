@@ -59,7 +59,7 @@ task zip(type: Zip) {
 
 
 def lambdasMap = [
-        'PostGithubWebhookEvent': 'github-reports-webhook-post'
+        'PostGithubWebhookEventHandler': 'github-reports-webhook-post'
 ]
 
 task uploadHooksLambdas(group: 'aws')
