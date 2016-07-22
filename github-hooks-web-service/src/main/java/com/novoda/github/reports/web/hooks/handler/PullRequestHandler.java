@@ -4,6 +4,7 @@ import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbEventDataLayer;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.web.hooks.EventType;
+import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
 import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.parse.EventHandler;
@@ -29,13 +30,17 @@ class PullRequestHandler implements EventHandler {
     }
 
     @Override
-    public boolean handle(GithubWebhookEvent event) {
+    public boolean handle(GithubWebhookEvent event) throws UnhandledEventException {
         if (cannotHandleEvent(event)) {
             return false;
         }
 
         GithubWebhookEvent.Action action = event.action();
-        GithubIssue pullRequest = extractor.extractFrom(event);
+        try {
+            GithubIssue pullRequest = extractor.extractFrom(event);
+        } catch (ExtractException e) {
+            throw new UnhandledEventException(e.getMessage());
+        }
         // TODO convert and persist and... ?
 
         return true;

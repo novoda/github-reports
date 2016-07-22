@@ -34,8 +34,8 @@ public class HandlerRouterTest {
         handlerRouter.route(event);
     }
 
-    @Test(expected = HandlerRouter.UnhandledEventException.class)
-    public void givenAHandlerThatDoesNotHandleThisEvent_whenRouting_thenExceptionIsThrown() throws HandlerRouter.UnhandledEventException {
+    @Test(expected = UnhandledEventException.class)
+    public void givenAHandlerThatDoesNotHandleThisEvent_whenRouting_thenExceptionIsThrown() throws UnhandledEventException {
         GithubWebhookEvent event = mock(GithubWebhookEvent.class);
         when(mockHandler.handle(event)).thenReturn(false);
 
