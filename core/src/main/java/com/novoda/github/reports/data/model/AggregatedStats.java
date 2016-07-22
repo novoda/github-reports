@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @AutoValue
 public abstract class AggregatedStats implements Stats {
 
-    public static final String NEW_LINE = "\n";
+    private static final String NEW_LINE = "\n";
 
     public static Builder builder() {
         return new AutoValue_AggregatedStats.Builder();

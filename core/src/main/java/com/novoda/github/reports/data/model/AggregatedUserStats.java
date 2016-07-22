@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 @AutoValue
 public abstract class AggregatedUserStats implements Stats {
 
+    private static final String NEW_LINE = "\n";
+
     public static Builder builder() {
         return new AutoValue_AggregatedUserStats.Builder();
     }
@@ -23,9 +25,9 @@ public abstract class AggregatedUserStats implements Stats {
 
     @Override
     public String describeStats() {
-        return "* assigned projects\n" +
+        return "* assigned projects" + NEW_LINE +
                 describeMapWithTotal(assignedProjectsStats(), assignedProjectsContributions()) +
-                "* external projects\n" +
+                "* external projects" + NEW_LINE +
                 describeMapWithTotal(externalProjectsStats(), externalProjectsContributions());
     }
 
@@ -33,7 +35,7 @@ public abstract class AggregatedUserStats implements Stats {
         return contributionsMap.entrySet()
                 .stream()
                 .map(projectContributionToString())
-                .collect(Collectors.joining("\n", "", getTotalContributionsSuffix(contributionsTotal)));
+                .collect(Collectors.joining(NEW_LINE, "", getTotalContributionsSuffix(contributionsTotal)));
     }
 
     private Function<Map.Entry<String, Integer>, String> projectContributionToString() {
@@ -41,7 +43,7 @@ public abstract class AggregatedUserStats implements Stats {
     }
 
     private String getTotalContributionsSuffix(Integer contributionsTotal) {
-        return String.format("\n  TOTAL: %d\n", contributionsTotal);
+        return String.format("%s  TOTAL: %d%s", NEW_LINE, contributionsTotal, NEW_LINE);
     }
 
     @AutoValue.Builder
