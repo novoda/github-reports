@@ -21,17 +21,28 @@ public class HandlerRouter {
 
     private WebhookEventClassifier eventClassifier;
 
+    public static HandlerRouter newInstance() {
+        WebhookEventClassifier eventClassifier = new WebhookEventClassifier();
+        return new HandlerRouter(eventClassifier);
+    }
+
     HandlerRouter(WebhookEventClassifier eventClassifier) {
         this.eventClassifier = eventClassifier;
     }
 
     public void route(GithubWebhookEvent event) {
 
-        // TODO classify and route accordingly
-
         // ?? @RUI who extracts the payload, Extractors here or inside each handler?
         // probably inside each handler 'cause this guy should only route
 
+        EventType eventType = eventClassifier.classify(event);
+        EventHandler eventHandler = HANDLERS.get(eventType);
+
+        if (eventHandler == null) {
+            throw new IllegalStateException("Could not find correct handler for the event.");
+        }
+
+        eventHandler.handle(event);
     }
 
 }
