@@ -31,17 +31,6 @@ INSERT INTO `event_type` VALUES (205, 'pr_merge');
 INSERT INTO `event_type` VALUES (300, 'branch_delete');
 
 --
--- Table structure for table `project`
---
-DROP TABLE IF EXISTS `project`;
-CREATE TABLE `project` (
-  `_id`  BIGINT(11)     NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`_id`),
-  UNIQUE KEY `name_UNIQUE` (`name`)
-);
-
---
 -- Table structure for table `repository`
 --
 DROP TABLE IF EXISTS `repository`;
@@ -50,25 +39,6 @@ CREATE TABLE `repository` (
   `name`    VARCHAR(255) NOT NULL,
   `private` TINYINT(1)   NOT NULL,
   PRIMARY KEY (`_id`)
-);
-
---
--- Table structure for table `project_repository`
---
-DROP TABLE IF EXISTS `project_repository`;
-CREATE TABLE `project_repository` (
-  `_id`           BIGINT(11) NOT NULL AUTO_INCREMENT,
-  `project_id`    BIGINT(11) NOT NULL,
-  `repository_id` BIGINT(11) NOT NULL,
-  PRIMARY KEY (`_id`),
-  KEY `project_id_INDEX` (`project_id`),
-  KEY `repository_id_INDEX` (`repository_id`),
-  CONSTRAINT `project` FOREIGN KEY (`project_id`) REFERENCES `project` (`_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `repository` FOREIGN KEY (`repository_id`) REFERENCES `repository` (`_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
 );
 
 --
