@@ -8,18 +8,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class HandlerRouter {
+public class HandlerForwarder {
 
     private final List<EventHandler> handlers;
 
-    public static HandlerRouter newInstance() {
-        return new HandlerRouter(Collections.unmodifiableList(Arrays.asList(
+    public static HandlerForwarder newInstance() {
+        return new HandlerForwarder(Collections.unmodifiableList(Arrays.asList(
                 // TODO more handlers
                 PullRequestHandler.newInstance(ConnectionManagerContainer.getConnectionManager())
         )));
     }
 
-    HandlerRouter(List<EventHandler> handlers) {
+    HandlerForwarder(List<EventHandler> handlers) {
         this.handlers = handlers;
     }
 
