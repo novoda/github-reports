@@ -18,7 +18,7 @@ import java.io.Reader;
 
 public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
-    private Gson gson = new GsonBuilder()
+    private static final Gson gson = new GsonBuilder()
             .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
             .create();
 
