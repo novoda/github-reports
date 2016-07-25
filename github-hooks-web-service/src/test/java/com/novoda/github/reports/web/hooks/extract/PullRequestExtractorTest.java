@@ -38,6 +38,7 @@ public class PullRequestExtractorTest {
 
     @Test(expected = ExtractException.class)
     public void givenANonPullRequestEvent_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+        when(mockEvent.pullRequest()).thenReturn(null);
 
         pullRequestExtractor.extractFrom(mockEvent);
     }
