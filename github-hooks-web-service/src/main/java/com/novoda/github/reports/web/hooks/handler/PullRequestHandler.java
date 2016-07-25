@@ -7,7 +7,6 @@ import com.novoda.github.reports.web.hooks.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
 import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
-import com.novoda.github.reports.web.hooks.parse.EventHandler;
 import com.novoda.github.reports.web.hooks.parse.WebhookEventClassifier;
 
 class PullRequestHandler implements EventHandler {
