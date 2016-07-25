@@ -1,19 +1,21 @@
 package com.novoda.github.reports.web.hooks.handler;
 
 import com.novoda.github.reports.data.db.DbEventDataLayer;
+import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.web.hooks.classification.ClassificationException;
 import com.novoda.github.reports.web.hooks.classification.EventType;
+import com.novoda.github.reports.web.hooks.classification.WebhookEventClassifier;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
 import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
-import com.novoda.github.reports.web.hooks.classification.WebhookEventClassifier;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -42,21 +44,19 @@ public class PullRequestHandlerTest {
     }
 
     @Test
-    public void givenAnEventThatsNotAPullRequest_whenHandlingIt_thenReturnFalse() throws UnhandledEventException, ClassificationException {
-        when(mockEventClassifier.classify(mockEvent)).thenReturn(ANY_EVENT_TYPE_BUT_PULL_REQUEST);
-
-        boolean eventHandled = pullRequestHandler.handle(mockEvent);
-
-        assertEquals(false, eventHandled);
-    }
-
-    @Test
     public void givenAnEventThatIsAPullRequest_whenHandlingIt_thenReturnTrue() throws UnhandledEventException, ClassificationException {
         when(mockEventClassifier.classify(mockEvent)).thenReturn(EventType.PULL_REQUEST);
+        whenExtractingPullRequestExtractSuccessfuly();
 
-        boolean eventHandled = pullRequestHandler.handle(mockEvent);
+        pullRequestHandler.handle(mockEvent);
+    }
 
-        assertEquals(true, eventHandled);
+    private void whenExtractingPullRequestExtractSuccessfuly() {
+        try {
+            given(mockPullRequestExtractor.extractFrom(mockEvent)).willReturn(mock(GithubIssue.class));
+        } catch (ExtractException e) {
+            // nothing to do
+        }
     }
 
     @Test(expected = UnhandledEventException.class)
@@ -73,22 +73,6 @@ public class PullRequestHandlerTest {
         try {
             when(mockPullRequestExtractor.extractFrom(mockEvent)).thenThrow(ExtractException.class);
         } catch (ExtractException e) {
-            // nothing to do
-        }
-    }
-
-    @Test(expected = UnhandledEventException.class)
-    public void givenAnEventThatIsNotClassifiable_whenHandlingIt_thenThrowException()
-            throws UnhandledEventException, ClassificationException {
-        whenClassifyingEventThrowClassificationException();
-
-        pullRequestHandler.handle(mockEvent);
-    }
-
-    private void whenClassifyingEventThrowClassificationException() {
-        try {
-            when(mockEventClassifier.classify(mockEvent)).thenThrow(ClassificationException.class);
-        } catch (ClassificationException e) {
             // nothing to do
         }
     }
