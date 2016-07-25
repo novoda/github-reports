@@ -17,17 +17,17 @@ public class WebhookEventClassifier {
         RULES.put(EventType.REVIEW_COMMENT, new ReviewCommentRule());
     }
 
-    public EventType classify(GithubWebhookEvent event) {
+    public EventType classify(GithubWebhookEvent event) throws ClassificationException {
         return RULES.entrySet() // TODO code for the possibility of more than one rule matching
                 .stream()
                 .filter(entry -> entry.getValue().check(event))
                 .findFirst()
-                .orElseThrow(supplyClassificationException())
+                .orElseThrow(supplyClassificationExceptionFor(event))
                 .getKey();
     }
 
-    private Supplier<IllegalStateException> supplyClassificationException() {
-        return () -> new IllegalStateException("Unable to classify.");
+    private Supplier<ClassificationException> supplyClassificationExceptionFor(GithubWebhookEvent event) {
+        return () -> new ClassificationException(event);
     }
 
 }

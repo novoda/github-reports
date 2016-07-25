@@ -3,6 +3,7 @@ package com.novoda.github.reports.web.hooks.handler;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbEventDataLayer;
 import com.novoda.github.reports.service.issue.GithubIssue;
+import com.novoda.github.reports.web.hooks.classification.ClassificationException;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
@@ -45,7 +46,11 @@ class PullRequestHandler implements EventHandler {
         return true;
     }
 
-    private boolean cannotHandleEvent(GithubWebhookEvent event) {
-        return eventClassifier.classify(event) != EventType.PULL_REQUEST;
+    private boolean cannotHandleEvent(GithubWebhookEvent event) throws UnhandledEventException {
+        try {
+            return eventClassifier.classify(event) != EventType.PULL_REQUEST;
+        } catch (ClassificationException e) {
+            throw new UnhandledEventException(e.getMessage());
+        }
     }
 }
