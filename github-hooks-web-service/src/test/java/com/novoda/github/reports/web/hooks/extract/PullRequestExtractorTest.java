@@ -9,11 +9,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PullRequestExtractorTest {
+
+    private static final int ANY_ISSUE_NUMBER = 1;
+    private static final int ANY_OWNER_ID = 2;
 
     @Mock
     private GithubWebhookEvent mockEvent;
@@ -34,6 +38,15 @@ public class PullRequestExtractorTest {
         GithubIssue actual = pullRequestExtractor.extractFrom(mockEvent);
 
         assertEquals(mockIssue, actual);
+    }
+
+    @Test
+    public void givenAPullRequestEvent_whenExtractingThePayload_thenItIsAnIssueMarkedAsAPullRequest() throws Exception {
+        given(mockEvent.pullRequest()).willReturn(new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, false));
+
+        GithubIssue extractedIssue = pullRequestExtractor.extractFrom(mockEvent);
+
+        assertTrue(extractedIssue.isPullRequest());
     }
 
     @Test(expected = ExtractException.class)
