@@ -4,7 +4,7 @@ import com.novoda.github.reports.service.persistence.ConnectionManagerContainer;
 import com.novoda.github.reports.web.hooks.classification.ClassificationException;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.classification.WebhookEventClassifier;
-import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
 import java.util.Collections;
 import java.util.HashMap;

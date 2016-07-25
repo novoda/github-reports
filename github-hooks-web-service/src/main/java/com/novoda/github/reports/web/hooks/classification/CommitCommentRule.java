@@ -1,6 +1,6 @@
 package com.novoda.github.reports.web.hooks.classification;
 
-import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
 class CommitCommentRule implements ClassificationRule {
     @Override

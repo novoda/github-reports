@@ -2,7 +2,7 @@ package com.novoda.github.reports.web.hooks.classification;
 
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssue;
-import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
 import org.junit.Before;
 import org.junit.Test;
