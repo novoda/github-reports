@@ -31,7 +31,7 @@ public class WebhookEventClassifierTest {
     }
 
     @Test(expected = ClassificationException.class)
-    public void givenAnNonClassifiableEvent_whenClassifying_thenThrowsException() throws ClassificationException {
+    public void givenANonClassifiableEvent_whenClassifying_thenThrowsException() throws ClassificationException {
         when(mockRule.check(mockEvent)).thenReturn(false);
 
         eventClassifier.classify(mockEvent);
