@@ -1,6 +1,6 @@
 package com.novoda.github.reports.web.hooks.extract;
 
-import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
 public class ExtractException extends Exception {
     public ExtractException(GithubWebhookEvent event) {
