@@ -1,4 +1,4 @@
-package com.novoda.github.reports.web.hooks.parse;
+package com.novoda.github.reports.web.hooks.classification;
 
 import com.novoda.github.reports.web.hooks.EventType;
 import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
