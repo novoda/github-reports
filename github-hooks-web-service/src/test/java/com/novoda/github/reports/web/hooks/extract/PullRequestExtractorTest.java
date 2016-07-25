@@ -5,6 +5,7 @@ import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
@@ -17,12 +18,12 @@ public class PullRequestExtractorTest {
     @Mock
     private GithubWebhookEvent mockEvent;
 
+    @InjectMocks
     private PullRequestExtractor pullRequestExtractor;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        pullRequestExtractor = new PullRequestExtractor();
     }
 
     @Test
