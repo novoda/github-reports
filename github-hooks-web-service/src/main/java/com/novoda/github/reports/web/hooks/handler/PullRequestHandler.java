@@ -15,6 +15,11 @@ class PullRequestHandler implements EventHandler {
     private WebhookEventClassifier eventClassifier;
     private PullRequestExtractor extractor;
     private DbEventDataLayer eventDataLayer;
+    // TODO we need a converter to convert from github issue to the db equivalent pojo (RepositoryIssueEvent?)
+    // check:
+    // - com.novoda.github.reports.lambda.issue.EventsServiceClient#retrieveEventsFrom()
+    // - com.novoda.github.reports.lambda.issue.TransformToRepositoryIssueEvent
+
 
     static PullRequestHandler newInstance(ConnectionManager connectionManager) {
         WebhookEventClassifier eventClassifier = WebhookEventClassifier.newInstance();
