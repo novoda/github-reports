@@ -1,4 +1,4 @@
-package com.novoda.github.reports.web.hooks;
+package com.novoda.github.reports.web.hooks.classification;
 
 public enum EventType {
 
