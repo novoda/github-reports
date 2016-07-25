@@ -45,4 +45,11 @@ public class WebhookEventClassifierTest {
 
         assertEquals(ANY_EVENT_TYPE, actual);
     }
+
+    @Test(expected = ClassificationException.class)
+    public void givenNoRules_whenClassifyingAnEvent_thenThrowsException() throws Exception {
+        eventClassifier = new WebhookEventClassifier(Collections.emptyMap());
+
+        eventClassifier.classify(mockEvent);
+    }
 }
