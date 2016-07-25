@@ -17,7 +17,7 @@ class PullRequestHandler implements EventHandler {
     private DbEventDataLayer eventDataLayer;
 
     static PullRequestHandler newInstance(ConnectionManager connectionManager) {
-        WebhookEventClassifier eventClassifier = WebhookEventClassifier.newInstance();
+        WebhookEventClassifier eventClassifier = new WebhookEventClassifier();
         PullRequestExtractor pullRequestExtractor = new PullRequestExtractor();
         DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         return new PullRequestHandler(eventClassifier, pullRequestExtractor, eventDataLayer);
