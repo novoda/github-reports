@@ -90,6 +90,14 @@ public class GithubIssue {
         return pullRequest != null;
     }
 
+    public void setIsPullRequest(boolean isPullRequest) {
+        if (isPullRequest) {
+            pullRequest = new GithubPullRequest();
+        } else {
+            pullRequest = null;
+        }
+    }
+
     @Override
     public String toString() {
         return String.format("%s (%d) [%s] - %s , %s", title, id, state, user.getUsername(), updatedAt);
