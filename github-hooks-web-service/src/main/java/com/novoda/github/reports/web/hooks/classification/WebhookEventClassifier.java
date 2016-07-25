@@ -17,8 +17,18 @@ public class WebhookEventClassifier {
         RULES.put(EventType.REVIEW_COMMENT, new ReviewCommentRule());
     }
 
+    private final Map<EventType, ClassificationRule> rules;
+
+    public static WebhookEventClassifier newInstance() {
+        return new WebhookEventClassifier(RULES);
+    }
+
+    WebhookEventClassifier(Map<EventType, ClassificationRule> rules) {
+        this.rules = rules;
+    }
+
     public EventType classify(GithubWebhookEvent event) throws ClassificationException {
-        return RULES.entrySet() // TODO code for the possibility of more than one rule matching
+        return rules.entrySet() // TODO code for the possibility of more than one rule matching
                 .stream()
                 .filter(entry -> entry.getValue().check(event))
                 .findFirst()
