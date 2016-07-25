@@ -16,11 +16,11 @@ public abstract class AggregatedStats implements Stats {
         return new AutoValue_AggregatedStats.Builder();
     }
 
-    abstract Map<String, AggregatedUserStats> userStats();
+    abstract Map<String, AggregatedUserStats> usersStats();
 
     @Override
     public String describeStats() {
-        return userStats().entrySet()
+        return usersStats().entrySet()
                 .stream()
                 .map(userEntryToString())
                 .collect(Collectors.joining(NEW_LINE));
@@ -28,10 +28,11 @@ public abstract class AggregatedStats implements Stats {
 
     private Function<Map.Entry<String, AggregatedUserStats>, String> userEntryToString() {
         return userEntry -> String.format(
-                "- %s%s%s",
+                "- %s%s%s%s",
                 userEntry.getKey(),
                 NEW_LINE,
-                describeAggregatedUserStats(userEntry.getValue())
+                describeAggregatedUserStats(userEntry.getValue()),
+                NEW_LINE
         );
     }
 
@@ -45,7 +46,7 @@ public abstract class AggregatedStats implements Stats {
     @AutoValue.Builder
     public abstract static class Builder {
 
-        public abstract Builder userStats(Map<String, AggregatedUserStats> userStats);
+        public abstract Builder usersStats(Map<String, AggregatedUserStats> usersStats);
 
         public abstract AggregatedStats build();
 
