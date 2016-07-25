@@ -1,7 +1,7 @@
 package com.novoda.github.reports.web.hooks.handler;
 
 import com.novoda.github.reports.data.db.DbEventDataLayer;
-import com.novoda.github.reports.web.hooks.EventType;
+import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
 import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
