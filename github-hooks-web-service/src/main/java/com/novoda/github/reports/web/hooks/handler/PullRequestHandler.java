@@ -41,7 +41,7 @@ class PullRequestHandler implements EventHandler {
         } catch (ExtractException e) {
             throw new UnhandledEventException(e.getMessage());
         }
-        // TODO convert and persist and... ?
+        // TODO convert and persist, taking into account the value of 'action'
 
         return true;
     }
