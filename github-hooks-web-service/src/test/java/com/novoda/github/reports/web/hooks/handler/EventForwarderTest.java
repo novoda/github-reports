@@ -12,17 +12,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class HandlerForwarderTest {
+public class EventForwarderTest {
 
     @Mock
     private EventHandler mockHandler;
 
-    private HandlerForwarder handlerForwarder;
+    private EventForwarder eventForwarder;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        handlerForwarder = new HandlerForwarder(Collections.singletonList(mockHandler));
+        eventForwarder = new EventForwarder(Collections.singletonList(mockHandler));
     }
 
     @Test
@@ -30,7 +30,7 @@ public class HandlerForwarderTest {
         GithubWebhookEvent event = mock(GithubWebhookEvent.class);
         when(mockHandler.handle(event)).thenReturn(true);
 
-        handlerForwarder.route(event);
+        eventForwarder.route(event);
     }
 
     @Test(expected = UnhandledEventException.class)
@@ -38,7 +38,7 @@ public class HandlerForwarderTest {
         GithubWebhookEvent event = mock(GithubWebhookEvent.class);
         when(mockHandler.handle(event)).thenReturn(false);
 
-        handlerForwarder.route(event);
+        eventForwarder.route(event);
     }
 
 }
