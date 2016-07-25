@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class WebhookEventClassifierTest {
@@ -32,14 +32,14 @@ public class WebhookEventClassifierTest {
 
     @Test(expected = ClassificationException.class)
     public void givenANonClassifiableEvent_whenClassifying_thenThrowsException() throws ClassificationException {
-        when(mockRule.check(mockEvent)).thenReturn(false);
+        given(mockRule.check(mockEvent)).willReturn(false);
 
         eventClassifier.classify(mockEvent);
     }
 
     @Test
     public void givenAnEvent_whenClassifyingIt_thenWeGetItsType() throws Exception {
-        when(mockRule.check(mockEvent)).thenReturn(true);
+        given(mockRule.check(mockEvent)).willReturn(true);
 
         EventType actual = eventClassifier.classify(mockEvent);
 
