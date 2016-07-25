@@ -3,37 +3,29 @@ package com.novoda.github.reports.web.hooks.handler;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbEventDataLayer;
 import com.novoda.github.reports.service.issue.GithubIssue;
-import com.novoda.github.reports.web.hooks.classification.ClassificationException;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
 import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
-import com.novoda.github.reports.web.hooks.classification.WebhookEventClassifier;
 
 class PullRequestHandler implements EventHandler {
 
-    private WebhookEventClassifier eventClassifier;
     private PullRequestExtractor extractor;
     private DbEventDataLayer eventDataLayer;
 
     static PullRequestHandler newInstance(ConnectionManager connectionManager) {
-        WebhookEventClassifier eventClassifier = new WebhookEventClassifier();
         PullRequestExtractor pullRequestExtractor = new PullRequestExtractor();
         DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
-        return new PullRequestHandler(eventClassifier, pullRequestExtractor, eventDataLayer);
+        return new PullRequestHandler(pullRequestExtractor, eventDataLayer);
     }
 
-    PullRequestHandler(WebhookEventClassifier eventClassifier, PullRequestExtractor extractor, DbEventDataLayer eventDataLayer) {
-        this.eventClassifier = eventClassifier;
+    PullRequestHandler(PullRequestExtractor extractor, DbEventDataLayer eventDataLayer) {
         this.extractor = extractor;
         this.eventDataLayer = eventDataLayer;
     }
 
     @Override
-    public boolean handle(GithubWebhookEvent event) throws UnhandledEventException {
-        if (cannotHandleEvent(event)) {
-            return false;
-        }
+    public void handle(GithubWebhookEvent event) throws UnhandledEventException {
 
         GithubWebhookEvent.Action action = event.action();
         try {
@@ -43,14 +35,11 @@ class PullRequestHandler implements EventHandler {
         }
         // TODO convert and persist, taking into account the value of 'action'
 
-        return true;
     }
 
-    private boolean cannotHandleEvent(GithubWebhookEvent event) throws UnhandledEventException {
-        try {
-            return eventClassifier.classify(event) != EventType.PULL_REQUEST;
-        } catch (ClassificationException e) {
-            throw new UnhandledEventException(e.getMessage());
-        }
+    @Override
+    public EventType handledEventType() {
+        return EventType.PULL_REQUEST;
     }
+
 }

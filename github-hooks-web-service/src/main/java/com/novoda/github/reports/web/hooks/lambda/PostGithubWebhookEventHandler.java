@@ -34,7 +34,7 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
         GithubWebhookEvent event = getEventFrom(input);
         try {
-            eventForwarder.route(event);
+            eventForwarder.forward(event);
         } catch (UnhandledEventException e) {
             e.printStackTrace();
         }
