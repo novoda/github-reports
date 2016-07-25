@@ -16,12 +16,9 @@ import org.mockito.Mock;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PullRequestHandlerTest {
-
-    private static final EventType ANY_EVENT_TYPE_BUT_PULL_REQUEST = EventType.COMMIT_COMMENT;
 
     @Mock
     private WebhookEventClassifier mockEventClassifier;
@@ -45,7 +42,7 @@ public class PullRequestHandlerTest {
 
     @Test
     public void givenAnEventThatIsAPullRequest_whenHandlingIt_thenReturnTrue() throws UnhandledEventException, ClassificationException {
-        when(mockEventClassifier.classify(mockEvent)).thenReturn(EventType.PULL_REQUEST);
+        given(mockEventClassifier.classify(mockEvent)).willReturn(EventType.PULL_REQUEST);
         whenExtractingPullRequestExtractSuccessfuly();
 
         pullRequestHandler.handle(mockEvent);
@@ -63,7 +60,7 @@ public class PullRequestHandlerTest {
     public void givenAnEventThatIsAPullRequestButDoesNotHavePayload_whenHandlingIt_thenThrowException()
             throws UnhandledEventException, ClassificationException {
 
-        when(mockEventClassifier.classify(mockEvent)).thenReturn(EventType.PULL_REQUEST);
+        given(mockEventClassifier.classify(mockEvent)).willReturn(EventType.PULL_REQUEST);
         whenExtractingPullRequestThrowExtractException();
 
         pullRequestHandler.handle(mockEvent);
@@ -71,7 +68,7 @@ public class PullRequestHandlerTest {
 
     private void whenExtractingPullRequestThrowExtractException() {
         try {
-            when(mockPullRequestExtractor.extractFrom(mockEvent)).thenThrow(ExtractException.class);
+            given(mockPullRequestExtractor.extractFrom(mockEvent)).willThrow(ExtractException.class);
         } catch (ExtractException e) {
             // nothing to do
         }
