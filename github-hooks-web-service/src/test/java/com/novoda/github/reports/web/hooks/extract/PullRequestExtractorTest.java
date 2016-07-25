@@ -5,11 +5,12 @@ import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PullRequestExtractorTest {
@@ -17,18 +18,18 @@ public class PullRequestExtractorTest {
     @Mock
     private GithubWebhookEvent mockEvent;
 
+    @InjectMocks
     private PullRequestExtractor pullRequestExtractor;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        pullRequestExtractor = new PullRequestExtractor();
     }
 
     @Test
     public void givenAPullRequestEvent_whenExtractingThePayload_thenItIsExtracted() throws Exception {
         GithubIssue mockIssue = mock(GithubIssue.class);
-        when(mockEvent.pullRequest()).thenReturn(mockIssue);
+        given(mockEvent.pullRequest()).willReturn(mockIssue);
 
         GithubIssue actual = pullRequestExtractor.extractFrom(mockEvent);
 
@@ -37,6 +38,7 @@ public class PullRequestExtractorTest {
 
     @Test(expected = ExtractException.class)
     public void givenANonPullRequestEvent_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+        given(mockEvent.pullRequest()).willReturn(null);
 
         pullRequestExtractor.extractFrom(mockEvent);
     }
