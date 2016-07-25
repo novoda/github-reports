@@ -59,7 +59,7 @@ public class PullRequestHandlerTest {
         assertEquals(true, eventHandled);
     }
 
-    @Test(expected = ClassificationException.class)
+    @Test(expected = UnhandledEventException.class)
     public void givenAnEventThatIsAPullRequestButDoesNotHavePayload_whenHandlingIt_thenThrowException()
             throws UnhandledEventException, ClassificationException {
 
