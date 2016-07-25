@@ -9,8 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PullRequestExtractorTest {
@@ -29,7 +29,7 @@ public class PullRequestExtractorTest {
     @Test
     public void givenAPullRequestEvent_whenExtractingThePayload_thenItIsExtracted() throws Exception {
         GithubIssue mockIssue = mock(GithubIssue.class);
-        when(mockEvent.pullRequest()).thenReturn(mockIssue);
+        given(mockEvent.pullRequest()).willReturn(mockIssue);
 
         GithubIssue actual = pullRequestExtractor.extractFrom(mockEvent);
 
@@ -38,7 +38,7 @@ public class PullRequestExtractorTest {
 
     @Test(expected = ExtractException.class)
     public void givenANonPullRequestEvent_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
-        when(mockEvent.pullRequest()).thenReturn(null);
+        given(mockEvent.pullRequest()).willReturn(null);
 
         pullRequestExtractor.extractFrom(mockEvent);
     }
