@@ -2,6 +2,7 @@ package com.novoda.github.reports.data.model;
 
 import com.google.auto.value.AutoValue;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -12,34 +13,38 @@ public abstract class AggregatedUserStats implements Stats {
     private static final String NEW_LINE = "\n";
 
     public static Builder builder() {
-        return new AutoValue_AggregatedUserStats.Builder();
+        return new AutoValue_AggregatedUserStats.Builder()
+                .assignedProjectsContributions(0)
+                .assignedProjectsStats(Collections.emptyMap())
+                .externalRepositoriesContributions(0)
+                .externalRepositoriesStats(Collections.emptyMap());
     }
 
     abstract Map<String, Integer> assignedProjectsStats();
 
-    abstract Map<String, Integer> externalProjectsStats();
-
     abstract Integer assignedProjectsContributions();
 
-    abstract Integer externalProjectsContributions();
+    abstract Map<String, Integer> externalRepositoriesStats();
+
+    abstract Integer externalRepositoriesContributions();
 
     @Override
     public String describeStats() {
         return "* assigned projects" + NEW_LINE +
                 describeMapWithTotal(assignedProjectsStats(), assignedProjectsContributions()) +
-                "* external projects" + NEW_LINE +
-                describeMapWithTotal(externalProjectsStats(), externalProjectsContributions());
+                "* external repositories" + NEW_LINE +
+                describeMapWithTotal(externalRepositoriesStats(), externalRepositoriesContributions());
     }
 
     private String describeMapWithTotal(Map<String, Integer> contributionsMap, Integer contributionsTotal) {
         return contributionsMap.entrySet()
                 .stream()
-                .map(projectContributionToString())
+                .map(contributionToString())
                 .collect(Collectors.joining(NEW_LINE, "", getTotalContributionsSuffix(contributionsTotal)));
     }
 
-    private Function<Map.Entry<String, Integer>, String> projectContributionToString() {
-        return projectContribution -> String.format("  + %s %d", projectContribution.getKey(), projectContribution.getValue());
+    private Function<Map.Entry<String, Integer>, String> contributionToString() {
+        return contribution -> String.format("  + %s %d", contribution.getKey(), contribution.getValue());
     }
 
     private String getTotalContributionsSuffix(Integer contributionsTotal) {
@@ -51,11 +56,11 @@ public abstract class AggregatedUserStats implements Stats {
 
         public abstract Builder assignedProjectsStats(Map<String, Integer> assignedProjectsStats);
 
-        public abstract Builder externalProjectsStats(Map<String, Integer> externalProjectsStats);
-
         public abstract Builder assignedProjectsContributions(Integer assignedProjectsContributions);
 
-        public abstract Builder externalProjectsContributions(Integer externalProjectsContributions);
+        public abstract Builder externalRepositoriesStats(Map<String, Integer> externalRepositoriesStats);
+
+        public abstract Builder externalRepositoriesContributions(Integer externalRepositoriesContributions);
 
         public abstract AggregatedUserStats build();
 
