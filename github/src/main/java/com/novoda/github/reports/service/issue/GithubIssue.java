@@ -86,6 +86,10 @@ public class GithubIssue {
         return comments;
     }
 
+    public GithubPullRequest getPullRequest() {
+        return pullRequest;
+    }
+
     public boolean isPullRequest() {
         return pullRequest != null;
     }
