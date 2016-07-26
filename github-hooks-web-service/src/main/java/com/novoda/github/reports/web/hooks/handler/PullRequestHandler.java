@@ -8,15 +8,14 @@ import com.novoda.github.reports.data.db.DbUserDataLayer;
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.Repository;
 import com.novoda.github.reports.data.model.User;
-import com.novoda.github.reports.service.issue.GithubEvent;
 import com.novoda.github.reports.service.issue.GithubIssue;
+import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.convert.EventConverter;
 import com.novoda.github.reports.web.hooks.convert.PullRequestToDbEventConverter;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
-import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
@@ -66,47 +65,40 @@ class PullRequestHandler implements EventHandler {
     @Override
     public void handle(GithubWebhookEvent event) throws UnhandledEventException {
 
-        // TODO convert and persist, taking into account the value of 'action'
+        PullRequest pullRequest = extractPullRequest(event);
+        GithubIssue issue = pullRequest.getIssue();
+        GithubRepository repository = pullRequest.getRepository();
 
-        GithubAction action = event.action();
+        Event dbEvent = convertFrom(pullRequest);
+
+        // TODO @RUI extract persistence operations to their own classes
+        User dbUser = User.create(issue.getUserId(), issue.getUser().getUsername());
+        Repository dbRepository = Repository.create(repository.getId(), repository.getName(), repository.isPrivateRepo());
+
         try {
-            PullRequest pullRequest = extractor.extractFrom(event);
-            GithubIssue issue = pullRequest.getIssue();
-            GithubRepository repository = pullRequest.getRepository();
+            userDataLayer.updateOrInsert(dbUser);
+            repoDataLayer.updateOrInsert(dbRepository);
+            eventDataLayer.updateOrInsert(dbEvent);
+        } catch (DataLayerException e) {
+            e.printStackTrace();
+            throw new UnhandledEventException(e.getMessage());
+        }
+    }
 
-            // TODO convert action to GithubEvent.Type
-            // TODO convert from GithubIssue to GithubEvent
-            GithubEvent githubEvent = new GithubEvent(
-                    issue.getId(),
-                    issue.getUser(),
-                    GithubEvent.Type.ASSIGNED,
-                    issue.getCreatedAt()
-            );
+    private Event convertFrom(PullRequest pullRequest) throws UnhandledEventException {
+        try {
+            return converter.convertFrom(pullRequest);
+        } catch (ConverterException e) {
+            throw new UnhandledEventException(e.getMessage());
+        }
+    }
 
-            Event dbEvent = Event.create(
-                    issue.getId(),
-                    repository.getId(),
-                    issue.getUserId(),
-                    issue.getUserId(),
-                    com.novoda.github.reports.data.model.EventType.BRANCH_DELETE,
-                    issue.getUpdatedAt()
-            );
-            User dbUser = User.create(issue.getUserId(), issue.getUser().getUsername());
-            Repository dbRepository = Repository.create(repository.getId(), repository.getName(), repository.isPrivateRepo());
-
-            try {
-                userDataLayer.updateOrInsert(dbUser);
-                repoDataLayer.updateOrInsert(dbRepository);
-                eventDataLayer.updateOrInsert(dbEvent);
-            } catch (DataLayerException e) {
-                e.printStackTrace();
-                throw new UnhandledEventException(e.getMessage());
-            }
-
+    private PullRequest extractPullRequest(GithubWebhookEvent event) throws UnhandledEventException {
+        try {
+            return extractor.extractFrom(event);
         } catch (ExtractException e) {
             throw new UnhandledEventException(e.getMessage());
         }
-
     }
 
     @Override
