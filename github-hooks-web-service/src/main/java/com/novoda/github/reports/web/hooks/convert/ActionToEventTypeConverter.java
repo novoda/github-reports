@@ -7,12 +7,16 @@ import com.novoda.github.reports.web.hooks.model.GithubAction;
 
 public class ActionToEventTypeConverter implements Converter<GithubAction, EventType> {
 
+    // FIXME @RUI we have an issue here: without the rest of the payload there's not enough context to convert to the right EventType
+    // @RUI alternative would be to have inteface: Converter<PullRequest, Action, Event>
+
     @Override
     public EventType convertFrom(GithubAction action) throws ConverterException {
 
         switch (action) {
             case ADDED:
-
+                //return EventType.ISSUE_LABEL_ADD ?
+                //return EventType.PULL_REQUEST_LABEL_ADD ?
                 break;
             case CLOSED:
 
