@@ -6,6 +6,8 @@ import com.novoda.github.reports.data.model.UserAssignments;
 import org.jooq.*;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collector;
@@ -88,17 +90,20 @@ public class EventUserAssignmentsQueryBuilder {
             throws NoUserAssignmentsException {
 
         return parameters.getUsersAssignments()
-                .keySet()
+                .entrySet()
                 .stream()
                 .flatMap(toUserAssignmentQueries())
                 .collect(toUnion())
                 .orElseThrow(NoUserAssignmentsException::new);
     }
 
-    private Function<String, Stream<SelectSelectStep<Record5<Timestamp, Timestamp, String, String, String>>>> toUserAssignmentQueries() {
-        return username -> parameters.getUsersAssignments().get(username)
-                .stream()
-                .map(toUserAssignmentQuery(username));
+    private Function<Map.Entry<String, List<UserAssignments>>, Stream<SelectSelectStep<Record5<Timestamp, Timestamp, String, String, String>>>> toUserAssignmentQueries() {
+        return entry -> {
+            String username = entry.getKey();
+            return entry.getValue()
+                    .stream()
+                    .map(toUserAssignmentQuery(username));
+        };
     }
 
     private Function<UserAssignments, SelectSelectStep<Record5<Timestamp, Timestamp, String, String, String>>> toUserAssignmentQuery(String username) {
