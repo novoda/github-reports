@@ -44,8 +44,6 @@ public class ReviewCommentHandlerTest {
         given(mockExtractor.extractFrom(mockEvent)).willThrow(ExtractException.class);
 
         reviewCommentHandler.handle(mockEvent);
-
-        verify(mockExtractor).extractFrom(mockEvent);
     }
 
     @Test
