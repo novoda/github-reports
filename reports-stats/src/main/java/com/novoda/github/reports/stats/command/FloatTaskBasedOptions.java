@@ -16,6 +16,7 @@ public abstract class FloatTaskBasedOptions extends RangeOptions {
     }
 
     public FloatTaskBasedOptions() {
+        // no-op
     }
 
     public List<String> getUsers() {
