@@ -3,6 +3,7 @@ package com.novoda.github.reports.data.db;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.db.builder.EventPullRequestQueryBuilder;
+import com.novoda.github.reports.data.db.builder.EventUserAggregatedWorkQueryBuilder;
 import com.novoda.github.reports.data.db.builder.EventUserAssignmentsQueryBuilder;
 import com.novoda.github.reports.data.db.converter.AggregatedUserStatsConverter;
 import com.novoda.github.reports.data.db.converter.PullRequestStatsConverter;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.dateToTimestamp;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
+import static com.novoda.github.reports.data.db.Tables.USER;
 import static com.novoda.github.reports.data.db.builder.EventUserAssignmentsQueryBuilder.USERNAME_FIELD;
 
 public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements EventDataLayer {
@@ -162,25 +164,6 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
         }
     }
 
-    @Override
-    public AggregatedStats getAggregatedUserAssignmentsStats(Date from,
-                                                             Date to,
-                                                             Map<String, List<UserAssignments>> usersAssignments)
-            throws DataLayerException {
-
-        try {
-            Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername =
-                    getUserAssignmentsStatsQuery(from, to, usersAssignments)
-                            .having(EVENT.EVENT_TYPE_ID.isNotNull())
-                            .fetchGroups(USERNAME_FIELD);
-
-            return aggregatedUserStatsConverter.convert(resultsGroupedByUsername);
-
-        } catch (SQLException e) {
-            throw new DataLayerException(e);
-        }
-    }
-
     private SelectHavingStep<? extends Record> getUserAssignmentsStatsQuery(Date from,
                                                                             Date to,
                                                                             Map<String, List<UserAssignments>> usersAssignments)
@@ -194,6 +177,40 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
                 .newInstance(parameters);
 
         return userAssignmentsQueryBuilder.getStats();
+    }
+
+    @Override
+    public AggregatedStats getAggregatedUserAssignmentsStats(Date from,
+                                                             Date to,
+                                                             Map<String, List<UserAssignments>> usersAssignments)
+            throws DataLayerException {
+
+        try {
+            Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername =
+                    getUserAggregatedStatsQuery(from, to, usersAssignments)
+                            .having(EVENT.EVENT_TYPE_ID.isNotNull())
+                            .fetchGroups(USER.USERNAME);
+
+            return aggregatedUserStatsConverter.convert(resultsGroupedByUsername);
+
+        } catch (SQLException e) {
+            throw new DataLayerException(e);
+        }
+    }
+
+    private SelectHavingStep<? extends Record> getUserAggregatedStatsQuery(Date from,
+                                                                           Date to,
+                                                                           Map<String, List<UserAssignments>> usersAssignments)
+            throws SQLException, DataLayerException {
+
+        Connection connection = getNewConnection();
+        DSLContext create = getNewDSLContext(connection);
+
+        UserAssignmentsStatsParameters parameters = new UserAssignmentsStatsParameters(from, to, usersAssignments, create);
+        EventUserAggregatedWorkQueryBuilder userAggregatedWorkQueryBuilder = EventUserAggregatedWorkQueryBuilder
+                .newInstance(parameters);
+
+        return userAggregatedWorkQueryBuilder.getStats();
     }
 
 }

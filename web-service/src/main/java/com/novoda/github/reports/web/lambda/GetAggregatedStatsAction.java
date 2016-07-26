@@ -47,7 +47,11 @@ public class GetAggregatedStatsAction implements RequestStreamHandler {
         );
 
         try {
-            AggregatedStats aggregatedStats = eventDataLayer.getAggregatedUserAssignmentsStats(usersAssignments);
+            AggregatedStats aggregatedStats = eventDataLayer.getAggregatedUserAssignmentsStats(
+                    request.from(),
+                    request.to(),
+                    usersAssignments
+            );
             String json = gson.toJson(aggregatedStats);
             OutputStreamWriter writer = new OutputStreamWriter(output);
             writer.write(json);
