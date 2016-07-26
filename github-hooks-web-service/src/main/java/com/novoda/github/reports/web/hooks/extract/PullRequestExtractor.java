@@ -8,7 +8,7 @@ import com.novoda.github.reports.web.hooks.model.PullRequest;
 public class PullRequestExtractor implements PayloadExtractor<PullRequest> {
     @Override
     public PullRequest extractFrom(GithubWebhookEvent event) throws ExtractException {
-        GithubIssue issue = event.issue();
+        GithubIssue issue = event.pullRequest();
         GithubRepository repository = event.repository();
         if (issue == null || repository == null) {
             throw new ExtractException(event);
