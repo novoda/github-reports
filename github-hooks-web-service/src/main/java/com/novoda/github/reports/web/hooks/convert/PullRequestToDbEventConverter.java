@@ -28,8 +28,8 @@ public class PullRequestToDbEventConverter implements EventConverter<PullRequest
         );
     }
 
-    private EventType convertPullRequestAction(PullRequest pullRequest) {
-        EventType eventType = convertAction(pullRequest.getAction());
+    private EventType convertPullRequestAction(PullRequest pullRequest) throws ConverterException {
+        EventType eventType = convertActionOrThrow(pullRequest);
         if (eventType == EventType.PULL_REQUEST_CLOSE) {
             // TODO extract
             return pullRequest.getIssue().getPullRequest().isMerged() ?
@@ -39,8 +39,16 @@ public class PullRequestToDbEventConverter implements EventConverter<PullRequest
         return eventType;
     }
 
+    private EventType convertActionOrThrow(PullRequest pullRequest) throws ConverterException {
+        try {
+            return convertAction(pullRequest.getAction());
+        } catch (UnsupportedActionException e) {
+            throw new ConverterException(e);
+        }
+    }
+
     @Override
-    public EventType convertAction(GithubAction action) {
+    public EventType convertAction(GithubAction action) throws UnsupportedActionException {
         switch (action) {
             case LABELED:
                 return EventType.PULL_REQUEST_LABEL_ADD;
@@ -61,6 +69,6 @@ public class PullRequestToDbEventConverter implements EventConverter<PullRequest
                 break;
         }
 
-        throw new IllegalStateException("Unable to convert action: " + action.toString());
+        throw new UnsupportedActionException(action);
     }
 }
