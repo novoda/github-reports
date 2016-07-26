@@ -1,41 +1,56 @@
 package com.novoda.github.reports.stats.handler;
 
+import com.novoda.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
-import com.novoda.github.reports.data.db.DbEventDataLayer;
 import com.novoda.github.reports.data.model.PullRequestStats;
 import com.novoda.github.reports.stats.command.PullRequestOptions;
 import com.novoda.github.reports.stats.command.PullRequestOptionsGroupBy;
 
+import java.io.IOException;
 import java.util.List;
 
 public class PullRequestCommandHandler implements CommandHandler<PullRequestStats, PullRequestOptions> {
 
-    private final DbEventDataLayer dbEventDataLayer;
+    private final EventDataLayer eventDataLayer;
+    private final FloatGithubUserConverter floatGithubUserConverter;
 
-    public PullRequestCommandHandler(DbEventDataLayer dbEventDataLayer) {
-        this.dbEventDataLayer = dbEventDataLayer;
+    public PullRequestCommandHandler(EventDataLayer eventDataLayer, FloatGithubUserConverter floatGithubUserConverter) {
+        this.eventDataLayer = eventDataLayer;
+        this.floatGithubUserConverter = floatGithubUserConverter;
     }
 
     @Override
     public PullRequestStats handle(PullRequestOptions options) {
-        // TODO: retrieve team users from a team JSON
-        List<String> organisationUsers = options.getOrganisationUsers();
 
         try {
-            return dbEventDataLayer.getOrganisationStats(
+            List<String> users = getUsersFromOptionsOrAll(options);
+
+            return eventDataLayer.getOrganisationStats(
                     options.getFrom(),
                     options.getTo(),
                     options.getRepositories(),
-                    organisationUsers,
+                    users,
                     convertToGroupBy(options.getGroupBy()),
                     options.withAverage()
             );
-        } catch (DataLayerException e) {
+        } catch (DataLayerException | IOException e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    private List<String> getUsersFromOptionsOrAll(PullRequestOptions options) throws IOException {
+        List<String> users = options.getUsers();
+        if (isListNullOrEmpty(users)) {
+            users = floatGithubUserConverter.getGithubUsers();
+        }
+        return users;
+    }
+
+    private boolean isListNullOrEmpty(List<String> users) {
+        return users == null || users.isEmpty();
     }
 
     private EventDataLayer.PullRequestStatsGroupBy convertToGroupBy(PullRequestOptionsGroupBy groupBy) {
