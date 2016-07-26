@@ -17,6 +17,13 @@ public class GithubEvent {
     @SerializedName("created_at")
     private Date createdAt;
 
+    public GithubEvent(long id, GithubUser actor, Type type, Date createdAt) {
+        this.id = id;
+        this.actor = actor;
+        this.type = type;
+        this.createdAt = createdAt;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
