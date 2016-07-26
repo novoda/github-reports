@@ -13,6 +13,7 @@ abstract class RangeOptions implements Options {
     private Date to;
 
     public RangeOptions() {
+        // no-op
     }
 
     public RangeOptions(Date from, Date to) {
