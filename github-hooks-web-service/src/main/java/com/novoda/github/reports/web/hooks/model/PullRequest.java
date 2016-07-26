@@ -8,9 +8,10 @@ public class PullRequest extends Event {
     private GithubIssue issue;
     private GithubRepository repository;
 
-    public PullRequest(GithubIssue issue, GithubRepository repository) {
+    public PullRequest(GithubIssue issue, GithubRepository repository, GithubAction action) {
         this.issue = issue;
         this.repository = repository;
+        this.action = action;
     }
 
     public GithubIssue getIssue() {

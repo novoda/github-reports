@@ -14,6 +14,6 @@ public class PullRequestExtractor implements PayloadExtractor<PullRequest> {
             throw new ExtractException(event);
         }
         issue.setIsPullRequest(true);
-        return new PullRequest(issue, repository);
+        return new PullRequest(issue, repository, event.action());
     }
 }
