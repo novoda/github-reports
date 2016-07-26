@@ -4,6 +4,7 @@ import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.IssueExtractor;
+import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
 public class IssueHandler implements EventHandler {
@@ -22,7 +23,7 @@ public class IssueHandler implements EventHandler {
     @Override
     public void handle(GithubWebhookEvent event) throws UnhandledEventException {
 
-        GithubWebhookEvent.Action action = event.action();
+        GithubAction action = event.action();
         try {
             GithubIssue issue = extractor.extractFrom(event);
         } catch (ExtractException e) {

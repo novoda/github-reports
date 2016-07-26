@@ -14,6 +14,7 @@ import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
+import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
@@ -57,7 +58,7 @@ class PullRequestHandler implements EventHandler {
 
         // TODO convert and persist, taking into account the value of 'action'
 
-        GithubWebhookEvent.Action action = event.action();
+        GithubAction action = event.action();
         try {
             PullRequest pullRequest = extractor.extractFrom(event);
             GithubIssue issue = pullRequest.getIssue();
