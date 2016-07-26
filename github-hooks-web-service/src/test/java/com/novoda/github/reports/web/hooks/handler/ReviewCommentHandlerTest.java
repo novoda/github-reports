@@ -32,7 +32,7 @@ public class ReviewCommentHandlerTest {
     }
 
     @Test
-    public void givenAnEventThatIsAReviewComment_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
+    public void givenAnEvent_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
 
         reviewCommentHandler.handle(mockEvent);
 
