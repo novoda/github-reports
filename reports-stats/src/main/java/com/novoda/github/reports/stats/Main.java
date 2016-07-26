@@ -72,9 +72,7 @@ public class Main {
 
             OverallCommandHandler handler = new OverallCommandHandler(
                     eventDataLayer,
-                    floatServiceClient,
-                    floatDateConverter,
-                    usersServiceClient
+                    floatServiceClient
             );
             stats = handler.handle(overallOptions);
         } else if (command.equals(COMMAND_AGGREGATE)) {
