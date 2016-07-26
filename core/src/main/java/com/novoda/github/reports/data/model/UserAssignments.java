@@ -38,7 +38,7 @@ public abstract class UserAssignments implements UserAssignmentsBase, Stats {
 
         public abstract Builder assignmentEnd(@Nullable Date assignmentEnd);
 
-        public abstract Builder assignedProject(String assignedProject);
+        public abstract Builder assignedProject(@Nullable String assignedProject);
 
         public abstract Builder assignedRepositories(List<String> assignedRepositories);
 
