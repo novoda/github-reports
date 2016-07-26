@@ -31,6 +31,7 @@ repositories {
 dependencies {
     compile project(':core')
     compile project(':db-layer')
+    compile project(':float')
 
     compileOnly 'com.google.auto.value:auto-value:1.2'
     apt 'com.google.auto.value:auto-value:1.2'
@@ -60,7 +61,8 @@ task zip(type: Zip) {
 def lambdasMap = [
         'GetRepositoriesAction': 'github-reports-repositories-get',
         'GetOrganisationUsersAction': 'github-reports-users-organisation-get',
-        'GetPullRequestStatsAction': 'github-reports-stats-pr-get'
+        'GetPullRequestStatsAction': 'github-reports-stats-pr-get',
+        'GetAggregatedStatsAction': 'github-reports-stats-aggregated-get'
 ]
 
 task uploadActionLambdas(group: 'aws')
