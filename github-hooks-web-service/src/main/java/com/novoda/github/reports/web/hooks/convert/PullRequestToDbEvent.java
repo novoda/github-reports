@@ -44,8 +44,8 @@ public class PullRequestToDbEvent implements EventConverter<PullRequest, Event> 
             case PUBLISHED:
 
                 break;
-            default:
-                // TODO throw exception?
         }
+
+        throw new IllegalStateException("Unable to convert action: " + action.toString());
     }
 }
