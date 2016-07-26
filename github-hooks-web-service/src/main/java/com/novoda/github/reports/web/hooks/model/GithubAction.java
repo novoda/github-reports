@@ -17,7 +17,33 @@ public enum GithubAction {
     ADDED("added"),
 
     @SerializedName("published")
-    PUBLISHED("published");
+    PUBLISHED("published"),
+
+    @SerializedName("assigned")
+    ASSIGNED("assigned"),
+
+    @SerializedName("unassigned")
+    UNASSIGNED("unassigned"),
+
+    @SerializedName("labeled")
+    LABELED("labeled"),
+
+    @SerializedName("unlabeled")
+    UNLABELED("unlabeled"),
+
+    @SerializedName("edited")
+    EDITED("edited"),
+
+    @SerializedName("repopened")
+    REOPENED("reopened"),
+
+    @SerializedName("synchronize")
+    SYNCHRONIZE("synchronize");
+
+    /*
+    from https://developer.github.com/v3/activity/events/types/#pullrequestevent:
+    "assigned", "unassigned", "labeled", "unlabeled", "opened", "edited", "closed", or "reopened", or "synchronize"
+    */
 
     private final String action;
 
