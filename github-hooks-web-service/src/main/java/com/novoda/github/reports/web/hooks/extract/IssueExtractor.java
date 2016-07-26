@@ -3,14 +3,13 @@ package com.novoda.github.reports.web.hooks.extract;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
-public class PullRequestExtractor implements PayloadExtractor<GithubIssue> {
+public class IssueExtractor implements PayloadExtractor<GithubIssue> {
     @Override
     public GithubIssue extractFrom(GithubWebhookEvent event) throws ExtractException {
-        GithubIssue pullRequest = event.pullRequest();
-        if (pullRequest == null) {
+        GithubIssue issue = event.issue();
+        if (issue == null) {
             throw new ExtractException(event);
         }
-        pullRequest.setIsPullRequest(true);
-        return pullRequest;
+        return issue;
     }
 }
