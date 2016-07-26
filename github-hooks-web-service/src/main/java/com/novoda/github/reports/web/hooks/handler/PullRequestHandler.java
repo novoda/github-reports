@@ -1,10 +1,14 @@
 package com.novoda.github.reports.web.hooks.handler;
 
+import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbEventDataLayer;
 import com.novoda.github.reports.data.db.DbUserDataLayer;
+import com.novoda.github.reports.data.model.Event;
+import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.service.issue.GithubEvent;
 import com.novoda.github.reports.service.issue.GithubIssue;
+import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
@@ -54,6 +58,7 @@ class PullRequestHandler implements EventHandler {
         try {
             PullRequest pullRequest = extractor.extractFrom(event);
             GithubIssue issue = pullRequest.getIssue();
+            GithubRepository repository = pullRequest.getRepository();
 
             // TODO convert action to GithubEvent.Type
             // TODO convert from GithubIssue to GithubEvent
@@ -64,8 +69,23 @@ class PullRequestHandler implements EventHandler {
                     issue.getCreatedAt()
             );
 
-            //Event dbEvent = Event.create(pullRequest.getId(), pullRequest.get)
-            //eventDataLayer.updateOrInsert();
+            Event dbEvent = Event.create(
+                    issue.getId(),
+                    repository.getId(),
+                    issue.getUserId(),
+                    issue.getUserId(),
+                    com.novoda.github.reports.data.model.EventType.BRANCH_DELETE,
+                    issue.getUpdatedAt()
+            );
+            User dbUser = User.create(issue.getUserId(), issue.getUser().getUsername());
+
+            try {
+                eventDataLayer.updateOrInsert(dbEvent);
+                userDataLayer.updateOrInsert(dbUser);
+            } catch (DataLayerException e) {
+                e.printStackTrace();
+                throw new UnhandledEventException(e.getMessage());
+            }
 
         } catch (ExtractException e) {
             throw new UnhandledEventException(e.getMessage());
