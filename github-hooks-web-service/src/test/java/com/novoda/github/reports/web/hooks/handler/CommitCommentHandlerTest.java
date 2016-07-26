@@ -44,8 +44,6 @@ public class CommitCommentHandlerTest {
         given(mockExtractor.extractFrom(mockEvent)).willThrow(ExtractException.class);
 
         commitCommentHandler.handle(mockEvent);
-
-        verify(mockExtractor).extractFrom(mockEvent);
     }
 
     @Test

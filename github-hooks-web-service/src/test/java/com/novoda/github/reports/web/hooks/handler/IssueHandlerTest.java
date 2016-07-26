@@ -44,8 +44,6 @@ public class IssueHandlerTest {
         given(mockExtractor.extractFrom(mockEvent)).willThrow(ExtractException.class);
 
         issueHandler.handle(mockEvent);
-
-        verify(mockExtractor).extractFrom(mockEvent);
     }
 
     @Test

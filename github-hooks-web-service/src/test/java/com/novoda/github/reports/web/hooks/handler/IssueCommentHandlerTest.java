@@ -44,8 +44,6 @@ public class IssueCommentHandlerTest {
         given(mockExtractor.extractFrom(mockEvent)).willThrow(ExtractException.class);
 
         handler.handle(mockEvent);
-
-        verify(mockExtractor).extractFrom(mockEvent);
     }
 
     @Test
