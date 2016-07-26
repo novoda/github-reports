@@ -9,6 +9,7 @@ import com.novoda.github.reports.data.model.UserAssignments;
 import com.novoda.github.reports.reader.UsersServiceClient;
 import com.novoda.github.reports.stats.command.FloatTaskBasedOptions;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +41,7 @@ abstract class FloatTaskBasedCommandHandler<S extends Stats, O extends FloatTask
         );
 
         try {
-            return handleUserAssignments(usersAssignments);
+            return handleUserAssignments(options.getFrom(), options.getTo(), usersAssignments);
         } catch (DataLayerException e) {
             e.printStackTrace();
         }
@@ -48,7 +49,9 @@ abstract class FloatTaskBasedCommandHandler<S extends Stats, O extends FloatTask
         return null;
     }
 
-    protected abstract S handleUserAssignments(Map<String, List<UserAssignments>> usersAssignments)
+    protected abstract S handleUserAssignments(Date from,
+                                               Date to,
+                                               Map<String, List<UserAssignments>> usersAssignments)
             throws DataLayerException;
 
     EventDataLayer getEventDataLayer() {

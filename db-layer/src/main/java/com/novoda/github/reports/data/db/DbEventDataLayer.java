@@ -145,12 +145,14 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
     }
 
     @Override
-    public UserAssignmentsStats getUserAssignmentsStats(Map<String, List<UserAssignments>> usersAssignments)
+    public UserAssignmentsStats getUserAssignmentsStats(Date from,
+                                                        Date to,
+                                                        Map<String, List<UserAssignments>> usersAssignments)
             throws DataLayerException {
 
         try {
             Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername =
-                    getUserAssignmentsStatsQuery(usersAssignments)
+                    getUserAssignmentsStatsQuery(from, to, usersAssignments)
                             .fetchGroups(USERNAME_FIELD);
 
             return usersAssignmentsConverter.convert(resultsGroupedByUsername);
@@ -161,12 +163,14 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
     }
 
     @Override
-    public AggregatedStats getAggregatedUserAssignmentsStats(Map<String, List<UserAssignments>> usersAssignments)
+    public AggregatedStats getAggregatedUserAssignmentsStats(Date from,
+                                                             Date to,
+                                                             Map<String, List<UserAssignments>> usersAssignments)
             throws DataLayerException {
 
         try {
             Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername =
-                    getUserAssignmentsStatsQuery(usersAssignments)
+                    getUserAssignmentsStatsQuery(from, to, usersAssignments)
                             .having(EVENT.EVENT_TYPE_ID.isNotNull())
                             .fetchGroups(USERNAME_FIELD);
 
@@ -177,13 +181,15 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
         }
     }
 
-    private SelectHavingStep<? extends Record> getUserAssignmentsStatsQuery(Map<String, List<UserAssignments>> usersAssignments)
+    private SelectHavingStep<? extends Record> getUserAssignmentsStatsQuery(Date from,
+                                                                            Date to,
+                                                                            Map<String, List<UserAssignments>> usersAssignments)
             throws SQLException, DataLayerException {
 
         Connection connection = getNewConnection();
         DSLContext create = getNewDSLContext(connection);
 
-        UserAssignmentsStatsParameters parameters = new UserAssignmentsStatsParameters(usersAssignments, create);
+        UserAssignmentsStatsParameters parameters = new UserAssignmentsStatsParameters(from, to, usersAssignments, create);
         EventUserAssignmentsQueryBuilder userAssignmentsQueryBuilder = EventUserAssignmentsQueryBuilder
                 .newInstance(parameters);
 
