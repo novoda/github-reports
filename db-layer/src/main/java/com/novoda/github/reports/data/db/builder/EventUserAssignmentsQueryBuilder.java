@@ -26,9 +26,9 @@ public class EventUserAssignmentsQueryBuilder {
     public static final Field<String> USERNAME_FIELD = field("user_username", String.class);
     public static final Field<String> REPOSITORY_WORKED_NAME_FIELD = field("repository_worked_name", String.class);
     public static final Field<Integer> COUNT_EVENT_FIELD = field("count_event", Integer.class);
+    public static final Field<Boolean> WAS_SCHEDULED_WORK_FIELD = field("was_scheduled_work", Boolean.class);
 
     private static final Integer NO_ELEMENT_FOUND_IN_SET = 0;
-    private static final Field<Boolean> WAS_SCHEDULED_WORK_FIELD = field("was_scheduled_work", Boolean.class);
 
     private final UserAssignmentsStatsParameters parameters;
 
