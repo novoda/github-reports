@@ -1,9 +1,6 @@
 package com.novoda.github.reports.data;
 
-import com.novoda.github.reports.data.model.Event;
-import com.novoda.github.reports.data.model.PullRequestStats;
-import com.novoda.github.reports.data.model.UserAssignments;
-import com.novoda.github.reports.data.model.UserAssignmentsStats;
+import com.novoda.github.reports.data.model.*;
 
 import java.util.Date;
 import java.util.List;
@@ -26,14 +23,17 @@ public interface EventDataLayer extends DataLayer<Event> {
                                           PullRequestStatsGroupBy groupBy,
                                           Boolean withAverage) throws DataLayerException;
 
+    UserAssignmentsStats getUserAssignmentsStats(Map<String, List<UserAssignments>> usersAssignments)
+            throws DataLayerException;
+
+    AggregatedStats getAggregatedUserAssignmentsStats(Map<String, List<UserAssignments>> usersAssignments)
+            throws DataLayerException;
+
     enum PullRequestStatsGroupBy {
         NONE,
         WEEK,
         MONTH
     }
-
-    UserAssignmentsStats getUserAssignmentsStats(Map<String, List<UserAssignments>> usersAssignments)
-            throws DataLayerException;
 
 }
 
