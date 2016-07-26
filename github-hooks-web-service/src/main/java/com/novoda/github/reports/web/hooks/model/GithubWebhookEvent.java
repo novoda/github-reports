@@ -1,4 +1,4 @@
-package com.novoda.github.reports.web.hooks.lambda;
+package com.novoda.github.reports.web.hooks.model;
 
 import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;

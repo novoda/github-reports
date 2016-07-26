@@ -6,12 +6,17 @@ import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
-import com.novoda.github.reports.web.hooks.lambda.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
 class PullRequestHandler implements EventHandler {
 
     private PullRequestExtractor extractor;
     private DbEventDataLayer eventDataLayer;
+    // TODO we need a converter to convert from github issue to the db equivalent pojo (RepositoryIssueEvent?)
+    // check:
+    // - com.novoda.github.reports.lambda.issue.EventsServiceClient#retrieveEventsFrom()
+    // - com.novoda.github.reports.lambda.issue.TransformToRepositoryIssueEvent
+
 
     static PullRequestHandler newInstance(ConnectionManager connectionManager) {
         PullRequestExtractor pullRequestExtractor = new PullRequestExtractor();
