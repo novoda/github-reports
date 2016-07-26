@@ -110,6 +110,7 @@ public class FloatServiceClient {
         return Collections.emptyList();
     }
 
+    // TODO: test this
     public HashMap<String, List<UserAssignments>> getGithubUsersAssignmentsInDateRange(List<String> githubUsers,
                                                                                        Date from,
                                                                                        Date to) {
@@ -140,7 +141,6 @@ public class FloatServiceClient {
         }
     }
 
-    // TODO: test this
     public Observable<Map.Entry<String, List<Task>>> getTasksForGithubUsers(List<String> githubUsernames,
                                                                             Date startDate,
                                                                             Date endDate) {
