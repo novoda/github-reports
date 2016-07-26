@@ -6,6 +6,6 @@ import com.novoda.github.reports.web.hooks.model.GithubAction;
 
 public interface EventConverter<From, To> extends Converter<From, To> {
 
-    EventType convertAction(GithubAction action);
+    EventType convertAction(GithubAction action) throws UnsupportedActionException;
 
 }
