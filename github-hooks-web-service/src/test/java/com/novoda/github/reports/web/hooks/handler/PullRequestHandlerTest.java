@@ -1,13 +1,13 @@
 package com.novoda.github.reports.web.hooks.handler;
 
 import com.novoda.github.reports.data.db.DbEventDataLayer;
-import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.web.hooks.classification.ClassificationException;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.classification.WebhookEventClassifier;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.PullRequest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class PullRequestHandlerTest {
 
     private void whenExtractingPullRequestExtractSuccessfuly() {
         try {
-            given(mockPullRequestExtractor.extractFrom(mockEvent)).willReturn(mock(GithubIssue.class));
+            given(mockPullRequestExtractor.extractFrom(mockEvent)).willReturn(mock(PullRequest.class));
         } catch (ExtractException e) {
             // nothing to do
         }

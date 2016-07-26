@@ -9,6 +9,7 @@ import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.PullRequest;
 
 class PullRequestHandler implements EventHandler {
 
@@ -51,15 +52,16 @@ class PullRequestHandler implements EventHandler {
 
         GithubWebhookEvent.Action action = event.action();
         try {
-            GithubIssue pullRequest = extractor.extractFrom(event);
+            PullRequest pullRequest = extractor.extractFrom(event);
+            GithubIssue issue = pullRequest.getIssue();
 
             // TODO convert action to GithubEvent.Type
             // TODO convert from GithubIssue to GithubEvent
             GithubEvent githubEvent = new GithubEvent(
-                    pullRequest.getId(),
-                    pullRequest.getUser(),
+                    issue.getId(),
+                    issue.getUser(),
                     GithubEvent.Type.ASSIGNED,
-                    pullRequest.getCreatedAt()
+                    issue.getCreatedAt()
             );
 
             //Event dbEvent = Event.create(pullRequest.getId(), pullRequest.get)
