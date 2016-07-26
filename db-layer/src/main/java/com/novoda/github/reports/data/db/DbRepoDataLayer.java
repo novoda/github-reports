@@ -9,8 +9,10 @@ import org.jooq.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.*;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
@@ -38,6 +40,11 @@ public class DbRepoDataLayer extends DbDataLayer<Repository, RepositoryRecord> i
 
     @Override
     public ProjectRepoStats getStats(String repo, Date from, Date to) throws DataLayerException {
+        return getStats(Collections.singletonList(repo), from, to);
+    }
+
+    @Override
+    public ProjectRepoStats getStats(List<String> repositories, Date from, Date to) throws DataLayerException {
         Connection connection = null;
         Result<Record2<Integer, Integer>> eventsResult;
         Result<Record1<Integer>> peopleResult;
@@ -47,7 +54,7 @@ public class DbRepoDataLayer extends DbDataLayer<Repository, RepositoryRecord> i
             DSLContext create = getNewDSLContext(connection);
 
             Condition betweenCondition = DatabaseHelper.conditionalBetween(EVENT.DATE, from, to);
-            Condition repoCondition = REPOSITORY.NAME.equalIgnoreCase(repo);
+            Condition repoCondition = REPOSITORY.NAME.in(repositories);
 
             eventsResult = selectEvents(create, betweenCondition, repoCondition).fetch();
             peopleResult = selectPeople(create, betweenCondition, repoCondition).fetch();
@@ -57,7 +64,7 @@ public class DbRepoDataLayer extends DbDataLayer<Repository, RepositoryRecord> i
             attemptCloseConnection(connection);
         }
 
-        return DatabaseHelper.recordsToProjectRepoStats(eventsResult, peopleResult, repo);
+        return DatabaseHelper.recordsToProjectRepoStats(eventsResult, peopleResult, joinRepositories(repositories));
     }
 
     private static Select<Record2<Integer, Integer>> selectEvents(DSLContext create, Condition betweenCondition, Condition repoCondition) {
@@ -79,6 +86,10 @@ public class DbRepoDataLayer extends DbDataLayer<Repository, RepositoryRecord> i
                 .on(EVENT_REPOSITORY_JOIN_ON_CONDITION)
                 .where(betweenCondition)
                 .and(repoCondition);
+    }
+
+    private String joinRepositories(List<String> repositories) {
+        return repositories.stream().collect(Collectors.joining(", "));
     }
 
     @Override

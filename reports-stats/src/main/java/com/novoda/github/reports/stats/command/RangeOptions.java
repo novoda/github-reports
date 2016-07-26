@@ -12,6 +12,15 @@ abstract class RangeOptions implements Options {
     @Parameter(names = "--to", description = "End of range", converter = ISO8601DateConverter.class)
     private Date to;
 
+    public RangeOptions() {
+        // no-op
+    }
+
+    public RangeOptions(Date from, Date to) {
+        this.from = from;
+        this.to = to;
+    }
+
     public Date getFrom() {
         return from;
     }
