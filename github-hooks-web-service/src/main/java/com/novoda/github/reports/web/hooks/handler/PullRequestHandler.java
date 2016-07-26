@@ -13,6 +13,7 @@ import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.convert.EventConverter;
+import com.novoda.github.reports.web.hooks.convert.PullRequestToDbEventConverter;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.PullRequestExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
@@ -22,6 +23,7 @@ import com.novoda.github.reports.web.hooks.model.PullRequest;
 class PullRequestHandler implements EventHandler {
 
     private final PullRequestExtractor extractor;
+    private final EventConverter<PullRequest, Event> converter;
 
     private final DbEventDataLayer eventDataLayer;
     private final DbUserDataLayer userDataLayer;
@@ -42,14 +44,20 @@ class PullRequestHandler implements EventHandler {
 
     static PullRequestHandler newInstance(ConnectionManager connectionManager) {
         PullRequestExtractor pullRequestExtractor = new PullRequestExtractor();
+        EventConverter<PullRequest, Event> converter = new PullRequestToDbEventConverter();
         DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         DbUserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         DbRepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
-        return new PullRequestHandler(pullRequestExtractor, eventDataLayer, userDataLayer, repoDataLayer);
+        return new PullRequestHandler(pullRequestExtractor, converter, eventDataLayer, userDataLayer, repoDataLayer);
     }
 
-    PullRequestHandler(PullRequestExtractor extractor, DbEventDataLayer eventDataLayer, DbUserDataLayer userDataLayer, DbRepoDataLayer repoDataLayer) {
+    PullRequestHandler(PullRequestExtractor extractor,
+                       EventConverter<PullRequest, Event> converter,
+                       DbEventDataLayer eventDataLayer,
+                       DbUserDataLayer userDataLayer,
+                       DbRepoDataLayer repoDataLayer) {
         this.extractor = extractor;
+        this.converter = converter;
         this.eventDataLayer = eventDataLayer;
         this.userDataLayer = userDataLayer;
         this.repoDataLayer = repoDataLayer;
