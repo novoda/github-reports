@@ -13,6 +13,7 @@ import static com.novoda.github.reports.data.db.Tables.EVENT;
 import static com.novoda.github.reports.data.db.Tables.REPOSITORY;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.countDistinct;
+import static org.jooq.impl.DSL.field;
 
 public class DatabaseHelper {
 
@@ -130,4 +131,9 @@ public class DatabaseHelper {
     static boolean byteToBool(Byte value) {
         return TRUE_BYTE == value;
     }
+
+    public static Field<Integer> findInSetForMySQLOnly(Field<String> element, Field<String> elementSet) {
+        return field("FIND_IN_SET({0}, {1})", Integer.class, element, elementSet);
+    }
+
 }
