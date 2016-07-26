@@ -3,8 +3,10 @@ package com.novoda.github.reports.web.hooks.handler;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbEventDataLayer;
+import com.novoda.github.reports.data.db.DbRepoDataLayer;
 import com.novoda.github.reports.data.db.DbUserDataLayer;
 import com.novoda.github.reports.data.model.Event;
+import com.novoda.github.reports.data.model.Repository;
 import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.service.issue.GithubEvent;
 import com.novoda.github.reports.service.issue.GithubIssue;
@@ -20,6 +22,7 @@ class PullRequestHandler implements EventHandler {
     private PullRequestExtractor extractor;
     private DbEventDataLayer eventDataLayer;
     private DbUserDataLayer userDataLayer;
+    private DbRepoDataLayer repoDataLayer;
 
     // TODO we need a converter to convert from github issue to the db equivalent pojo (RepositoryIssueEvent?)
     // check:
@@ -34,19 +37,19 @@ class PullRequestHandler implements EventHandler {
     //          .. PersistEventsOperator: DataLayer<Event> dataLayer, Converter<RepositoryIssueEvent, Event> converter
     //         ... each PersistOperator: dataLayer.updateOrInsert(converter.convertListFrom(elements));
 
-
-
     static PullRequestHandler newInstance(ConnectionManager connectionManager) {
         PullRequestExtractor pullRequestExtractor = new PullRequestExtractor();
         DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         DbUserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
-        return new PullRequestHandler(pullRequestExtractor, eventDataLayer, userDataLayer);
+        DbRepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
+        return new PullRequestHandler(pullRequestExtractor, eventDataLayer, userDataLayer, repoDataLayer);
     }
 
-    PullRequestHandler(PullRequestExtractor extractor, DbEventDataLayer eventDataLayer, DbUserDataLayer userDataLayer) {
+    PullRequestHandler(PullRequestExtractor extractor, DbEventDataLayer eventDataLayer, DbUserDataLayer userDataLayer, DbRepoDataLayer repoDataLayer) {
         this.extractor = extractor;
         this.eventDataLayer = eventDataLayer;
         this.userDataLayer = userDataLayer;
+        this.repoDataLayer = repoDataLayer;
     }
 
     @Override
@@ -78,10 +81,12 @@ class PullRequestHandler implements EventHandler {
                     issue.getUpdatedAt()
             );
             User dbUser = User.create(issue.getUserId(), issue.getUser().getUsername());
+            Repository dbRepository = Repository.create(repository.getId(), repository.getName(), repository.isPrivateRepo());
 
             try {
-                eventDataLayer.updateOrInsert(dbEvent);
                 userDataLayer.updateOrInsert(dbUser);
+                repoDataLayer.updateOrInsert(dbRepository);
+                eventDataLayer.updateOrInsert(dbEvent);
             } catch (DataLayerException e) {
                 e.printStackTrace();
                 throw new UnhandledEventException(e.getMessage());
