@@ -9,6 +9,7 @@ import com.novoda.github.reports.data.model.UserAssignmentsStats;
 import com.novoda.github.reports.reader.UsersServiceClient;
 import com.novoda.github.reports.stats.command.OverallOptions;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -24,10 +25,12 @@ public class OverallCommandHandler extends FloatTaskBasedCommandHandler<UserAssi
 
 
     @Override
-    protected UserAssignmentsStats handleUserAssignments(Map<String, List<UserAssignments>> usersAssignments)
+    protected UserAssignmentsStats handleUserAssignments(Date from,
+                                                         Date to,
+                                                         Map<String, List<UserAssignments>> usersAssignments)
             throws DataLayerException {
 
-        return getEventDataLayer().getUserAssignmentsStats(usersAssignments);
+        return getEventDataLayer().getUserAssignmentsStats(from, to, usersAssignments);
     }
 
 }
