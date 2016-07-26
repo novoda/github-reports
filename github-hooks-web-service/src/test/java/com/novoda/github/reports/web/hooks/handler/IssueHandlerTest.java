@@ -32,7 +32,7 @@ public class IssueHandlerTest {
     }
 
     @Test
-    public void givenAnEventThatIsAnIssue_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
+    public void givenAnEvent_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
 
         issueHandler.handle(mockEvent);
 

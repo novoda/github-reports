@@ -32,7 +32,7 @@ public class CommitCommentHandlerTest {
     }
 
     @Test
-    public void givenAnEventThatIsACommitComment_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
+    public void givenAnEvent_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
 
         commitCommentHandler.handle(mockEvent);
 

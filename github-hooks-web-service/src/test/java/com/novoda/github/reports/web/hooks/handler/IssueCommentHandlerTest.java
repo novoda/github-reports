@@ -32,7 +32,7 @@ public class IssueCommentHandlerTest {
     }
 
     @Test
-    public void givenAnEventThatIsnIssueComment_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
+    public void givenAnEvent_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
 
         handler.handle(mockEvent);
 
