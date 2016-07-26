@@ -1,12 +1,10 @@
 package com.novoda.github.reports.stats.handler;
 
 import com.novoda.floatschedule.FloatServiceClient;
-import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.model.Stats;
 import com.novoda.github.reports.data.model.UserAssignments;
-import com.novoda.github.reports.reader.UsersServiceClient;
 import com.novoda.github.reports.stats.command.FloatTaskBasedOptions;
 
 import java.util.Date;
@@ -18,18 +16,12 @@ abstract class FloatTaskBasedCommandHandler<S extends Stats, O extends FloatTask
 
     private final EventDataLayer eventDataLayer;
     private final FloatServiceClient floatServiceClient;
-    private final FloatDateConverter floatDateConverter;
-    private final UsersServiceClient usersServiceClient;
 
     FloatTaskBasedCommandHandler(EventDataLayer eventDataLayer,
-                                 FloatServiceClient floatServiceClient,
-                                 FloatDateConverter floatDateConverter,
-                                 UsersServiceClient usersServiceClient) {
+                                 FloatServiceClient floatServiceClient) {
 
         this.eventDataLayer = eventDataLayer;
         this.floatServiceClient = floatServiceClient;
-        this.floatDateConverter = floatDateConverter;
-        this.usersServiceClient = usersServiceClient;
     }
 
     @Override
