@@ -33,9 +33,7 @@ Main.prototype.showPrStats = function(from, to, repos, groupBy, withAverage, req
     })['catch'](
     // awful hax because Google Apps Script uses the stupidest AST parser or whatevs
     // see https://github.com/stefanpenner/es6-promise#usage-in-ie9
-    function(error) {
-      self.spreadsheet.showAlert('Error', 'There was an error while executing the request:\n' + error);
-    });
+    showAlertForError(self.spreadsheet));
 };
 
 var SHEET_STATS_HEADER_ROW = 1;
@@ -209,9 +207,7 @@ Main.prototype.showAggregatedStats = function(from, to, users, requestISODate) {
     .then(setStatsIntoNewSheet(self.spreadsheet, requestISODate))['catch'](
     // awful hax because Google Apps Script uses the stupidest AST parser or whatevs
     // see https://github.com/stefanpenner/es6-promise#usage-in-ie9
-    function(error) {
-      self.spreadsheet.showAlert('Error', 'There was an error while executing the request:\n' + error);
-    });
+    showAlertForError(self.spreadsheet));
 };
 
 var AGGREGATED_STATS_NUMBER_OF_COLUMNS = 5;
@@ -341,4 +337,10 @@ function setAggregatedStats(statsSheet, lines) {
   );
   statsSheet.mergeRange(SHEET_STATS_HEADER_ROW, AGGREGATED_STATS_PROJECTS_COLUMN, 1, 2);
   statsSheet.mergeRange(SHEET_STATS_HEADER_ROW, AGGREGATED_STATS_REPOSITORIES_COLUMN, 1, 2);
+}
+
+function showAlertForError(spreadsheet) {
+  return function(error) {
+    spreadsheet.showAlert('Error', 'There was an error while executing the request:\n' + error);
+  };
 }
