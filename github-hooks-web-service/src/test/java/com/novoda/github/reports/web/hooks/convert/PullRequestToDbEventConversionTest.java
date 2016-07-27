@@ -2,11 +2,11 @@ package com.novoda.github.reports.web.hooks.convert;
 
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.EventType;
-import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.pullrequest.GithubPullRequest;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
 import java.util.Arrays;
@@ -55,7 +55,7 @@ public class PullRequestToDbEventConversionTest {
     public EventType expectedEventType;
 
     @Mock
-    private GithubIssue mockGithubIssue;
+    private GithubWebhookPullRequest mockGithubIssue;
 
     @Mock
     private GithubRepository mockGithubRepository;

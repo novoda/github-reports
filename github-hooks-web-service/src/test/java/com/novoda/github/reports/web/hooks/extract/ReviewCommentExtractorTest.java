@@ -3,6 +3,7 @@ package com.novoda.github.reports.web.hooks.extract;
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.ReviewComment;
 
 import org.junit.Before;
@@ -34,8 +35,8 @@ public class ReviewCommentExtractorTest {
     @Test
     public void givenAReviewCommentEvent_whenExtractingThePayload_thenItIsExtracted() throws Exception {
         GithubComment comment = new GithubComment();
-        GithubIssue issue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, true);
-        given(mockEvent.issue()).willReturn(issue);
+        GithubWebhookPullRequest issue = new GithubWebhookPullRequest(ANY_ISSUE_NUMBER, ANY_OWNER_ID, true);
+        given(mockEvent.pullRequest()).willReturn(issue);
         given(mockEvent.comment()).willReturn(comment);
 
         ReviewComment actual = extractor.extractFrom(mockEvent);
@@ -47,8 +48,8 @@ public class ReviewCommentExtractorTest {
     @Test
     public void givenAReviewCommentEvent_whenExtractingTheIssue_thenItIsMarkedAsAPullRequest() throws Exception {
         GithubComment comment = new GithubComment();
-        GithubIssue issue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, false);
-        given(mockEvent.issue()).willReturn(issue);
+        GithubWebhookPullRequest issue = new GithubWebhookPullRequest(ANY_ISSUE_NUMBER, ANY_OWNER_ID, false);
+        given(mockEvent.pullRequest()).willReturn(issue);
         given(mockEvent.comment()).willReturn(comment);
 
         GithubIssue actualIssue = extractor.extractFrom(mockEvent).getIssue();

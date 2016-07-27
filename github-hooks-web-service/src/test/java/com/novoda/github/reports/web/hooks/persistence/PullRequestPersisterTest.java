@@ -8,10 +8,10 @@ import com.novoda.github.reports.data.model.EventType;
 import com.novoda.github.reports.data.model.Repository;
 import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.service.GithubUser;
-import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.convert.EventConverter;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
 import java.util.Date;
@@ -109,7 +109,7 @@ public class PullRequestPersisterTest {
         GithubUser mockUser = mock(GithubUser.class);
         given(mockUser.getUsername()).willReturn(ANY_USERNAME);
 
-        GithubIssue mockIssue = mock(GithubIssue.class);
+        GithubWebhookPullRequest mockIssue = mock(GithubWebhookPullRequest.class);
         given(mockIssue.getUserId()).willReturn(ANY_USER_ID);
         given(mockIssue.getUser()).willReturn(mockUser);
 
