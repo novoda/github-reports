@@ -102,15 +102,6 @@ public class FloatServiceClient {
         return person -> taskServiceClient.getTasks(startDate, numberOfWeeks, person.getId());
     }
 
-    public List<String> getRepositoriesFor(Task task) {
-        try {
-            return floatGithubProjectConverter.getRepositories(task.getProjectName());
-        } catch (IOException | NoMatchFoundException e) {
-            // ignored
-        }
-        return Collections.emptyList();
-    }
-
     // TODO: test this
     public HashMap<String, List<UserAssignments>> getGithubUsersAssignmentsInDateRange(List<String> githubUsers,
                                                                                        Date from,
@@ -139,9 +130,9 @@ public class FloatServiceClient {
         }
     }
 
-    public Observable<Map.Entry<String, List<Task>>> getTasksForGithubUsers(List<String> githubUsernames,
-                                                                            Date startDate,
-                                                                            Date endDate) {
+    Observable<Map.Entry<String, List<Task>>> getTasksForGithubUsers(List<String> githubUsernames,
+                                                                     Date startDate,
+                                                                     Date endDate) {
 
         Integer numberOfWeeks = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
         return getTasksForGithubUsers(githubUsernames, startDate, numberOfWeeks);
@@ -242,6 +233,15 @@ public class FloatServiceClient {
                     .assignedRepositories(repositoriesForTask)
                     .build();
         };
+    }
+
+    private List<String> getRepositoriesFor(Task task) {
+        try {
+            return floatGithubProjectConverter.getRepositories(task.getProjectName());
+        } catch (IOException | NoMatchFoundException e) {
+            // ignored
+        }
+        return Collections.emptyList();
     }
 
     private Func1<Map.Entry<String, List<Task>>, AbstractMap.SimpleImmutableEntry<String, List<UserAssignments>>> tasksToUserAssignments() {
