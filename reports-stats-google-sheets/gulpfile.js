@@ -7,6 +7,8 @@ var Karma = require('karma').Server;
 var inject = require('gulp-inject');
 var clean = require('gulp-clean');
 var bowerFiles = require('main-bower-files');
+var rename = require('gulp-rename');
+var flatmap = require('gulp-flatmap');
 
 gulp.task('lint', function() {
   return gulp.src(['src/**/*.js'])
@@ -45,38 +47,57 @@ ${content}
 </script>`;
 };
 
-var transformContentsJs = function(filePath, file) {
-  return wrapTagJs(file.contents.toString('utf8'));
-};
-
 var wrapTagCss = function(content) {
   return `<style type="text/css">
 ${content}
 </style>`;
 };
 
-var transformContentsCss = function(filePath, file) {
-  return wrapTagCss(file.contents.toString('utf8'));
+var transformContents = function(partialName) {
+  return function(filePath, file) {
+    let fileContents = file.contents.toString('utf8');
+    if (filePath.slice(-3) === '.js') {
+      return wrapTagJs(fileContents);
+    }
+    if (filePath.slice(-4) === '.css') {
+      return wrapTagCss(fileContents);
+    }
+    if (filePath.slice(-5) === '.html' && partialName === file.relative) {
+      return fileContents;
+    }
+  };
 };
 
 gulp.task('build-sidebar', ['test', 'clean-sidebar'], function() {
-  return gulp
-    .src('src/sidebar/sidebar.html', {base: './src/sidebar'})
-    .pipe(inject(gulp.src('src/lib/common/**/*.js'), {
-      starttag: '<!-- inject:lib/common:{{ext}} -->',
-      transform: transformContentsJs
-    }))
-    .pipe(inject(gulp.src('src/lib/web/**/*.js'), {
-      starttag: '<!-- inject:lib/web:{{ext}} -->',
-      transform: transformContentsJs
-    }))
-    .pipe(inject(gulp.src('src/sidebar/**/*.css'), {
-      starttag: '<!-- inject:css -->',
-      transform: transformContentsCss
-    }))
-    .pipe(inject(gulp.src(bowerFiles()), {
-      starttag: '<!-- inject:bower:{{ext}} -->',
-      transform: transformContentsJs
+  var allSourceFiles = [
+    'src/sidebar/**/*.css',
+    'src/lib/common/**/*.js',
+    'src/lib/web/**/*.js',
+    '!src/lib/web/**/*.controller.js',
+    'src/sidebar/**/*.partial.html'
+  ];
+  var allBowerFiles = bowerFiles();
+
+  return gulp.src('src/sidebar/**/*.partial.html')
+    .pipe(flatmap(function(partialHtmlStream, partialHtmlFile) {
+      var partialHtmlFileName = partialHtmlFile.relative;
+      const regExp = /^(.*)(?:\.partial\.html)$/g;
+      var partialPageName = regExp.exec(partialHtmlFileName)[1];
+
+      return gulp
+        .src('src/sidebar/sidebar.template.html', {base: './src/sidebar'})
+        .pipe(inject(gulp.src(allBowerFiles), {
+          starttag: '<!-- inject:bower:{{ext}} -->',
+          transform: transformContents()
+        }))
+        .pipe(inject(gulp.src(allSourceFiles), {
+          transform: transformContents(partialHtmlFileName)
+        }))
+        .pipe(inject(gulp.src(`src/lib/web/**/${partialPageName}.controller.js`), {
+          starttag: '<!-- inject:pageController:js -->',
+          transform: transformContents()
+        }))
+        .pipe(rename(`sidebar-${partialPageName}.html`));
     }))
     .pipe(gulp.dest('build/sidebar'));
 });
@@ -94,11 +115,17 @@ gulp.task('copy-lib', ['test', 'clean-lib'], function() {
 });
 
 gulp.task('bower', ['clean-bower'], function() {
-   return gulp
-     .src(bowerFiles(), {
-       base: './bower_components'
-     })
-     .pipe(gulp.dest('build/bower_components'))
+  return gulp
+    .src(bowerFiles({
+      overrides: {
+        jquery: {
+          ignore: true
+        }
+      }
+    }), {
+      base: './bower_components'
+    })
+    .pipe(gulp.dest('build/bower_components'))
 });
 
 gulp.task('build', ['build-sidebar', 'copy-lib', 'bower']);
