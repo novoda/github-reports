@@ -36,7 +36,7 @@ public class PullRequestExtractorTest {
     public void givenAPullRequestEvent_whenExtractingThePayload_thenItIsExtracted() throws Exception {
         GithubRepository repository = new GithubRepository(ANY_REPO_ID);
         GithubIssue issue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, true);
-        given(mockEvent.issue()).willReturn(issue);
+        given(mockEvent.pullRequest()).willReturn(issue);
         given(mockEvent.repository()).willReturn(repository);
 
         PullRequest actual = extractor.extractFrom(mockEvent);
@@ -49,7 +49,7 @@ public class PullRequestExtractorTest {
     public void givenAPullRequesEvent_whenExtractingTheIssue_thenItIsMarkedAsAPullRequest() throws Exception {
         GithubRepository repository = new GithubRepository(ANY_REPO_ID);
         GithubIssue issue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, false);
-        given(mockEvent.issue()).willReturn(issue);
+        given(mockEvent.pullRequest()).willReturn(issue);
         given(mockEvent.repository()).willReturn(repository);
 
         GithubIssue actualIssue = extractor.extractFrom(mockEvent).getIssue();
