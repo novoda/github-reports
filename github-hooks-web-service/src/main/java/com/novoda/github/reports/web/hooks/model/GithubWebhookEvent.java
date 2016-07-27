@@ -30,7 +30,6 @@ public abstract class GithubWebhookEvent {
     public abstract Integer number();
 
     @Nullable
-    //@SerializedName(value = "issue", alternate = {"pull_request"}) // not working :(
     public abstract GithubIssue issue();
 
     @Nullable
