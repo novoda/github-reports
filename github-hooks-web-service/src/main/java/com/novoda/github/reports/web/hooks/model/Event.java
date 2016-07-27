@@ -1,6 +1,6 @@
 package com.novoda.github.reports.web.hooks.model;
 
-abstract class Event {
+public abstract class Event {
 
     protected GithubAction action;
 
