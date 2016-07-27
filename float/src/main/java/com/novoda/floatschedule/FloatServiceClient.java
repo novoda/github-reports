@@ -48,7 +48,8 @@ public class FloatServiceClient {
                                FloatGithubProjectConverter floatGithubProjectConverter,
                                PeopleServiceClient peopleServiceClient,
                                TaskServiceClient taskServiceClient,
-                               NumberOfWeeksCalculator numberOfWeeksCalculator, FloatDateConverter floatDateConverter) {
+                               NumberOfWeeksCalculator numberOfWeeksCalculator,
+                               FloatDateConverter floatDateConverter) {
 
         this.floatGithubUserConverter = floatGithubUserConverter;
         this.floatGithubProjectConverter = floatGithubProjectConverter;
@@ -121,10 +122,7 @@ public class FloatServiceClient {
 
         return getTasksForGithubUsers(githubUsers, from, to)
                 .map(tasksToUserAssignments())
-                .collect(
-                        HashMap<String, List<UserAssignments>>::new,
-                        putEntryInMap()
-                )
+                .collect(HashMap<String, List<UserAssignments>>::new, putEntryInMap())
                 .toBlocking()
                 .first();
     }
@@ -189,7 +187,8 @@ public class FloatServiceClient {
                 .collect(
                         HashMap::new,
                         (map, entry) -> map.put(entry.getKey(), entry.getValue()),
-                        (combineThis, withThis) -> {}
+                        (combineThis, withThis) -> {
+                        }
                 );
     }
 
