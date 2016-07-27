@@ -34,7 +34,7 @@ public class PullRequestToDbEventConversionTest {
         return Arrays.asList(new Object[][]{
                 {OPENED, false, EventType.PULL_REQUEST_OPEN},
                 {CLOSED, false, EventType.PULL_REQUEST_CLOSE},
-                {CLOSED, false, EventType.PULL_REQUEST_MERGE},
+                {CLOSED, true, EventType.PULL_REQUEST_MERGE},
                 {LABELED, false, EventType.PULL_REQUEST_LABEL_ADD},
                 {UNLABELED, false, EventType.PULL_REQUEST_LABEL_REMOVE}
         });
