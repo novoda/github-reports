@@ -1,19 +1,18 @@
 package com.novoda.github.reports.web.hooks.model;
 
 import com.novoda.github.reports.service.issue.GithubComment;
-import com.novoda.github.reports.service.issue.GithubIssue;
 
 public class ReviewComment {
 
-    private GithubIssue issue;
+    private GithubWebhookPullRequest issue;
     private GithubComment comment;
 
-    public ReviewComment(GithubIssue issue, GithubComment comment) {
+    public ReviewComment(GithubWebhookPullRequest issue, GithubComment comment) {
         this.issue = issue;
         this.comment = comment;
     }
 
-    public GithubIssue getIssue() {
+    public GithubWebhookPullRequest getIssue() {
         return issue;
     }
 

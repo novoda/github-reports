@@ -32,9 +32,8 @@ public abstract class GithubWebhookEvent {
     @Nullable
     public abstract GithubIssue issue();
 
-    @Nullable
     @SerializedName("pull_request")
-    public abstract GithubIssue pullRequest();
+    public abstract @Nullable GithubWebhookPullRequest pullRequest();
 
     @Nullable
     public abstract GithubRepository repository();
@@ -56,7 +55,7 @@ public abstract class GithubWebhookEvent {
 
         abstract Builder sender(GithubUser sender);
 
-        abstract Builder pullRequest(@Nullable GithubIssue pullRequest);
+        abstract Builder pullRequest(@Nullable GithubWebhookPullRequest pullRequest);
 
         abstract Builder issue(@Nullable GithubIssue issue);
 
