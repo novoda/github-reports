@@ -199,7 +199,6 @@ function countAverages(group) {
   return count;
 }
 
-
 Main.prototype.showAggregatedStats = function(from, to, users, requestISODate) {
   var self = this;
   return this.reports.getAggregatedUserStats(from, to, users)
@@ -233,6 +232,7 @@ function convertAggregatedStatToLine(username, userData) {
     userData.externalRepositoriesContributions
   ];
 }
+
 function describeProjectsOrRepositoriesStats(stats) {
   return Object.keys(stats)
     .map(function(name) {
