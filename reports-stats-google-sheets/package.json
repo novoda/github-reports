@@ -29,6 +29,7 @@
     "lodash": "^4.13.1",
     "main-bower-files": "^2.13.1",
     "matchdep": "~1.0.0",
+    "open": "0.0.5",
     "phantomjs-prebuilt": "^2.1.3"
   }
 }
