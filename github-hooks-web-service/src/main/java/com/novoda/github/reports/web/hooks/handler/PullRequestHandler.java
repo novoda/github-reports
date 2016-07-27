@@ -27,7 +27,7 @@ class PullRequestHandler implements EventHandler {
     private final DbEventDataLayer eventDataLayer;
     private final DbUserDataLayer userDataLayer;
     private final DbRepoDataLayer repoDataLayer;
-    
+
     static PullRequestHandler newInstance(ConnectionManager connectionManager) {
         PullRequestExtractor pullRequestExtractor = new PullRequestExtractor();
         EventConverter<PullRequest, Event> converter = new PullRequestToDbEventConverter();

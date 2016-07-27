@@ -31,10 +31,7 @@ public class PullRequestToDbEventConverter implements EventConverter<PullRequest
     private EventType convertPullRequestAction(PullRequest pullRequest) throws ConverterException {
         EventType eventType = convertActionOrThrow(pullRequest);
         if (eventType == EventType.PULL_REQUEST_CLOSE) {
-            // TODO extract
-            return pullRequest.getIssue().getPullRequest().isMerged() ?
-                    EventType.PULL_REQUEST_MERGE
-                    : EventType.PULL_REQUEST_CLOSE;
+            return convertClosedAction(pullRequest);
         }
         return eventType;
     }
@@ -70,5 +67,12 @@ public class PullRequestToDbEventConverter implements EventConverter<PullRequest
         }
 
         throw new UnsupportedActionException(action);
+    }
+
+    private EventType convertClosedAction(PullRequest pullRequest) {
+        if (pullRequest.getIssue().getPullRequest().isMerged()) {
+            return EventType.PULL_REQUEST_MERGE;
+        }
+        return EventType.PULL_REQUEST_CLOSE;
     }
 }
