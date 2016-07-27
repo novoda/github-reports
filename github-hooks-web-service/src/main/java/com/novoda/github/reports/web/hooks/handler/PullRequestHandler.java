@@ -27,20 +27,7 @@ class PullRequestHandler implements EventHandler {
     private final DbEventDataLayer eventDataLayer;
     private final DbUserDataLayer userDataLayer;
     private final DbRepoDataLayer repoDataLayer;
-
-    // TODO we need a converter to convert from github issue to the db equivalent pojo (RepositoryIssueEvent?)
-    // check:
-    // - com.novoda.github.reports.lambda.issue.EventsServiceClient#retrieveEventsFrom()
-    // - com.novoda.github.reports.lambda.issue.TransformToRepositoryIssueEvent
-    // - RepositoryIssueEventPersistTransformer, uses:
-    //      - PersistEventUserTransformer   (composing on an observable of RepositoryIssueEvent)
-    //      - PersistEventTransformer       (composing on an observable of RepositoryIssueEvent)
-    //      . each of these two has an operator (PersistEventUserOperator and PersistEventsOperator) that hold the respective DataLayers
-    //        and converters:
-    //          .. PersistEventUserOperator: DataLayer<User> dataLayer, Converter<RepositoryIssueEvent, User> converter
-    //          .. PersistEventsOperator: DataLayer<Event> dataLayer, Converter<RepositoryIssueEvent, Event> converter
-    //         ... each PersistOperator: dataLayer.updateOrInsert(converter.convertListFrom(elements));
-
+    
     static PullRequestHandler newInstance(ConnectionManager connectionManager) {
         PullRequestExtractor pullRequestExtractor = new PullRequestExtractor();
         EventConverter<PullRequest, Event> converter = new PullRequestToDbEventConverter();
@@ -89,6 +76,7 @@ class PullRequestHandler implements EventHandler {
         try {
             return converter.convertFrom(pullRequest);
         } catch (ConverterException e) {
+            // TODO swallow this exception
             throw new UnhandledEventException(e.getMessage());
         }
     }
