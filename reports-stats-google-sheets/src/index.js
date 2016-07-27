@@ -1,6 +1,6 @@
 'use strict';
 
-/* exported onInstall, onOpen, createMenu, createAndShowSidebarPrStats, createAndShowSidebarAggregatedStats, showPrStats, setTimeout */
+/* exported onInstall, onOpen, createAndShowSidebarPrStats, createAndShowSidebarAggregatedStats, showPrStats, setTimeout */
 
 var SIDEBAR_PR_STATS_NAME = 'PR_STATS';
 var SIDEBAR_AGGREGATED_STATS_NAME = 'AGGREGATED_STATS';
