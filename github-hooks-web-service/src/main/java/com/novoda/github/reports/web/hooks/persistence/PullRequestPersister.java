@@ -64,7 +64,6 @@ public class PullRequestPersister implements Persister<PullRequest> {
     }
 
     private Event convertFrom(PullRequest pullRequest) throws PersistenceException {
-
         try {
             return converter.convertFrom(pullRequest);
         } catch (ConverterException e) {
