@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.conditionalBetween;
 import static com.novoda.github.reports.data.db.DatabaseHelper.dateToTimestamp;
-import static com.novoda.github.reports.data.db.DatabaseHelper.findInSetForMySQLOnly;
+import static com.novoda.github.reports.data.db.DatabaseHelper.findInSetForMySqlOnly;
 import static com.novoda.github.reports.data.db.Tables.*;
 import static org.jooq.impl.DSL.*;
 
@@ -83,7 +83,7 @@ public class EventUserAggregatedWorkQueryBuilder {
 
     private Field<Boolean> wasScheduledWork() {
         return when(
-                findInSetForMySQLOnly(REPOSITORY.NAME, REPOSITORIES_ASSIGNED_FIELD).greaterThan(NO_ELEMENT_FOUND_IN_SET),
+                findInSetForMySqlOnly(REPOSITORY.NAME, REPOSITORIES_ASSIGNED_FIELD).greaterThan(NO_ELEMENT_FOUND_IN_SET),
                 true
         ).otherwise(false);
     }
