@@ -1,6 +1,6 @@
 'use strict';
 
-/* exported onInstall, onOpen, createAndShowSidebarPrStats, createAndShowSidebarAggregatedStats, showPrStats, setTimeout */
+/* exported onInstall, onOpen, createAndShowSidebarPrStats, createAndShowSidebarAggregatedStats, showPrStats, showAggregatedStats, setTimeout */
 
 var SIDEBAR_PR_STATS_NAME = 'PR_STATS';
 var SIDEBAR_AGGREGATED_STATS_NAME = 'AGGREGATED_STATS';
@@ -37,6 +37,11 @@ function createAndShowSidebarAggregatedStats(main) {
 function showPrStats(from, to, repositories, groupBy, withAverage, requestISODate) {
   var main = buildMain_();
   return main.showPrStats(from, to, repositories, groupBy, withAverage, requestISODate);
+}
+
+function showAggregatedStats(from, to, users, requestISODate) {
+  var main = buildMain_();
+  return main.showAggregatedStats(from, to, users, requestISODate);
 }
 
 function buildMain_(main) {
