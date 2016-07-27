@@ -40,11 +40,6 @@ public enum GithubAction {
     @SerializedName("synchronize")
     SYNCHRONIZE("synchronize");
 
-    /*
-    from https://developer.github.com/v3/activity/events/types/#pullrequestevent:
-    "assigned", "unassigned", "labeled", "unlabeled", "opened", "edited", "closed", or "reopened", or "synchronize"
-    */
-
     private final String action;
 
     GithubAction(String action) {
