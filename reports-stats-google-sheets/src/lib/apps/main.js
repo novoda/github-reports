@@ -6,6 +6,10 @@ function Main(reports, spreadsheet) {
   this.spreadsheet = spreadsheet;
 }
 
+var SHEET_STATS_HEADER_ROW = 1;
+var SHEET_STATS_FIRST_ROW = 2;
+var SHEET_STATS_FIRST_COLUMN = 1;
+
 Main.prototype.showPrStats = function(from, to, repos, groupBy, withAverage, requestISODate) {
   var self = this;
   return this.reports.getPrStats(from, to, repos, groupBy, withAverage)
@@ -35,10 +39,6 @@ Main.prototype.showPrStats = function(from, to, repos, groupBy, withAverage, req
     // see https://github.com/stefanpenner/es6-promise#usage-in-ie9
     showAlertForError(self.spreadsheet));
 };
-
-var SHEET_STATS_HEADER_ROW = 1;
-var SHEET_STATS_FIRST_ROW = 2;
-var SHEET_STATS_FIRST_COLUMN = 1;
 
 var PR_STATS_USER_ATTRIBUTE_QTY = 11;
 
