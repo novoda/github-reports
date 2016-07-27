@@ -4,12 +4,6 @@ describe('Main', function() {
 
   var mockHttp, mockReports, mockSpreadsheet, main;
 
-  var ANY_START_DATE = '2016-01-01';
-  var ANY_END_DATE = '2016-07-31';
-  var ANY_REPOSITORIES = ['all-4', 'merlin'];
-  var ANY_GROUP_BY = 'MONTH';
-  var ANY_WITH_AVERAGE = true;
-
   beforeEach(function() {
     mockHttp = new AppsMockHttp();
     mockReports = new Reports(mockHttp);
@@ -27,6 +21,12 @@ describe('Main', function() {
   };
 
   describe('showPrStats', function() {
+
+    var ANY_START_DATE = '2016-01-01';
+    var ANY_END_DATE = '2016-07-31';
+    var ANY_REPOSITORIES = ['all-4', 'merlin'];
+    var ANY_GROUP_BY = 'MONTH';
+    var ANY_WITH_AVERAGE = true;
 
     var mockSheet;
 
@@ -124,7 +124,7 @@ describe('Main', function() {
       it('should create a new sheet with a valid name', function(done) {
         showPrStats()
           .then(function() {
-            expect(mockSpreadsheet.createNewSheet).toHaveBeenCalledWith(jasmine.stringMatching(/^.+$/));
+            expect(mockSpreadsheet.createNewSheet).toHaveBeenCalledWith(jasmine.stringMatching(/^PR Stats.+$/));
           })
           .then(done);
       });
@@ -263,6 +263,281 @@ describe('Main', function() {
 
       it('should show an alert when the stats generation fails', function(done) {
         showPrStats()
+          .then(function() {
+            expect(mockSpreadsheet.showAlert).toHaveBeenCalled();
+          })
+          .then(done);
+      });
+
+    });
+
+  });
+
+  describe('showAggregatedStats', function() {
+
+    var ANY_START_DATE = '2016-01-01';
+    var ANY_END_DATE = '2016-07-31';
+    var ANY_USERS = ['frapontillo', 'takecare', 'slacker'];
+
+    var mockSheet;
+
+    // setup mockSpreadsheet
+    beforeEach(function() {
+      mockSheet = new MockSheet();
+      mockSpreadsheet.createNewSheet.and.returnValue(mockSheet);
+    });
+
+    var showAggregatedStats = function() {
+      return main.showAggregatedStats(ANY_START_DATE, ANY_END_DATE, ANY_USERS);
+    };
+
+    describe('on success', function() {
+
+      beforeEach(function() {
+        var statsFromHttp = {
+          'usersStats': {
+            'frapontillo': {
+              'assignedProjectsStats': {
+                'R & D: Scheduled': 386
+              },
+              'assignedProjectsContributions': 386,
+              'externalRepositoriesStats': {
+                'sqlite-provider': 11,
+                'all-4-android-tv-feature': 20
+              },
+              'externalRepositoriesContributions': 31
+            },
+            'takecare': {
+              'assignedProjectsStats': {
+                'R & D: Scheduled': 338,
+                'All-4': 2
+              },
+              'assignedProjectsContributions': 340,
+              'externalRepositoriesStats': {},
+              'externalRepositoriesContributions': 0
+            },
+            'slacker': {
+              'assignedProjectsStats': {
+              },
+              'assignedProjectsContributions': 0,
+              'externalRepositoriesStats': {
+                'merlin': 1
+              },
+              'externalRepositoriesContributions': 1
+            }
+          }
+        };
+        spyOnAndReturnPromise(mockReports, 'getAggregatedUserStats', statsFromHttp);
+      });
+
+      it('should get the stats from the reports library', function(done) {
+        showAggregatedStats().then(done);
+
+        expect(mockReports.getAggregatedUserStats)
+          .toHaveBeenCalledWith(ANY_START_DATE, ANY_END_DATE, ANY_USERS);
+      });
+
+      it('should convert every user into an array element', function(done) {
+        showAggregatedStats()
+          .then(function(actual) {
+            expect(actual.length).toBe(3);
+          })
+          .then(done);
+      });
+
+      it('should return items with the username as first element', function(done) {
+        showAggregatedStats()
+          .then(function(actual) {
+            expect(actual[0][0]).toBe('frapontillo');
+            expect(actual[1][0]).toBe('takecare');
+            expect(actual[2][0]).toBe('slacker');
+          })
+          .then(done);
+      });
+
+      it('should return an item with one-line description of projects as second element if one project was contributed to', function(done) {
+        showAggregatedStats()
+          .then(function(actual) {
+            expect(actual[0][1]).toBe('R & D: Scheduled (386)');
+          })
+          .then(done);
+      });
+
+      it('should return an item with multiple lines of description of projects as second element if multiple projects were contributed to', function(done) {
+        showAggregatedStats()
+          .then(function(actual) {
+            expect(actual[1][1]).toBe(
+              'R & D: Scheduled (338)\n' +
+              'All-4 (2)'
+            );
+          })
+          .then(done);
+      });
+
+      it('should return an item with an empty line as description of projects as second element if no project was contributed to', function(done) {
+        showAggregatedStats()
+          .then(function(actual) {
+            expect(actual[2][1]).toBe('');
+          })
+          .then(done);
+      });
+
+      it('should return items with the projects contributions count as third element', function(done) {
+        showAggregatedStats()
+          .then(function(actual) {
+            expect(actual[0][2]).toBe(386);
+            expect(actual[1][2]).toBe(340);
+            expect(actual[2][2]).toBe(0);
+          })
+          .then(done);
+      });
+
+      it('should return an item with one-line description of repositories as fourth element if one repository were contributed to', function(done) {
+        showAggregatedStats()
+          .then(function(actual) {
+            expect(actual[2][3]).toBe('merlin (1)');
+          })
+          .then(done);
+      });
+
+      it('should return an item with multiple lines of description of repositories as fourth element if multiple repositories were contributed to', function(done) {
+        showAggregatedStats()
+          .then(function(actual) {
+            expect(actual[0][3]).toBe(
+              'sqlite-provider (11)\n' +
+              'all-4-android-tv-feature (20)'
+            );
+          })
+          .then(done);
+      });
+
+      it('should return an item with an empty line as description of repositories as fourth element if no repository was contributed to', function(done) {
+        showAggregatedStats()
+          .then(function(actual) {
+            expect(actual[1][3]).toBe('');
+          })
+          .then(done);
+      });
+
+      it('should return items with the repositories contributions count as fifth element', function(done) {
+        showAggregatedStats()
+          .then(function(actual) {
+            expect(actual[0][4]).toBe(31);
+            expect(actual[1][4]).toBe(0);
+            expect(actual[2][4]).toBe(1);
+          })
+          .then(done);
+      });
+
+      it('should create a new sheet with a valid name', function(done) {
+        showAggregatedStats()
+          .then(function() {
+            expect(mockSpreadsheet.createNewSheet).toHaveBeenCalledWith(jasmine.stringMatching(/^Aggregated Stats.+$/));
+          })
+          .then(done);
+      });
+
+      it('should clear the stats sheet', function(done) {
+        showAggregatedStats()
+          .then(function() {
+            expect(mockSheet.clear).toHaveBeenCalled();
+          })
+          .then(done);
+      });
+
+      it('should set the header into the stats sheet', function(done) {
+        showAggregatedStats()
+          .then(function() {
+            expect(mockSheet.setValues).toHaveBeenCalledWith(1, 1, 2, 5, jasmine.any(Array));
+          })
+          .then(done);
+      });
+
+      it('should make the header lines bold', function(done) {
+        showAggregatedStats()
+          .then(function() {
+            expect(mockSheet.setBold).toHaveBeenCalledWith(1, 1, 2, 5);
+          })
+          .then(done);
+      });
+
+      it('should make the first column bold', function(done) {
+        showAggregatedStats()
+          .then(function() {
+            expect(mockSheet.setBold).toHaveBeenCalledWith(3, 1, 3, 1);
+          })
+          .then(done);
+      });
+
+      it('should align the header cells to center and middle', function(done) {
+        showAggregatedStats()
+          .then(function() {
+            expect(mockSheet.alignToCenterMiddle).toHaveBeenCalledWith(1, 1, 2, 5);
+          })
+          .then(done);
+      });
+
+      it('should align the data cells to middle', function(done) {
+        showAggregatedStats()
+          .then(function() {
+            expect(mockSheet.alignToMiddle).toHaveBeenCalledWith(3, 1, 3, 5);
+          })
+          .then(done);
+      });
+
+      it('should merge the assigned and non-assigned header cells', function(done) {
+        showAggregatedStats()
+          .then(function() {
+            expect(mockSheet.mergeRange).toHaveBeenCalledWith(1, 2, 1, 2);
+            expect(mockSheet.mergeRange).toHaveBeenCalledWith(1, 4, 1, 2);
+          })
+          .then(done);
+      });
+
+      it('should make the header text wrap', function(done) {
+        showAggregatedStats()
+          .then(function() {
+            expect(mockSheet.setWrap).toHaveBeenCalledWith(1, 1, 2, 5, true);
+          })
+          .then(done);
+      });
+
+      it('should freeze the first two rows and the first column', function(done) {
+        showAggregatedStats()
+          .then(function() {
+            expect(mockSheet.setFrozenRows).toHaveBeenCalledWith(2);
+            expect(mockSheet.setFrozenColumns).toHaveBeenCalledWith(1);
+          })
+          .then(done);
+      });
+
+      it('should set the results into the stats sheet', function(done) {
+        showAggregatedStats()
+          .then(function(results) {
+            expect(mockSheet.setValues).toHaveBeenCalledWith(3, 1, 3, 5, results);
+          })
+          .then(done);
+      });
+
+      it('should not show an error alert', function(done) {
+        showAggregatedStats()
+          .then(function() {
+            expect(mockSpreadsheet.showAlert).not.toHaveBeenCalled();
+          })
+          .then(done);
+      });
+
+    });
+
+    describe('on failure', function() {
+
+      // setup mockReports
+      beforeEach(function() {
+        spyOn(mockReports, 'getAggregatedUserStats').and.returnValue(Promise.reject(new Error('lol you failed')));
+      });
+
+      it('should show an alert when the stats generation fails', function(done) {
+        showAggregatedStats()
           .then(function() {
             expect(mockSpreadsheet.showAlert).toHaveBeenCalled();
           })
