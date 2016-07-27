@@ -11,11 +11,11 @@ import com.novoda.github.reports.data.db.DbUserDataLayer;
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.Repository;
 import com.novoda.github.reports.data.model.User;
-import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.convert.EventConverter;
 import com.novoda.github.reports.web.hooks.convert.PullRequestToDbEventConverter;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
 public class PullRequestPersister implements Persister<PullRequest> {
@@ -48,7 +48,7 @@ public class PullRequestPersister implements Persister<PullRequest> {
     public void persist(PullRequest pullRequest) throws PersistenceException {
         Event dbEvent = convertFrom(pullRequest);
 
-        GithubIssue issue = pullRequest.getIssue();
+        GithubWebhookPullRequest issue = pullRequest.getIssue();
         GithubRepository repository = pullRequest.getRepository();
 
         User dbUser = User.create(issue.getUserId(), issue.getUser().getUsername());
