@@ -132,7 +132,7 @@ public class DatabaseHelper {
         return TRUE_BYTE == value;
     }
 
-    public static Field<Integer> findInSetForMySQLOnly(Field<String> element, Field<String> elementSet) {
+    public static Field<Integer> findInSetForMySqlOnly(Field<String> element, Field<String> elementSet) {
         return field("FIND_IN_SET({0}, {1})", Integer.class, element, elementSet);
     }
 
