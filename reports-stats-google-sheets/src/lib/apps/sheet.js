@@ -40,10 +40,19 @@ Sheet.prototype.setBold = function(startRow, startCol, rows, cols) {
   cells.setFontWeight('bold');
 };
 
-Sheet.prototype.alignToCenterMiddle = function(startRow, startCol, rows, cols) {
+Sheet.prototype.alignToCenter = function(startRow, startCol, rows, cols) {
   var cells = this.sheet.getRange(startRow, startCol, rows, cols);
   cells.setHorizontalAlignment('center');
+};
+
+Sheet.prototype.alignToMiddle = function(startRow, startCol, rows, cols) {
+  var cells = this.sheet.getRange(startRow, startCol, rows, cols);
   cells.setVerticalAlignment('middle');
+};
+
+Sheet.prototype.alignToCenterMiddle = function(startRow, startCol, rows, cols) {
+  this.alignToCenter(startRow, startCol, rows, cols);
+  this.alignToMiddle(startRow, startCol, rows, cols);
 };
 
 Sheet.prototype.setRowHeight = function(row, height) {
@@ -71,4 +80,16 @@ Sheet.prototype.setBottomBorder = function(startRow, startCol, rows, cols) {
 Sheet.prototype.setBackground = function(startRow, startCol, rows, cols, color) {
   var cells = this.sheet.getRange(startRow, startCol, rows, cols);
   cells.setBackground(color);
+};
+
+Sheet.prototype.autoResizeColumns = function(startCol, cols) {
+  var endCol = startCol + cols - 1;
+  for (var col = startCol; col <= endCol; col++) {
+    this.sheet.autoResizeColumn(col);
+  }
+};
+
+Sheet.prototype.mergeRange = function(startRow, startCol, rows, cols) {
+  var cells = this.sheet.getRange(startRow, startCol, rows, cols);
+  cells.merge();
 };

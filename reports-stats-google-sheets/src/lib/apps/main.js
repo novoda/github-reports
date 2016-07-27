@@ -10,7 +10,7 @@ var SHEET_STATS_HEADER_ROW = 1;
 var SHEET_STATS_FIRST_ROW = 2;
 var SHEET_STATS_FIRST_COLUMN = 1;
 
-var STATS_USER_ATTRIBUTE_QTY = 11;
+var PR_STATS_USER_ATTRIBUTE_QTY = 11;
 
 var AVERAGE_ROW_BACKGROUND_COLOR = '#8dc5db';
 
@@ -49,9 +49,9 @@ function userToLineFn(group) {
   };
 }
 
-function buildNewSheetName(requestISODate) {
+function buildNewSheetName(baseName, requestISODate) {
   var requestDate = new Date(requestISODate);
-  return 'PR Stats ' +
+  return baseName + ' ' +
     requestDate.getFullYear() + '-' + padTens(requestDate.getMonth()) + '-' + padTens(requestDate.getDay()) + ' ' +
     padTens(requestDate.getHours()) + ':' + padTens(requestDate.getMinutes()) + ':' + padTens(requestDate.getSeconds());
 }
@@ -71,26 +71,26 @@ function setHeader(statsSheet, groupBy) {
     SHEET_STATS_HEADER_ROW,
     SHEET_STATS_FIRST_COLUMN,
     header.length,
-    STATS_USER_ATTRIBUTE_QTY,
+    PR_STATS_USER_ATTRIBUTE_QTY,
     header
   );
   statsSheet.setBold(
     SHEET_STATS_HEADER_ROW,
     SHEET_STATS_FIRST_COLUMN,
     header.length,
-    STATS_USER_ATTRIBUTE_QTY
+    PR_STATS_USER_ATTRIBUTE_QTY
   );
   statsSheet.alignToCenterMiddle(
     SHEET_STATS_HEADER_ROW,
     SHEET_STATS_FIRST_COLUMN,
     header.length,
-    STATS_USER_ATTRIBUTE_QTY
+    PR_STATS_USER_ATTRIBUTE_QTY
   );
   statsSheet.setWrap(
     SHEET_STATS_HEADER_ROW,
     SHEET_STATS_FIRST_COLUMN,
     header.length,
-    STATS_USER_ATTRIBUTE_QTY,
+    PR_STATS_USER_ATTRIBUTE_QTY,
     true
   );
 }
@@ -128,7 +128,7 @@ function setStats(statsSheet, lines) {
     SHEET_STATS_FIRST_ROW,
     SHEET_STATS_FIRST_COLUMN,
     lines.length,
-    STATS_USER_ATTRIBUTE_QTY,
+    PR_STATS_USER_ATTRIBUTE_QTY,
     lines
   );
   statsSheet.setBold(
@@ -147,7 +147,7 @@ function setBorderToEndOfGroups(statsSheet, stats) {
       rowAccumulator,
       SHEET_STATS_FIRST_COLUMN,
       1,
-      STATS_USER_ATTRIBUTE_QTY
+      PR_STATS_USER_ATTRIBUTE_QTY
     );
   });
 }
@@ -164,7 +164,7 @@ function setBackgroundToGroupAverages(statsSheet, stats) {
       firstRow,
       SHEET_STATS_FIRST_COLUMN,
       averages,
-      STATS_USER_ATTRIBUTE_QTY,
+      PR_STATS_USER_ATTRIBUTE_QTY,
       AVERAGE_ROW_BACKGROUND_COLOR
     );
     rowAccumulator += group.users.length + averages;
@@ -201,7 +201,7 @@ Main.prototype.showPrStats = function(from, to, repos, groupBy, withAverage, req
       };
     })
     .then(function(stats) {
-      var statsSheet = self.spreadsheet.createNewSheet(buildNewSheetName(requestISODate));
+      var statsSheet = self.spreadsheet.createNewSheet(buildNewSheetName('PR Stats', requestISODate));
       statsSheet.clear();
       setHeader(statsSheet, groupBy);
       freezeRowAndColumn(statsSheet);
@@ -216,3 +216,128 @@ Main.prototype.showPrStats = function(from, to, repos, groupBy, withAverage, req
       self.spreadsheet.showAlert('Error', 'There was an error while executing the request:\n' + error);
     });
 };
+
+Main.prototype.showAggregatedStats = function(from, to, users, requestISODate) {
+  var self = this;
+  return this.reports.getAggregatedUserStats(from, to, users)
+    .then(convertAggregatedStatsToLines)
+    .then(setStatsIntoNewSheet(self.spreadsheet, requestISODate))['catch'](
+    // awful hax because Google Apps Script uses the stupidest AST parser or whatevs
+    // see https://github.com/stefanpenner/es6-promise#usage-in-ie9
+    function(error) {
+      self.spreadsheet.showAlert('Error', 'There was an error while executing the request:\n' + error);
+    });
+};
+
+var AGGREGATED_STATS_NUMBER_OF_COLUMNS = 5;
+var AGGREGATED_STATS_FIRST_ROW = 3;
+
+var AGGREGATED_STATS_PROJECTS_COLUMN = 2;
+var AGGREGATED_STATS_REPOSITORIES_COLUMN = 4;
+
+function convertAggregatedStatsToLines(stats) {
+  return Object.keys(stats.usersStats)
+    .map(function(username) {
+      var userData = stats.usersStats[username];
+      return convertAggregatedStatToLine(username, userData);
+    });
+}
+
+function convertAggregatedStatToLine(username, userData) {
+  return [
+    username,
+    describeProjectsOrRepositoriesStats(userData.assignedProjectsStats),
+    userData.assignedProjectsContributions,
+    describeProjectsOrRepositoriesStats(userData.externalRepositoriesStats),
+    userData.externalRepositoriesContributions
+  ];
+}
+function describeProjectsOrRepositoriesStats(stats) {
+  return Object.keys(stats)
+    .map(function(name) {
+      return name + ' (' + stats[name] + ')';
+    })
+    .join('\n');
+}
+
+function setAggregatedHeader(statsSheet) {
+  var header = [[
+    'Username',
+    'Assigned',
+    '',
+    'Non assigned',
+    ''
+  ], [
+    '',
+    'Projects',
+    'Contributions',
+    'Repositories',
+    'Contributions'
+  ]];
+  statsSheet.setValues(
+    SHEET_STATS_HEADER_ROW,
+    SHEET_STATS_FIRST_COLUMN,
+    header.length,
+    AGGREGATED_STATS_NUMBER_OF_COLUMNS,
+    header
+  );
+  statsSheet.setBold(
+    SHEET_STATS_HEADER_ROW,
+    SHEET_STATS_FIRST_COLUMN,
+    header.length,
+    AGGREGATED_STATS_NUMBER_OF_COLUMNS
+  );
+  statsSheet.alignToCenterMiddle(
+    SHEET_STATS_HEADER_ROW,
+    SHEET_STATS_FIRST_COLUMN,
+    header.length,
+    AGGREGATED_STATS_NUMBER_OF_COLUMNS
+  );
+  statsSheet.setWrap(
+    SHEET_STATS_HEADER_ROW,
+    SHEET_STATS_FIRST_COLUMN,
+    header.length,
+    AGGREGATED_STATS_NUMBER_OF_COLUMNS,
+    true
+  );
+}
+
+function setStatsIntoNewSheet(spreadsheet, requestISODate) {
+  return function(stats) {
+    var statsSheet = spreadsheet.createNewSheet(buildNewSheetName('Aggregated Stats', requestISODate));
+    statsSheet.clear();
+    setAggregatedHeader(statsSheet);
+    freezeAggregatedRowAndColumn(statsSheet);
+    setAggregatedStats(statsSheet, stats);
+    return stats;
+  };
+}
+
+function freezeAggregatedRowAndColumn(statsSheet) {
+  statsSheet.setFrozenRows(2);
+  statsSheet.setFrozenColumns(1);
+}
+
+function setAggregatedStats(statsSheet, lines) {
+  statsSheet.setValues(
+    AGGREGATED_STATS_FIRST_ROW,
+    SHEET_STATS_FIRST_COLUMN,
+    lines.length,
+    AGGREGATED_STATS_NUMBER_OF_COLUMNS,
+    lines
+  );
+  statsSheet.setBold(
+    AGGREGATED_STATS_FIRST_ROW,
+    SHEET_STATS_FIRST_COLUMN,
+    lines.length,
+    SHEET_STATS_FIRST_COLUMN
+  );
+  statsSheet.alignToMiddle(
+    AGGREGATED_STATS_FIRST_ROW,
+    SHEET_STATS_FIRST_COLUMN,
+    lines.length,
+    AGGREGATED_STATS_NUMBER_OF_COLUMNS
+  );
+  statsSheet.mergeRange(SHEET_STATS_HEADER_ROW, AGGREGATED_STATS_PROJECTS_COLUMN, 1, 2);
+  statsSheet.mergeRange(SHEET_STATS_HEADER_ROW, AGGREGATED_STATS_REPOSITORIES_COLUMN, 1, 2);
+}
