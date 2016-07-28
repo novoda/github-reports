@@ -8,6 +8,7 @@ import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
+// TODO @RUI rename to PullRequestConverter
 public class PullRequestToDbEventConverter implements EventConverter<PullRequest> {
 
     @Override
