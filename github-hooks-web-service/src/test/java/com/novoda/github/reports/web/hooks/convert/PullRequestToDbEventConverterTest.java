@@ -40,7 +40,7 @@ public class PullRequestToDbEventConverterTest {
     }
 
     @Test(expected = ConverterException.class)
-    public void givenAPullRequest_whenConverting_thenThrowsException() throws ConverterException {
+    public void givenAPullRequestWithAnUnsupportedAction_whenConverting_thenThrowsException() throws ConverterException {
         given(mockPullRequest.getAction()).willReturn(ANY_UNSUPPORTED_ACTION);
 
         converter.convertFrom(mockPullRequest);
