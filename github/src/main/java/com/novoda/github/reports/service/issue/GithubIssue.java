@@ -38,8 +38,15 @@ public class GithubIssue {
         this.number = issueNumber;
         this.user = new GithubUser(ownerId);
         if (isPullRequest) {
-            this.pullRequest = new GithubPullRequest();
+            this.pullRequest = new GithubPullRequest(false);
         }
+    }
+
+    public GithubIssue(long id, Date updatedAt, GithubUser user, GithubPullRequest pullRequest) {
+        this.id = id;
+        this.updatedAt = updatedAt;
+        this.user = user;
+        this.pullRequest = pullRequest;
     }
 
     public long getId() {
@@ -86,13 +93,17 @@ public class GithubIssue {
         return comments;
     }
 
+    public GithubPullRequest getPullRequest() {
+        return pullRequest;
+    }
+
     public boolean isPullRequest() {
         return pullRequest != null;
     }
 
     public void setIsPullRequest(boolean isPullRequest) {
         if (isPullRequest) {
-            pullRequest = new GithubPullRequest();
+            pullRequest = new GithubPullRequest(false);
         } else {
             pullRequest = null;
         }
