@@ -8,7 +8,7 @@ import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
-public class PullRequestToDbEventConverter implements EventConverter<PullRequest, Event> {
+public class PullRequestToDbEventConverter implements EventConverter<PullRequest> {
 
     @Override
     public Event convertFrom(PullRequest pullRequest) throws ConverterException {

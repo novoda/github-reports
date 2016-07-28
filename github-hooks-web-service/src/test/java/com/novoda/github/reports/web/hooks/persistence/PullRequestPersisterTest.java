@@ -11,6 +11,7 @@ import com.novoda.github.reports.service.GithubUser;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.convert.EventConverter;
+import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
@@ -24,7 +25,6 @@ import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -38,9 +38,11 @@ public class PullRequestPersisterTest {
     private static final String ANY_USERNAME = "dudelio";
     private static final String ANY_REPOSITORY_NAME = "topbantz";
     private static final boolean ANY_IS_PRIVATE_REPOSITORY = false;
+    private static final GithubAction ANY_ACTION = GithubAction.ADDED;
+    private static final boolean ANY_PULL_REQUEST_WAS_MERGED = false;
 
     @Mock
-    private EventConverter<PullRequest, Event> mockConverter;
+    private EventConverter<PullRequest> mockConverter;
 
     @Mock
     private EventDataLayer mockEventDataLayer;
@@ -54,9 +56,6 @@ public class PullRequestPersisterTest {
     @InjectMocks
     private PullRequestPersister pullRequestPersister;
 
-    @Mock
-    private PullRequest mockPullRequest;
-
     @Before
     public void setUp() throws Exception {
         initMocks(this);
@@ -64,9 +63,10 @@ public class PullRequestPersisterTest {
 
     @Test
     public void givenAPullRequest_whenPersisting_thenTheUserIsPersisted() throws Exception {
-        givenAPullRequest();
+        PullRequest pullRequest = givenAPullRequest();
+        givenAnEvent(pullRequest);
 
-        pullRequestPersister.persist(mockPullRequest);
+        pullRequestPersister.persist(pullRequest);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(mockUserDataLayer).updateOrInsert(userCaptor.capture());
@@ -75,9 +75,10 @@ public class PullRequestPersisterTest {
 
     @Test
     public void givenAPullRequest_whenPersisting_thenTheRepositoryIsPersisted() throws Exception {
-        givenAPullRequest();
+        PullRequest pullRequest = givenAPullRequest();
+        givenAnEvent(pullRequest);
 
-        pullRequestPersister.persist(mockPullRequest);
+        pullRequestPersister.persist(pullRequest);
 
         ArgumentCaptor<Repository> repositoryCaptor = ArgumentCaptor.forClass(Repository.class);
         verify(mockRepoDataLayer).updateOrInsert(repositoryCaptor.capture());
@@ -88,9 +89,10 @@ public class PullRequestPersisterTest {
 
     @Test
     public void givenAPullRequest_whenPersisting_thenTheEventIsPersisted() throws Exception {
-        givenAPullRequest();
+        PullRequest pullRequest = givenAPullRequest();
+        givenAnEvent(pullRequest);
 
-        pullRequestPersister.persist(mockPullRequest);
+        pullRequestPersister.persist(pullRequest);
 
         ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
         verify(mockEventDataLayer).updateOrInsert(eventCaptor.capture());
@@ -99,35 +101,27 @@ public class PullRequestPersisterTest {
         );
     }
 
-    private void givenAPullRequest() {
-        givenAUser();
-        givenARepository();
-        givenAnEvent();
+    private PullRequest givenAPullRequest() {
+        GithubWebhookPullRequest githubIssue = givenAnIssue();
+        return new PullRequest(githubIssue, givenARepository(), ANY_ACTION);
     }
 
-    private void givenAUser() {
-        GithubUser mockUser = mock(GithubUser.class);
-        given(mockUser.getUsername()).willReturn(ANY_USERNAME);
-
-        GithubWebhookPullRequest mockIssue = mock(GithubWebhookPullRequest.class);
-        given(mockIssue.getUserId()).willReturn(ANY_USER_ID);
-        given(mockIssue.getUser()).willReturn(mockUser);
-
-        given(mockPullRequest.getIssue()).willReturn(mockIssue);
+    private GithubUser givenAUser() {
+        return new GithubUser(ANY_USER_ID, ANY_USERNAME);
     }
 
-    private void givenARepository() {
-        GithubRepository repository = mock(GithubRepository.class);
-        given(repository.getId()).willReturn(ANY_REPOSITORY_ID);
-        given(repository.getName()).willReturn(ANY_REPOSITORY_NAME);
-        given(repository.isPrivateRepo()).willReturn(ANY_IS_PRIVATE_REPOSITORY);
-        given(mockPullRequest.getRepository()).willReturn(repository);
+    private GithubWebhookPullRequest givenAnIssue() {
+        return new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, givenAUser(), ANY_PULL_REQUEST_WAS_MERGED);
     }
 
-    private void givenAnEvent() {
+    private GithubRepository givenARepository() {
+        return new GithubRepository(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_IS_PRIVATE_REPOSITORY);
+    }
+
+    private void givenAnEvent(PullRequest pullRequest) {
         Event event = Event.create(ANY_ISSUE_ID, ANY_REPOSITORY_ID, ANY_USER_ID, ANY_USER_ID, ANY_EVENT_TYPE, ANY_DATE);
         try {
-            given(mockConverter.convertFrom(mockPullRequest)).willReturn(event);
+            given(mockConverter.convertFrom(pullRequest)).willReturn(event);
         } catch (ConverterException e) {
             // nothing to do
         }
