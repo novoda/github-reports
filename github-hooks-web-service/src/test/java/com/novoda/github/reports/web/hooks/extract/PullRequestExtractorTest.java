@@ -1,5 +1,6 @@
 package com.novoda.github.reports.web.hooks.extract;
 
+import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
@@ -21,6 +22,7 @@ public class PullRequestExtractorTest {
     private static final int ANY_ISSUE_NUMBER = 1;
     private static final int ANY_OWNER_ID = 2;
     private static final long ANY_REPO_ID = 1L;
+    public static final GithubComment NO_COMMENT = null;
 
     @Mock
     private GithubWebhookEvent mockEvent;
@@ -60,7 +62,7 @@ public class PullRequestExtractorTest {
 
     @Test(expected = ExtractException.class)
     public void givenAReviewCommentEvent_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
-        given(mockEvent.comment()).willReturn(null);
+        given(mockEvent.comment()).willReturn(NO_COMMENT);
 
         extractor.extractFrom(mockEvent);
     }
