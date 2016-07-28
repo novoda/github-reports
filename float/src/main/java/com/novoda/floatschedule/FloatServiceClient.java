@@ -5,7 +5,9 @@ import com.novoda.floatschedule.people.PeopleServiceClient;
 import com.novoda.floatschedule.people.Person;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
+import com.novoda.github.reports.data.model.UserAssignments;
 import rx.Observable;
+import rx.functions.Action2;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.internal.util.UtilityFunctions;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class FloatServiceClient {
 
@@ -22,6 +25,7 @@ public class FloatServiceClient {
     private final PeopleServiceClient peopleServiceClient;
     private final TaskServiceClient taskServiceClient;
     private final NumberOfWeeksCalculator numberOfWeeksCalculator;
+    private final FloatDateConverter floatDateConverter;
 
     public static FloatServiceClient newInstance() {
         FloatGithubUserConverter floatGithubUserConverter = FloatGithubUserConverter.newInstance();
@@ -29,27 +33,30 @@ public class FloatServiceClient {
         PeopleServiceClient peopleServiceClient = PeopleServiceClient.newInstance();
         TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
         NumberOfWeeksCalculator numberOfWeeksCalculator = new NumberOfWeeksCalculator();
+        FloatDateConverter floatDateConverter = new FloatDateConverter();
 
         return new FloatServiceClient(
                 floatGithubUserConverter,
                 floatGithubProjectConverter,
                 peopleServiceClient,
                 taskServiceClient,
-                numberOfWeeksCalculator
-        );
+                numberOfWeeksCalculator,
+                floatDateConverter);
     }
 
     private FloatServiceClient(FloatGithubUserConverter floatGithubUserConverter,
                                FloatGithubProjectConverter floatGithubProjectConverter,
                                PeopleServiceClient peopleServiceClient,
                                TaskServiceClient taskServiceClient,
-                               NumberOfWeeksCalculator numberOfWeeksCalculator) {
+                               NumberOfWeeksCalculator numberOfWeeksCalculator,
+                               FloatDateConverter floatDateConverter) {
 
         this.floatGithubUserConverter = floatGithubUserConverter;
         this.floatGithubProjectConverter = floatGithubProjectConverter;
         this.peopleServiceClient = peopleServiceClient;
         this.taskServiceClient = taskServiceClient;
         this.numberOfWeeksCalculator = numberOfWeeksCalculator;
+        this.floatDateConverter = floatDateConverter;
     }
 
     Observable<String> getRepositoryNamesForGithubUser(String githubUsername, Date startDate, int numberOfWeeks)
@@ -95,18 +102,36 @@ public class FloatServiceClient {
         return person -> taskServiceClient.getTasks(startDate, numberOfWeeks, person.getId());
     }
 
-    public List<String> getRepositoriesFor(Task task) {
-        try {
-            return floatGithubProjectConverter.getRepositories(task.getProjectName());
-        } catch (IOException | NoMatchFoundException e) {
-            // ignored
+    public HashMap<String, List<UserAssignments>> getGithubUsersAssignmentsInDateRange(List<String> githubUsers,
+                                                                                       Date from,
+                                                                                       Date to) {
+
+        if (listIsNullOrEmpty(githubUsers)) {
+            githubUsers = getGithubUsersOrEmpty();
         }
-        return Collections.emptyList();
+
+        return getTasksForGithubUsers(githubUsers, from, to)
+                .map(tasksToUserAssignments())
+                .collect(HashMap<String, List<UserAssignments>>::new, putEntryInMap())
+                .toBlocking()
+                .first();
     }
 
-    public Observable<Map.Entry<String, List<Task>>> getTasksForGithubUsers(List<String> githubUsernames,
-                                                                            Date startDate,
-                                                                            Date endDate) {
+    private boolean listIsNullOrEmpty(List<String> githubUsers) {
+        return githubUsers == null || githubUsers.isEmpty();
+    }
+
+    private List<String> getGithubUsersOrEmpty() {
+        try {
+            return floatGithubUserConverter.getGithubUsers();
+        } catch (IOException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    Observable<Map.Entry<String, List<Task>>> getTasksForGithubUsers(List<String> githubUsernames,
+                                                                     Date startDate,
+                                                                     Date endDate) {
 
         Integer numberOfWeeks = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
         return getTasksForGithubUsers(githubUsernames, startDate, numberOfWeeks);
@@ -143,14 +168,17 @@ public class FloatServiceClient {
         return person.getName().equalsIgnoreCase(floatUsername);
     }
 
-    Map<String, String> mapFloatToGithubUsernames(List<String> githubUsernames) throws GithubToFloatUserMatchNotFoundException {
+    Map<String, String> mapFloatToGithubUsernames(List<String> githubUsernames)
+            throws GithubToFloatUserMatchNotFoundException {
+
         return githubUsernames
                 .stream()
                 .map(githubToFloatUsername())
                 .collect(
                         HashMap::new,
                         (map, entry) -> map.put(entry.getKey(), entry.getValue()),
-                        (combineThis, withThis) -> {}
+                        (combineThis, withThis) -> {
+                        }
                 );
     }
 
@@ -187,6 +215,46 @@ public class FloatServiceClient {
     }
 
     private Func1<Task, Boolean> excludingHolidays() {
-        return task -> task.getName() != null && !(task.getName().contains("holiday") || task.getName().contains("Holiday"));
+        return task -> task.getName() != null &&
+                !(task.getName().contains("holiday") || task.getName().contains("Holiday"));
+    }
+
+    private Function<Task, UserAssignments> taskToUserAssignments() {
+        return task -> {
+            Date assignmentStart = floatDateConverter.fromFloatDateFormatOrNoDate(task.getStartDate());
+            Date assignmentEnd = floatDateConverter.fromFloatDateFormatOrNoDate(task.getEndDate());
+            List<String> repositoriesForTask = getRepositoriesFor(task);
+
+            return UserAssignments.builder()
+                    .assignmentStart(assignmentStart)
+                    .assignmentEnd(assignmentEnd)
+                    .assignedProject(task.getProjectName())
+                    .assignedRepositories(repositoriesForTask)
+                    .build();
+        };
+    }
+
+    private List<String> getRepositoriesFor(Task task) {
+        try {
+            return floatGithubProjectConverter.getRepositories(task.getProjectName());
+        } catch (IOException | NoMatchFoundException e) {
+            // ignored
+        }
+        return Collections.emptyList();
+    }
+
+    private Func1<Map.Entry<String, List<Task>>, AbstractMap.SimpleImmutableEntry<String, List<UserAssignments>>> tasksToUserAssignments() {
+        return usernameWithTasks -> {
+            String username = usernameWithTasks.getKey();
+            List<UserAssignments> assignments = usernameWithTasks.getValue()
+                    .stream()
+                    .map(taskToUserAssignments())
+                    .collect(Collectors.toList());
+            return new AbstractMap.SimpleImmutableEntry<>(username, assignments);
+        };
+    }
+
+    private Action2<HashMap<String, List<UserAssignments>>, AbstractMap.SimpleImmutableEntry<String, List<UserAssignments>>> putEntryInMap() {
+        return (map, entry) -> map.put(entry.getKey(), entry.getValue());
     }
 }

@@ -128,7 +128,7 @@ public class PullRequestStatsParameters {
         return withAverage != null && withAverage;
     }
 
-    public Field<String> getGroupFieldForMySQLOnly() {
+    public Field<String> getGroupFieldForMySqlOnly() {
         Field<String> groupField = year(EVENT.DATE).concat(GROUP_SELECTOR_SEPARATOR);
 
         if (groupBy == EventDataLayer.PullRequestStatsGroupBy.MONTH) {
