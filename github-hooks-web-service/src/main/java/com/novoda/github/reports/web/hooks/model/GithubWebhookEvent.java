@@ -32,8 +32,9 @@ public abstract class GithubWebhookEvent {
     @Nullable
     public abstract GithubIssue issue();
 
+    @Nullable
     @SerializedName("pull_request")
-    public abstract @Nullable GithubWebhookPullRequest pullRequest();
+    public abstract GithubWebhookPullRequest pullRequest();
 
     @Nullable
     public abstract GithubRepository repository();
