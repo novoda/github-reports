@@ -1,4 +1,4 @@
-package com.novoda.github.reports.web.hooks.convert;
+package com.novoda.github.reports.web.hooks.converter;
 
 import com.novoda.github.reports.data.model.EventType;
 import com.novoda.github.reports.service.persistence.converter.Converter;

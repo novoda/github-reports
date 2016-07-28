@@ -10,7 +10,7 @@ import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.service.GithubUser;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
-import com.novoda.github.reports.web.hooks.convert.EventConverter;
+import com.novoda.github.reports.web.hooks.converter.EventConverter;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
