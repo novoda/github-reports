@@ -20,20 +20,20 @@ import com.novoda.github.reports.web.hooks.model.PullRequest;
 
 public class PullRequestPersister implements Persister<PullRequest> {
 
-    private final EventConverter<PullRequest, Event> converter;
+    private final EventConverter<PullRequest> converter;
     private final EventDataLayer eventDataLayer;
     private final UserDataLayer userDataLayer;
     private final RepoDataLayer repoDataLayer;
 
     public static PullRequestPersister newInstance(ConnectionManager connectionManager) {
-        EventConverter<PullRequest, Event> converter = new PullRequestToDbEventConverter();
+        EventConverter<PullRequest> converter = new PullRequestToDbEventConverter();
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
         return new PullRequestPersister(converter, eventDataLayer, userDataLayer, repoDataLayer);
     }
 
-    PullRequestPersister(EventConverter<PullRequest, Event> converter,
+    PullRequestPersister(EventConverter<PullRequest> converter,
                          EventDataLayer eventDataLayer,
                          UserDataLayer userDataLayer,
                          RepoDataLayer repoDataLayer) {

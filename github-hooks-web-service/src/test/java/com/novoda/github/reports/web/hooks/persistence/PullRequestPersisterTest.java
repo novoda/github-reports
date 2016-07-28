@@ -43,7 +43,7 @@ public class PullRequestPersisterTest {
     private static final boolean ANY_PULL_REQUEST_WAS_MERGED = false;
 
     @Mock
-    private EventConverter<PullRequest, Event> mockConverter;
+    private EventConverter<PullRequest> mockConverter;
 
     @Mock
     private EventDataLayer mockEventDataLayer;
