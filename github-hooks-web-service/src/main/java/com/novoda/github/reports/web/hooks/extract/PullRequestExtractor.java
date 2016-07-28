@@ -13,7 +13,6 @@ public class PullRequestExtractor implements PayloadExtractor<PullRequest> {
         if (issue == null || repository == null) {
             throw new ExtractException(event);
         }
-        //issue.setIsPullRequest(true);
         return new PullRequest(issue, repository, event.action());
     }
 }
