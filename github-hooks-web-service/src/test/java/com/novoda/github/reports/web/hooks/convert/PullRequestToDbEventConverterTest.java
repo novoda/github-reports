@@ -2,8 +2,8 @@ package com.novoda.github.reports.web.hooks.convert;
 
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.EventType;
+import com.novoda.github.reports.service.GithubUser;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
-import com.novoda.github.reports.service.pullrequest.GithubPullRequest;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
@@ -19,15 +19,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
 import static com.novoda.github.reports.web.hooks.model.GithubAction.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(Parameterized.class)
 public class PullRequestToDbEventConverterTest {
+
+    private static final int ANY_ISSUE_NUMBER = 23;
 
     @Parameterized.Parameters(name = "{index}: action={0}, isPrMerged={1} expectedEvent={2}")
     public static Collection<Object[]> data() {
@@ -54,18 +54,6 @@ public class PullRequestToDbEventConverterTest {
     @Parameter(2)
     public EventType expectedEventType;
 
-    @Mock
-    private GithubWebhookPullRequest mockGithubIssue;
-
-    @Mock
-    private GithubRepository mockGithubRepository;
-
-    @Mock
-    private GithubPullRequest mockGithubPullRequest;
-
-    @Mock
-    private PullRequest mockPullRequest;
-
     @InjectMocks
     private PullRequestToDbEventConverter converter;
 
@@ -76,23 +64,19 @@ public class PullRequestToDbEventConverterTest {
 
     @Test
     public void givenAPullRequest_whenConverting_thenConvertsSuccessfully() throws ConverterException {
-        givenAPullRequest();
+        PullRequest pullRequest = givenAPullRequest();
 
-        Event actual = converter.convertFrom(mockPullRequest);
+        Event actual = converter.convertFrom(pullRequest);
 
         assertThat(actual).isEqualToComparingFieldByField(buildExpectedEvent(expectedEventType));
     }
 
-    private void givenAPullRequest() {
-        given(mockGithubPullRequest.isMerged()).willReturn(isPullRequestMerged);
-        given(mockGithubRepository.getId()).willReturn(ANY_REPOSITORY_ID);
-        given(mockGithubIssue.getId()).willReturn(ANY_ISSUE_ID);
-        given(mockGithubIssue.getUserId()).willReturn(ANY_USER_ID);
-        given(mockGithubIssue.getUpdatedAt()).willReturn(ANY_DATE);
-        given(mockGithubIssue.getPullRequest()).willReturn(mockGithubPullRequest);
-        given(mockPullRequest.getAction()).willReturn(action);
-        given(mockPullRequest.getIssue()).willReturn(mockGithubIssue);
-        given(mockPullRequest.getRepository()).willReturn(mockGithubRepository);
+    private PullRequest givenAPullRequest() {
+        GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID);
+        GithubUser githubUser = new GithubUser(ANY_USER_ID);
+        GithubWebhookPullRequest githubIssue = new GithubWebhookPullRequest(ANY_ISSUE_NUMBER, ANY_DATE, githubUser, isPullRequestMerged);
+
+        return new PullRequest(githubIssue, githubRepository, action);
     }
 
     private Event buildExpectedEvent(EventType eventType) {
