@@ -102,7 +102,6 @@ public class FloatServiceClient {
         return person -> taskServiceClient.getTasks(startDate, numberOfWeeks, person.getId());
     }
 
-    // TODO: test this
     public HashMap<String, List<UserAssignments>> getGithubUsersAssignmentsInDateRange(List<String> githubUsers,
                                                                                        Date from,
                                                                                        Date to) {
