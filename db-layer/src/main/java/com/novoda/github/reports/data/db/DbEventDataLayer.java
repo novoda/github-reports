@@ -3,6 +3,7 @@ package com.novoda.github.reports.data.db;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.db.builder.EventPullRequestQueryBuilder;
+import com.novoda.github.reports.data.db.builder.EventUserAggregatedWorkQueryBuilder;
 import com.novoda.github.reports.data.db.builder.EventUserAssignmentsQueryBuilder;
 import com.novoda.github.reports.data.db.converter.AggregatedUserStatsConverter;
 import com.novoda.github.reports.data.db.converter.PullRequestStatsConverter;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 import static com.novoda.github.reports.data.db.DatabaseHelper.dateToTimestamp;
 import static com.novoda.github.reports.data.db.Tables.EVENT;
+import static com.novoda.github.reports.data.db.Tables.USER;
 import static com.novoda.github.reports.data.db.builder.EventUserAssignmentsQueryBuilder.USERNAME_FIELD;
 
 public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements EventDataLayer {
@@ -145,12 +147,14 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
     }
 
     @Override
-    public UserAssignmentsStats getUserAssignmentsStats(Map<String, List<UserAssignments>> usersAssignments)
+    public UserAssignmentsStats getUserAssignmentsStats(Date from,
+                                                        Date to,
+                                                        Map<String, List<UserAssignments>> usersAssignments)
             throws DataLayerException {
 
         try {
             Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername =
-                    getUserAssignmentsStatsQuery(usersAssignments)
+                    getUserAssignmentsStatsQuery(from, to, usersAssignments)
                             .fetchGroups(USERNAME_FIELD);
 
             return usersAssignmentsConverter.convert(resultsGroupedByUsername);
@@ -160,15 +164,32 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
         }
     }
 
+    private SelectHavingStep<? extends Record> getUserAssignmentsStatsQuery(Date from,
+                                                                            Date to,
+                                                                            Map<String, List<UserAssignments>> usersAssignments)
+            throws SQLException, DataLayerException {
+
+        Connection connection = getNewConnection();
+        DSLContext create = getNewDSLContext(connection);
+
+        UserAssignmentsStatsParameters parameters = new UserAssignmentsStatsParameters(from, to, usersAssignments, create);
+        EventUserAssignmentsQueryBuilder userAssignmentsQueryBuilder = EventUserAssignmentsQueryBuilder
+                .newInstance(parameters);
+
+        return userAssignmentsQueryBuilder.getStats();
+    }
+
     @Override
-    public AggregatedStats getAggregatedUserAssignmentsStats(Map<String, List<UserAssignments>> usersAssignments)
+    public AggregatedStats getAggregatedUserAssignmentsStats(Date from,
+                                                             Date to,
+                                                             Map<String, List<UserAssignments>> usersAssignments)
             throws DataLayerException {
 
         try {
             Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername =
-                    getUserAssignmentsStatsQuery(usersAssignments)
+                    getUserAggregatedStatsQuery(from, to, usersAssignments)
                             .having(EVENT.EVENT_TYPE_ID.isNotNull())
-                            .fetchGroups(USERNAME_FIELD);
+                            .fetchGroups(USER.USERNAME);
 
             return aggregatedUserStatsConverter.convert(resultsGroupedByUsername);
 
@@ -177,17 +198,19 @@ public class DbEventDataLayer extends DbDataLayer<Event, EventRecord> implements
         }
     }
 
-    private SelectHavingStep<? extends Record> getUserAssignmentsStatsQuery(Map<String, List<UserAssignments>> usersAssignments)
+    private SelectHavingStep<? extends Record> getUserAggregatedStatsQuery(Date from,
+                                                                           Date to,
+                                                                           Map<String, List<UserAssignments>> usersAssignments)
             throws SQLException, DataLayerException {
 
         Connection connection = getNewConnection();
         DSLContext create = getNewDSLContext(connection);
 
-        UserAssignmentsStatsParameters parameters = new UserAssignmentsStatsParameters(usersAssignments, create);
-        EventUserAssignmentsQueryBuilder userAssignmentsQueryBuilder = EventUserAssignmentsQueryBuilder
+        UserAssignmentsStatsParameters parameters = new UserAssignmentsStatsParameters(from, to, usersAssignments, create);
+        EventUserAggregatedWorkQueryBuilder userAggregatedWorkQueryBuilder = EventUserAggregatedWorkQueryBuilder
                 .newInstance(parameters);
 
-        return userAssignmentsQueryBuilder.getStats();
+        return userAggregatedWorkQueryBuilder.getStats();
     }
 
 }
