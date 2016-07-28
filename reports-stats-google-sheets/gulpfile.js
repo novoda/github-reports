@@ -181,7 +181,7 @@ gulp.task('start:client', ['start:server'], function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(['./src/**/*'], ['build:dev']);
+  gulp.watch(['./src/**/*', './test/**/*'], ['build:dev']);
 });
 
-gulp.task('serve', ['start:client', 'watch'])
+gulp.task('serve', ['start:client', 'watch']);
