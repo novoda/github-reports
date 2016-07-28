@@ -22,7 +22,7 @@ public abstract class GithubWebhookEvent {
         return new AutoValue_GithubWebhookEvent.GsonTypeAdapter(gson);
     }
 
-    public abstract Action action();
+    public abstract GithubAction action();
 
     public abstract GithubUser sender();
 
@@ -30,7 +30,6 @@ public abstract class GithubWebhookEvent {
     public abstract Integer number();
 
     @Nullable
-    //@SerializedName(value = "issue", alternate = {"pull_request"}) // not working :(
     public abstract GithubIssue issue();
 
     @Nullable
@@ -51,7 +50,7 @@ public abstract class GithubWebhookEvent {
     @AutoValue.Builder
     public static abstract class Builder {
 
-        abstract Builder action(Action action);
+        abstract Builder action(GithubAction action);
 
         abstract Builder number(@Nullable Integer number);
 
@@ -68,32 +67,4 @@ public abstract class GithubWebhookEvent {
         abstract GithubWebhookEvent build();
     }
 
-    public enum Action {
-
-        @SerializedName("opened")
-        OPENED("opened"),
-
-        @SerializedName("closed")
-        CLOSED("closed"),
-
-        @SerializedName("created")
-        CREATED("created"),
-
-        @SerializedName("added")
-        ADDED("added"),
-
-        @SerializedName("published")
-        PUBLISHED("published");
-
-        private final String action;
-
-        Action(String action) {
-            this.action = action;
-        }
-
-        @Override
-        public String toString() {
-            return action;
-        }
-    }
 }

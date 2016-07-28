@@ -30,6 +30,12 @@ public class GithubRepository {
         this.id = id;
     }
 
+    public GithubRepository(Long id, String name, boolean issuesPresent) {
+        this.id = id;
+        this.name = name;
+        this.issuesPresent = issuesPresent;
+    }
+
     public Long getId() {
         return id;
     }

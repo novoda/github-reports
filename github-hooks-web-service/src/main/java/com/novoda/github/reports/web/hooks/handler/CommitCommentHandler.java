@@ -4,6 +4,7 @@ import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.CommitCommentExtractor;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
+import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
 public class CommitCommentHandler implements EventHandler {
@@ -22,7 +23,7 @@ public class CommitCommentHandler implements EventHandler {
     @Override
     public void handle(GithubWebhookEvent event) throws UnhandledEventException {
 
-        GithubWebhookEvent.Action action = event.action();
+        GithubAction action = event.action();
         try {
             GithubComment comment = extractor.extractFrom(event);
         } catch (ExtractException e) {
