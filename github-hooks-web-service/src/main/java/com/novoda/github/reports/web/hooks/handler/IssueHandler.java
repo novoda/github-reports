@@ -7,16 +7,16 @@ import com.novoda.github.reports.web.hooks.extract.IssueExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
-public class IssueHandler implements EventHandler {
+class IssueHandler implements EventHandler {
 
     private final IssueExtractor extractor;
 
-    public static IssueHandler newInstance() {
+    static IssueHandler newInstance() {
         IssueExtractor issueExtractor = new IssueExtractor();
         return new IssueHandler(issueExtractor);
     }
 
-    IssueHandler(IssueExtractor extractor) {
+    private IssueHandler(IssueExtractor extractor) {
         this.extractor = extractor;
     }
 
