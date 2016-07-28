@@ -70,9 +70,13 @@ public class PullRequestToDbEventConverter implements EventConverter<PullRequest
     }
 
     private EventType convertClosedAction(PullRequest pullRequest) {
-        if (pullRequest.getIssue().getPullRequest().isMerged()) {
+        if (isMerged(pullRequest)) {
             return EventType.PULL_REQUEST_MERGE;
         }
         return EventType.PULL_REQUEST_CLOSE;
+    }
+
+    private boolean isMerged(PullRequest pullRequest) {
+        return pullRequest.getIssue().getPullRequest().isMerged();
     }
 }
