@@ -22,4 +22,9 @@ function ReportsExecutor() {
     return runScriptAsPromise('showPrStats', from, to, repositories, groupBy, withAverage, requestISODate);
   };
 
+  ReportsExecutor.prototype.showAggregatedStats = function(from, to, users, requestISODate) {
+    return runScriptAsPromise('showAggregatedStats', from, to, users, requestISODate);
+  };
+
 }
+

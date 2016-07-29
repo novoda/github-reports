@@ -57,6 +57,7 @@ The available Gulp tasks are:
 * `test`, runs `lint` and `karma` in parallel
 * `build`, executes the tests and builds the uploadable project
 * `upload`, builds the project and then uploads it to Google Drive
+* `serve`, builds a development version of the project and starts a live reload server to test UI
 
 For example, to run the tests, execute the following in your command line:
 
