@@ -63,12 +63,12 @@ public class CommitCommentPersister implements Persister<CommitComment> {
         }
     }
 
-    private Event convertFrom(CommitComment issue) throws PersistenceException {
+    private Event convertFrom(CommitComment commitComment) throws PersistenceException {
         try {
-            return converter.convertFrom(issue);
+            return converter.convertFrom(commitComment);
         } catch (ConverterException e) {
             // TODO swallow this exception 'cause it should be from actions we don't support
-            throw new PersistenceException(issue);
+            throw new PersistenceException(commitComment);
         }
     }
 }
