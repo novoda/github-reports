@@ -19,7 +19,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(Parameterized.class)
-public class CommitCommentCoverterUnsupportedActionTest {
+public class CommitCommentConverterUnsupportedActionTest {
 
     @Parameters(name = "{index}: unsupported action={0}")
     public static Collection<Object> data() {
