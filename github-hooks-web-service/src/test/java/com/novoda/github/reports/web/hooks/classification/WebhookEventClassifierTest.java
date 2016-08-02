@@ -83,13 +83,13 @@ public class WebhookEventClassifierTest {
     }
 
     @Test
-    public void givenA_DEPRECATED_CommentEvent_whenClassifyingIt_thenWeGetItsType() throws Exception {
+    public void givenACommitCommentEvent_whenClassifyingIt_thenWeGetItsType() throws Exception {
         given(mockRule.check(mockEvent)).willReturn(true);
         given(mockEvent.comment()).willReturn(mock(GithubComment.class));
         given(mockEvent.repository()).willReturn(mock(GithubRepository.class));
 
         EventType actual = eventClassifier.classify(mockEvent);
 
-        assertEquals(EventType.DEPRECATED_REVIEW_COMMENT, actual);
+        assertEquals(EventType.COMMIT_COMMENT, actual);
     }
 }

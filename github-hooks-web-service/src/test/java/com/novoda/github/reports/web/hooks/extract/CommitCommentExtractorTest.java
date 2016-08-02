@@ -5,7 +5,7 @@ import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
-import com.novoda.github.reports.web.hooks.model.Deprecated_ReviewComment;
+import com.novoda.github.reports.web.hooks.model.CommitComment;
 
 import java.util.Date;
 
@@ -20,7 +20,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class DeprecatedDeprecatedReviewCommentExtractorTest {
+public class CommitCommentExtractorTest {
 
     private static final long ANY_OWNER_ID = 88;
     private static final Date ANY_DATE = new Date();
@@ -31,7 +31,7 @@ public class DeprecatedDeprecatedReviewCommentExtractorTest {
     private GithubWebhookEvent mockEvent;
 
     @InjectMocks
-    private Deprecated_ReviewCommentExtractor extractor;
+    private CommitCommentExtractor extractor;
 
     @Before
     public void setUp() {
@@ -39,21 +39,21 @@ public class DeprecatedDeprecatedReviewCommentExtractorTest {
     }
 
     @Test
-    public void givenAReviewCommentEvent_whenExtractingThePayload_thenItIsExtracted() throws Exception {
+    public void givenACommitCommentEvent_whenExtractingThePayload_thenItIsExtracted() throws Exception {
         GithubComment comment = mock(GithubComment.class);
         GithubUser user = new GithubUser(ANY_OWNER_ID);
         GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, user, ANY_WAS_MERGED);
         given(mockEvent.pullRequest()).willReturn(webhookPullRequest);
         given(mockEvent.comment()).willReturn(comment);
 
-        Deprecated_ReviewComment actual = extractor.extractFrom(mockEvent);
+        CommitComment actual = extractor.extractFrom(mockEvent);
 
         assertEquals(comment, actual.getComment());
         assertEquals(webhookPullRequest, actual.getWebhookPullRequest());
     }
 
     @Test
-    public void givenAReviewCommentEvent_whenExtractingTheIssue_thenItIsMarkedAsAPullRequest() throws Exception {
+    public void givenACommitCommentEvent_whenExtractingTheIssue_thenItIsMarkedAsAPullRequest() throws Exception {
         GithubComment comment = mock(GithubComment.class);
         GithubUser user = new GithubUser(ANY_OWNER_ID);
         GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, user, ANY_WAS_MERGED);
@@ -66,7 +66,7 @@ public class DeprecatedDeprecatedReviewCommentExtractorTest {
     }
 
     @Test(expected = ExtractException.class)
-    public void givenAReviewCommentEvent_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+    public void givenACommitCommentEvent_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
         given(mockEvent.comment()).willReturn(null);
 
         extractor.extractFrom(mockEvent);

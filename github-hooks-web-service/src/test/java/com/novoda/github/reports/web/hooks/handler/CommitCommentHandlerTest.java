@@ -2,7 +2,7 @@ package com.novoda.github.reports.web.hooks.handler;
 
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
-import com.novoda.github.reports.web.hooks.extract.Deprecated_ReviewCommentExtractor;
+import com.novoda.github.reports.web.hooks.extract.CommitCommentExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
 import org.junit.Before;
@@ -15,13 +15,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class Deprecated_ReviewCommentHandlerTest {
+public class CommitCommentHandlerTest {
 
     @Mock
-    private Deprecated_ReviewCommentExtractor mockExtractor;
+    private CommitCommentExtractor mockExtractor;
 
     @InjectMocks
-    private Deprecated_ReviewCommentHandler deprecatedReviewCommentHandler;
+    private CommitCommentHandler commitCommentHandler;
 
     @Mock
     private GithubWebhookEvent mockEvent;
@@ -34,7 +34,7 @@ public class Deprecated_ReviewCommentHandlerTest {
     @Test
     public void givenAnEvent_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
 
-        deprecatedReviewCommentHandler.handle(mockEvent);
+        commitCommentHandler.handle(mockEvent);
 
         verify(mockExtractor).extractFrom(mockEvent);
     }
@@ -43,12 +43,12 @@ public class Deprecated_ReviewCommentHandlerTest {
     public void givenAnEventThatIsNotAReviewComment_whenHandlingIt_thenThrowsException() throws Exception {
         given(mockExtractor.extractFrom(mockEvent)).willThrow(ExtractException.class);
 
-        deprecatedReviewCommentHandler.handle(mockEvent);
+        commitCommentHandler.handle(mockEvent);
     }
 
     @Test
     public void handledEventTypeShouldBeReviewComment() {
-        assertEquals(EventType.DEPRECATED_REVIEW_COMMENT, deprecatedReviewCommentHandler.handledEventType());
+        assertEquals(EventType.COMMIT_COMMENT, commitCommentHandler.handledEventType());
     }
 
 }

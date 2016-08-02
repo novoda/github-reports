@@ -2,22 +2,21 @@ package com.novoda.github.reports.web.hooks.handler;
 
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
-import com.novoda.github.reports.web.hooks.extract.Deprecated_ReviewCommentExtractor;
+import com.novoda.github.reports.web.hooks.extract.CommitCommentExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
-import com.novoda.github.reports.web.hooks.model.Deprecated_ReviewComment;
+import com.novoda.github.reports.web.hooks.model.CommitComment;
 
-@Deprecated
-public class Deprecated_ReviewCommentHandler implements EventHandler {
+public class CommitCommentHandler implements EventHandler {
 
-    private final Deprecated_ReviewCommentExtractor extractor;
+    private final CommitCommentExtractor extractor;
 
-    public static Deprecated_ReviewCommentHandler newInstance() {
-        Deprecated_ReviewCommentExtractor extractor = new Deprecated_ReviewCommentExtractor();
-        return new Deprecated_ReviewCommentHandler(extractor);
+    public static CommitCommentHandler newInstance() {
+        CommitCommentExtractor extractor = new CommitCommentExtractor();
+        return new CommitCommentHandler(extractor);
     }
 
-    Deprecated_ReviewCommentHandler(Deprecated_ReviewCommentExtractor extractor) {
+    CommitCommentHandler(CommitCommentExtractor extractor) {
         this.extractor = extractor;
     }
 
@@ -26,7 +25,7 @@ public class Deprecated_ReviewCommentHandler implements EventHandler {
 
         GithubAction action = event.action();
         try {
-            Deprecated_ReviewComment deprecatedReviewComment = extractor.extractFrom(event);
+            CommitComment commitComment = extractor.extractFrom(event);
         } catch (ExtractException e) {
             throw new UnhandledEventException(e.getMessage());
         }
@@ -35,6 +34,6 @@ public class Deprecated_ReviewCommentHandler implements EventHandler {
 
     @Override
     public EventType handledEventType() {
-        return EventType.DEPRECATED_REVIEW_COMMENT;
+        return EventType.COMMIT_COMMENT;
     }
 }
