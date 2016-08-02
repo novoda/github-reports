@@ -34,7 +34,7 @@ public class CommitCommentConverterTest {
     }
 
     @Test
-    public void convertFrom() throws ConverterException {
+    public void givenACommitComment_whenConverting_thenConvertsSuccessfully() throws ConverterException {
         CommitComment commitComment = givenACommitComment();
 
         Event actual = converter.convertFrom(commitComment);
@@ -57,5 +57,4 @@ public class CommitCommentConverterTest {
         GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID);
         return new CommitComment(githubComment, githubRepository, GithubAction.CREATED);
     }
-
 }
