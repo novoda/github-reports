@@ -14,7 +14,7 @@ import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.converter.EventConverter;
-import com.novoda.github.reports.web.hooks.converter.PullRequestToDbEventConverter;
+import com.novoda.github.reports.web.hooks.converter.PullRequestConverter;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
@@ -26,7 +26,7 @@ public class PullRequestPersister implements Persister<PullRequest> {
     private final RepoDataLayer repoDataLayer;
 
     public static PullRequestPersister newInstance(ConnectionManager connectionManager) {
-        EventConverter<PullRequest> converter = new PullRequestToDbEventConverter();
+        EventConverter<PullRequest> converter = new PullRequestConverter();
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);

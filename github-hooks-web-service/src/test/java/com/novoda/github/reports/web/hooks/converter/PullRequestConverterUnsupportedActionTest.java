@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class PullRequestToDbEventUnsupportedActionConverterTest {
+public class PullRequestConverterUnsupportedActionTest {
 
     private static final GithubAction ANY_UNSUPPORTED_ACTION = GithubAction.SYNCHRONIZE;
 
@@ -32,7 +32,7 @@ public class PullRequestToDbEventUnsupportedActionConverterTest {
     private PullRequest mockPullRequest;
 
     @InjectMocks
-    private PullRequestToDbEventConverter converter;
+    private PullRequestConverter converter;
 
     @Before
     public void setUp() {
