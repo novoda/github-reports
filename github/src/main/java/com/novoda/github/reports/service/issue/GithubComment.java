@@ -17,6 +17,12 @@ public class GithubComment {
     @SerializedName("updated_at")
     private Date updatedAt;
 
+    public GithubComment(long id, GithubUser user, Date updatedAt) {
+        this.id = id;
+        this.user = user;
+        this.updatedAt = updatedAt;
+    }
+
     public long getId() {
         return id;
     }
