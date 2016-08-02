@@ -47,7 +47,7 @@ public class IssueConverter implements EventConverter<Issue> {
             case LABELED:
                 return EventType.ISSUE_LABEL_ADD;
             case CLOSED:
-                return EventType.ISSUE_OPEN;
+                return EventType.ISSUE_CLOSE;
             case EDITED:
             case REOPENED:
             case ASSIGNED:
