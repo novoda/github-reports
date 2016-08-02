@@ -87,6 +87,6 @@ public class WebhookEventClassifierTest {
 
         EventType actual = eventClassifier.classify(mockEvent);
 
-        assertEquals(EventType.REVIEW_COMMENT, actual);
+        assertEquals(EventType.DEPRECATED_REVIEW_COMMENT, actual);
     }
 }

@@ -5,7 +5,7 @@ import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
-import com.novoda.github.reports.web.hooks.model.ReviewComment;
+import com.novoda.github.reports.web.hooks.model.Deprecated_ReviewComment;
 
 import java.util.Date;
 
@@ -20,7 +20,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class ReviewCommentExtractorTest {
+public class DeprecatedDeprecatedReviewCommentExtractorTest {
 
     private static final long ANY_OWNER_ID = 88;
     private static final Date ANY_DATE = new Date();
@@ -31,7 +31,7 @@ public class ReviewCommentExtractorTest {
     private GithubWebhookEvent mockEvent;
 
     @InjectMocks
-    private ReviewCommentExtractor extractor;
+    private Deprecated_ReviewCommentExtractor extractor;
 
     @Before
     public void setUp() {
@@ -46,7 +46,7 @@ public class ReviewCommentExtractorTest {
         given(mockEvent.pullRequest()).willReturn(webhookPullRequest);
         given(mockEvent.comment()).willReturn(comment);
 
-        ReviewComment actual = extractor.extractFrom(mockEvent);
+        Deprecated_ReviewComment actual = extractor.extractFrom(mockEvent);
 
         assertEquals(comment, actual.getComment());
         assertEquals(webhookPullRequest, actual.getWebhookPullRequest());
