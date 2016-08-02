@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ReviewCommentExtractorTest {
@@ -39,7 +40,7 @@ public class ReviewCommentExtractorTest {
 
     @Test
     public void givenAReviewCommentEvent_whenExtractingThePayload_thenItIsExtracted() throws Exception {
-        GithubComment comment = new GithubComment();
+        GithubComment comment = mock(GithubComment.class);
         GithubUser user = new GithubUser(ANY_OWNER_ID);
         GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, user, ANY_WAS_MERGED);
         given(mockEvent.pullRequest()).willReturn(webhookPullRequest);
@@ -53,7 +54,7 @@ public class ReviewCommentExtractorTest {
 
     @Test
     public void givenAReviewCommentEvent_whenExtractingTheIssue_thenItIsMarkedAsAPullRequest() throws Exception {
-        GithubComment comment = new GithubComment();
+        GithubComment comment = mock(GithubComment.class);
         GithubUser user = new GithubUser(ANY_OWNER_ID);
         GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, user, ANY_WAS_MERGED);
         given(mockEvent.pullRequest()).willReturn(webhookPullRequest);
