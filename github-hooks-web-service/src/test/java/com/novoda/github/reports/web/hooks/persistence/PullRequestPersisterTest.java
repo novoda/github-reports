@@ -8,12 +8,11 @@ import com.novoda.github.reports.data.model.EventType;
 import com.novoda.github.reports.data.model.Repository;
 import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.service.GithubUser;
-import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
-import com.novoda.github.reports.service.pullrequest.GithubPullRequest;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.convert.EventConverter;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
 import java.util.Date;
@@ -103,20 +102,16 @@ public class PullRequestPersisterTest {
     }
 
     private PullRequest givenAPullRequest() {
-        GithubIssue githubIssue = givenAnIssue(givenAUser(), givenAGithubPullRequest());
-        return new PullRequest(githubIssue, givenARepository(), ANY_ACTION);
-    }
-
-    private GithubPullRequest givenAGithubPullRequest() {
-        return new GithubPullRequest(ANY_PULL_REQUEST_WAS_MERGED);
+        GithubWebhookPullRequest webhookPullRequest = givenAnIssue();
+        return new PullRequest(webhookPullRequest, givenARepository(), ANY_ACTION);
     }
 
     private GithubUser givenAUser() {
         return new GithubUser(ANY_USER_ID, ANY_USERNAME);
     }
 
-    private GithubIssue givenAnIssue(GithubUser githubUser, GithubPullRequest githubPullRequest) {
-        return new GithubIssue(ANY_ISSUE_ID, ANY_DATE, githubUser, githubPullRequest);
+    private GithubWebhookPullRequest givenAnIssue() {
+        return new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, givenAUser(), ANY_PULL_REQUEST_WAS_MERGED);
     }
 
     private GithubRepository givenARepository() {

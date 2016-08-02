@@ -3,11 +3,10 @@ package com.novoda.github.reports.web.hooks.convert;
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.EventType;
 import com.novoda.github.reports.service.GithubUser;
-import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
-import com.novoda.github.reports.service.pullrequest.GithubPullRequest;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
 import java.util.Arrays;
@@ -27,6 +26,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(Parameterized.class)
 public class PullRequestToDbEventConverterTest {
+
+    private static final int ANY_ISSUE_NUMBER = 23;
 
     @Parameterized.Parameters(name = "{index}: action={0}, isPrMerged={1} expectedEvent={2}")
     public static Collection<Object[]> data() {
@@ -71,12 +72,11 @@ public class PullRequestToDbEventConverterTest {
     }
 
     private PullRequest givenAPullRequest() {
-        GithubPullRequest githubPullRequest = new GithubPullRequest(isPullRequestMerged);
         GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID);
         GithubUser githubUser = new GithubUser(ANY_USER_ID);
-        GithubIssue githubIssue = new GithubIssue(ANY_ISSUE_ID, ANY_DATE, githubUser, githubPullRequest);
+        GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_NUMBER, ANY_DATE, githubUser, isPullRequestMerged);
 
-        return new PullRequest(githubIssue, githubRepository, action);
+        return new PullRequest(webhookPullRequest, githubRepository, action);
     }
 
     private Event buildExpectedEvent(EventType eventType) {

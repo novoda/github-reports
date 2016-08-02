@@ -1,10 +1,14 @@
 package com.novoda.github.reports.web.hooks.extract;
 
+import com.novoda.github.reports.service.GithubUser;
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
+
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,10 +22,12 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PullRequestExtractorTest {
 
-    private static final int ANY_ISSUE_NUMBER = 1;
     private static final int ANY_OWNER_ID = 2;
     private static final long ANY_REPO_ID = 1L;
-    public static final GithubComment NO_COMMENT = null;
+    private static final GithubComment NO_COMMENT = null;
+    private static final long ANY_ISSUE_ID = 23L;
+    private static final Date ANY_DATE = new Date();
+    private static final boolean ANY_WAS_MERGED = false;
 
     @Mock
     private GithubWebhookEvent mockEvent;
@@ -37,24 +43,26 @@ public class PullRequestExtractorTest {
     @Test
     public void givenAPullRequestEvent_whenExtractingThePayload_thenItIsExtracted() throws Exception {
         GithubRepository repository = new GithubRepository(ANY_REPO_ID);
-        GithubIssue issue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, true);
-        given(mockEvent.pullRequest()).willReturn(issue);
+        GithubUser user = new GithubUser(ANY_OWNER_ID);
+        GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, user, ANY_WAS_MERGED);
+        given(mockEvent.pullRequest()).willReturn(webhookPullRequest);
         given(mockEvent.repository()).willReturn(repository);
 
         PullRequest actual = extractor.extractFrom(mockEvent);
 
         assertEquals(repository, actual.getRepository());
-        assertEquals(issue, actual.getIssue());
+        assertEquals(webhookPullRequest, actual.getWebhookPullRequest());
     }
 
     @Test
     public void givenAPullRequesEvent_whenExtractingTheIssue_thenItIsMarkedAsAPullRequest() throws Exception {
         GithubRepository repository = new GithubRepository(ANY_REPO_ID);
-        GithubIssue issue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, false);
-        given(mockEvent.pullRequest()).willReturn(issue);
+        GithubUser user = new GithubUser(ANY_OWNER_ID);
+        GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, user, ANY_WAS_MERGED);
+        given(mockEvent.pullRequest()).willReturn(webhookPullRequest);
         given(mockEvent.repository()).willReturn(repository);
 
-        GithubIssue actualIssue = extractor.extractFrom(mockEvent).getIssue();
+        GithubIssue actualIssue = extractor.extractFrom(mockEvent).getWebhookPullRequest();
 
         assertTrue(actualIssue.isPullRequest());
     }
