@@ -1,9 +1,7 @@
 package com.novoda.github.reports.web.hooks.converter;
 
-import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.pullrequest.GithubPullRequest;
-import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
@@ -18,12 +16,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class PullRequestConverterUnsupportedActionTest {
 
     private static final GithubAction ANY_UNSUPPORTED_ACTION = GithubAction.SYNCHRONIZE;
-
-    @Mock
-    private GithubIssue mockGithubIssue;
-
-    @Mock
-    private GithubRepository mockGithubRepository;
 
     @Mock
     private GithubPullRequest mockGithubPullRequest;
