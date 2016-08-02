@@ -14,18 +14,18 @@ public class PullRequestToDbEventConverter implements EventConverter<PullRequest
     @Override
     public Event convertFrom(PullRequest pullRequest) throws ConverterException {
 
-        GithubWebhookPullRequest issue = pullRequest.getIssue();
+        GithubWebhookPullRequest webhookPullRequest = pullRequest.getWebhookPullRequest();
         GithubRepository repository = pullRequest.getRepository();
 
         EventType eventType = convertPullRequestAction(pullRequest);
 
         return Event.create(
-                issue.getId(),
+                webhookPullRequest.getId(),
                 repository.getId(),
-                issue.getUserId(),
-                issue.getUserId(),
+                webhookPullRequest.getUserId(),
+                webhookPullRequest.getUserId(),
                 eventType,
-                issue.getUpdatedAt()
+                webhookPullRequest.getUpdatedAt()
         );
     }
 
@@ -78,6 +78,6 @@ public class PullRequestToDbEventConverter implements EventConverter<PullRequest
     }
 
     private boolean isMerged(PullRequest pullRequest) {
-        return pullRequest.getIssue().getPullRequest().isMerged();
+        return pullRequest.getWebhookPullRequest().getPullRequest().isMerged();
     }
 }
