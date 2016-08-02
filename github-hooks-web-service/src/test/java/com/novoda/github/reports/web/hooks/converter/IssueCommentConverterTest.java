@@ -39,9 +39,9 @@ public class IssueCommentConverterTest {
 
     @Test
     public void givenAnIssueComment_whenConverting_thenConvertsSuccessfully() throws ConverterException {
-        IssueComment commitComment = givenAnIssueComment();
+        IssueComment issueComment = givenAnIssueComment();
 
-        Event actual = converter.convertFrom(commitComment);
+        Event actual = converter.convertFrom(issueComment);
 
         assertThat(actual).isEqualToComparingFieldByField(buildExpectedEvent());
     }

@@ -1,7 +1,7 @@
 package com.novoda.github.reports.web.hooks.converter;
 
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
-import com.novoda.github.reports.web.hooks.model.CommitComment;
+import com.novoda.github.reports.web.hooks.model.ReviewComment;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 
 import java.util.Arrays;
@@ -19,7 +19,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(Parameterized.class)
-public class CommitCommentConverterUnsupportedActionTest {
+public class ReviewCommentConverterUnsupportedActionTest {
 
     @Parameters(name = "{index}: unsupported action={0}")
     public static Collection<Object> data() {
@@ -37,13 +37,13 @@ public class CommitCommentConverterUnsupportedActionTest {
     }
 
     @Mock
-    private CommitComment mockCommitComment;
+    private ReviewComment mockReviewComment;
 
     @Parameterized.Parameter(0)
     public GithubAction unsupportedAction;
 
     @InjectMocks
-    private CommitCommentConverter converter;
+    private ReviewCommentConverter converter;
 
     @Before
     public void setUp() {
@@ -51,9 +51,9 @@ public class CommitCommentConverterUnsupportedActionTest {
     }
 
     @Test(expected = ConverterException.class)
-    public void givenACommitCommentWithAnUnsupportedAction_whenConverting_thenThrowsException() throws ConverterException {
-        given(mockCommitComment.getAction()).willReturn(unsupportedAction);
+    public void givenAReviewCommentWithAnUnsupportedAction_whenConverting_thenThrowsException() throws ConverterException {
+        given(mockReviewComment.getAction()).willReturn(unsupportedAction);
 
-        converter.convertFrom(mockCommitComment);
+        converter.convertFrom(mockReviewComment);
     }
 }

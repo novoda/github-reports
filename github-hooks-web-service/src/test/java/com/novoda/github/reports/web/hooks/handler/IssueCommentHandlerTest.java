@@ -51,7 +51,7 @@ public class IssueCommentHandlerTest {
     }
 
     @Test
-    public void handledEventTypeShouldBeCommitComment() {
+    public void handledEventTypeShouldBeIssueComment() {
         assertEquals(EventType.ISSUE_COMMENT, issueCommentHandler.handledEventType());
     }
 

@@ -14,26 +14,26 @@ import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
-import com.novoda.github.reports.web.hooks.converter.CommitCommentConverter;
+import com.novoda.github.reports.web.hooks.converter.ReviewCommentConverter;
 import com.novoda.github.reports.web.hooks.converter.EventConverter;
-import com.novoda.github.reports.web.hooks.model.CommitComment;
+import com.novoda.github.reports.web.hooks.model.ReviewComment;
 
-public class CommitCommentPersister implements Persister<CommitComment> {
+public class ReviewCommentPersister implements Persister<ReviewComment> {
 
-    private final EventConverter<CommitComment> converter;
+    private final EventConverter<ReviewComment> converter;
     private final EventDataLayer eventDataLayer;
     private final UserDataLayer userDataLayer;
     private final RepoDataLayer repoDataLayer;
 
-    public static CommitCommentPersister newInstance(ConnectionManager connectionManager) {
-        EventConverter<CommitComment> converter = new CommitCommentConverter();
+    public static ReviewCommentPersister newInstance(ConnectionManager connectionManager) {
+        EventConverter<ReviewComment> converter = new ReviewCommentConverter();
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
-        return new CommitCommentPersister(converter, eventDataLayer, userDataLayer, repoDataLayer);
+        return new ReviewCommentPersister(converter, eventDataLayer, userDataLayer, repoDataLayer);
     }
 
-    private CommitCommentPersister(EventConverter<CommitComment> converter,
+    private ReviewCommentPersister(EventConverter<ReviewComment> converter,
                                    EventDataLayer eventDataLayer,
                                    UserDataLayer userDataLayer,
                                    RepoDataLayer repoDataLayer) {
@@ -45,14 +45,14 @@ public class CommitCommentPersister implements Persister<CommitComment> {
     }
 
     @Override
-    public void persist(CommitComment commitComment) throws PersistenceException {
-        GithubComment githubComment = commitComment.getComment();
-        GithubRepository repository = commitComment.getRepository();
+    public void persist(ReviewComment reviewComment) throws PersistenceException {
+        GithubComment githubComment = reviewComment.getComment();
+        GithubRepository repository = reviewComment.getRepository();
         String username = githubComment.getUser().getUsername();
 
         User dbUser = User.create(githubComment.getUserId(), username);
         Repository dbRepository = Repository.create(repository.getId(), repository.getName(), repository.isPrivateRepo());
-        Event dbEvent = convertFrom(commitComment);
+        Event dbEvent = convertFrom(reviewComment);
 
         try {
             userDataLayer.updateOrInsert(dbUser);
@@ -63,12 +63,12 @@ public class CommitCommentPersister implements Persister<CommitComment> {
         }
     }
 
-    private Event convertFrom(CommitComment commitComment) throws PersistenceException {
+    private Event convertFrom(ReviewComment reviewComment) throws PersistenceException {
         try {
-            return converter.convertFrom(commitComment);
+            return converter.convertFrom(reviewComment);
         } catch (ConverterException e) {
             // TODO swallow this exception 'cause it should be from actions we don't support
-            throw new PersistenceException(commitComment);
+            throw new PersistenceException(reviewComment);
         }
     }
 }

@@ -1,10 +1,9 @@
 package com.novoda.github.reports.web.hooks.handler;
 
 import com.novoda.github.reports.web.hooks.classification.EventType;
-import com.novoda.github.reports.web.hooks.extract.CommitCommentExtractor;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
+import com.novoda.github.reports.web.hooks.extract.Deprecated_ReviewCommentExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
-import com.novoda.github.reports.web.hooks.persistence.CommitCommentPersister;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,16 +15,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class CommitCommentHandlerTest {
+public class Deprecated_ReviewCommentHandlerTest {
 
     @Mock
-    private CommitCommentExtractor mockExtractor;
-
-    @Mock
-    private CommitCommentPersister mockPersister;
+    private Deprecated_ReviewCommentExtractor mockExtractor;
 
     @InjectMocks
-    private CommitCommentHandler commitCommentHandler;
+    private Deprecated_ReviewCommentHandler deprecatedReviewCommentHandler;
 
     @Mock
     private GithubWebhookEvent mockEvent;
@@ -38,21 +34,21 @@ public class CommitCommentHandlerTest {
     @Test
     public void givenAnEvent_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
 
-        commitCommentHandler.handle(mockEvent);
+        deprecatedReviewCommentHandler.handle(mockEvent);
 
         verify(mockExtractor).extractFrom(mockEvent);
     }
 
     @Test(expected = UnhandledEventException.class)
-    public void givenAnEventThatIsNotACommitComment_whenHandlingIt_thenThrowsException() throws Exception {
+    public void givenAnEventThatIsNotAReviewComment_whenHandlingIt_thenThrowsException() throws Exception {
         given(mockExtractor.extractFrom(mockEvent)).willThrow(ExtractException.class);
 
-        commitCommentHandler.handle(mockEvent);
+        deprecatedReviewCommentHandler.handle(mockEvent);
     }
 
     @Test
-    public void handledEventTypeShouldBeCommitComment() {
-        assertEquals(EventType.COMMIT_COMMENT, commitCommentHandler.handledEventType());
+    public void handledEventTypeShouldBeReviewComment() {
+        assertEquals(EventType.DEPRECATED_REVIEW_COMMENT, deprecatedReviewCommentHandler.handledEventType());
     }
 
 }

@@ -2,6 +2,7 @@ package com.novoda.github.reports.web.hooks.classification;
 
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssue;
+import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 
@@ -49,13 +50,15 @@ public class WebhookEventClassifierTest {
     }
 
     @Test
-    public void givenACommitCommentEvent_whenClassifyingIt_thenWeGetItsType() throws Exception {
+    public void givenAReviewCommentEvent_whenClassifyingIt_thenWeGetItsType() throws Exception {
         given(mockRule.check(mockEvent)).willReturn(true);
+        given(mockEvent.pullRequest()).willReturn(mock(GithubWebhookPullRequest.class));
         given(mockEvent.comment()).willReturn(mock(GithubComment.class));
+        given(mockEvent.repository()).willReturn(mock(GithubRepository.class));
 
         EventType actual = eventClassifier.classify(mockEvent);
 
-        assertEquals(EventType.COMMIT_COMMENT, actual);
+        assertEquals(EventType.REVIEW_COMMENT, actual);
     }
 
     @Test
@@ -80,10 +83,10 @@ public class WebhookEventClassifierTest {
     }
 
     @Test
-    public void givenAReviewCommentEvent_whenClassifyingIt_thenWeGetItsType() throws Exception {
+    public void givenA_DEPRECATED_CommentEvent_whenClassifyingIt_thenWeGetItsType() throws Exception {
         given(mockRule.check(mockEvent)).willReturn(true);
-        given(mockEvent.pullRequest()).willReturn(mock(GithubWebhookPullRequest.class));
         given(mockEvent.comment()).willReturn(mock(GithubComment.class));
+        given(mockEvent.repository()).willReturn(mock(GithubRepository.class));
 
         EventType actual = eventClassifier.classify(mockEvent);
 

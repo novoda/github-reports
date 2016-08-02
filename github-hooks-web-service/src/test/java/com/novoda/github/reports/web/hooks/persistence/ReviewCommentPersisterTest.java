@@ -12,7 +12,7 @@ import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.converter.EventConverter;
-import com.novoda.github.reports.web.hooks.model.CommitComment;
+import com.novoda.github.reports.web.hooks.model.ReviewComment;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 
 import java.util.Date;
@@ -28,7 +28,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class CommitCommentPersisterTest {
+public class ReviewCommentPersisterTest {
 
     private static final String ANY_USERNAME = "uzer";
     private static final long ANY_USER_ID = 88L;
@@ -39,7 +39,7 @@ public class CommitCommentPersisterTest {
     private static final boolean ANY_IS_PRIVATE_REPOSITORY = true;
 
     @Mock
-    private EventConverter<CommitComment> mockConverter;
+    private EventConverter<ReviewComment> mockConverter;
 
     @Mock
     private EventDataLayer mockEventDataLayer;
@@ -51,7 +51,7 @@ public class CommitCommentPersisterTest {
     private RepoDataLayer mockRepoDataLayer;
 
     @InjectMocks
-    private CommitCommentPersister persister;
+    private ReviewCommentPersister persister;
 
     @Before
     public void setUp() throws Exception {
@@ -59,11 +59,11 @@ public class CommitCommentPersisterTest {
     }
 
     @Test
-    public void givenACommitComment_whenPersisting_thenTheUserIsPersisted() throws Exception {
-        CommitComment commitComment = givenACommitComment();
-        givenAnEvent(commitComment);
+    public void givenAReviewComment_whenPersisting_thenTheUserIsPersisted() throws Exception {
+        ReviewComment reviewComment = givenAReviewComment();
+        givenAnEvent(reviewComment);
 
-        persister.persist(commitComment);
+        persister.persist(reviewComment);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(mockUserDataLayer).updateOrInsert(userCaptor.capture());
@@ -71,11 +71,11 @@ public class CommitCommentPersisterTest {
     }
 
     @Test
-    public void givenACommitComment_whenPersisting_thenTheRepositoryIsPersisted() throws Exception {
-        CommitComment commitComment = givenACommitComment();
-        givenAnEvent(commitComment);
+    public void givenAReviewComment_whenPersisting_thenTheRepositoryIsPersisted() throws Exception {
+        ReviewComment reviewComment = givenAReviewComment();
+        givenAnEvent(reviewComment);
 
-        persister.persist(commitComment);
+        persister.persist(reviewComment);
 
         ArgumentCaptor<Repository> repositoryCaptor = ArgumentCaptor.forClass(Repository.class);
         verify(mockRepoDataLayer).updateOrInsert(repositoryCaptor.capture());
@@ -85,11 +85,11 @@ public class CommitCommentPersisterTest {
     }
 
     @Test
-    public void givenACommitComment_whenPersisting_thenTheEventIsPersisted() throws Exception {
-        CommitComment commitComment = givenACommitComment();
-        givenAnEvent(commitComment);
+    public void givenAReviewomment_whenPersisting_thenTheEventIsPersisted() throws Exception {
+        ReviewComment reviewComment = givenAReviewComment();
+        givenAnEvent(reviewComment);
 
-        persister.persist(commitComment);
+        persister.persist(reviewComment);
 
         ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
         verify(mockEventDataLayer).updateOrInsert(eventCaptor.capture());
@@ -98,17 +98,17 @@ public class CommitCommentPersisterTest {
         );
     }
 
-    private CommitComment givenACommitComment() {
+    private ReviewComment givenAReviewComment() {
         GithubUser githubUser = new GithubUser(ANY_USER_ID, ANY_USERNAME);
         GithubComment githubComment = new GithubComment(ANY_COMMENT_ID, githubUser, ANY_DATE);
         GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_IS_PRIVATE_REPOSITORY);
-        return new CommitComment(githubComment, githubRepository, GithubAction.CREATED);
+        return new ReviewComment(githubComment, githubRepository, GithubAction.CREATED);
     }
 
-    private void givenAnEvent(CommitComment commitComment) {
+    private void givenAnEvent(ReviewComment reviewComment) {
         Event event = Event.create(ANY_COMMENT_ID, ANY_REPOSITORY_ID, ANY_USER_ID, ANY_USER_ID, EventType.PULL_REQUEST_COMMENT, ANY_DATE);
         try {
-            given(mockConverter.convertFrom(commitComment)).willReturn(event);
+            given(mockConverter.convertFrom(reviewComment)).willReturn(event);
         } catch (ConverterException e) {
             // nothing to do
         }
