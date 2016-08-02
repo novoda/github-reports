@@ -31,8 +31,16 @@ public class GithubComment {
         return user;
     }
 
+    public long getUserId() {
+        return user.getId();
+    }
+
     public Date getCreatedAt() {
         return createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
     @Override
