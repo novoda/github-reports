@@ -2,13 +2,12 @@ package com.novoda.github.reports.web.hooks.model;
 
 import com.novoda.github.reports.service.issue.GithubComment;
 
-@Deprecated
-public class Deprecated_ReviewComment {
+public class CommitComment {
 
     private GithubWebhookPullRequest webhookPullRequest;
     private GithubComment comment;
 
-    public Deprecated_ReviewComment(GithubWebhookPullRequest webhookPullRequest, GithubComment comment) {
+    public CommitComment(GithubWebhookPullRequest webhookPullRequest, GithubComment comment) {
         this.webhookPullRequest = webhookPullRequest;
         this.comment = comment;
     }
