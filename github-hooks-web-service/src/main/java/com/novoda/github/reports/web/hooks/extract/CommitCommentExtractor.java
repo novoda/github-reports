@@ -1,15 +1,18 @@
 package com.novoda.github.reports.web.hooks.extract;
 
 import com.novoda.github.reports.service.issue.GithubComment;
+import com.novoda.github.reports.service.repository.GithubRepository;
+import com.novoda.github.reports.web.hooks.model.CommitComment;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
-public class CommitCommentExtractor implements PayloadExtractor<GithubComment> {
+public class CommitCommentExtractor implements PayloadExtractor<CommitComment> {
     @Override
-    public GithubComment extractFrom(GithubWebhookEvent event) throws ExtractException {
+    public CommitComment extractFrom(GithubWebhookEvent event) throws ExtractException {
         GithubComment comment = event.comment();
-        if (comment == null) {
+        GithubRepository repository = event.repository();
+        if (comment == null || repository == null) {
             throw new ExtractException(event);
         }
-        return comment;
+        return new CommitComment(comment, repository, event.action());
     }
 }
