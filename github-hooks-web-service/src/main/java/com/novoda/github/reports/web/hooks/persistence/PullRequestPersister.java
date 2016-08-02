@@ -48,10 +48,10 @@ public class PullRequestPersister implements Persister<PullRequest> {
     public void persist(PullRequest pullRequest) throws PersistenceException {
         Event dbEvent = convertFrom(pullRequest);
 
-        GithubWebhookPullRequest issue = pullRequest.getIssue();
+        GithubWebhookPullRequest webhookPullRequest = pullRequest.getWebhookPullRequest();
         GithubRepository repository = pullRequest.getRepository();
 
-        User dbUser = User.create(issue.getUserId(), issue.getUser().getUsername());
+        User dbUser = User.create(webhookPullRequest.getUserId(), webhookPullRequest.getUser().getUsername());
         Repository dbRepository = Repository.create(repository.getId(), repository.getName(), repository.isPrivateRepo());
 
         try {

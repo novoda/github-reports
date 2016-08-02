@@ -4,16 +4,16 @@ import com.novoda.github.reports.service.issue.GithubComment;
 
 public class ReviewComment {
 
-    private GithubWebhookPullRequest issue;
+    private GithubWebhookPullRequest webhookPullRequest;
     private GithubComment comment;
 
-    public ReviewComment(GithubWebhookPullRequest issue, GithubComment comment) {
-        this.issue = issue;
+    public ReviewComment(GithubWebhookPullRequest webhookPullRequest, GithubComment comment) {
+        this.webhookPullRequest = webhookPullRequest;
         this.comment = comment;
     }
 
-    public GithubWebhookPullRequest getIssue() {
-        return issue;
+    public GithubWebhookPullRequest getWebhookPullRequest() {
+        return webhookPullRequest;
     }
 
     public GithubComment getComment() {
