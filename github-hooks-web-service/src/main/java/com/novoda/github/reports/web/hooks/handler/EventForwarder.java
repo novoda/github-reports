@@ -16,7 +16,7 @@ public class EventForwarder {
     static {
         HANDLERS.put(EventType.PULL_REQUEST, PullRequestHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
         HANDLERS.put(EventType.ISSUE, IssueHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
-        HANDLERS.put(EventType.COMMIT_COMMENT, CommitCommentHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
+        HANDLERS.put(EventType.REVIEW_COMMENT, ReviewCommentHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
         HANDLERS.put(EventType.ISSUE_COMMENT, IssueCommentHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
         HANDLERS.put(EventType.DEPRECATED_REVIEW_COMMENT, Deprecated_ReviewCommentHandler.newInstance());
     }

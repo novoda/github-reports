@@ -2,11 +2,12 @@ package com.novoda.github.reports.web.hooks.classification;
 
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
-class CommitCommentRule implements ClassificationRule {
+class ReviewCommentRule implements ClassificationRule {
     @Override
     public boolean check(GithubWebhookEvent event) {
         return event.comment() != null
-                && event.issue() == null
-                && event.pullRequest() == null;
+                && event.pullRequest() != null
+                && event.repository() != null
+                && event.issue() == null;
     }
 }

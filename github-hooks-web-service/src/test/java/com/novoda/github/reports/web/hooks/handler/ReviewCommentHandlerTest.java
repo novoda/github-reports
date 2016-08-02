@@ -1,9 +1,10 @@
 package com.novoda.github.reports.web.hooks.handler;
 
 import com.novoda.github.reports.web.hooks.classification.EventType;
+import com.novoda.github.reports.web.hooks.extract.ReviewCommentExtractor;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
-import com.novoda.github.reports.web.hooks.extract.Deprecated_ReviewCommentExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.persistence.ReviewCommentPersister;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,13 +16,16 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class DeprecatedDeprecatedReviewCommentHandlerTest {
+public class ReviewCommentHandlerTest {
 
     @Mock
-    private Deprecated_ReviewCommentExtractor mockExtractor;
+    private ReviewCommentExtractor mockExtractor;
+
+    @Mock
+    private ReviewCommentPersister mockPersister;
 
     @InjectMocks
-    private Deprecated_ReviewCommentHandler deprecatedReviewCommentHandler;
+    private ReviewCommentHandler reviewCommentHandler;
 
     @Mock
     private GithubWebhookEvent mockEvent;
@@ -34,7 +38,7 @@ public class DeprecatedDeprecatedReviewCommentHandlerTest {
     @Test
     public void givenAnEvent_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
 
-        deprecatedReviewCommentHandler.handle(mockEvent);
+        reviewCommentHandler.handle(mockEvent);
 
         verify(mockExtractor).extractFrom(mockEvent);
     }
@@ -43,12 +47,12 @@ public class DeprecatedDeprecatedReviewCommentHandlerTest {
     public void givenAnEventThatIsNotAReviewComment_whenHandlingIt_thenThrowsException() throws Exception {
         given(mockExtractor.extractFrom(mockEvent)).willThrow(ExtractException.class);
 
-        deprecatedReviewCommentHandler.handle(mockEvent);
+        reviewCommentHandler.handle(mockEvent);
     }
 
     @Test
     public void handledEventTypeShouldBeReviewComment() {
-        assertEquals(EventType.DEPRECATED_REVIEW_COMMENT, deprecatedReviewCommentHandler.handledEventType());
+        assertEquals(EventType.REVIEW_COMMENT, reviewCommentHandler.handledEventType());
     }
 
 }
