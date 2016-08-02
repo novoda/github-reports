@@ -4,17 +4,17 @@ import com.novoda.github.reports.service.repository.GithubRepository;
 
 public class PullRequest extends Event {
 
-    private GithubWebhookPullRequest issue;
+    private GithubWebhookPullRequest webhookPullRequest;
     private GithubRepository repository;
 
-    public PullRequest(GithubWebhookPullRequest issue, GithubRepository repository, GithubAction action) {
-        this.issue = issue;
+    public PullRequest(GithubWebhookPullRequest webhookPullRequest, GithubRepository repository, GithubAction action) {
+        this.webhookPullRequest = webhookPullRequest;
         this.repository = repository;
         this.action = action;
     }
 
-    public GithubWebhookPullRequest getIssue() {
-        return issue;
+    public GithubWebhookPullRequest getWebhookPullRequest() {
+        return webhookPullRequest;
     }
 
     public GithubRepository getRepository() {

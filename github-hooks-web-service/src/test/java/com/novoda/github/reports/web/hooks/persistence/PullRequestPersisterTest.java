@@ -102,8 +102,8 @@ public class PullRequestPersisterTest {
     }
 
     private PullRequest givenAPullRequest() {
-        GithubWebhookPullRequest githubIssue = givenAnIssue();
-        return new PullRequest(githubIssue, givenARepository(), ANY_ACTION);
+        GithubWebhookPullRequest webhookPullRequest = givenAnIssue();
+        return new PullRequest(webhookPullRequest, givenARepository(), ANY_ACTION);
     }
 
     private GithubUser givenAUser() {

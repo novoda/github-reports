@@ -74,9 +74,9 @@ public class PullRequestToDbEventConverterTest {
     private PullRequest givenAPullRequest() {
         GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID);
         GithubUser githubUser = new GithubUser(ANY_USER_ID);
-        GithubWebhookPullRequest githubIssue = new GithubWebhookPullRequest(ANY_ISSUE_NUMBER, ANY_DATE, githubUser, isPullRequestMerged);
+        GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_NUMBER, ANY_DATE, githubUser, isPullRequestMerged);
 
-        return new PullRequest(githubIssue, githubRepository, action);
+        return new PullRequest(webhookPullRequest, githubRepository, action);
     }
 
     private Event buildExpectedEvent(EventType eventType) {

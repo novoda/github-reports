@@ -9,11 +9,11 @@ public class ReviewCommentExtractor implements PayloadExtractor<ReviewComment> {
     @Override
     public ReviewComment extractFrom(GithubWebhookEvent event) throws ExtractException {
         GithubComment comment = event.comment();
-        GithubWebhookPullRequest issue = event.pullRequest();
-        if (comment == null || issue == null) {
+        GithubWebhookPullRequest webhookPullRequest = event.pullRequest();
+        if (comment == null || webhookPullRequest == null) {
             throw new ExtractException(event);
         }
-        issue.setIsPullRequest(true);
-        return new ReviewComment(issue, comment);
+        webhookPullRequest.setIsPullRequest(true);
+        return new ReviewComment(webhookPullRequest, comment);
     }
 }
