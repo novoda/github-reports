@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 import org.mockito.InjectMocks;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +32,7 @@ public class IssueConverterTest {
     private static final long ANY_USER_ID = 88L;
     private static final Date ANY_DATE = new Date();
 
-    @Parameterized.Parameters(name = "{index}: action={0}, expectedEvent={1}")
+    @Parameters(name = "{index}: action={0}, expectedEvent={1}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 { GithubAction.UNLABELED, EventType.ISSUE_LABEL_REMOVE },
