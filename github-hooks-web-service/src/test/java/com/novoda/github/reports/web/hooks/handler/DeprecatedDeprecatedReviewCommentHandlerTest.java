@@ -2,7 +2,7 @@ package com.novoda.github.reports.web.hooks.handler;
 
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
-import com.novoda.github.reports.web.hooks.extract.ReviewCommentExtractor;
+import com.novoda.github.reports.web.hooks.extract.Deprecated_ReviewCommentExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
 import org.junit.Before;
@@ -15,13 +15,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class ReviewCommentHandlerTest {
+public class DeprecatedDeprecatedReviewCommentHandlerTest {
 
     @Mock
-    private ReviewCommentExtractor mockExtractor;
+    private Deprecated_ReviewCommentExtractor mockExtractor;
 
     @InjectMocks
-    private ReviewCommentHandler reviewCommentHandler;
+    private Deprecated_ReviewCommentHandler deprecatedReviewCommentHandler;
 
     @Mock
     private GithubWebhookEvent mockEvent;
@@ -34,7 +34,7 @@ public class ReviewCommentHandlerTest {
     @Test
     public void givenAnEvent_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
 
-        reviewCommentHandler.handle(mockEvent);
+        deprecatedReviewCommentHandler.handle(mockEvent);
 
         verify(mockExtractor).extractFrom(mockEvent);
     }
@@ -43,12 +43,12 @@ public class ReviewCommentHandlerTest {
     public void givenAnEventThatIsNotAReviewComment_whenHandlingIt_thenThrowsException() throws Exception {
         given(mockExtractor.extractFrom(mockEvent)).willThrow(ExtractException.class);
 
-        reviewCommentHandler.handle(mockEvent);
+        deprecatedReviewCommentHandler.handle(mockEvent);
     }
 
     @Test
     public void handledEventTypeShouldBeReviewComment() {
-        assertEquals(EventType.REVIEW_COMMENT, reviewCommentHandler.handledEventType());
+        assertEquals(EventType.DEPRECATED_REVIEW_COMMENT, deprecatedReviewCommentHandler.handledEventType());
     }
 
 }

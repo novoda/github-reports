@@ -2,21 +2,22 @@ package com.novoda.github.reports.web.hooks.handler;
 
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
-import com.novoda.github.reports.web.hooks.extract.ReviewCommentExtractor;
+import com.novoda.github.reports.web.hooks.extract.Deprecated_ReviewCommentExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
-import com.novoda.github.reports.web.hooks.model.ReviewComment;
+import com.novoda.github.reports.web.hooks.model.Deprecated_ReviewComment;
 
-public class ReviewCommentHandler implements EventHandler {
+@Deprecated
+public class Deprecated_ReviewCommentHandler implements EventHandler {
 
-    private final ReviewCommentExtractor extractor;
+    private final Deprecated_ReviewCommentExtractor extractor;
 
-    public static ReviewCommentHandler newInstance() {
-        ReviewCommentExtractor extractor = new ReviewCommentExtractor();
-        return new ReviewCommentHandler(extractor);
+    public static Deprecated_ReviewCommentHandler newInstance() {
+        Deprecated_ReviewCommentExtractor extractor = new Deprecated_ReviewCommentExtractor();
+        return new Deprecated_ReviewCommentHandler(extractor);
     }
 
-    ReviewCommentHandler(ReviewCommentExtractor extractor) {
+    Deprecated_ReviewCommentHandler(Deprecated_ReviewCommentExtractor extractor) {
         this.extractor = extractor;
     }
 
@@ -25,7 +26,7 @@ public class ReviewCommentHandler implements EventHandler {
 
         GithubAction action = event.action();
         try {
-            ReviewComment reviewComment = extractor.extractFrom(event);
+            Deprecated_ReviewComment deprecatedReviewComment = extractor.extractFrom(event);
         } catch (ExtractException e) {
             throw new UnhandledEventException(e.getMessage());
         }
@@ -34,6 +35,6 @@ public class ReviewCommentHandler implements EventHandler {
 
     @Override
     public EventType handledEventType() {
-        return EventType.REVIEW_COMMENT;
+        return EventType.DEPRECATED_REVIEW_COMMENT;
     }
 }

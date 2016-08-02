@@ -18,7 +18,7 @@ public class EventForwarder {
         HANDLERS.put(EventType.ISSUE, IssueHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
         HANDLERS.put(EventType.COMMIT_COMMENT, CommitCommentHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
         HANDLERS.put(EventType.ISSUE_COMMENT, IssueCommentHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
-        HANDLERS.put(EventType.REVIEW_COMMENT, ReviewCommentHandler.newInstance());
+        HANDLERS.put(EventType.DEPRECATED_REVIEW_COMMENT, Deprecated_ReviewCommentHandler.newInstance());
     }
 
     private WebhookEventClassifier eventClassifier;
