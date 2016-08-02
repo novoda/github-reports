@@ -295,7 +295,7 @@
         "href": "https://api.github.com/repos/takecare/dump/statuses/4a817432314af17c6032894890fd4c849d8ce05f"
       }
     },
-    "merged": false,
+    "merged": true,
     "mergeable": true,
     "mergeable_state": "clean",
     "merged_by": null,

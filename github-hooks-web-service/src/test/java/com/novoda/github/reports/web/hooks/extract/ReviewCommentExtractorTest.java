@@ -1,9 +1,13 @@
 package com.novoda.github.reports.web.hooks.extract;
 
+import com.novoda.github.reports.service.GithubUser;
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.ReviewComment;
+
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,8 +21,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ReviewCommentExtractorTest {
 
-    private static final int ANY_ISSUE_NUMBER = 23;
     private static final long ANY_OWNER_ID = 88;
+    private static final Date ANY_DATE = new Date();
+    private static final long ANY_ISSUE_ID = 43L;
+    private static final boolean ANY_WAS_MERGED = false;
 
     @Mock
     private GithubWebhookEvent mockEvent;
@@ -34,24 +40,26 @@ public class ReviewCommentExtractorTest {
     @Test
     public void givenAReviewCommentEvent_whenExtractingThePayload_thenItIsExtracted() throws Exception {
         GithubComment comment = new GithubComment();
-        GithubIssue issue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, true);
-        given(mockEvent.issue()).willReturn(issue);
+        GithubUser user = new GithubUser(ANY_OWNER_ID);
+        GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, user, ANY_WAS_MERGED);
+        given(mockEvent.pullRequest()).willReturn(webhookPullRequest);
         given(mockEvent.comment()).willReturn(comment);
 
         ReviewComment actual = extractor.extractFrom(mockEvent);
 
         assertEquals(comment, actual.getComment());
-        assertEquals(issue, actual.getIssue());
+        assertEquals(webhookPullRequest, actual.getWebhookPullRequest());
     }
 
     @Test
     public void givenAReviewCommentEvent_whenExtractingTheIssue_thenItIsMarkedAsAPullRequest() throws Exception {
         GithubComment comment = new GithubComment();
-        GithubIssue issue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, false);
-        given(mockEvent.issue()).willReturn(issue);
+        GithubUser user = new GithubUser(ANY_OWNER_ID);
+        GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, user, ANY_WAS_MERGED);
+        given(mockEvent.pullRequest()).willReturn(webhookPullRequest);
         given(mockEvent.comment()).willReturn(comment);
 
-        GithubIssue actualIssue = extractor.extractFrom(mockEvent).getIssue();
+        GithubIssue actualIssue = extractor.extractFrom(mockEvent).getWebhookPullRequest();
 
         assertTrue(actualIssue.isPullRequest());
     }

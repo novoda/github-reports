@@ -3,6 +3,7 @@ package com.novoda.github.reports.web.hooks.classification;
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class WebhookEventClassifierTest {
     @Test
     public void givenAPullRequestEvent_whenClassifyingIt_thenWeGetItsType() throws Exception {
         given(mockRule.check(mockEvent)).willReturn(true);
-        given(mockEvent.pullRequest()).willReturn(mock(GithubIssue.class));
+        given(mockEvent.pullRequest()).willReturn(mock(GithubWebhookPullRequest.class));
 
         EventType actual = eventClassifier.classify(mockEvent);
 
@@ -81,7 +82,7 @@ public class WebhookEventClassifierTest {
     @Test
     public void givenAReviewCommentEvent_whenClassifyingIt_thenWeGetItsType() throws Exception {
         given(mockRule.check(mockEvent)).willReturn(true);
-        given(mockEvent.pullRequest()).willReturn(mock(GithubIssue.class));
+        given(mockEvent.pullRequest()).willReturn(mock(GithubWebhookPullRequest.class));
         given(mockEvent.comment()).willReturn(mock(GithubComment.class));
 
         EventType actual = eventClassifier.classify(mockEvent);
