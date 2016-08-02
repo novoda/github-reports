@@ -4,6 +4,7 @@ import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.CommitCommentExtractor;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.persistence.CommitCommentPersister;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +20,9 @@ public class CommitCommentHandlerTest {
 
     @Mock
     private CommitCommentExtractor mockExtractor;
+
+    @Mock
+    private CommitCommentPersister mockPersister;
 
     @InjectMocks
     private CommitCommentHandler commitCommentHandler;
