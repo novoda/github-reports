@@ -4,6 +4,7 @@ import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.IssueCommentExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.persistence.IssueCommentPersister;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +21,11 @@ public class IssueCommentHandlerTest {
     @Mock
     private IssueCommentExtractor mockExtractor;
 
+    @Mock
+    private IssueCommentPersister mockPersister;
+
     @InjectMocks
-    private IssueCommentHandler handler;
+    private IssueCommentHandler issueCommentHandler;
 
     @Mock
     private GithubWebhookEvent mockEvent;
@@ -34,7 +38,7 @@ public class IssueCommentHandlerTest {
     @Test
     public void givenAnEvent_whenHandlingIt_thenThePayloadIsExtracted() throws Exception {
 
-        handler.handle(mockEvent);
+        issueCommentHandler.handle(mockEvent);
 
         verify(mockExtractor).extractFrom(mockEvent);
     }
@@ -43,12 +47,12 @@ public class IssueCommentHandlerTest {
     public void givenAnEventThatIsNotAnIssueComment_whenHandlingIt_thenThrowsException() throws Exception {
         given(mockExtractor.extractFrom(mockEvent)).willThrow(ExtractException.class);
 
-        handler.handle(mockEvent);
+        issueCommentHandler.handle(mockEvent);
     }
 
     @Test
-    public void handledEventTypeShouldBeIssueComment() {
-        assertEquals(EventType.ISSUE_COMMENT, handler.handledEventType());
+    public void handledEventTypeShouldBeCommitComment() {
+        assertEquals(EventType.ISSUE_COMMENT, issueCommentHandler.handledEventType());
     }
 
 }
