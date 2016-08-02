@@ -13,6 +13,6 @@ public class IssueCommentExtractor implements PayloadExtractor<IssueComment> {
         if (comment == null || issue == null) {
             throw new ExtractException(event);
         }
-        return new IssueComment(issue, comment);
+        return new IssueComment(issue, comment, event.action());
     }
 }
