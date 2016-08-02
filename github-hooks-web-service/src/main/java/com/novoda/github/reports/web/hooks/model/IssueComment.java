@@ -17,15 +17,15 @@ public class IssueComment extends Event {
         this.action = action;
     }
 
-    public GithubIssue getGithubIssue() {
+    public GithubIssue getIssue() {
         return githubIssue;
     }
 
-    public GithubRepository getGithubRepository() {
+    public GithubRepository getRepository() {
         return githubRepository;
     }
 
-    public GithubComment getGithubComment() {
+    public GithubComment getComment() {
         return githubComment;
     }
 }
