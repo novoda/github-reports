@@ -1,9 +1,9 @@
 package com.novoda.github.reports.web.hooks.handler;
 
-import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.CommitCommentExtractor;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
+import com.novoda.github.reports.web.hooks.model.CommitComment;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
@@ -25,7 +25,7 @@ public class CommitCommentHandler implements EventHandler {
 
         GithubAction action = event.action();
         try {
-            GithubComment comment = extractor.extractFrom(event);
+            CommitComment comment = extractor.extractFrom(event);
         } catch (ExtractException e) {
             throw new UnhandledEventException(e.getMessage());
         }

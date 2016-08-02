@@ -12,6 +12,7 @@ import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class IssueCommentExtractorTest {
@@ -33,7 +34,7 @@ public class IssueCommentExtractorTest {
 
     @Test
     public void givenAnIssueCommentEvent_whenExtractingThePayload_thenItIsExtracted() throws Exception {
-        GithubComment comment = new GithubComment();
+        GithubComment comment = mock(GithubComment.class);
         GithubIssue issue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, ANY_IS_PULL_REQUEST);
         given(mockEvent.issue()).willReturn(issue);
         given(mockEvent.comment()).willReturn(comment);
