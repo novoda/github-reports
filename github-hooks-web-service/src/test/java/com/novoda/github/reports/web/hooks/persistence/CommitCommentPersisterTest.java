@@ -59,7 +59,7 @@ public class CommitCommentPersisterTest {
     }
 
     @Test
-    public void givenAnIssue_whenPersisting_thenTheUserIsPersisted() throws Exception {
+    public void givenACommitComment_whenPersisting_thenTheUserIsPersisted() throws Exception {
         CommitComment commitComment = givenACommitComment();
         givenAnEvent(commitComment);
 
@@ -71,7 +71,7 @@ public class CommitCommentPersisterTest {
     }
 
     @Test
-    public void givenAnIssue_whenPersisting_thenTheRepositoryIsPersisted() throws Exception {
+    public void givenACommitComment_whenPersisting_thenTheRepositoryIsPersisted() throws Exception {
         CommitComment commitComment = givenACommitComment();
         givenAnEvent(commitComment);
 
@@ -85,7 +85,7 @@ public class CommitCommentPersisterTest {
     }
 
     @Test
-    public void givenAnIssue_whenPersisting_thenTheEventIsPersisted() throws Exception {
+    public void givenACommitComment_whenPersisting_thenTheEventIsPersisted() throws Exception {
         CommitComment commitComment = givenACommitComment();
         givenAnEvent(commitComment);
 
