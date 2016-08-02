@@ -7,16 +7,16 @@ import com.novoda.github.reports.web.hooks.model.CommitComment;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
-public class CommitCommentHandler implements EventHandler {
+class CommitCommentHandler implements EventHandler {
 
     private final CommitCommentExtractor extractor;
 
-    public static CommitCommentHandler newInstance() {
+    static CommitCommentHandler newInstance() {
         CommitCommentExtractor extractor = new CommitCommentExtractor();
         return new CommitCommentHandler(extractor);
     }
 
-    CommitCommentHandler(CommitCommentExtractor extractor) {
+    private CommitCommentHandler(CommitCommentExtractor extractor) {
         this.extractor = extractor;
     }
 
