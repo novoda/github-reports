@@ -18,6 +18,7 @@ import com.novoda.github.reports.web.hooks.converter.CommitCommentConverter;
 import com.novoda.github.reports.web.hooks.converter.EventConverter;
 import com.novoda.github.reports.web.hooks.model.CommitComment;
 
+// TODO @RUI probably lots of duplication between CommitComment* and ReviewComment*
 public class CommitCommentPersister implements Persister<CommitComment> {
 
     private final EventConverter<CommitComment> converter;
