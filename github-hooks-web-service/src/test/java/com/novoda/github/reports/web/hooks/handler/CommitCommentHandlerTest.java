@@ -1,9 +1,10 @@
 package com.novoda.github.reports.web.hooks.handler;
 
 import com.novoda.github.reports.web.hooks.classification.EventType;
-import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.CommitCommentExtractor;
+import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.persistence.CommitCommentPersister;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,10 +22,13 @@ public class CommitCommentHandlerTest {
     private CommitCommentExtractor mockExtractor;
 
     @Mock
-    private GithubWebhookEvent mockEvent;
+    private CommitCommentPersister mockPersister;
 
     @InjectMocks
     private CommitCommentHandler commitCommentHandler;
+
+    @Mock
+    private GithubWebhookEvent mockEvent;
 
     @Before
     public void setUp() throws Exception {
@@ -47,8 +51,7 @@ public class CommitCommentHandlerTest {
     }
 
     @Test
-    public void handledEventTypeShouldBeReviewComment() {
+    public void handledEventTypeShouldBeCommitComment() {
         assertEquals(EventType.COMMIT_COMMENT, commitCommentHandler.handledEventType());
     }
-
 }
