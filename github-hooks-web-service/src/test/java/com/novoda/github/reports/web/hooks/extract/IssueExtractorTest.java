@@ -46,16 +46,22 @@ public class IssueExtractorTest {
     private Issue givenAnIssue() {
         GithubIssue githubIssue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, ANY_IS_PULL_REQUEST);
         GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID);
-        Issue expected = new Issue(githubIssue, githubRepository, ANY_ACTION);
         given(mockEvent.issue()).willReturn(githubIssue);
         given(mockEvent.repository()).willReturn(githubRepository);
         given(mockEvent.action()).willReturn(ANY_ACTION);
-        return expected;
+        return new Issue(githubIssue, githubRepository, ANY_ACTION);
     }
 
     @Test(expected = ExtractException.class)
-    public void givenAnIssueEvent_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+    public void givenAnIssueEventWithNoIssue_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
         given(mockEvent.issue()).willReturn(null);
+
+        extractor.extractFrom(mockEvent);
+    }
+
+    @Test(expected = ExtractException.class)
+    public void givenAnIssueEventWithNoRepository_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+        given(mockEvent.repository()).willReturn(null);
 
         extractor.extractFrom(mockEvent);
     }
