@@ -60,6 +60,10 @@ public class GithubRepository {
         return owner;
     }
 
+    public long getOwnerId() {
+        return owner.getId();
+    }
+
     public String getOwnerUsername() {
         return owner.getUsername();
     }
