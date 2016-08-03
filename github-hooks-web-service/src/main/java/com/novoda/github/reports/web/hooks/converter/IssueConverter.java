@@ -35,10 +35,6 @@ public class IssueConverter implements EventConverter<Issue> {
 
     @Override
     public EventType convertAction(GithubAction action) throws UnsupportedActionException {
-        /*
-            The action that was performed. Can be one of "assigned", "unassigned", "labeled",
-            "unlabeled", "opened", "edited", "closed", or "reopened"
-        */
         switch (action) {
             case UNLABELED:
                 return EventType.ISSUE_LABEL_REMOVE;
