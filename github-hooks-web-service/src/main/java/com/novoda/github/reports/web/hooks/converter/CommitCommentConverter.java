@@ -42,8 +42,8 @@ public class CommitCommentConverter implements EventConverter<CommitComment> {
             case EDITED:
             case DELETED:
                 // no db support
+            default:
+                throw new UnsupportedActionException(action);
         }
-
-        throw new UnsupportedActionException(action);
     }
 }

@@ -43,8 +43,9 @@ public class IssueCommentConverter implements EventConverter<IssueComment> {
             case EDITED:
             case DELETED:
                 // no db support
+            default:
+                throw new UnsupportedActionException(action);
         }
 
-        throw new UnsupportedActionException(action);
     }
 }

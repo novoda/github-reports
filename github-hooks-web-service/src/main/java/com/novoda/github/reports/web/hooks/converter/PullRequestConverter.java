@@ -56,17 +56,12 @@ public class PullRequestConverter implements EventConverter<PullRequest> {
             case CLOSED:
                 return EventType.PULL_REQUEST_CLOSE;
             case EDITED:
-                // no db support
-                break;
             case REOPENED:
-                // no db support
-                break;
             case SYNCHRONIZE:
                 // no db support
-                break;
+            default:
+                throw new UnsupportedActionException(action);
         }
-
-        throw new UnsupportedActionException(action);
     }
 
     private EventType convertClosedAction(PullRequest pullRequest) {
