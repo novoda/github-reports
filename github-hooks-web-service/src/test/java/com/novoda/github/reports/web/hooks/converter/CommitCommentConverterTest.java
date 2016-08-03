@@ -37,7 +37,7 @@ public class CommitCommentConverterTest {
     }
 
     @Test
-    public void givenAReviewComment_whenConverting_thenConvertsSuccessfully() throws ConverterException {
+    public void givenACommitComment_whenConverting_thenConvertsSuccessfully() throws ConverterException {
         CommitComment commitComment = givenACommitComment();
 
         Event actual = converter.convertFrom(commitComment);
