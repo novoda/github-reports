@@ -10,7 +10,7 @@ public class IssueExtractor implements PayloadExtractor<Issue> {
     public Issue extractFrom(GithubWebhookEvent event) throws ExtractException {
         GithubIssue issue = event.issue();
         GithubRepository repository = event.repository();
-        if (issue == null) {
+        if (issue == null || repository == null) {
             throw new ExtractException(event);
         }
         return new Issue(issue, repository, event.action());
