@@ -8,12 +8,12 @@ import com.novoda.github.reports.data.model.EventType;
 import com.novoda.github.reports.data.model.Repository;
 import com.novoda.github.reports.data.model.User;
 import com.novoda.github.reports.service.GithubUser;
+import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.converter.EventConverter;
+import com.novoda.github.reports.web.hooks.model.CommitComment;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
-import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
-import com.novoda.github.reports.web.hooks.model.PullRequest;
 
 import java.util.Date;
 
@@ -28,21 +28,18 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class PullRequestPersisterTest {
+public class CommitCommentPersisterTest {
 
-    private static final long ANY_ISSUE_ID = 23L;
-    private static final long ANY_REPOSITORY_ID = 42L;
+    private static final String ANY_USERNAME = "uzer";
     private static final long ANY_USER_ID = 88L;
+    private static final long ANY_REPOSITORY_ID = 42L;
+    private static final long ANY_COMMENT_ID = 23L;
     private static final Date ANY_DATE = new Date();
-    private static final EventType ANY_EVENT_TYPE = EventType.BRANCH_DELETE;
-    private static final String ANY_USERNAME = "dudelio";
     private static final String ANY_REPOSITORY_NAME = "topbantz";
-    private static final boolean ANY_IS_PRIVATE_REPOSITORY = false;
-    private static final GithubAction ANY_ACTION = GithubAction.ADDED;
-    private static final boolean ANY_PULL_REQUEST_WAS_MERGED = false;
+    private static final boolean ANY_IS_PRIVATE_REPOSITORY = true;
 
     @Mock
-    private EventConverter<PullRequest> mockConverter;
+    private EventConverter<CommitComment> mockConverter;
 
     @Mock
     private EventDataLayer mockEventDataLayer;
@@ -54,7 +51,7 @@ public class PullRequestPersisterTest {
     private RepoDataLayer mockRepoDataLayer;
 
     @InjectMocks
-    private PullRequestPersister pullRequestPersister;
+    private CommitCommentPersister persister;
 
     @Before
     public void setUp() throws Exception {
@@ -62,11 +59,11 @@ public class PullRequestPersisterTest {
     }
 
     @Test
-    public void givenAPullRequest_whenPersisting_thenTheUserIsPersisted() throws Exception {
-        PullRequest pullRequest = givenAPullRequest();
-        givenAnEvent(pullRequest);
+    public void givenACommitComment_whenPersisting_thenTheUserIsPersisted() throws Exception {
+        CommitComment commitComment = givenACommitComment();
+        givenAnEvent(commitComment);
 
-        pullRequestPersister.persist(pullRequest);
+        persister.persist(commitComment);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(mockUserDataLayer).updateOrInsert(userCaptor.capture());
@@ -74,11 +71,11 @@ public class PullRequestPersisterTest {
     }
 
     @Test
-    public void givenAPullRequest_whenPersisting_thenTheRepositoryIsPersisted() throws Exception {
-        PullRequest pullRequest = givenAPullRequest();
-        givenAnEvent(pullRequest);
+    public void givenACommitComment_whenPersisting_thenTheRepositoryIsPersisted() throws Exception {
+        CommitComment commitComment = givenACommitComment();
+        givenAnEvent(commitComment);
 
-        pullRequestPersister.persist(pullRequest);
+        persister.persist(commitComment);
 
         ArgumentCaptor<Repository> repositoryCaptor = ArgumentCaptor.forClass(Repository.class);
         verify(mockRepoDataLayer).updateOrInsert(repositoryCaptor.capture());
@@ -88,43 +85,32 @@ public class PullRequestPersisterTest {
     }
 
     @Test
-    public void givenAPullRequest_whenPersisting_thenTheEventIsPersisted() throws Exception {
-        PullRequest pullRequest = givenAPullRequest();
-        givenAnEvent(pullRequest);
+    public void givenACommitComment_whenPersisting_thenTheEventIsPersisted() throws Exception {
+        CommitComment commitComment = givenACommitComment();
+        givenAnEvent(commitComment);
 
-        pullRequestPersister.persist(pullRequest);
+        persister.persist(commitComment);
 
         ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
         verify(mockEventDataLayer).updateOrInsert(eventCaptor.capture());
         assertThat(eventCaptor.getValue()).isEqualToComparingFieldByField(
-                Event.create(ANY_ISSUE_ID, ANY_REPOSITORY_ID, ANY_USER_ID, ANY_USER_ID, ANY_EVENT_TYPE, ANY_DATE)
+                Event.create(ANY_COMMENT_ID, ANY_REPOSITORY_ID, ANY_USER_ID, ANY_USER_ID, EventType.PULL_REQUEST_COMMENT, ANY_DATE)
         );
     }
 
-    private PullRequest givenAPullRequest() {
-        GithubWebhookPullRequest webhookPullRequest = givenAnIssue();
-        return new PullRequest(webhookPullRequest, givenARepository(), ANY_ACTION);
+    private CommitComment givenACommitComment() {
+        GithubUser githubUser = new GithubUser(ANY_USER_ID, ANY_USERNAME);
+        GithubComment githubComment = new GithubComment(ANY_COMMENT_ID, githubUser, ANY_DATE);
+        GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_IS_PRIVATE_REPOSITORY);
+        return new CommitComment(githubComment, githubRepository, GithubAction.CREATED);
     }
 
-    private GithubUser givenAUser() {
-        return new GithubUser(ANY_USER_ID, ANY_USERNAME);
-    }
-
-    private GithubWebhookPullRequest givenAnIssue() {
-        return new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, givenAUser(), ANY_PULL_REQUEST_WAS_MERGED);
-    }
-
-    private GithubRepository givenARepository() {
-        return new GithubRepository(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_IS_PRIVATE_REPOSITORY);
-    }
-
-    private void givenAnEvent(PullRequest pullRequest) {
-        Event event = Event.create(ANY_ISSUE_ID, ANY_REPOSITORY_ID, ANY_USER_ID, ANY_USER_ID, ANY_EVENT_TYPE, ANY_DATE);
+    private void givenAnEvent(CommitComment commitComment) {
+        Event event = Event.create(ANY_COMMENT_ID, ANY_REPOSITORY_ID, ANY_USER_ID, ANY_USER_ID, EventType.PULL_REQUEST_COMMENT, ANY_DATE);
         try {
-            given(mockConverter.convertFrom(pullRequest)).willReturn(event);
+            given(mockConverter.convertFrom(commitComment)).willReturn(event);
         } catch (ConverterException e) {
             // nothing to do
         }
     }
-
 }

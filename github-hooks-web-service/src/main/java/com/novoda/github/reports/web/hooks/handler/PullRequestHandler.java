@@ -22,7 +22,7 @@ class PullRequestHandler implements EventHandler {
         return new PullRequestHandler(extractor, persister);
     }
 
-    PullRequestHandler(PayloadExtractor<PullRequest> extractor, Persister<PullRequest> persister) {
+    private PullRequestHandler(PayloadExtractor<PullRequest> extractor, Persister<PullRequest> persister) {
         this.extractor = extractor;
         this.persister = persister;
     }

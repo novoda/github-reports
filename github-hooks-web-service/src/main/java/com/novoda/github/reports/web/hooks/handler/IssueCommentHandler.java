@@ -1,35 +1,52 @@
 package com.novoda.github.reports.web.hooks.handler;
 
+import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.IssueCommentExtractor;
-import com.novoda.github.reports.web.hooks.model.GithubAction;
+import com.novoda.github.reports.web.hooks.extract.PayloadExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.IssueComment;
+import com.novoda.github.reports.web.hooks.persistence.IssueCommentPersister;
+import com.novoda.github.reports.web.hooks.persistence.PersistenceException;
+import com.novoda.github.reports.web.hooks.persistence.Persister;
 
-public class IssueCommentHandler implements EventHandler {
+class IssueCommentHandler implements EventHandler {
 
-    private final IssueCommentExtractor extractor;
+    private final PayloadExtractor<IssueComment> extractor;
+    private final Persister<IssueComment> persister;
 
-    public static IssueCommentHandler newInstance() {
-        IssueCommentExtractor extractor = new IssueCommentExtractor();
-        return new IssueCommentHandler(extractor);
+    static IssueCommentHandler newInstance(ConnectionManager connectionManager) {
+        PayloadExtractor<IssueComment> extractor = new IssueCommentExtractor();
+        Persister<IssueComment> persister = IssueCommentPersister.newInstance(connectionManager);
+        return new IssueCommentHandler(extractor, persister);
     }
 
-    IssueCommentHandler(IssueCommentExtractor extractor) {
+    private IssueCommentHandler(PayloadExtractor<IssueComment> extractor, Persister<IssueComment> persister) {
         this.extractor = extractor;
+        this.persister = persister;
     }
 
     @Override
     public void handle(GithubWebhookEvent event) throws UnhandledEventException {
+        IssueComment issueComment = extractIssueComment(event);
+        persist(issueComment);
+    }
 
-        GithubAction action = event.action();
+    private IssueComment extractIssueComment(GithubWebhookEvent event) throws UnhandledEventException {
         try {
-            IssueComment issueComment = extractor.extractFrom(event);
+            return extractor.extractFrom(event);
         } catch (ExtractException e) {
             throw new UnhandledEventException(e.getMessage());
         }
-        // TODO convert and persist, taking into account the value of 'action'
+    }
+
+    private void persist(IssueComment issueComment) throws UnhandledEventException {
+        try {
+            persister.persist(issueComment);
+        } catch (PersistenceException e) {
+            throw new UnhandledEventException(e.getMessage());
+        }
     }
 
     @Override

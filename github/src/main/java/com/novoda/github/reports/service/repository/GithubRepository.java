@@ -30,10 +30,10 @@ public class GithubRepository {
         this.id = id;
     }
 
-    public GithubRepository(Long id, String name, boolean issuesPresent) {
+    public GithubRepository(Long id, String name, boolean privateRepo) {
         this.id = id;
         this.name = name;
-        this.issuesPresent = issuesPresent;
+        this.privateRepo = privateRepo;
     }
 
     public Long getId() {
@@ -58,6 +58,10 @@ public class GithubRepository {
 
     public GithubUser getOwner() {
         return owner;
+    }
+
+    public long getOwnerId() {
+        return owner.getId();
     }
 
     public String getOwnerUsername() {

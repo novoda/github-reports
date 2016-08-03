@@ -11,32 +11,32 @@ import com.novoda.github.reports.data.db.DbUserDataLayer;
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.Repository;
 import com.novoda.github.reports.data.model.User;
+import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
+import com.novoda.github.reports.web.hooks.converter.CommitCommentConverter;
 import com.novoda.github.reports.web.hooks.converter.EventConverter;
-import com.novoda.github.reports.web.hooks.converter.PullRequestConverter;
-import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
-import com.novoda.github.reports.web.hooks.model.PullRequest;
+import com.novoda.github.reports.web.hooks.model.CommitComment;
 
-public class PullRequestPersister implements Persister<PullRequest> {
+public class CommitCommentPersister implements Persister<CommitComment> {
 
-    private final EventConverter<PullRequest> converter;
+    private final EventConverter<CommitComment> converter;
     private final EventDataLayer eventDataLayer;
     private final UserDataLayer userDataLayer;
     private final RepoDataLayer repoDataLayer;
 
-    public static PullRequestPersister newInstance(ConnectionManager connectionManager) {
-        EventConverter<PullRequest> converter = new PullRequestConverter();
+    public static CommitCommentPersister newInstance(ConnectionManager connectionManager) {
+        EventConverter<CommitComment> converter = new CommitCommentConverter();
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
-        return new PullRequestPersister(converter, eventDataLayer, userDataLayer, repoDataLayer);
+        return new CommitCommentPersister(converter, eventDataLayer, userDataLayer, repoDataLayer);
     }
 
-    PullRequestPersister(EventConverter<PullRequest> converter,
-                         EventDataLayer eventDataLayer,
-                         UserDataLayer userDataLayer,
-                         RepoDataLayer repoDataLayer) {
+    private CommitCommentPersister(EventConverter<CommitComment> converter,
+                                   EventDataLayer eventDataLayer,
+                                   UserDataLayer userDataLayer,
+                                   RepoDataLayer repoDataLayer) {
 
         this.converter = converter;
         this.eventDataLayer = eventDataLayer;
@@ -45,14 +45,14 @@ public class PullRequestPersister implements Persister<PullRequest> {
     }
 
     @Override
-    public void persist(PullRequest pullRequest) throws PersistenceException {
-        Event dbEvent = convertFrom(pullRequest);
+    public void persist(CommitComment commitComment) throws PersistenceException {
+        GithubComment githubComment = commitComment.getComment();
+        GithubRepository repository = commitComment.getRepository();
+        String username = githubComment.getUser().getUsername();
 
-        GithubWebhookPullRequest webhookPullRequest = pullRequest.getWebhookPullRequest();
-        GithubRepository repository = pullRequest.getRepository();
-
-        User dbUser = User.create(webhookPullRequest.getUserId(), webhookPullRequest.getUser().getUsername());
+        User dbUser = User.create(githubComment.getUserId(), username);
         Repository dbRepository = Repository.create(repository.getId(), repository.getName(), repository.isPrivateRepo());
+        Event dbEvent = convertFrom(commitComment);
 
         try {
             userDataLayer.updateOrInsert(dbUser);
@@ -63,12 +63,12 @@ public class PullRequestPersister implements Persister<PullRequest> {
         }
     }
 
-    private Event convertFrom(PullRequest pullRequest) throws PersistenceException {
+    private Event convertFrom(CommitComment commitComment) throws PersistenceException {
         try {
-            return converter.convertFrom(pullRequest);
+            return converter.convertFrom(commitComment);
         } catch (ConverterException e) {
             // TODO swallow this exception 'cause it should be from actions we don't support
-            throw new PersistenceException(pullRequest);
+            throw new PersistenceException(commitComment);
         }
     }
 }

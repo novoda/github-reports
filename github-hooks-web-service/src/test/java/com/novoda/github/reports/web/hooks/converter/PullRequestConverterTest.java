@@ -1,4 +1,4 @@
-package com.novoda.github.reports.web.hooks.convert;
+package com.novoda.github.reports.web.hooks.converter;
 
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.EventType;
@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(Parameterized.class)
-public class PullRequestToDbEventConverterTest {
+public class PullRequestConverterTest {
 
     private static final int ANY_ISSUE_NUMBER = 23;
 
@@ -55,7 +55,7 @@ public class PullRequestToDbEventConverterTest {
     public EventType expectedEventType;
 
     @InjectMocks
-    private PullRequestToDbEventConverter converter;
+    private PullRequestConverter converter;
 
     @Before
     public void setUp() {

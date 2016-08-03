@@ -1,14 +1,17 @@
 package com.novoda.github.reports.web.hooks.extract;
 
 import com.novoda.github.reports.service.issue.GithubIssue;
+import com.novoda.github.reports.service.repository.GithubRepository;
+import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.Issue;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -17,6 +20,8 @@ public class IssueExtractorTest {
     private static final int ANY_ISSUE_NUMBER = 23;
     private static final long ANY_OWNER_ID = 88;
     private static final boolean ANY_IS_PULL_REQUEST = false;
+    private static final long ANY_REPOSITORY_ID = 42L;
+    private static final GithubAction ANY_ACTION = GithubAction.OPENED;
 
     @Mock
     private GithubWebhookEvent mockEvent;
@@ -31,17 +36,32 @@ public class IssueExtractorTest {
 
     @Test
     public void givenAnIssueEvent_whenExtractingThePayload_thenItIsExtracted() throws Exception {
-        GithubIssue issue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, ANY_IS_PULL_REQUEST);
-        given(mockEvent.issue()).willReturn(issue);
+        Issue expected = givenAnIssue();
 
-        GithubIssue actual = extractor.extractFrom(mockEvent);
+        Issue actual = extractor.extractFrom(mockEvent);
 
-        assertEquals(issue, actual);
+        assertThat(actual).isEqualToComparingFieldByField(expected);
+    }
+
+    private Issue givenAnIssue() {
+        GithubIssue githubIssue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, ANY_IS_PULL_REQUEST);
+        GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID);
+        given(mockEvent.issue()).willReturn(githubIssue);
+        given(mockEvent.repository()).willReturn(githubRepository);
+        given(mockEvent.action()).willReturn(ANY_ACTION);
+        return new Issue(githubIssue, githubRepository, ANY_ACTION);
     }
 
     @Test(expected = ExtractException.class)
-    public void givenAnIssueEvent_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+    public void givenAnIssueEventWithNoIssue_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
         given(mockEvent.issue()).willReturn(null);
+
+        extractor.extractFrom(mockEvent);
+    }
+
+    @Test(expected = ExtractException.class)
+    public void givenAnIssueEventWithNoRepository_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+        given(mockEvent.repository()).willReturn(null);
 
         extractor.extractFrom(mockEvent);
     }

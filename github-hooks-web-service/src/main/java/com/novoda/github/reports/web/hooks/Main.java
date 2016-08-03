@@ -31,5 +31,4 @@ public class Main {
         Path path = Paths.get(url.toURI());
         return Files.lines(path).collect(Collectors.joining("\n"));
     }
-
 }
