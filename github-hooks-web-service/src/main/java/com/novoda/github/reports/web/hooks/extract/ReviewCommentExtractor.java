@@ -1,19 +1,19 @@
 package com.novoda.github.reports.web.hooks.extract;
 
 import com.novoda.github.reports.service.issue.GithubComment;
-import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
-import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
+import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.model.ReviewComment;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
 public class ReviewCommentExtractor implements PayloadExtractor<ReviewComment> {
     @Override
     public ReviewComment extractFrom(GithubWebhookEvent event) throws ExtractException {
         GithubComment comment = event.comment();
-        GithubWebhookPullRequest webhookPullRequest = event.pullRequest();
-        if (comment == null || webhookPullRequest == null) {
+        GithubRepository repository = event.repository();
+        // TODO check if we want to extract the pull request object here too
+        if (comment == null || repository == null) {
             throw new ExtractException(event);
         }
-        webhookPullRequest.setIsPullRequest(true);
-        return new ReviewComment(webhookPullRequest, comment);
+        return new ReviewComment(comment, repository, event.action());
     }
 }

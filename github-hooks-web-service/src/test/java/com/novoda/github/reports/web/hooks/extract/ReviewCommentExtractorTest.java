@@ -2,10 +2,10 @@ package com.novoda.github.reports.web.hooks.extract;
 
 import com.novoda.github.reports.service.GithubUser;
 import com.novoda.github.reports.service.issue.GithubComment;
-import com.novoda.github.reports.service.issue.GithubIssue;
-import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
-import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
+import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.model.ReviewComment;
+import com.novoda.github.reports.web.hooks.model.GithubAction;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
 import java.util.Date;
 
@@ -14,17 +14,17 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ReviewCommentExtractorTest {
 
     private static final long ANY_OWNER_ID = 88;
+    private static final long ANY_REPOSITORY_ID = 42L;
+    private static final GithubAction ANY_ACTION = GithubAction.OPENED;
+    private static final long ANY_COMMENT_ID = 23L;
     private static final Date ANY_DATE = new Date();
-    private static final long ANY_ISSUE_ID = 43L;
-    private static final boolean ANY_WAS_MERGED = false;
 
     @Mock
     private GithubWebhookEvent mockEvent;
@@ -39,33 +39,32 @@ public class ReviewCommentExtractorTest {
 
     @Test
     public void givenAReviewCommentEvent_whenExtractingThePayload_thenItIsExtracted() throws Exception {
-        GithubComment comment = new GithubComment();
-        GithubUser user = new GithubUser(ANY_OWNER_ID);
-        GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, user, ANY_WAS_MERGED);
-        given(mockEvent.pullRequest()).willReturn(webhookPullRequest);
-        given(mockEvent.comment()).willReturn(comment);
+        ReviewComment expected = givenAReviewComment();
 
         ReviewComment actual = extractor.extractFrom(mockEvent);
 
-        assertEquals(comment, actual.getComment());
-        assertEquals(webhookPullRequest, actual.getWebhookPullRequest());
+        assertThat(actual).isEqualToComparingFieldByField(expected);
     }
 
-    @Test
-    public void givenAReviewCommentEvent_whenExtractingTheIssue_thenItIsMarkedAsAPullRequest() throws Exception {
-        GithubComment comment = new GithubComment();
-        GithubUser user = new GithubUser(ANY_OWNER_ID);
-        GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_ID, ANY_DATE, user, ANY_WAS_MERGED);
-        given(mockEvent.pullRequest()).willReturn(webhookPullRequest);
-        given(mockEvent.comment()).willReturn(comment);
-
-        GithubIssue actualIssue = extractor.extractFrom(mockEvent).getWebhookPullRequest();
-
-        assertTrue(actualIssue.isPullRequest());
+    private ReviewComment givenAReviewComment() {
+        GithubUser githubUser = new GithubUser(ANY_OWNER_ID);
+        GithubComment githubComment = new GithubComment(ANY_COMMENT_ID, githubUser, ANY_DATE);
+        GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID);
+        given(mockEvent.comment()).willReturn(githubComment);
+        given(mockEvent.repository()).willReturn(githubRepository);
+        given(mockEvent.action()).willReturn(ANY_ACTION);
+        return new ReviewComment(githubComment, githubRepository, ANY_ACTION);
     }
 
     @Test(expected = ExtractException.class)
-    public void givenAReviewCommentEvent_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+    public void givenAReviewCommentEventWithNoIssue_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+        given(mockEvent.issue()).willReturn(null);
+
+        extractor.extractFrom(mockEvent);
+    }
+
+    @Test(expected = ExtractException.class)
+    public void givenAReviewCommentEventWithNoComment_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
         given(mockEvent.comment()).willReturn(null);
 
         extractor.extractFrom(mockEvent);

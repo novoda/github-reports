@@ -2,11 +2,11 @@ package com.novoda.github.reports.web.hooks.classification;
 
 public enum EventType {
 
-    COMMIT_COMMENT(new CommitCommentRule()),    // payload has 'comment' object and no 'issue' or 'pull_request' objects
-    ISSUE(new IssueRule()),                     // payload has 'issue' object
-    PULL_REQUEST(new PullRequestRule()),        // payload has 'pull_request' object
-    ISSUE_COMMENT(new IssueCommentRule()),      // payload has both 'issue' and 'comment' objects
-    REVIEW_COMMENT(new ReviewCommentRule());    // payload has both 'pull_request' and 'comment' objects
+    REVIEW_COMMENT(new ReviewCommentRule()),    // payload has: 'comment', 'pull_request' and 'repository' objects
+    ISSUE(new IssueRule()),                     // payload has: 'issue' and 'repository' objects
+    PULL_REQUEST(new PullRequestRule()),        // payload has: 'pull_request', 'repository' objects
+    ISSUE_COMMENT(new IssueCommentRule()),      // payload has: 'issue', 'repository' and 'comment' objects
+    COMMIT_COMMENT(new CommitCommentRule());    // payload has: 'repository' and 'comment' objects
 
     private final ClassificationRule rule;
 

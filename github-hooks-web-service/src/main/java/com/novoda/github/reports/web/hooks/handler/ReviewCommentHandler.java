@@ -1,35 +1,52 @@
 package com.novoda.github.reports.web.hooks.handler;
 
+import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.web.hooks.classification.EventType;
-import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.ReviewCommentExtractor;
-import com.novoda.github.reports.web.hooks.model.GithubAction;
-import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.extract.ExtractException;
+import com.novoda.github.reports.web.hooks.extract.PayloadExtractor;
 import com.novoda.github.reports.web.hooks.model.ReviewComment;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.persistence.ReviewCommentPersister;
+import com.novoda.github.reports.web.hooks.persistence.PersistenceException;
+import com.novoda.github.reports.web.hooks.persistence.Persister;
 
-public class ReviewCommentHandler implements EventHandler {
+class ReviewCommentHandler implements EventHandler {
 
-    private final ReviewCommentExtractor extractor;
+    private final PayloadExtractor<ReviewComment> extractor;
+    private final Persister<ReviewComment> persister;
 
-    public static ReviewCommentHandler newInstance() {
-        ReviewCommentExtractor extractor = new ReviewCommentExtractor();
-        return new ReviewCommentHandler(extractor);
+    static ReviewCommentHandler newInstance(ConnectionManager connectionManager) {
+        PayloadExtractor<ReviewComment> extractor = new ReviewCommentExtractor();
+        Persister<ReviewComment> persister = ReviewCommentPersister.newInstance(connectionManager);
+        return new ReviewCommentHandler(extractor, persister);
     }
 
-    ReviewCommentHandler(ReviewCommentExtractor extractor) {
+    private ReviewCommentHandler(PayloadExtractor<ReviewComment> extractor, Persister<ReviewComment> persister) {
         this.extractor = extractor;
+        this.persister = persister;
     }
 
     @Override
     public void handle(GithubWebhookEvent event) throws UnhandledEventException {
+        ReviewComment reviewComment = extractReviewComment(event);
+        persist(reviewComment);
+    }
 
-        GithubAction action = event.action();
+    private ReviewComment extractReviewComment(GithubWebhookEvent event) throws UnhandledEventException {
         try {
-            ReviewComment reviewComment = extractor.extractFrom(event);
+            return extractor.extractFrom(event);
         } catch (ExtractException e) {
             throw new UnhandledEventException(e.getMessage());
         }
-        // TODO convert and persist, taking into account the value of 'action'
+    }
+
+    private void persist(ReviewComment reviewComment) throws UnhandledEventException {
+        try {
+            persister.persist(reviewComment);
+        } catch (PersistenceException e) {
+            throw new UnhandledEventException(e.getMessage());
+        }
     }
 
     @Override

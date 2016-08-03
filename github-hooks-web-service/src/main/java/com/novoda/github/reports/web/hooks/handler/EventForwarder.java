@@ -15,10 +15,10 @@ public class EventForwarder {
     private static final Map<EventType, EventHandler> HANDLERS = new HashMap<>(5);
     static {
         HANDLERS.put(EventType.PULL_REQUEST, PullRequestHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
-        HANDLERS.put(EventType.ISSUE, IssueHandler.newInstance());
-        HANDLERS.put(EventType.COMMIT_COMMENT, CommitCommentHandler.newInstance());
-        HANDLERS.put(EventType.ISSUE_COMMENT, IssueCommentHandler.newInstance());
-        HANDLERS.put(EventType.REVIEW_COMMENT, ReviewCommentHandler.newInstance());
+        HANDLERS.put(EventType.ISSUE, IssueHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
+        HANDLERS.put(EventType.REVIEW_COMMENT, ReviewCommentHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
+        HANDLERS.put(EventType.ISSUE_COMMENT, IssueCommentHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
+        HANDLERS.put(EventType.COMMIT_COMMENT, CommitCommentHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
     }
 
     private WebhookEventClassifier eventClassifier;

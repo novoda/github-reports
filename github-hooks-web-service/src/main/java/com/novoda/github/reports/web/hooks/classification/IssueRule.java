@@ -2,7 +2,7 @@ package com.novoda.github.reports.web.hooks.classification;
 
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
-public class IssueRule implements ClassificationRule {
+class IssueRule implements ClassificationRule {
     @Override
     public boolean check(GithubWebhookEvent event) {
         return event.issue() != null && event.comment() == null;

@@ -1,35 +1,52 @@
 package com.novoda.github.reports.web.hooks.handler;
 
-import com.novoda.github.reports.service.issue.GithubIssue;
+import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.web.hooks.classification.EventType;
 import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.IssueExtractor;
-import com.novoda.github.reports.web.hooks.model.GithubAction;
+import com.novoda.github.reports.web.hooks.extract.PayloadExtractor;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.Issue;
+import com.novoda.github.reports.web.hooks.persistence.IssuePersister;
+import com.novoda.github.reports.web.hooks.persistence.PersistenceException;
+import com.novoda.github.reports.web.hooks.persistence.Persister;
 
-public class IssueHandler implements EventHandler {
+class IssueHandler implements EventHandler {
 
-    private final IssueExtractor extractor;
+    private final PayloadExtractor<Issue> extractor;
+    private final Persister<Issue> persister;
 
-    public static IssueHandler newInstance() {
-        IssueExtractor issueExtractor = new IssueExtractor();
-        return new IssueHandler(issueExtractor);
+    static IssueHandler newInstance(ConnectionManager connectionManager) {
+        PayloadExtractor<Issue> issueExtractor = new IssueExtractor();
+        Persister<Issue> persister = IssuePersister.newInstance(connectionManager);
+        return new IssueHandler(issueExtractor, persister);
     }
 
-    IssueHandler(IssueExtractor extractor) {
+    private IssueHandler(PayloadExtractor<Issue> extractor, Persister<Issue> persister) {
         this.extractor = extractor;
+        this.persister = persister;
     }
 
     @Override
     public void handle(GithubWebhookEvent event) throws UnhandledEventException {
+        Issue issue = extractIssue(event);
+        persist(issue);
+    }
 
-        GithubAction action = event.action();
+    private Issue extractIssue(GithubWebhookEvent event) throws UnhandledEventException {
         try {
-            GithubIssue issue = extractor.extractFrom(event);
+            return extractor.extractFrom(event);
         } catch (ExtractException e) {
             throw new UnhandledEventException(e.getMessage());
         }
-        // TODO convert and persist, taking into account the value of 'action'
+    }
+
+    private void persist(Issue issue) throws UnhandledEventException {
+        try {
+            persister.persist(issue);
+        } catch (PersistenceException e) {
+            throw new UnhandledEventException(e.getMessage());
+        }
     }
 
     @Override

@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -42,7 +41,6 @@ public class PullRequestHandlerTest {
 
     @Test
     public void givenAnEventThatIsAPullRequest_whenHandlingIt_thenWeDelegateToExtractor() throws ExtractException, UnhandledEventException {
-        whenExtractingPullRequestExtractSuccessfully();
 
         pullRequestHandler.handle(mockEvent);
 
@@ -51,19 +49,10 @@ public class PullRequestHandlerTest {
 
     @Test
     public void givenAnEvent_whenHandlingIt_thenWeDelegateToPersister() throws UnhandledEventException, PersistenceException {
-        whenExtractingPullRequestExtractSuccessfully();
 
         pullRequestHandler.handle(mockEvent);
 
         verify(mockPersister).persist(any(PullRequest.class));
-    }
-
-    private void whenExtractingPullRequestExtractSuccessfully() {
-        try {
-            given(mockPullRequestExtractor.extractFrom(mockEvent)).willReturn(mock(PullRequest.class));
-        } catch (ExtractException e) {
-            // nothing to do
-        }
     }
 
     @Test(expected = UnhandledEventException.class)

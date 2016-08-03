@@ -1,9 +1,10 @@
 package com.novoda.github.reports.web.hooks.handler;
 
 import com.novoda.github.reports.web.hooks.classification.EventType;
-import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.extract.ReviewCommentExtractor;
+import com.novoda.github.reports.web.hooks.extract.ExtractException;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.persistence.ReviewCommentPersister;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +20,9 @@ public class ReviewCommentHandlerTest {
 
     @Mock
     private ReviewCommentExtractor mockExtractor;
+
+    @Mock
+    private ReviewCommentPersister mockPersister;
 
     @InjectMocks
     private ReviewCommentHandler reviewCommentHandler;

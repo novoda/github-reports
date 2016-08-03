@@ -1,4 +1,4 @@
-package com.novoda.github.reports.web.hooks.convert;
+package com.novoda.github.reports.web.hooks.converter;
 
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.EventType;
@@ -8,7 +8,7 @@ import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
 
-public class PullRequestToDbEventConverter implements EventConverter<PullRequest> {
+public class PullRequestConverter implements EventConverter<PullRequest> {
 
     @Override
     public Event convertFrom(PullRequest pullRequest) throws ConverterException {
@@ -56,17 +56,12 @@ public class PullRequestToDbEventConverter implements EventConverter<PullRequest
             case CLOSED:
                 return EventType.PULL_REQUEST_CLOSE;
             case EDITED:
-                // no db support
-                break;
             case REOPENED:
-                // no db support
-                break;
             case SYNCHRONIZE:
                 // no db support
-                break;
+            default:
+                throw new UnsupportedActionException(action);
         }
-
-        throw new UnsupportedActionException(action);
     }
 
     private EventType convertClosedAction(PullRequest pullRequest) {

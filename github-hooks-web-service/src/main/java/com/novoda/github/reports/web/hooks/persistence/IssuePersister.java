@@ -11,32 +11,32 @@ import com.novoda.github.reports.data.db.DbUserDataLayer;
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.Repository;
 import com.novoda.github.reports.data.model.User;
+import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.converter.EventConverter;
-import com.novoda.github.reports.web.hooks.converter.PullRequestConverter;
-import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
-import com.novoda.github.reports.web.hooks.model.PullRequest;
+import com.novoda.github.reports.web.hooks.converter.IssueConverter;
+import com.novoda.github.reports.web.hooks.model.Issue;
 
-public class PullRequestPersister implements Persister<PullRequest> {
+public class IssuePersister implements Persister<Issue> {
 
-    private final EventConverter<PullRequest> converter;
+    private final EventConverter<Issue> converter;
     private final EventDataLayer eventDataLayer;
     private final UserDataLayer userDataLayer;
     private final RepoDataLayer repoDataLayer;
 
-    public static PullRequestPersister newInstance(ConnectionManager connectionManager) {
-        EventConverter<PullRequest> converter = new PullRequestConverter();
+    public static IssuePersister newInstance(ConnectionManager connectionManager) {
+        EventConverter<Issue> converter = new IssueConverter();
         EventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
         UserDataLayer userDataLayer = DbUserDataLayer.newInstance(connectionManager);
         RepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
-        return new PullRequestPersister(converter, eventDataLayer, userDataLayer, repoDataLayer);
+        return new IssuePersister(converter, eventDataLayer, userDataLayer, repoDataLayer);
     }
 
-    PullRequestPersister(EventConverter<PullRequest> converter,
-                         EventDataLayer eventDataLayer,
-                         UserDataLayer userDataLayer,
-                         RepoDataLayer repoDataLayer) {
+    private IssuePersister(EventConverter<Issue> converter,
+                           EventDataLayer eventDataLayer,
+                           UserDataLayer userDataLayer,
+                           RepoDataLayer repoDataLayer) {
 
         this.converter = converter;
         this.eventDataLayer = eventDataLayer;
@@ -45,14 +45,14 @@ public class PullRequestPersister implements Persister<PullRequest> {
     }
 
     @Override
-    public void persist(PullRequest pullRequest) throws PersistenceException {
-        Event dbEvent = convertFrom(pullRequest);
+    public void persist(Issue issue) throws PersistenceException {
+        GithubIssue githubIssue = issue.getIssue();
+        GithubRepository repository = issue.getRepository();
+        String username = githubIssue.getUser().getUsername();
 
-        GithubWebhookPullRequest webhookPullRequest = pullRequest.getWebhookPullRequest();
-        GithubRepository repository = pullRequest.getRepository();
-
-        User dbUser = User.create(webhookPullRequest.getUserId(), webhookPullRequest.getUser().getUsername());
+        User dbUser = User.create(githubIssue.getUserId(), username);
         Repository dbRepository = Repository.create(repository.getId(), repository.getName(), repository.isPrivateRepo());
+        Event dbEvent = convertFrom(issue);
 
         try {
             userDataLayer.updateOrInsert(dbUser);
@@ -63,12 +63,12 @@ public class PullRequestPersister implements Persister<PullRequest> {
         }
     }
 
-    private Event convertFrom(PullRequest pullRequest) throws PersistenceException {
+    private Event convertFrom(Issue issue) throws PersistenceException {
         try {
-            return converter.convertFrom(pullRequest);
+            return converter.convertFrom(issue);
         } catch (ConverterException e) {
             // TODO swallow this exception 'cause it should be from actions we don't support
-            throw new PersistenceException(pullRequest);
+            throw new PersistenceException(issue);
         }
     }
 }
