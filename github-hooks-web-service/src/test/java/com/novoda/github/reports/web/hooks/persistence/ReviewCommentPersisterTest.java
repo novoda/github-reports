@@ -85,7 +85,7 @@ public class ReviewCommentPersisterTest {
     }
 
     @Test
-    public void givenAReviewomment_whenPersisting_thenTheEventIsPersisted() throws Exception {
+    public void givenAReviewComment_whenPersisting_thenTheEventIsPersisted() throws Exception {
         ReviewComment reviewComment = givenAReviewComment();
         givenAnEvent(reviewComment);
 
