@@ -67,7 +67,6 @@ public class PullRequestPersister implements Persister<PullRequest> {
         try {
             return converter.convertFrom(pullRequest);
         } catch (ConverterException e) {
-            // TODO swallow this exception 'cause it should be from actions we don't support
             throw new PersistenceException(pullRequest);
         }
     }
