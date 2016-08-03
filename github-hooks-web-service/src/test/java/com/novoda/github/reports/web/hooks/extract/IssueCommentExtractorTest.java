@@ -27,6 +27,7 @@ public class IssueCommentExtractorTest {
     private static final long ANY_REPOSITORY_ID = 42L;
     private static final long ANY_COMMENT_ID = 23L;
     private static final Date ANY_DATE = new Date();
+    private static final GithubAction ANY_ACTION = GithubAction.OPENED;
 
     @Mock
     private GithubWebhookEvent mockEvent;
@@ -56,13 +57,27 @@ public class IssueCommentExtractorTest {
         given(mockEvent.comment()).willReturn(githubComment);
         given(mockEvent.repository()).willReturn(githubRepository);
         given(mockEvent.issue()).willReturn(githubIssue);
-        given(mockEvent.action()).willReturn(GithubAction.OPENED);
-        return new IssueComment(githubComment, githubRepository, githubIssue, GithubAction.OPENED);
+        given(mockEvent.action()).willReturn(ANY_ACTION);
+        return new IssueComment(githubComment, githubRepository, githubIssue, ANY_ACTION);
     }
 
     @Test(expected = ExtractException.class)
-    public void givenAnIssueCommentEvent_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+    public void givenAnIssueCommentEventWithNoComment_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
         given(mockEvent.comment()).willReturn(null);
+
+        extractor.extractFrom(mockEvent);
+    }
+
+    @Test(expected = ExtractException.class)
+    public void givenAnIssueCommentEventWithNoIssue_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+        given(mockEvent.issue()).willReturn(null);
+
+        extractor.extractFrom(mockEvent);
+    }
+
+    @Test(expected = ExtractException.class)
+    public void givenAnIssueCommentEventWithNoRepository_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+        given(mockEvent.repository()).willReturn(null);
 
         extractor.extractFrom(mockEvent);
     }
