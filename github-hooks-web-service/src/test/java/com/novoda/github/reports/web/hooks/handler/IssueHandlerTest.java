@@ -27,11 +27,11 @@ public class IssueHandlerTest {
     @Mock
     private IssuePersister mockPersister;
 
-    @InjectMocks
-    private IssueHandler issueHandler;
-
     @Mock
     private GithubWebhookEvent mockEvent;
+
+    @InjectMocks
+    private IssueHandler issueHandler;
 
     @Before
     public void setUp() throws Exception {

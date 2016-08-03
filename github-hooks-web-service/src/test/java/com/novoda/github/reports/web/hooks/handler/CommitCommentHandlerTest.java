@@ -20,11 +20,11 @@ public class CommitCommentHandlerTest {
     @Mock
     private CommitCommentExtractor mockExtractor;
 
-    @InjectMocks
-    private CommitCommentHandler commitCommentHandler;
-
     @Mock
     private GithubWebhookEvent mockEvent;
+
+    @InjectMocks
+    private CommitCommentHandler commitCommentHandler;
 
     @Before
     public void setUp() throws Exception {
@@ -40,7 +40,7 @@ public class CommitCommentHandlerTest {
     }
 
     @Test(expected = UnhandledEventException.class)
-    public void givenAnEventThatIsNotAReviewComment_whenHandlingIt_thenThrowsException() throws Exception {
+    public void givenAnEventThatIsNotACommitComment_whenHandlingIt_thenThrowsException() throws Exception {
         given(mockExtractor.extractFrom(mockEvent)).willThrow(ExtractException.class);
 
         commitCommentHandler.handle(mockEvent);
