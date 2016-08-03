@@ -41,8 +41,8 @@ public class ReviewCommentConverter implements EventConverter<ReviewComment> {
             case EDITED:
             case DELETED:
                 // no db support
+            default:
+                throw new UnsupportedActionException(action);
         }
-
-        throw new UnsupportedActionException(action);
     }
 }

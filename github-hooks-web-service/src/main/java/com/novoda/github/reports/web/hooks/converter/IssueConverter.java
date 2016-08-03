@@ -49,8 +49,8 @@ public class IssueConverter implements EventConverter<Issue> {
             case ASSIGNED:
             case UNASSIGNED:
                 // no db support
+            default:
+                throw new UnsupportedActionException(action);
         }
-
-        throw new UnsupportedActionException(action);
     }
 }
