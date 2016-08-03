@@ -57,8 +57,15 @@ public class ReviewCommentExtractorTest {
     }
 
     @Test(expected = ExtractException.class)
-    public void givenAReviewCommentEvent_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+    public void givenAReviewCommentEventWithNoIssue_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
         given(mockEvent.issue()).willReturn(null);
+
+        extractor.extractFrom(mockEvent);
+    }
+
+    @Test(expected = ExtractException.class)
+    public void givenAReviewCommentEventWithNoComment_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+        given(mockEvent.comment()).willReturn(null);
 
         extractor.extractFrom(mockEvent);
     }
