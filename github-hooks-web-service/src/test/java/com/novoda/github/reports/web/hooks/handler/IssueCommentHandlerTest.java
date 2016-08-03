@@ -24,11 +24,11 @@ public class IssueCommentHandlerTest {
     @Mock
     private IssueCommentPersister mockPersister;
 
-    @InjectMocks
-    private IssueCommentHandler issueCommentHandler;
-
     @Mock
     private GithubWebhookEvent mockEvent;
+
+    @InjectMocks
+    private IssueCommentHandler issueCommentHandler;
 
     @Before
     public void setUp() throws Exception {
