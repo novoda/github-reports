@@ -60,7 +60,7 @@ public class IssueCommentPersister implements Persister<IssueComment> {
             repoDataLayer.updateOrInsert(dbRepository);
             eventDataLayer.updateOrInsert(dbEvent);
         } catch (DataLayerException e) {
-            throw new PersistenceException(e.getMessage());
+            throw new PersistenceException(e);
         }
     }
 
@@ -68,7 +68,7 @@ public class IssueCommentPersister implements Persister<IssueComment> {
         try {
             return converter.convertFrom(issueComment);
         } catch (ConverterException e) {
-            throw new PersistenceException(issueComment);
+            throw new PersistenceException(e);
         }
     }
 }

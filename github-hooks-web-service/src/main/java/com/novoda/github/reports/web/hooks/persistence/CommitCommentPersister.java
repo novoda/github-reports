@@ -59,7 +59,7 @@ public class CommitCommentPersister implements Persister<CommitComment> {
             repoDataLayer.updateOrInsert(dbRepository);
             eventDataLayer.updateOrInsert(dbEvent);
         } catch (DataLayerException e) {
-            throw new PersistenceException(e.getMessage());
+            throw new PersistenceException(e);
         }
     }
 
@@ -67,7 +67,7 @@ public class CommitCommentPersister implements Persister<CommitComment> {
         try {
             return converter.convertFrom(commitComment);
         } catch (ConverterException e) {
-            throw new PersistenceException(commitComment);
+            throw new PersistenceException(e);
         }
     }
 }
