@@ -8,7 +8,11 @@ public class UnhandledEventException extends Exception {
         super(message);
     }
 
-    UnhandledEventException(GithubWebhookEvent event) {
+    public UnhandledEventException(Throwable cause) {
+        super(cause);
+    }
+
+    UnhandledEventException(GithubWebhookEvent event, String message) {
         super("Unhandled event: " + event.toString());
     }
 }

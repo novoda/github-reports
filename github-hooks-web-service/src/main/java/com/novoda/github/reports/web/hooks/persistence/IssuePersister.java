@@ -59,7 +59,7 @@ public class IssuePersister implements Persister<Issue> {
             repoDataLayer.updateOrInsert(dbRepository);
             eventDataLayer.updateOrInsert(dbEvent);
         } catch (DataLayerException e) {
-            throw new PersistenceException(e.getMessage());
+            throw new PersistenceException(e);
         }
     }
 
@@ -68,7 +68,7 @@ public class IssuePersister implements Persister<Issue> {
             return converter.convertFrom(issue);
         } catch (ConverterException e) {
             // TODO swallow this exception 'cause it should be from actions we don't support
-            throw new PersistenceException(issue);
+            throw new PersistenceException(e);
         }
     }
 }
