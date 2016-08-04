@@ -17,7 +17,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 
-        String json = readFile("issue_edited.sample.json");
+        String json = readFile("commit_comment_created.sample.json");
 
         PostGithubWebhookEventHandler handler = new PostGithubWebhookEventHandler();
         handler.handleRequest(new StringInputStream(json), new ByteArrayOutputStream(), null);
