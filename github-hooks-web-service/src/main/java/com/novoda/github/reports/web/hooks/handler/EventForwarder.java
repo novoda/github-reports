@@ -50,7 +50,7 @@ public class EventForwarder {
         try {
             eventType = eventClassifier.classify(event);
         } catch (ClassificationException e) {
-            throw new UnhandledEventException(e.getMessage());
+            throw new UnhandledEventException(e);
         }
         return eventType;
     }

@@ -45,7 +45,7 @@ class IssueHandler implements EventHandler {
         try {
             persister.persist(issue);
         } catch (PersistenceException e) {
-            throw new UnhandledEventException(e.getMessage());
+            throw new UnhandledEventException(e);
         }
     }
 
