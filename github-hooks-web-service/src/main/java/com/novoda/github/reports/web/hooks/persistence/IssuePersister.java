@@ -67,7 +67,6 @@ public class IssuePersister implements Persister<Issue> {
         try {
             return converter.convertFrom(issue);
         } catch (ConverterException e) {
-            // TODO swallow this exception 'cause it should be from actions we don't support
             throw new PersistenceException(e);
         }
     }
