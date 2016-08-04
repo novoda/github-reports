@@ -67,7 +67,6 @@ public class ReviewCommentPersister implements Persister<ReviewComment> {
         try {
             return converter.convertFrom(reviewComment);
         } catch (ConverterException e) {
-            // TODO swallow this exception 'cause it should be from actions we don't support
             throw new PersistenceException(e);
         }
     }
