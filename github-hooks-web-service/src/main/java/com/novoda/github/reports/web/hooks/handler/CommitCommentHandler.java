@@ -37,7 +37,7 @@ class CommitCommentHandler implements EventHandler {
         try {
             return extractor.extractFrom(event);
         } catch (ExtractException e) {
-            throw new UnhandledEventException(e.getMessage());
+            throw new UnhandledEventException(e);
         }
     }
 
@@ -45,7 +45,7 @@ class CommitCommentHandler implements EventHandler {
         try {
             persister.persist(reviewComment);
         } catch (PersistenceException e) {
-            throw new UnhandledEventException(e.getMessage());
+            throw new UnhandledEventException(e);
         }
     }
 
