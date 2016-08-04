@@ -59,7 +59,7 @@ public class PullRequestPersister implements Persister<PullRequest> {
             repoDataLayer.updateOrInsert(dbRepository);
             eventDataLayer.updateOrInsert(dbEvent);
         } catch (DataLayerException e) {
-            throw new PersistenceException(e.getMessage());
+            throw new PersistenceException(e);
         }
     }
 
@@ -67,8 +67,7 @@ public class PullRequestPersister implements Persister<PullRequest> {
         try {
             return converter.convertFrom(pullRequest);
         } catch (ConverterException e) {
-            // TODO swallow this exception 'cause it should be from actions we don't support
-            throw new PersistenceException(pullRequest);
+            throw new PersistenceException(e);
         }
     }
 }

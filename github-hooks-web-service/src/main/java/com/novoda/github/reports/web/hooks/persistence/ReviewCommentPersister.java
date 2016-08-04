@@ -59,7 +59,7 @@ public class ReviewCommentPersister implements Persister<ReviewComment> {
             repoDataLayer.updateOrInsert(dbRepository);
             eventDataLayer.updateOrInsert(dbEvent);
         } catch (DataLayerException e) {
-            throw new PersistenceException(e.getMessage());
+            throw new PersistenceException(e);
         }
     }
 
@@ -67,8 +67,7 @@ public class ReviewCommentPersister implements Persister<ReviewComment> {
         try {
             return converter.convertFrom(reviewComment);
         } catch (ConverterException e) {
-            // TODO swallow this exception 'cause it should be from actions we don't support
-            throw new PersistenceException(reviewComment);
+            throw new PersistenceException(e);
         }
     }
 }
