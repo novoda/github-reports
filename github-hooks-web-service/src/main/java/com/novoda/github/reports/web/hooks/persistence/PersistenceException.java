@@ -12,7 +12,7 @@ public class PersistenceException extends Exception {
         super("Unable to persist event: " + event.toString());
     }
 
-    public PersistenceException(Throwable cause) {
+    PersistenceException(Throwable cause) {
         super(cause);
     }
 }
