@@ -45,8 +45,8 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
             logger.log("*** FORWARDING EVENT...");
             eventForwarder.forward(event);
         } catch (UnhandledEventException e) {
-            String log = "Failed to forward an event (" + event.toString() + ")";
-            logger.log("*** ERROR: " + log + ". " + e.getMessage());
+            logger.log("*** ERROR: Failed to forward an event (" + event.toString() + "). " + e.getMessage());
+            outputException(output, e);
             e.printStackTrace();
         }
 
@@ -69,6 +69,14 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
     private LambdaLogger getLogger(Context context) {
         return context == null ? System.out::println : context.getLogger();
+    }
+
+    private void outputException(OutputStream output, Exception exception) {
+        try {
+            writeToOutputFor(output, "{\"error\": \"" + exception.getMessage() + "\"}");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void writeToOutputFor(OutputStream output, String message) throws IOException {
