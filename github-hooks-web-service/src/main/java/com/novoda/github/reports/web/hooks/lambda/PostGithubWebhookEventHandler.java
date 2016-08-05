@@ -44,15 +44,13 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         try {
             logger.log("*** FORWARDING EVENT...");
             eventForwarder.forward(event);
+            writeToOutput(output, gson.toJson(event, PostGithubWebhookEventHandler.class));
+            logger.log("*** HANDLED EVENT: " + event.toString());
         } catch (UnhandledEventException e) {
             logger.log("*** ERROR: Failed to forward an event (" + event.toString() + "). " + e.getMessage());
             outputException(output, e);
             e.printStackTrace();
         }
-
-        writeToOutput(output, "{}");
-
-        logger.log("*** HANDLED EVENT: " + event.toString());
     }
 
     private void disableJooqLogAd() {
