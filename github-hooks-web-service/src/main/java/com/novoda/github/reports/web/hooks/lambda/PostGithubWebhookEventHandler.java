@@ -11,9 +11,11 @@ import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,5 +72,14 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
     private LambdaLogger getLogger(Context context) {
         return context == null ? System.out::println : context.getLogger();
+    }
+
+    private void writeToOutputFor(OutputStream output, String message) throws IOException {
+        try (OutputStreamWriter writer = new OutputStreamWriter(output)) {
+            writer.write(message);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
