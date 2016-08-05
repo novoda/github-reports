@@ -50,8 +50,9 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
             e.printStackTrace();
         }
 
+        writeToOutput(output, "{}");
+
         logger.log("*** HANDLED EVENT: " + event.toString());
-        logger.log(getPostBody(input));
     }
 
     private void disableJooqLogAd() {
@@ -72,8 +73,12 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
     }
 
     private void outputException(OutputStream output, Exception exception) {
+        writeToOutput(output, "{\"error\": \"" + exception.getMessage() + "\"}");
+    }
+
+    private void writeToOutput(OutputStream output, String message) {
         try {
-            writeToOutputFor(output, "{\"error\": \"" + exception.getMessage() + "\"}");
+            writeToOutputFor(output, message);
         } catch (IOException e) {
             e.printStackTrace();
         }
