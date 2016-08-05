@@ -17,8 +17,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.jooq.tools.JooqLogger;
@@ -57,7 +55,6 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
     }
 
     private void disableJooqLogAd() {
-        Logger.getLogger("org.jooq.Constants").setLevel(Level.WARNING);
         JooqLogger.globalThreshold(JooqLogger.Level.WARN);
     }
 
