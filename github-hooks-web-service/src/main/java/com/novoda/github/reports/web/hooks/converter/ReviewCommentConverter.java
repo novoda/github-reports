@@ -19,7 +19,7 @@ public class ReviewCommentConverter implements EventConverter<ReviewComment> {
                 githubComment.getId(),
                 githubRepository.getId(),
                 githubComment.getUserId(),
-                githubComment.getUserId(),
+                githubRepository.getOwnerId(),
                 eventType,
                 githubComment.getUpdatedAt()
         );

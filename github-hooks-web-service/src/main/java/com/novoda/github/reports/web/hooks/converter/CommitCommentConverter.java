@@ -19,7 +19,7 @@ public class CommitCommentConverter implements EventConverter<CommitComment> {
                 githubComment.getId(),
                 githubRepository.getId(),
                 githubComment.getUserId(),
-                githubComment.getUserId(),
+                githubRepository.getOwnerId(),
                 eventType,
                 githubComment.getUpdatedAt()
         );
