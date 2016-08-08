@@ -10,7 +10,6 @@ public class ReviewCommentExtractor implements PayloadExtractor<ReviewComment> {
     public ReviewComment extractFrom(GithubWebhookEvent event) throws ExtractException {
         GithubComment comment = event.comment();
         GithubRepository repository = event.repository();
-        // TODO check if we want to extract the pull request object here too
         if (comment == null || repository == null) {
             throw new ExtractException(event);
         }
