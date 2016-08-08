@@ -22,23 +22,23 @@ class OutputWriter implements Closeable {
         this.gson = gson;
     }
 
-    public void outputInfo(String message) {
-        try {
-            writeToOutput(message);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void outputException(Exception exception) {
+    void outputException(Exception exception) {
         outputInfo(wrapInError(exception.getMessage()));
     }
 
-    public void outputEvent(GithubWebhookEvent event) {
+    void outputEvent(GithubWebhookEvent event) {
         try {
             outputInfo(gson.toJson(event, GithubWebhookEvent.class));
         } catch (Exception e) {
             outputException(e);
+        }
+    }
+
+    private void outputInfo(String message) {
+        try {
+            writeToOutput(message);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
