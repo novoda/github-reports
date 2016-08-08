@@ -60,6 +60,10 @@ public class GithubRepository {
         return owner;
     }
 
+    public long getOwnerId() {
+        return owner.getId();
+    }
+
     public String getOwnerUsername() {
         return owner.getUsername();
     }
@@ -78,6 +82,10 @@ public class GithubRepository {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setOwner(GithubUser owner) {
+        this.owner = owner;
     }
 
     @Override
