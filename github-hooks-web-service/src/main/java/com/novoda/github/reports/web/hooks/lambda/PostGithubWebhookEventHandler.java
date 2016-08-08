@@ -38,16 +38,16 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         LambdaLogger logger = getLogger(context);
         disableJooqLogAd();
 
-        logger.log("*** STARTING...");
+        logger.log("> λ STARTING...");
 
         GithubWebhookEvent event = getEventFrom(input);
         try {
-            logger.log("*** FORWARDING EVENT...");
+            logger.log("> FORWARDING EVENT...");
             eventForwarder.forward(event);
             writeToOutput(output, gson.toJson(event, PostGithubWebhookEventHandler.class));
-            logger.log("*** HANDLED EVENT: " + event.toString());
+            logger.log("> HANDLED EVENT: " + event.toString());
         } catch (UnhandledEventException e) {
-            logger.log("*** ERROR: Failed to forward an event (" + event.toString() + "). " + e.getMessage());
+            logger.log(">! ERROR: Failed to forward an event (" + event.toString() + "). " + e.getMessage());
             outputException(output, e);
             e.printStackTrace();
         }
