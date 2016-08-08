@@ -49,9 +49,9 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         } catch (UnhandledEventException e) {
             logger.log("ERROR: Failed to forward an event (" + event.toString() + "). " + e.getMessage());
             outputWriter.outputException(e);
+        } finally {
+            closeOutputWriter();
         }
-
-        closeOutputWriter();
     }
 
     private void disableJooqLogAd() {
