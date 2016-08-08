@@ -58,23 +58,12 @@ task zip(type: Zip) {
     exclude '*.sample'
 }
 
-
-def lambdasMap = [
-        'PostGithubWebhookEventHandler': 'github-reports-webhook-post'
-]
-
-task uploadHooksLambdas(group: 'aws')
-
-lambdasMap.each { key, value ->
-    String uploadLambdaTask = "upload${key}Lambda"
-    task(uploadLambdaTask, type: AWSLambdaMigrateFunctionTask, dependsOn: zip) {
-        functionName = value
-        role = "arn:aws:iam::${aws.accountId}:role/github-reports-ws-role"
-        zipFile = zip.archivePath
-        handler = "com.novoda.github.reports.web.hooks.lambda.${key}::handleRequest"
-        runtime = Runtime.Java8
-        memorySize = 256
-        timeout = 15
-    }
-    uploadHooksLambdas.dependsOn uploadLambdaTask
+task uploadWebhookLambda(type: AWSLambdaMigrateFunctionTask, dependsOn: zip) {
+    functionName = 'github-reports-webhook-post'
+    role = "arn:aws:iam::${aws.accountId}:role/github-reports-role"
+    zipFile = zip.archivePath
+    handler = 'com.novoda.github.reports.web.hooks.lambda.PostGithubWebhookEventHandler::handleRequest'
+    runtime = Runtime.Java8
+    memorySize = 256
+    timeout = 300
 }
