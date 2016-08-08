@@ -9,11 +9,13 @@ import com.novoda.github.reports.web.hooks.handler.UnhandledEventException;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.stream.Collectors;
 
 import org.jooq.tools.JooqLogger;
 
@@ -38,6 +40,9 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         disableJooqLogAd();
 
         logger.log("λ STARTING...");
+
+        String body = getPostBody(input);
+        logger.log(body);
 
         GithubWebhookEvent event = getEventFrom(input);
 
@@ -71,4 +76,7 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         }
     }
 
+    private String getPostBody(InputStream inputStream) {
+        return new BufferedReader(new InputStreamReader(inputStream)).lines().parallel().collect(Collectors.joining("\n"));
+    }
 }
