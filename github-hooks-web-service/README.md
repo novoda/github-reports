@@ -9,14 +9,14 @@ This Web Service is to contain an AWS lambda, to be exposed through AWS API Gate
 [webhooks](https://developer.github.com/webhooks/) for your organisation so they hit this API with events (containing data). This data is to be
 parsed and stored appropriately.
 
-### Configuration
+## Configuration
 
-#### Amazon AWS
+### Amazon AWS
 
 If you haven't installed or configured the AWS CLI yet, please refer to [`web-service`](web-service/README.md) in order to do so. All the steps
 are similar, but we'll detail them here anyway.
 
-### Role creation
+#### Role creation
 
 Create a new role for your lambda with the following command:
 
@@ -33,7 +33,7 @@ aws iam attach-role-policy --role-name github-reports-role --policy-arn arn:aws:
 aws iam attach-role-policy --role-name github-reports-role --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 ```
 
-### Lambda upload
+#### Lambda upload
 
 To upload or update the Lambda on your Amazon AWS account, just run the Gradle task `uploadWebhookLambda` (or `uWL`).
 
@@ -82,9 +82,7 @@ The output will be something like:
 
 Take note of the root path ID as well.
 
-#### Create endpoint mappings
-
-##### Repositories
+##### Create endpoint mappings
 
 Create `/webhook` endpoint with the following commands:
 
@@ -158,4 +156,31 @@ on setting up API gateway with lambda.
 #### Deploy
 
 Use the [API Gateway Web console](https://console.aws.amazon.com/apigateway) to ship your Web Service to
-staging/production and use the provided base URL to access the deployed endpoints.
+staging/production and take note of the provided base URL as you'll need it to setup your webhooks.
+
+### Github
+
+You can setup the webhooks on an organisation basis or individually, per repository. We'll be covering the organisation scenario here but setting
+up webhooks on each repo is similar with the only difference being you'll need to do this for each repo, under the repo settings.
+
+#### Organisation
+
+Under your organisation's settings webhooks section - `https://github.com/organizations/ORGANISATION/settings/hooks` - press the "**Add webhook**"
+button.
+
+You should now add your AWS API gateway endpoint in the "**Payload URL**" text box. Pick `application/json` as the content type and select 
+individual events in the *"Which events would you like to trigger this webhook?"* section.
+
+Currently we support a limited set of all the events (and not all the actions for each event): 
+
+- Commit comment
+- Issue comment
+- Issues
+- Pull request
+- Pull request review comment
+
+The "Active" checkbox should be selected by default. Now press the "**Add webhook**" button to finish the process.
+
+You might want to visit this section of your organisation's settings every now and then, as you can easily check the most recent webhook 
+deliveries, with details such as the POST request body (the actual event) and the AWS Lambda's response.
+
