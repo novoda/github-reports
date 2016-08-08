@@ -16,7 +16,7 @@ public class Logger {
         this.logger = logger;
     }
 
-    public void log(String message) {
+    void log(String message) {
         logger.log("> " + message);
     }
 }
