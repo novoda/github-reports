@@ -5,6 +5,7 @@ import com.novoda.github.reports.data.model.EventType;
 import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.ReviewComment;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 
@@ -14,12 +15,13 @@ public class ReviewCommentConverter implements EventConverter<ReviewComment> {
     public Event convertFrom(ReviewComment reviewComment) throws ConverterException {
         GithubComment githubComment = reviewComment.getComment();
         GithubRepository githubRepository = reviewComment.getRepository();
+        GithubWebhookPullRequest githubWebhookPullRequest = reviewComment.getWebhookPullRequest();
         EventType eventType = getEventType(reviewComment);
         return Event.create(
                 githubComment.getId(),
                 githubRepository.getId(),
                 githubComment.getUserId(),
-                githubRepository.getOwnerId(),
+                githubWebhookPullRequest.getUserId(),
                 eventType,
                 githubComment.getUpdatedAt()
         );
