@@ -21,7 +21,7 @@ public class IssueCommentConverter implements EventConverter<IssueComment> {
                 githubComment.getId(),
                 githubRepository.getId(),
                 githubComment.getUserId(),
-                githubIssue.getUserId(), // TODO check if we want the issues' user id or the repo's owner id
+                githubIssue.getUserId(),
                 eventType,
                 githubComment.getUpdatedAt()
         );
