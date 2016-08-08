@@ -7,10 +7,12 @@ public class ReviewComment extends Event {
 
     private GithubComment comment;
     private GithubRepository repository;
+    private GithubWebhookPullRequest webhookPullRequest;
 
-    public ReviewComment(GithubComment comment, GithubRepository repository, GithubAction action) {
+    public ReviewComment(GithubComment comment, GithubRepository repository, GithubWebhookPullRequest pullRequest, GithubAction action) {
         this.comment = comment;
         this.repository = repository;
+        this.webhookPullRequest = pullRequest;
         this.action = action;
     }
 
@@ -20,5 +22,9 @@ public class ReviewComment extends Event {
 
     public GithubRepository getRepository() {
         return repository;
+    }
+
+    public GithubWebhookPullRequest getWebhookPullRequest() {
+        return webhookPullRequest;
     }
 }
