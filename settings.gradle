@@ -29,3 +29,6 @@ include ':reports-batch'
 // query interfaces
 include ':reports-stats'
 include ':reports-stats-google-sheets'
+
+include ':github-hooks-web-service'
+

@@ -25,8 +25,8 @@ public class DbConnectionManager implements ConnectionManager {
     private DataSource dataSource;
 
     public static DbConnectionManager newInstance() {
-        DatabaseCredentialsReader databaseCredentialsReader = DatabaseCredentialsReader
-                .newInstance(PropertiesReader.newInstance(DATABASE_CREDENTIALS_FILENAME));
+        PropertiesReader propertiesReader = PropertiesReader.newInstance(DATABASE_CREDENTIALS_FILENAME);
+        DatabaseCredentialsReader databaseCredentialsReader = DatabaseCredentialsReader.newInstance(propertiesReader);
         return new DbConnectionManager(databaseCredentialsReader);
     }
 

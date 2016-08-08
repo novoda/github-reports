@@ -13,6 +13,11 @@ public class GithubUser {
         this.id = ownerId;
     }
 
+    public GithubUser(long id, String username) {
+        this.id = id;
+        this.username = username;
+    }
+
     public long getId() {
         return id;
     }
