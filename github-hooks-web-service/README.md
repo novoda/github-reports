@@ -54,7 +54,7 @@ AWS CLI will return something like:
 ```json
 {
     "name": "Github Reports Webhooks API",
-    "id": "kvl8nm3tc2", // API ID
+    "id": "API ID",
     "createdDate": 1470319082
 }
 ```
@@ -74,7 +74,7 @@ The output will be something like:
     "items": [
         {
             "path": "/",
-            "id": "kna9h2rtg4" // ROOT ID
+            "id": "ROOT ID"
         }
     ]
 }
@@ -91,7 +91,7 @@ Create `/webhook` endpoint with the following commands:
 ```shell
 aws apigateway create-resource \
     --rest-api-id API_ID \
-    --parent-id API_ROOT_ID \
+    --parent-id ROOT_ID \
     --path-part webhook
 ```
 
@@ -101,8 +101,8 @@ The output will be something like:
 {
     "path": "/webhook",
     "pathPart": "webhook",
-    "id": "qrkmjs", // RESOURCE ID
-    "parentId": "kna9h2rtg4"
+    "id": "RESOURCE ID",
+    "parentId": "kna1h2rtg4"
 }
 ```
 
@@ -136,7 +136,7 @@ aws apigateway put-integration \
     --http-method POST \
     --type AWS \
     --integration-http-method POST \
-    --uri arn:aws:apigateway:AWS_REGION:lambda:path/2015-03-31/functions/arn:aws:lambda:aws-region:YOUR_ACCOUNT_ID:function:github-reports-webhook-post/invocations
+    --uri arn:aws:apigateway:AWS_REGION:lambda:path/2015-03-31/functions/arn:aws:lambda:aws-region:YOUR ACCOUNT ID:function:github-reports-webhook-post/invocations
 ```
 
 A result as the following should come up:
@@ -148,7 +148,7 @@ A result as the following should come up:
     "cacheKeyParameters": [],
     "type": "AWS",
     "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:aws-region:91320918103:function:github-reports-webhook-post/invocations",
-    "cacheNamespace": "qrkmjs"
+    "cacheNamespace": "qrkrjs"
 }
 ```
 
