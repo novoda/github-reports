@@ -12,8 +12,9 @@ import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.persistence.converter.ConverterException;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.converter.EventConverter;
-import com.novoda.github.reports.web.hooks.model.ReviewComment;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
+import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
+import com.novoda.github.reports.web.hooks.model.ReviewComment;
 
 import java.util.Date;
 
@@ -37,6 +38,8 @@ public class ReviewCommentPersisterTest {
     private static final Date ANY_DATE = new Date();
     private static final String ANY_REPOSITORY_NAME = "topbantz";
     private static final boolean ANY_IS_PRIVATE_REPOSITORY = true;
+    private static final long ANY_PULL_REQUEST_ID = 94L;
+    private static final boolean ANY_WAS_MERGED = false;
 
     @Mock
     private EventConverter<ReviewComment> mockConverter;
@@ -102,7 +105,9 @@ public class ReviewCommentPersisterTest {
         GithubUser githubUser = new GithubUser(ANY_USER_ID, ANY_USERNAME);
         GithubComment githubComment = new GithubComment(ANY_COMMENT_ID, githubUser, ANY_DATE);
         GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_IS_PRIVATE_REPOSITORY);
-        return new ReviewComment(githubComment, githubRepository, GithubAction.CREATED);
+        GithubWebhookPullRequest githubWebhookPullRequest =
+                new GithubWebhookPullRequest(ANY_PULL_REQUEST_ID, ANY_DATE, githubUser, ANY_WAS_MERGED);
+        return new ReviewComment(githubComment, githubRepository, githubWebhookPullRequest, GithubAction.CREATED);
     }
 
     private void givenAnEvent(ReviewComment reviewComment) {
