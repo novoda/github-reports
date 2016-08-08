@@ -147,7 +147,7 @@ A result as the following should come up:
     "passthroughBehavior": "WHEN_NO_MATCH",
     "cacheKeyParameters": [],
     "type": "AWS",
-    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:aws-region:953109185106:function:github-reports-webhook-post/invocations",
+    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:aws-region:91320918103:function:github-reports-webhook-post/invocations",
     "cacheNamespace": "qrkmjs"
 }
 ```
