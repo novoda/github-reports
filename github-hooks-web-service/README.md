@@ -13,8 +13,9 @@ parsed and stored appropriately.
 
 ### Amazon AWS
 
-If you haven't installed or configured the AWS CLI yet, please refer to [`web-service`](web-service/README.md) in order to do so. All the steps
-are similar, but we'll detail them here anyway.
+If you haven't installed or configured the AWS CLI yet, please refer to [`web-service`](web-service/README.md) in order to do so. 
+
+All the other steps (regarding setting up the lambda and API gateway) are similar, but we'll detail them here anyway.
 
 #### Role creation
 
