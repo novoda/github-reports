@@ -21,7 +21,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class ReviewCommentConverterTest {
 
     private static final long ANY_USER_ID = 88L;
-    private static final long ANY_OWNER_ID = 86L;
     private static final long ANY_REPOSITORY_ID = 42L;
     private static final long ANY_COMMENT_ID = 23L;
     private static final Date ANY_DATE = new Date();
@@ -49,7 +48,7 @@ public class ReviewCommentConverterTest {
         return Event.create(ANY_COMMENT_ID,
                             ANY_REPOSITORY_ID,
                             ANY_USER_ID,
-                            ANY_OWNER_ID,
+                            ANY_USER_ID,
                             EventType.PULL_REQUEST_COMMENT,
                             ANY_DATE);
     }
@@ -58,7 +57,6 @@ public class ReviewCommentConverterTest {
         GithubUser githubUser = new GithubUser(ANY_USER_ID);
         GithubComment githubComment = new GithubComment(ANY_COMMENT_ID, githubUser, ANY_DATE);
         GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_IS_PRIVATE_REPOSITORY);
-        githubRepository.setOwner(new GithubUser(ANY_OWNER_ID));
         return new ReviewComment(githubComment, githubRepository, GithubAction.CREATED);
     }
 }
