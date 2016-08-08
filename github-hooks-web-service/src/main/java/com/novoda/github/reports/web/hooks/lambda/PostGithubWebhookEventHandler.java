@@ -44,12 +44,20 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         try {
             logger.log("> FORWARDING EVENT...");
             eventForwarder.forward(event);
-            writeToOutput(output, gson.toJson(event, GithubWebhookEvent.class));
+            writeToOutput(output, convertEventToJson(event));
             logger.log("> HANDLED EVENT: " + event.toString());
         } catch (UnhandledEventException e) {
             logger.log("> ! ERROR: Failed to forward an event (" + event.toString() + "). " + e.getMessage());
             outputException(output, e);
             e.printStackTrace();
+        }
+    }
+
+    private String convertEventToJson(GithubWebhookEvent event) {
+        try {
+            return gson.toJson(event, GithubWebhookEvent.class);
+        } catch (Exception e) {
+            return wrapInError("Failed to convert event to json.");
         }
     }
 
@@ -71,7 +79,11 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
     }
 
     private void outputException(OutputStream output, Exception exception) {
-        writeToOutput(output, "{\"error\": \"" + exception.getMessage() + "\"}");
+        writeToOutput(output, wrapInError(exception.getMessage()));
+    }
+
+    private String wrapInError(String message) {
+        return "{\"error\": \"" + message + "\"}";
     }
 
     private void writeToOutput(OutputStream output, String message) {
