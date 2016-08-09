@@ -1,2 +1,7 @@
-<h3>{{user.username}} ({{ (user.assignedCount / user.externalCount) | number }})</h3>
-<p>Internal {{user.assignedCount}}/External {{user.externalCount}}</p>
+<img [src]="'https://github.com/' + user.username + '.png?size=200px'" [alt]="'Github avatar for ' + user.username"/>
+<div class="work-user-info">
+  <h3>{{user.username}} ({{ (user.assignedCount / user.externalCount) | number }})</h3>
+  <p>{{ user.assignedProjects }} ({{user.assignedCount}})</p>
+  <p>External ({{user.externalCount}})</p>
+</div>
+
