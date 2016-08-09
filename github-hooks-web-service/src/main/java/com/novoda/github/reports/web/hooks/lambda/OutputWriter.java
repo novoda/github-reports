@@ -23,7 +23,8 @@ class OutputWriter implements Closeable {
     }
 
     void outputException(Exception exception) {
-        outputInfo(wrapInError(exception.getMessage()));
+        // this is aws lambda-specific as it's the only way we can mark the output as erroneous
+        throw new IllegalStateException(exception);
     }
 
     void outputEvent(GithubWebhookEvent event) {
@@ -40,10 +41,6 @@ class OutputWriter implements Closeable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private String wrapInError(String message) {
-        return "{\"error\": \"" + message + "\"}";
     }
 
     private void writeToOutput(String message) throws IOException {
