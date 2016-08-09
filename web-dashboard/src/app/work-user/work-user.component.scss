@@ -1,0 +1,30 @@
+:host {
+  display: inline-block;
+  border: 1px solid black;
+  padding: 5px;
+  box-sizing: border-box;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  @media screen and (max-width: 600px) {
+    flex-basis: 33%;
+  }
+
+  @media screen and (min-width: 600px) and (max-width: 900px) {
+    flex-basis: 25%;
+  }
+
+  @media screen and (min-width: 900px) {
+    flex-basis: 20%;
+  }
+
+  @media screen and (max-height: 700px) {
+    height: 25%;
+  }
+
+  @media screen and (min-height: 700px) {
+    height: 12.5%;
+  }
+
+}
