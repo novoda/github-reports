@@ -17,13 +17,14 @@ class OutputWriter implements Closeable {
         return new OutputWriter(outputStream, gson);
     }
 
-    private OutputWriter(OutputStream outputStream, Gson gson) {
+    OutputWriter(OutputStream outputStream, Gson gson) {
         this.outputStream = outputStream;
         this.gson = gson;
     }
 
     void outputException(Exception exception) {
-        outputInfo(wrapInError(exception.getMessage()));
+        // this is aws lambda-specific as it's the only way we can mark the output as erroneous
+        throw new RuntimeException(exception);
     }
 
     void outputEvent(GithubWebhookEvent event) {
@@ -40,10 +41,6 @@ class OutputWriter implements Closeable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private String wrapInError(String message) {
-        return "{\"error\": \"" + message + "\"}";
     }
 
     private void writeToOutput(String message) throws IOException {

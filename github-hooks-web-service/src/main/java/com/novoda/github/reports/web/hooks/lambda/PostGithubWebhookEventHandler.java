@@ -5,7 +5,6 @@ import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.novoda.github.reports.web.hooks.handler.EventForwarder;
-import com.novoda.github.reports.web.hooks.handler.UnhandledEventException;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
@@ -46,12 +45,12 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
             eventForwarder.forward(event);
             outputWriter.outputEvent(event);
             logger.log("HANDLED EVENT: " + event.toString());
-        } catch (UnhandledEventException e) {
+        } catch (Exception e) {
             logger.log("ERROR: Failed to forward an event (" + event.toString() + "). " + e.getMessage());
             outputWriter.outputException(e);
+        } finally {
+            closeOutputWriter();
         }
-
-        closeOutputWriter();
     }
 
     private void disableJooqLogAd() {
@@ -60,7 +59,12 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
     private GithubWebhookEvent getEventFrom(InputStream input) {
         Reader reader = new InputStreamReader(input);
-        return gson.fromJson(reader, GithubWebhookEvent.class);
+        try {
+            return gson.fromJson(reader, GithubWebhookEvent.class);
+        } catch (Exception e) {
+            outputWriter.outputException(e);
+        }
+        return null;
     }
 
     private void closeOutputWriter() {
