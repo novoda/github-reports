@@ -27,10 +27,12 @@ export class ReportsService {
         return Object
           .keys(stats.usersStats)
           .map((key: string) => {
+            const userStats = stats.usersStats[key];
             return {
               username: key,
-              assignedCount: stats.usersStats[key].assignedProjectsContributions,
-              externalCount: stats.usersStats[key].externalRepositoriesContributions
+              assignedProjects: Object.keys(userStats.assignedProjectsStats).join(', '),
+              assignedCount: userStats.assignedProjectsContributions,
+              externalCount: userStats.externalRepositoriesContributions
             }
           });
       });
