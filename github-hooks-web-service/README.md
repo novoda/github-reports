@@ -220,8 +220,8 @@ Now we need to set up our integration response for when things go south. We do t
 
 ```shell
 aws apigateway put-integration-response \
-    --rest-api-id wufbtotsae \
-    --resource-id n2soy2 \
+    --rest-api-id API_ID \
+    --resource-id RESOURCE_ID \
     --http-method POST \
     --status-code 500 \
     --selection-pattern '.*Exception.*'
