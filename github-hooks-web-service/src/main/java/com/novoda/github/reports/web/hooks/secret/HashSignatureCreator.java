@@ -9,15 +9,20 @@ import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.codec.binary.Hex;
 
-public class HashSignatureCreator {
+class HashSignatureCreator {
 
     private final SecretPropertiesReader secretPropertiesReader;
 
-    public HashSignatureCreator(SecretPropertiesReader secretPropertiesReader) {
+    public static HashSignatureCreator newInstance() {
+        SecretPropertiesReader secretPropertiesReader = SecretPropertiesReader.newInstance();
+        return new HashSignatureCreator(secretPropertiesReader);
+    }
+
+    private HashSignatureCreator(SecretPropertiesReader secretPropertiesReader) {
         this.secretPropertiesReader = secretPropertiesReader;
     }
 
-    String createSignatureFor(String payload) throws SecretException {
+    public String createSignatureFor(String payload) throws SecretException {
         String secret = secretPropertiesReader.getSecret();
         return signatureWith(secret, payload);
     }
