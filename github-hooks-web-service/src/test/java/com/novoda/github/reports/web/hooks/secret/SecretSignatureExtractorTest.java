@@ -1,4 +1,4 @@
-package com.novoda.github.reports.web.hooks.lambda;
+package com.novoda.github.reports.web.hooks.secret;
 
 import com.novoda.github.reports.service.GithubUser;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
@@ -14,11 +14,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SecretSignatureExtractorTest {
@@ -30,16 +27,12 @@ public class SecretSignatureExtractorTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    @Mock
-    private OutputWriter mockOutputWriter;
-
     @InjectMocks
     private SecretSignatureExtractor secretSignatureExtractor;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        doCallRealMethod().when(mockOutputWriter).outputException(any(Exception.class));
     }
 
     @Test
@@ -65,7 +58,7 @@ public class SecretSignatureExtractorTest {
 
     @Test
     public void givenARequestWithoutSignatureHeader_whenExtractSignature_thenExceptionIsThrown() {
-        expectedException.expect(RuntimeException.class);
+        expectedException.expect(SecurityException.class);
         WebhookRequest request = givenARequestWithHeaders(new HashMap<>(0));
 
         secretSignatureExtractor.extractSignatureFrom(request);
