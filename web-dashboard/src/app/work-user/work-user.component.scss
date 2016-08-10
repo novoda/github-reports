@@ -1,54 +1,134 @@
-$margin: 5px;
+$margin: 20px;
 $doubleMargin: $margin * 2;
 
 :host {
   display: flex;
   flex-direction: row;
+  align-items: center;
 
-  border: 1px solid black;
-  padding: 5px;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 40px 40px -30px rgba(0, 0, 0, 0.6);
+
+  padding: 15px;
   margin: $margin;
   box-sizing: border-box;
 
   overflow-x: auto;
   overflow-y: hidden;
 
+  // min width
+
   @media screen and (max-width: 600px) {
-    flex-basis: calc(33% - #{$doubleMargin});
+    flex-basis: calc(100% - #{$doubleMargin});
   }
 
   @media screen and (min-width: 600px) and (max-width: 900px) {
+    flex-basis: calc(50% - #{$doubleMargin});
+  }
+
+  @media screen and (min-width: 900px) and (max-width: 1200px) {
+    flex-basis: calc(33% - #{$doubleMargin});
+  }
+
+  @media screen and (min-width: 1200px) {
     flex-basis: calc(25% - #{$doubleMargin});
   }
 
-  @media screen and (min-width: 900px) {
-    flex-basis: calc(20% - #{$doubleMargin});
+  // height
+
+  @media screen and (max-height: 200px) {
+    height: calc(100% - #{$doubleMargin});
   }
 
-  @media screen and (max-height: 700px) {
+  @media screen and (min-height: 200px) and (max-height: 400px) {
+    height: calc(50% - #{$doubleMargin});
+  }
+
+  @media screen and (min-height: 400px) and (max-height: 500px) {
+    height: calc(33% - #{$doubleMargin});
+  }
+
+  @media screen and (min-height: 500px) and (max-height: 700px) {
     height: calc(25% - #{$doubleMargin});
   }
 
-  @media screen and (min-height: 700px) {
-    height: calc(12.5% - #{$doubleMargin});
+  @media screen and (min-height: 700px) and (max-height: 900px) {
+    height: calc(20% - #{$doubleMargin});
+  }
+
+  @media screen and (min-height: 900px) {
+    height: calc(16.5% - #{$doubleMargin});
   }
 
 }
 
 img {
   height: 100%;
+  border-radius: 25%;
 }
 
 .work-user-info {
+  width: 0;
   flex: 1;
-  padding: 5px;
+  padding: 15px;
 
   h3 {
-    font-family: 'Roboto Condensed', sans-serif;
-    margin: $margin;
+    font-family: 'Bitter', serif;
+    font-weight: 700;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: auto;
+
+    margin-top: 10px;
+    margin-bottom: 5px;
+
+    span {
+      font-size: 0.9em;
+      font-weight: 900;
+      opacity: 0.5;
+    }
   }
 
   p {
+    font-family: 'Bitter', serif;
+    font-weight: 400;
+    font-size: 0.9em;
+    font-style: italic;
+    opacity: 0.6;
     margin: 0;
   }
+}
+
+$level-size: 12px;
+$level-color: #fcb033;
+
+.work-user-level {
+  width: $level-size;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  [class^="level-"] {
+    min-width: $level-size;
+    min-height: $level-size;
+    margin-top: 2px;
+    border: 1px solid $level-color;
+    border-radius: 100%;
+  }
+
+  @for $assigned-level from 1 through 3 {
+    &.level-#{$assigned-level} {
+
+      @for $level from 1 through $assigned-level {
+        .level-#{$level} {
+          background-color: $level-color;
+        }
+      }
+
+    }
+  }
+
 }
