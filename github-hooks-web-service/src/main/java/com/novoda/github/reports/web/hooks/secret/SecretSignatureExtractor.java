@@ -12,7 +12,7 @@ public class SecretSignatureExtractor {
         String signature = headers.get("X-Hub-Signature");
 
         if (signature == null) {
-            throw new SecurityException("h4x0r3d");
+            throw new SecurityException("Request does not contain a signature.");
         }
 
         return signature;
