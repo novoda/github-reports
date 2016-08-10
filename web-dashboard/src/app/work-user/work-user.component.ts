@@ -1,4 +1,4 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 @Component({
   moduleId: module.id,
@@ -11,5 +11,10 @@ export class WorkUserComponent {
   constructor() { }
 
   @Input() user: any;
+
+  getLevel(user: any): string {
+    const total = user.assignedCount + user.externalCount;
+    return total > 100 ? 'good' : 'bad';
+  }
 
 }
