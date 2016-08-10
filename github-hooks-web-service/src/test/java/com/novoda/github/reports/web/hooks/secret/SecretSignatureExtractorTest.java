@@ -1,8 +1,8 @@
 package com.novoda.github.reports.web.hooks.secret;
 
+import com.google.gson.JsonObject;
 import com.novoda.github.reports.service.GithubUser;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
-import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.WebhookRequest;
 
 import java.util.Collections;
@@ -45,14 +45,9 @@ public class SecretSignatureExtractorTest {
     }
 
     private WebhookRequest givenARequestWithHeaders(Map<String, String> headers) {
-        GithubWebhookEvent event = GithubWebhookEvent.builder()
-                .action(ANY_ACTION)
-                .sender(ANY_GITHUB_USER)
-                .build();
-
         return WebhookRequest.builder()
                 .headers(headers)
-                .event(event)
+                .body(new JsonObject())
                 .build();
     }
 
