@@ -41,11 +41,6 @@ aws iam attach-role-policy --role-name github-reports-role --policy-arn arn:aws:
 aws iam attach-role-policy --role-name github-reports-role --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 ```
 
-#### Lambda upload
-
-To upload or update the Lambda on your Amazon AWS account, just run the Gradle task `uploadWebhookLambda` (or `uWL`).
-
-
 #### Create API
 
 Using the [AWS Web UI](https://console.aws.amazon.com/apigateway) might be an easier way to setup your API, but you can still do it manually
@@ -236,6 +231,8 @@ And you should finally see:
 }
 ```
 
+**TODO** @RUI add bit explaining how to setup body mapping in an integration request 
+
 #### Deploy
 
 Use the [API Gateway Web console](https://console.aws.amazon.com/apigateway) to ship your Web Service to
@@ -262,8 +259,33 @@ Currently we support a limited set of all the events (and not all the actions fo
 - Pull request
 - Pull request review comment
 
-The "Active" checkbox should be selected by default. Now press the "**Add webhook**" button to finish the process.
+##### Security
+
+Given your API gateway is now exposed to the world we need to make sure the Github webhooks play nice with it, as any event that gets POSTed to 
+it will be ignored unless we're sure it's coming from Github.
+
+This means you now need to pick a _secret_ and fill out the "**Secret**" text box with it. Github suggests you generate a random string and use it:
+
+```shell
+ruby -rsecurerandom -e 'puts SecureRandom.hex(20)'
+```
+
+Copy that secret to your clipboard as you'll need it after finishing setting up the webhook.  
+
+The "**Active**" checkbox should be selected by default. Now press the "**Add webhook**" button to finish the process.
 
 You might want to visit this section of your organisation's settings every now and then, as you can easily check the most recent webhook 
 deliveries, with details such as the POST request body (the actual event) and the AWS Lambda's response.
 
+Under the "_resources_" dir on this module you should find a "secret.properties.sample". Duplicate that file and remove the ".sample" extension.
+Now open the file and paste your secret there, so it reads:
+
+```
+SECRET=your_secret
+```
+
+Make sure to save the file and you should be set for the last step, which is uploading your lambda.
+
+#### Lambda upload
+
+To upload or update the Lambda on your Amazon AWS account, just run the Gradle task `uploadWebhookLambda` (or `uWL`).
