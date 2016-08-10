@@ -26,11 +26,11 @@ public abstract class WebhookRequest {
     @AutoValue.Builder
     public static abstract class Builder {
 
-        abstract Builder event(GithubWebhookEvent event);
+        public abstract Builder event(GithubWebhookEvent event);
 
-        abstract Builder headers(Map<String, String> headers);
+        public abstract Builder headers(Map<String, String> headers);
 
-        abstract WebhookRequest build();
+        public abstract WebhookRequest build();
 
     }
 }
