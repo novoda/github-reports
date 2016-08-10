@@ -1,7 +1,14 @@
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {enableProdMode} from '@angular/core';
-import {HTTP_PROVIDERS, Http} from '@angular/http';
-import {environment, AppComponent, appRouterProviders, SystemClock, WeekCalculatorService, ReportsService} from './app/';
+import {bootstrap} from "@angular/platform-browser-dynamic";
+import {enableProdMode} from "@angular/core";
+import {HTTP_PROVIDERS, Http} from "@angular/http";
+import {
+  environment,
+  AppComponent,
+  appRouterProviders,
+  SystemClock,
+  WeekCalculatorService,
+  ReportsService
+} from "./app/";
 import {ReportsMockService} from "./app/reports-mock.service";
 import {ReportsServiceClient} from "./app/reports-service-client.service";
 

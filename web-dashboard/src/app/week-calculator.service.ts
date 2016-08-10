@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import {SystemClock} from './system-clock';
+import {Injectable} from "@angular/core";
+import {SystemClock} from "./system-clock";
 
 @Injectable()
 export class WeekCalculatorService {
