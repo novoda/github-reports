@@ -9,6 +9,7 @@ import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.WebhookRequest;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,10 +43,7 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
         logger.log("λ STARTING...");
 
-        // ---
-//        String body = getPostBody(new BufferedInputStream(input));
-//        logger.log(body);
-        // ---
+        //logRequestBody(input);
 
         // TODO extract secret (using a collaborator)
         // TODO calculate hex (using collab)
@@ -67,6 +65,8 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
             closeOutputWriter();
         }
     }
+
+
 
     private void disableJooqLogAd() {
         JooqLogger.globalThreshold(JooqLogger.Level.WARN);
@@ -99,6 +99,13 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         }
     }
 
+    // TODO remove
+    private void logRequestBody(InputStream input) {
+        String body = getPostBody(new BufferedInputStream(input));
+        logger.log(body);
+    }
+
+    // TODO remove
     private String getPostBody(InputStream inputStream) {
         return new BufferedReader(new InputStreamReader(inputStream)).lines().parallel().collect(Collectors.joining("\n"));
     }
