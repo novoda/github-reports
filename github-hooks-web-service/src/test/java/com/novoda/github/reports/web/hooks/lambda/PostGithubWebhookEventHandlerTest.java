@@ -1,8 +1,12 @@
 package com.novoda.github.reports.web.hooks.lambda;
 
 import com.amazonaws.util.StringInputStream;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.novoda.github.reports.web.hooks.handler.EventForwarder;
+import com.novoda.github.reports.web.hooks.model.WebhookRequest;
 import com.novoda.github.reports.web.hooks.secret.PayloadVerifier;
+import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.OutputStream;
 
@@ -11,7 +15,6 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -45,18 +48,23 @@ public class PostGithubWebhookEventHandlerTest {
     @InjectMocks
     private PostGithubWebhookEventHandler handler;
 
+    private Gson gson;
+
     @Before
     public void setUp() throws Exception {
         initMocks(this);
+        gson = new GsonBuilder()
+                .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
+                .create();
     }
 
     @Test
-    public void handleRequest() throws Exception {
+    public void givenARequest_whenHandlingIt_thenWeCheckIfItsPayloadIsValid() throws Exception {
+        WebhookRequest request = gson.fromJson(JSON_REQUEST, WebhookRequest.class);
 
         handler.handleRequest(new StringInputStream(JSON_REQUEST), mock(OutputStream.class), null);
 
-        verify(mockPayloadVerifier).checkIfPayloadIsValid(any());
-
+        verify(mockPayloadVerifier).checkIfPayloadIsValid(request);
     }
 
 }
