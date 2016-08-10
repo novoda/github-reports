@@ -20,7 +20,7 @@ describe('Service: ReportsServiceClient', () => {
       ReportsServiceClient]);
   });
 
-  it('should ...',
+  it('should instantiate the service client',
     inject([ReportsServiceClient],
       (service: ReportsServiceClient) => {
         expect(service).toBeTruthy();
