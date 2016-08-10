@@ -8,6 +8,7 @@ node {
 }
 
 task test
+npm_test.dependsOn 'npmInstall'
 test.dependsOn 'npm_test'
 
 task build
