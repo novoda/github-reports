@@ -7,6 +7,8 @@ import com.google.gson.GsonBuilder;
 import com.novoda.github.reports.web.hooks.handler.EventForwarder;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.WebhookRequest;
+import com.novoda.github.reports.web.hooks.secret.PayloadVerifier;
+import com.novoda.github.reports.web.hooks.secret.SecretException;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.BufferedInputStream;
@@ -28,8 +30,10 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
             .create();
 
     private EventForwarder eventForwarder;
-    private Logger logger;
     private OutputWriter outputWriter;
+    private Logger logger;
+
+    private PayloadVerifier payloadVerifier;
 
     public PostGithubWebhookEventHandler() {
         eventForwarder = EventForwarder.newInstance();
@@ -37,20 +41,25 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) {
-        logger = Logger.newInstance(context);
+        payloadVerifier = PayloadVerifier.newInstance(gson);
+
         outputWriter = OutputWriter.newInstance(output, gson);
+        logger = Logger.newInstance(context);
         disableJooqLogAd();
 
         logger.log("λ STARTING...");
 
         //logRequestBody(input);
 
-        // TODO extract secret (using a collaborator)
-        // TODO calculate hex (using collab)
-        // TODO - properties file reader to read the key
-        // TODO check if keys match
-
         WebhookRequest request = getRequestFrom(input);
+
+        try {
+            System.out.println(payloadVerifier.checkIfPayloadIsValid(request));
+        } catch (SecretException e) {
+            e.printStackTrace();
+            outputWriter.outputException(e);
+        }
+
         GithubWebhookEvent event = getEventFrom(request);
 
         try {
