@@ -41,7 +41,7 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) {
-        payloadVerifier = PayloadVerifier.newInstance(gson);
+        payloadVerifier = PayloadVerifier.newInstance();
 
         outputWriter = OutputWriter.newInstance(output, gson);
         logger = Logger.newInstance(context);
@@ -75,8 +75,6 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         }
     }
 
-
-
     private void disableJooqLogAd() {
         JooqLogger.globalThreshold(JooqLogger.Level.WARN);
     }
@@ -94,10 +92,10 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
     @Nullable
     private GithubWebhookEvent getEventFrom(WebhookRequest request) {
-        if (request.event() == null) {
+        if (request.body() == null) {
             outputWriter.outputException(new NullPointerException("event is null"));
         }
-        return request.event();
+        return gson.fromJson(request.body(), GithubWebhookEvent.class);
     }
 
     private void closeOutputWriter() {
