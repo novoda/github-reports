@@ -29,11 +29,13 @@ export class ReportsServiceClient {
             const normalizedProjects = projects
               .map(project => {
                 return project.replace(/(: (Scheduled|Verified))/g, '')
-              })
+              });
+            const allProjects = Array
+              .from(new Set(normalizedProjects))
               .join(', ');
             return {
               username: key,
-              assignedProjects: normalizedProjects,
+              assignedProjects: allProjects,
               assignedCount: userStats.assignedProjectsContributions,
               externalCount: userStats.externalRepositoriesContributions
             }
