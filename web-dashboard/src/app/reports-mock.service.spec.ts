@@ -8,7 +8,7 @@ describe('Service: ReportsMock', () => {
     addProviders([ReportsMockService]);
   });
 
-  it('should ...',
+  it('should instantiate the mock service',
     inject([ReportsMockService],
       (service: ReportsMockService) => {
         expect(service).toBeTruthy();
