@@ -6,26 +6,27 @@ import {SystemClock} from "../system-clock";
 import {WeekCalculatorService} from "../week-calculator.service";
 import {ReportsService} from "../reports.service";
 import {ReportsMockService} from "../reports-mock.service";
+import {ReportsServiceClient} from "../reports-service-client.service";
 
 describe('Component: WorkDashboard', () => {
 
   let clock: SystemClock;
   let weekCalculator: WeekCalculatorService;
-  let reportsService: ReportsMockService;
+  let reportsServiceClient: ReportsServiceClient;
   let component;
 
   beforeEach(() => {
-    addProviders([SystemClock, WeekCalculatorService]);
+    addProviders([SystemClock, WeekCalculatorService, ReportsService]);
   });
 
-  beforeEach(inject([SystemClock, WeekCalculatorService], (_clock_, _weekCalculator_) => {
+  beforeEach(inject([SystemClock, WeekCalculatorService], (_clock_, _weekCalculator_, _reportsService_) => {
     clock = _clock_;
     weekCalculator = _weekCalculator_;
-    reportsService = new ReportsMockService();
+    reportsServiceClient = new ReportsServiceClient(_reportsService_);
   }));
 
   beforeEach(() => {
-    component = new WorkDashboardComponent(weekCalculator, clock, reportsService);
+    component = new WorkDashboardComponent(weekCalculator, clock, reportsServiceClient);
   });
 
   it('creates an instance', () => {

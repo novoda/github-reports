@@ -7,7 +7,7 @@ export class ReportsMockService {
   constructor() {
   }
 
-  getAggregatedStats() {
+  getAggregatedStats(): Observable<{usersStats: any}> {
     return Observable
       .from([{
         "usersStats": {
@@ -321,20 +321,7 @@ export class ReportsMockService {
             "externalRepositoriesContributions": 48
           }
         }
-      }])
-      .map((stats: {usersStats: any}) => {
-        return Object
-          .keys(stats.usersStats)
-          .map((key: string) => {
-            const userStats = stats.usersStats[key];
-            return {
-              username: key,
-              assignedProjects: Object.keys(userStats.assignedProjectsStats).join(', '),
-              assignedCount: userStats.assignedProjectsContributions,
-              externalCount: userStats.externalRepositoriesContributions
-            }
-          });
-      });
+      }]);
   }
 
 }

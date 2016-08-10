@@ -1,9 +1,8 @@
 import {Component, OnInit} from "@angular/core";
-import {ReportsService} from "../reports.service";
 import {SystemClock} from "../system-clock";
 import {WeekCalculatorService} from "../week-calculator.service";
-import {ReportsMockService} from "../reports-mock.service";
 import {WorkUserComponent} from "../work-user/work-user.component";
+import {ReportsServiceClient} from "../reports-service-client.service";
 
 @Component({
   moduleId: module.id,
@@ -18,22 +17,19 @@ export class WorkDashboardComponent implements OnInit {
 
   constructor(private weekCalculator: WeekCalculatorService,
               private clock: SystemClock,
-              private reportsService: ReportsMockService) {
+              private reportsServiceClient: ReportsServiceClient) {
     // noop
   }
 
   ngOnInit() {
-
-    this.reportsService.getAggregatedStats()
+    this.reportsServiceClient
+      .getAggregatedStats(
+        this.weekCalculator.getLastMonday(),
+        this.clock.getDate()
+      )
       .subscribe(stats => {
-      this.stats = stats;
-    });
-    /*this.reportsService.getAggregatedStats(
-      this.weekCalculator.getLastMonday(),
-      this.clock.getDate()
-    ).subscribe(stats => {
-      this.stats = stats;
-    });*/
+        this.stats = stats;
+      });
   }
 
 }
