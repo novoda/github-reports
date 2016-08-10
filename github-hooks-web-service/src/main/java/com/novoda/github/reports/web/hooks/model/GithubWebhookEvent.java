@@ -64,21 +64,21 @@ public abstract class GithubWebhookEvent {
     @AutoValue.Builder
     public static abstract class Builder {
 
-        abstract Builder action(GithubAction action);
+        public abstract Builder action(GithubAction action);
 
-        abstract Builder number(@Nullable Integer number);
+        public abstract Builder number(@Nullable Integer number);
 
-        abstract Builder sender(GithubUser sender);
+        public abstract Builder sender(GithubUser sender);
 
-        abstract Builder pullRequest(@Nullable GithubWebhookPullRequest pullRequest);
+        public abstract Builder pullRequest(@Nullable GithubWebhookPullRequest pullRequest);
 
-        abstract Builder issue(@Nullable GithubIssue issue);
+        public abstract Builder issue(@Nullable GithubIssue issue);
 
-        abstract Builder repository(@Nullable GithubRepository repository);
+        public abstract Builder repository(@Nullable GithubRepository repository);
 
-        abstract Builder comment(@Nullable GithubComment comment);
+        public abstract Builder comment(@Nullable GithubComment comment);
 
-        abstract GithubWebhookEvent build();
+        public abstract GithubWebhookEvent build();
     }
 
 }
