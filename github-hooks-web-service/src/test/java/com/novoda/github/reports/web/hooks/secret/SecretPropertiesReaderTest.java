@@ -14,6 +14,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class SecretPropertiesReaderTest {
 
     private static final java.lang.String ANY_KEY = "sempartirtudo";
+
     @Mock
     private PropertiesReader mockPropertiesReader;
 
