@@ -35,6 +35,7 @@
     "jasmine-spec-reporter": "2.5.0",
     "karma": "^0.13.22",
     "karma-chrome-launcher": "0.2.3",
+    "karma-coverage": "^1.1.1",
     "karma-jasmine": "0.3.8",
     "karma-junit-reporter": "^1.1.0",
     "karma-phantomjs-launcher": "^1.0.1",
