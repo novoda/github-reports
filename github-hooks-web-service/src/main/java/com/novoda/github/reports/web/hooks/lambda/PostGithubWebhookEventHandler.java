@@ -6,14 +6,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.novoda.github.reports.web.hooks.handler.EventForwarder;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.WebhookRequest;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.Nullable;
 import org.jooq.tools.JooqLogger;
 
 public class PostGithubWebhookEventHandler implements RequestStreamHandler {
@@ -38,7 +43,15 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
         logger.log("λ STARTING...");
 
-        GithubWebhookEvent event = getEventFrom(input);
+        //logRequestBody(input);
+
+        // TODO extract secret (using a collaborator)
+        // TODO calculate hex (using collab)
+        // TODO - properties file reader to read the key
+        // TODO check if keys match
+
+        WebhookRequest request = getRequestFrom(input);
+        GithubWebhookEvent event = getEventFrom(request);
 
         try {
             logger.log("FORWARDING EVENT...");
@@ -53,18 +66,29 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         }
     }
 
+
+
     private void disableJooqLogAd() {
         JooqLogger.globalThreshold(JooqLogger.Level.WARN);
     }
 
-    private GithubWebhookEvent getEventFrom(InputStream input) {
+    @Nullable
+    private WebhookRequest getRequestFrom(InputStream input) {
         Reader reader = new InputStreamReader(input);
         try {
-            return gson.fromJson(reader, GithubWebhookEvent.class);
+            return gson.fromJson(reader, WebhookRequest.class);
         } catch (Exception e) {
             outputWriter.outputException(e);
         }
         return null;
+    }
+
+    @Nullable
+    private GithubWebhookEvent getEventFrom(WebhookRequest request) {
+        if (request.event() == null) {
+            outputWriter.outputException(new NullPointerException("event is null"));
+        }
+        return request.event();
     }
 
     private void closeOutputWriter() {
@@ -75,4 +99,14 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         }
     }
 
+    // TODO remove
+    private void logRequestBody(InputStream input) {
+        String body = getPostBody(new BufferedInputStream(input));
+        logger.log(body);
+    }
+
+    // TODO remove
+    private String getPostBody(InputStream inputStream) {
+        return new BufferedReader(new InputStreamReader(inputStream)).lines().parallel().collect(Collectors.joining("\n"));
+    }
 }
