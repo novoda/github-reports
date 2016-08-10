@@ -1,8 +1,6 @@
 package com.novoda.github.reports.web.hooks.secret;
 
 import com.google.gson.JsonObject;
-import com.novoda.github.reports.service.GithubUser;
-import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.WebhookRequest;
 
 import java.util.Collections;
@@ -21,8 +19,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class SecretSignatureExtractorTest {
 
     private static final String ANY_SECRET_KEY = "s3c®37k3y";
-    private static final GithubAction ANY_ACTION = GithubAction.OPENED;
-    private static final GithubUser ANY_GITHUB_USER = new GithubUser(88L);
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
