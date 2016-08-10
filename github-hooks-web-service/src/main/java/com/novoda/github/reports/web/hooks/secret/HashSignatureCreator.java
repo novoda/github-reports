@@ -22,9 +22,9 @@ class HashSignatureCreator {
         this.secretPropertiesReader = secretPropertiesReader;
     }
 
-    public String createSignatureFor(String payload) throws SecretException {
+    String createSignatureFor(String payload) throws SecretException {
         String secret = secretPropertiesReader.getSecret();
-        return signatureWith(secret, payload);
+        return "sha1=" + signatureWith(secret, payload);
     }
 
     private String signatureWith(String secret, String payload) throws SecretException {
