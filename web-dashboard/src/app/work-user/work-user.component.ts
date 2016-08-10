@@ -14,7 +14,7 @@ export class WorkUserComponent {
 
   getLevel(user: any): string {
     const total = user.assignedCount + user.externalCount;
-    return total > 100 ? 'good' : 'bad';
+    return total > 0 ? 'good' : 'bad';
   }
 
 }
