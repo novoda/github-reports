@@ -101,8 +101,7 @@ img {
   }
 }
 
-$level-size: 12px;
-$level-color: #fcb033;
+$level-size: 30px;
 
 .work-user-level {
   width: $level-size;
@@ -111,24 +110,20 @@ $level-color: #fcb033;
   flex-direction: column;
   justify-content: flex-end;
 
-  [class^="level-"] {
+  .level {
     min-width: $level-size;
     min-height: $level-size;
     margin-top: 2px;
-    border: 1px solid $level-color;
     border-radius: 100%;
-  }
 
-  @for $assigned-level from 1 through 3 {
-    &.level-#{$assigned-level} {
-
-      @for $level from 1 through $assigned-level {
-        .level-#{$level} {
-          background-color: $level-color;
-        }
-      }
-
+    &.good {
+      background-color: #30a4d9;
     }
+
+    &.bad {
+      background-color: #fc0000;
+    }
+
   }
 
 }

@@ -4,9 +4,7 @@
   <p>{{ user.assignedProjects }} ({{user.assignedCount}})</p>
   <p>External ({{user.externalCount}})</p>
 </div>
-<div class="work-user-level level-2">
-  <div class="level-3"></div>
-  <div class="level-2"></div>
-  <div class="level-1"></div>
+<div class="work-user-level">
+  <div [class]="'level ' + getLevel(user)"></div>
 </div>
 
