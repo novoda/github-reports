@@ -26,20 +26,25 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
             .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
             .create();
 
+    private PayloadVerifier payloadVerifier;
     private EventForwarder eventForwarder;
     private OutputWriter outputWriter;
     private Logger logger;
 
-    private PayloadVerifier payloadVerifier;
-
     public PostGithubWebhookEventHandler() {
         eventForwarder = EventForwarder.newInstance();
+        payloadVerifier = PayloadVerifier.newInstance();
+    }
+
+    PostGithubWebhookEventHandler(EventForwarder eventForwarder, OutputWriter outputWriter, Logger logger, PayloadVerifier payloadVerifier) {
+        this.eventForwarder = eventForwarder;
+        this.outputWriter = outputWriter;
+        this.logger = logger;
+        this.payloadVerifier = payloadVerifier;
     }
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) {
-        payloadVerifier = PayloadVerifier.newInstance();
-
         outputWriter = OutputWriter.newInstance(output, gson);
         logger = Logger.newInstance(context);
         disableJooqLogAd();
