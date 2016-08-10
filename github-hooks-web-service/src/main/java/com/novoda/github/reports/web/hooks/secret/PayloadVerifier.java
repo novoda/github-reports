@@ -22,8 +22,8 @@ public class PayloadVerifier {
         String json = request.body().toString();
         String localSignature = hashSignatureCreator.createSignatureFor(json);
         String originalSignature = secretSignatureExtractor.extractSignatureFrom(request);
-        if (originalSignature.equals(localSignature)) {
-            throw new SecurityException("Signatures do not match.");
+        if (!originalSignature.equals(localSignature)) {
+            throw new SecretException("Signatures do not match.");
         }
     }
 }
