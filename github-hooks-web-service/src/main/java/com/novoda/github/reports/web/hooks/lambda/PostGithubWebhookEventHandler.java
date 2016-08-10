@@ -49,6 +49,7 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
         // TODO extract secret (using a collaborator)
         // TODO calculate hex (using collab)
+        // TODO - properties file reader to read the key
         // TODO check if keys match
 
         WebhookRequest request = getRequestFrom(input);
