@@ -11,7 +11,7 @@ export class ReportsService {
   constructor(private http: Http) {
   }
 
-  getAggregatedStats(from: Date, to: Date): Observable<Array<{username: string, assignedCount: number, externalCount: number}>> {
+  getAggregatedStats(from: Date, to: Date): Observable<{usersStats: any}> {
     let params = new URLSearchParams();
     params.set('from', from.toISOString());
     params.set('from', to.toISOString());
@@ -22,19 +22,6 @@ export class ReportsService {
       })
       .map((res: Response) => {
         return res.json();
-      })
-      .map((stats: {usersStats: any}) => {
-        return Object
-          .keys(stats.usersStats)
-          .map((key: string) => {
-            const userStats = stats.usersStats[key];
-            return {
-              username: key,
-              assignedProjects: Object.keys(userStats.assignedProjectsStats).join(', '),
-              assignedCount: userStats.assignedProjectsContributions,
-              externalCount: userStats.externalRepositoriesContributions
-            }
-          });
       });
   }
 
