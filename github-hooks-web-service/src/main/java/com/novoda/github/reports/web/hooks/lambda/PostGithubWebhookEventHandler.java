@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.novoda.github.reports.web.hooks.handler.EventForwarder;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.novoda.github.reports.web.hooks.model.WebhookRequest;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.BufferedReader;
@@ -16,6 +17,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.Nullable;
 import org.jooq.tools.JooqLogger;
 
 public class PostGithubWebhookEventHandler implements RequestStreamHandler {
@@ -40,10 +42,17 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
         logger.log("λ STARTING...");
 
-        String body = getPostBody(input);
-        logger.log(body);
+        // ---
+//        String body = getPostBody(new BufferedInputStream(input));
+//        logger.log(body);
+        // ---
 
-        GithubWebhookEvent event = getEventFrom(input);
+        // TODO extract secret (using a collaborator)
+        // TODO calculate hex (using collab)
+        // TODO check if keys match
+
+        WebhookRequest request = getRequestFrom(input);
+        GithubWebhookEvent event = getEventFrom(request);
 
         try {
             logger.log("FORWARDING EVENT...");
@@ -62,14 +71,23 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         JooqLogger.globalThreshold(JooqLogger.Level.WARN);
     }
 
-    private GithubWebhookEvent getEventFrom(InputStream input) {
+    @Nullable
+    private WebhookRequest getRequestFrom(InputStream input) {
         Reader reader = new InputStreamReader(input);
         try {
-            return gson.fromJson(reader, GithubWebhookEvent.class);
+            return gson.fromJson(reader, WebhookRequest.class);
         } catch (Exception e) {
             outputWriter.outputException(e);
         }
         return null;
+    }
+
+    @Nullable
+    private GithubWebhookEvent getEventFrom(WebhookRequest request) {
+        if (request.event() == null) {
+            outputWriter.outputException(new NullPointerException("event is null"));
+        }
+        return request.event();
     }
 
     private void closeOutputWriter() {
