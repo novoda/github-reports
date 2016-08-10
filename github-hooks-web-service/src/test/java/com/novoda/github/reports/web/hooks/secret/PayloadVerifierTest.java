@@ -60,6 +60,7 @@ public class PayloadVerifierTest {
         when(mockHashSignatureCreator.createSignatureFor(anyString())).thenReturn("no match");
 
         payloadVerifier.checkIfPayloadIsValid(givenARequest());
+
     }
 
     private WebhookRequest givenARequest() {
