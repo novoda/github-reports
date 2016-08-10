@@ -1,32 +1,36 @@
 package com.novoda.github.reports.web.hooks.model;
 
+import com.google.auto.value.AutoValue;
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Map;
 
-//@AutoValue
-public class WebhookRequest {
+@AutoValue
+public abstract class WebhookRequest {
 
-//    public static WebhookRequest.Builder builder() {
-//        return new AutoValue_WebhookRequest.Builder();
-//    }
+    public static WebhookRequest.Builder builder() {
+        return new AutoValue_WebhookRequest.Builder();
+    }
 
-//    public static TypeAdapter<WebhookRequest> typeAdapter(Gson gson) {
-//        return new AutoValue_WebhookRequest.GsonTypeAdapter(gson);
-//    }
+    public static TypeAdapter<WebhookRequest> typeAdapter(Gson gson) {
+        return new AutoValue_WebhookRequest.GsonTypeAdapter(gson);
+    }
 
     @SerializedName("body")
-    private GithubWebhookEvent event;
+    public abstract GithubWebhookEvent event();
 
-    private Map<String, String> headers;
+    public abstract Map<String, String> headers();
 
-    public GithubWebhookEvent getEvent() {
-        return event;
+    @AutoValue.Builder
+    public static abstract class Builder {
+
+        abstract Builder event(GithubWebhookEvent event);
+
+        abstract Builder headers(Map<String, String> headers);
+
+        abstract WebhookRequest build();
+
     }
-
-    public Map<String, String> getHeaders() {
-        return headers;
-    }
-
-
 }
