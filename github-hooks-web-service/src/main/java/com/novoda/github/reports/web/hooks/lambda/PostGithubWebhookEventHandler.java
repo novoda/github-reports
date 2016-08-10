@@ -11,14 +11,11 @@ import com.novoda.github.reports.web.hooks.secret.PayloadVerifier;
 import com.novoda.github.reports.web.hooks.secret.SecretException;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 import org.jooq.tools.JooqLogger;
@@ -49,16 +46,9 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
         logger.log("λ STARTING...");
 
-        //logRequestBody(input);
-
         WebhookRequest request = getRequestFrom(input);
 
-        try {
-            System.out.println(payloadVerifier.checkIfPayloadIsValid(request));
-        } catch (SecretException e) {
-            e.printStackTrace();
-            outputWriter.outputException(e);
-        }
+        breakIfPayloadNotValid(request);
 
         GithubWebhookEvent event = getEventFrom(request);
 
@@ -90,6 +80,15 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         return null;
     }
 
+    private void breakIfPayloadNotValid(WebhookRequest request) {
+        try {
+            payloadVerifier.checkIfPayloadIsValid(request);
+        } catch (SecretException e) {
+            e.printStackTrace();
+            outputWriter.outputException(e);
+        }
+    }
+
     @Nullable
     private GithubWebhookEvent getEventFrom(WebhookRequest request) {
         if (request.body() == null) {
@@ -106,14 +105,4 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         }
     }
 
-    // TODO remove
-    private void logRequestBody(InputStream input) {
-        String body = getPostBody(new BufferedInputStream(input));
-        logger.log(body);
-    }
-
-    // TODO remove
-    private String getPostBody(InputStream inputStream) {
-        return new BufferedReader(new InputStreamReader(inputStream)).lines().parallel().collect(Collectors.joining("\n"));
-    }
 }

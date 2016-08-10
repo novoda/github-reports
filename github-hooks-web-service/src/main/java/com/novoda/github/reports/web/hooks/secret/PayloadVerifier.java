@@ -18,12 +18,12 @@ public class PayloadVerifier {
         this.hashSignatureCreator = hashSignatureCreator;
     }
 
-    public boolean checkIfPayloadIsValid(WebhookRequest request) throws SecretException {
-
-        String originalSignature = secretSignatureExtractor.extractSignatureFrom(request);
+    public void checkIfPayloadIsValid(WebhookRequest request) throws SecretException {
         String json = request.body().toString();
-        String localSignature = "sha1=" + hashSignatureCreator.createSignatureFor(json);
-
-        return originalSignature.equals(localSignature);
+        String localSignature = hashSignatureCreator.createSignatureFor(json);
+        String originalSignature = secretSignatureExtractor.extractSignatureFrom(request);
+        if (originalSignature.equals(localSignature)) {
+            throw new SecurityException("Signatures do not match.");
+        }
     }
 }
