@@ -103,7 +103,7 @@ public class PostGithubWebhookEventHandlerTest {
         doThrow(SecretException.class).when(mockPayloadVerifier).checkIfPayloadIsValid(any(WebhookRequest.class));
 
         handler.handleRequest(new StringInputStream(INVALID_JSON_REQUEST), mock(OutputStream.class), ANY_CONTEXT);
-        
+
     }
 
 }

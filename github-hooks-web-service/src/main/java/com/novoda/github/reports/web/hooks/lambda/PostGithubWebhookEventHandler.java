@@ -36,13 +36,6 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         payloadVerifier = PayloadVerifier.newInstance();
     }
 
-    PostGithubWebhookEventHandler(EventForwarder eventForwarder, OutputWriter outputWriter, Logger logger, PayloadVerifier payloadVerifier) {
-        this.eventForwarder = eventForwarder;
-        this.outputWriter = outputWriter;
-        this.logger = logger;
-        this.payloadVerifier = payloadVerifier;
-    }
-
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) {
         outputWriter = OutputWriter.newInstance(output, gson);
