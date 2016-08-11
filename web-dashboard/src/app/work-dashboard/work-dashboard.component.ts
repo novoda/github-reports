@@ -25,6 +25,7 @@ export class WorkDashboardComponent implements OnInit {
         this.clock.getDate()
       )
       .subscribe(stats => {
+        console.log(stats);
         this.stats = stats;
       });
   }
