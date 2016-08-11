@@ -4,9 +4,8 @@ import {addProviders, inject} from '@angular/core/testing';
 import {WorkDashboardComponent} from './work-dashboard.component';
 import {SystemClock} from '../system-clock';
 import {WeekCalculator} from '../week-calculator.service';
-import {ReportsService} from '../reports.service';
-import {ReportsMockService} from '../reports-mock.service';
-import {ReportsClient} from '../reports-client.service';
+import {ReportsService} from '../reports/reports.service';
+import {ReportsClient} from '../reports/reports-client.service';
 
 describe('Component: WorkDashboard', () => {
 
