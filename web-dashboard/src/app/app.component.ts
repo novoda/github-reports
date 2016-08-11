@@ -1,12 +1,10 @@
-import {Component} from "@angular/core";
-import {ROUTER_DIRECTIVES} from "@angular/router";
+import { Component } from '@angular/core';
+import './rxjs-extensions';
 
 @Component({
-  moduleId: module.id,
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  styleUrls: ['app.component.css'],
-  directives: [ROUTER_DIRECTIVES]
+  styleUrls: ['app.component.scss']
 })
 export class AppComponent {
 }

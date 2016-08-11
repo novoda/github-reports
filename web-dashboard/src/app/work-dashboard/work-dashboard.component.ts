@@ -1,23 +1,20 @@
-import {Component, OnInit} from "@angular/core";
-import {SystemClock} from "../system-clock";
-import {WeekCalculatorService} from "../week-calculator.service";
-import {WorkUserComponent} from "../work-user/work-user.component";
-import {ReportsServiceClient} from "../reports-service-client.service";
+import {Component, OnInit} from '@angular/core';
+import {SystemClock} from '../system-clock';
+import {WeekCalculator} from '../week-calculator.service';
+import {ReportsClient} from '../reports-client.service';
 
 @Component({
-  moduleId: module.id,
   selector: 'app-work-dashboard',
   templateUrl: 'work-dashboard.component.html',
-  styleUrls: ['work-dashboard.component.css'],
-  directives: [WorkUserComponent]
+  styleUrls: ['work-dashboard.component.scss']
 })
 export class WorkDashboardComponent implements OnInit {
 
   private stats: any;
 
-  constructor(private weekCalculator: WeekCalculatorService,
+  constructor(private weekCalculator: WeekCalculator,
               private clock: SystemClock,
-              private reportsServiceClient: ReportsServiceClient) {
+              private reportsServiceClient: ReportsClient) {
     // noop
   }
 

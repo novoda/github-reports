@@ -1,29 +1,29 @@
 /* tslint:disable:no-unused-variable */
 
-import {addProviders, inject} from "@angular/core/testing";
-import {WeekCalculatorService} from "./week-calculator.service";
-import {SystemClock} from "./system-clock";
+import {addProviders, inject} from '@angular/core/testing';
+import {WeekCalculator} from './week-calculator.service';
+import {SystemClock} from './system-clock';
 
 describe('Service: WeekCalculator', () => {
 
   let clock: SystemClock;
-  let weekCalculatorService: WeekCalculatorService;
+  let weekCalculator: WeekCalculator;
 
   beforeEach(() => {
-    addProviders([SystemClock, WeekCalculatorService]);
+    addProviders([SystemClock, WeekCalculator]);
   });
 
-  beforeEach(inject([SystemClock, WeekCalculatorService], (_clock_: SystemClock, _weekCalculatorService_: WeekCalculatorService) => {
+  beforeEach(inject([SystemClock, WeekCalculator], (_clock_: SystemClock, _weekCalculator_: WeekCalculator) => {
     clock = _clock_;
-    weekCalculatorService = _weekCalculatorService_;
+    weekCalculator = _weekCalculator_;
   }));
 
   it('should instantiate the week calculator', () => {
-    expect(weekCalculatorService).toBeTruthy();
+    expect(weekCalculator).toBeTruthy();
   });
 
   it('should return a date at midnight', () => {
-    let monday: Date = weekCalculatorService.getLastMonday();
+    let monday: Date = weekCalculator.getLastMonday();
 
     expect(monday.getHours()).toBe(0);
     expect(monday.getMinutes()).toBe(0);
@@ -35,7 +35,7 @@ describe('Service: WeekCalculator', () => {
     let date = new Date(2016, 7, 8);
     spyOn(clock, 'getDate').and.returnValue(date);
 
-    let monday = weekCalculatorService.getLastMonday();
+    let monday = weekCalculator.getLastMonday();
 
     expect(monday.getFullYear()).toBe(2016);
     expect(monday.getMonth()).toBe(7);
@@ -46,7 +46,7 @@ describe('Service: WeekCalculator', () => {
     let date = new Date(2016, 7, 9);
     spyOn(clock, 'getDate').and.returnValue(date);
 
-    let monday = weekCalculatorService.getLastMonday();
+    let monday = weekCalculator.getLastMonday();
 
     expect(monday.getFullYear()).toBe(2016);
     expect(monday.getMonth()).toBe(7);
@@ -57,7 +57,7 @@ describe('Service: WeekCalculator', () => {
     let date = new Date(2016, 7, 11);
     spyOn(clock, 'getDate').and.returnValue(date);
 
-    let monday = weekCalculatorService.getLastMonday();
+    let monday = weekCalculator.getLastMonday();
 
     expect(monday.getFullYear()).toBe(2016);
     expect(monday.getMonth()).toBe(7);
@@ -68,7 +68,7 @@ describe('Service: WeekCalculator', () => {
     let date = new Date(2016, 7, 14);
     spyOn(clock, 'getDate').and.returnValue(date);
 
-    let monday = weekCalculatorService.getLastMonday();
+    let monday = weekCalculator.getLastMonday();
 
     expect(monday.getFullYear()).toBe(2016);
     expect(monday.getMonth()).toBe(7);
