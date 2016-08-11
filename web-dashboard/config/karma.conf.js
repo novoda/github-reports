@@ -4,12 +4,14 @@
 module.exports = function (config) {
   config.set({
     basePath: '..',
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'angular-cli'],
     plugins: [
       require('karma-jasmine'),
-      require('karma-coverage'),
       require('karma-phantomjs-launcher'),
-      require('karma-junit-reporter')
+      require('karma-junit-reporter'),
+      require('karma-chrome-launcher'),
+      require('karma-remap-istanbul'),
+      require('angular-cli/plugins/karma')
     ],
     customLaunchers: {
       // chrome setup for travis CI using chromium
@@ -19,46 +21,25 @@ module.exports = function (config) {
       }
     },
     files: [
-      { pattern: 'dist/vendor/es6-shim/es6-shim.js', included: true, watched: false },
-      { pattern: 'dist/vendor/zone.js/dist/zone.js', included: true, watched: false },
-      { pattern: 'dist/vendor/reflect-metadata/Reflect.js', included: true, watched: false },
-      { pattern: 'dist/vendor/systemjs/dist/system-polyfills.js', included: true, watched: false },
-      { pattern: 'dist/vendor/systemjs/dist/system.src.js', included: true, watched: false },
-      { pattern: 'dist/vendor/zone.js/dist/async-test.js', included: true, watched: false },
-      { pattern: 'dist/vendor/zone.js/dist/fake-async-test.js', included: true, watched: false },
-
-      { pattern: 'config/karma-test-shim.js', included: true, watched: true },
-
-      // Distribution folder.
-      { pattern: 'dist/**/*.js', included: false, watched: true },
-
-      // paths to support debugging with source maps in dev tools
-      { pattern: 'src/**/*.ts', included: false, watched: false },
-      { pattern: 'dist/**/*.js.map', included: false, watched: false }
-    ],
-    exclude: [
-      // Vendor packages might include spec files. We don't want to use those.
-      'dist/vendor/**/*.spec.js'
+      { pattern: './src/test.ts', watched: false }
     ],
     preprocessors: {
-      'dist/app/**/!(*spec).js': ['coverage'],
+      './src/test.ts': ['angular-cli']
     },
-    reporters: ['progress', 'coverage', 'junit'],
-
-    coverageReporter: {
-      type: 'json',
-      subdir: '.',
-      dir: 'coverage/',
-      file: 'coverage.json'
-    },
-
     junitReporter: {
       outputDir: 'coverage', // results will be saved as $outputDir/$browserName.xml
       outputFile: 'TEST-karma.xml', // if included, results will be saved as $outputDir/$browserName/$outputFile
       suite: 'com.novoda.github.reports.dashboard', // suite will become the package name attribute in xml testsuite element
       useBrowserName: false // add browser name to report and classes names
     },
-
+    remapIstanbulReporter: {
+      reports: {
+        html: 'coverage',
+        cobertura: 'coverage/cobertura-coverage.xml'
+      }
+    },
+    angularCliConfig: './angular-cli.json',
+    reporters: ['progress', 'karma-remap-istanbul', 'junit'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,

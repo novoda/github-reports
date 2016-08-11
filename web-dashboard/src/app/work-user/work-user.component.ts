@@ -1,17 +1,16 @@
-import {Component, Input} from "@angular/core";
+import {Component, Input} from '@angular/core';
 
 @Component({
-  moduleId: module.id,
   selector: 'work-user',
   templateUrl: 'work-user.component.html',
-  styleUrls: ['work-user.component.css']
+  styleUrls: ['work-user.component.scss']
 })
 export class WorkUserComponent {
 
+  @Input() user: any;
+
   constructor() {
   }
-
-  @Input() user: any;
 
   getLevel(user: any): string {
     const total = user.assignedCount + user.externalCount;

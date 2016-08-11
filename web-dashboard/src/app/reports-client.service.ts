@@ -1,9 +1,9 @@
-import {Injectable} from "@angular/core";
-import {ReportsService} from "./reports.service";
-import {Observable} from "rxjs";
+import {Injectable} from '@angular/core';
+import {ReportsService} from './reports.service';
+import {Observable} from 'rxjs';
 
 @Injectable()
-export class ReportsServiceClient {
+export class ReportsClient {
 
   constructor(private reportsService: ReportsService) {
   }
@@ -28,7 +28,7 @@ export class ReportsServiceClient {
             }
             const normalizedProjects = projects
               .map(project => {
-                return project.replace(/(: (Scheduled|Verified))/g, '')
+                return project.replace(/(: (Scheduled|Verified))/g, '');
               });
             const allProjects = Array
               .from(new Set(normalizedProjects))
@@ -38,7 +38,7 @@ export class ReportsServiceClient {
               assignedProjects: allProjects,
               assignedCount: userStats.assignedProjectsContributions,
               externalCount: userStats.externalRepositoriesContributions
-            }
+            };
           });
       });
   }
