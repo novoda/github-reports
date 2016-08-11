@@ -16,7 +16,7 @@ parsed and stored appropriately.
 aws apigateway get-resources --rest-api-id API_ID
 ```
 
-You can easily check you API ID through API gateway's UI.
+Remember, you can easily check you API ID through [API gateway's UI](https://console.aws.amazon.com/apigateway/home).
 
 ## Configuration
 
