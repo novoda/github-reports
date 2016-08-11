@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {SystemClock} from '../system-clock';
 import {WeekCalculator} from '../week-calculator.service';
-import {ReportsClient} from '../reports-client.service';
+import {ReportsClient} from '../reports/reports-client.service';
 
 @Component({
   selector: 'app-work-dashboard',
