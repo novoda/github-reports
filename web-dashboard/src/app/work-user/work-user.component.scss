@@ -1,12 +1,27 @@
 $margin: 20px;
 $doubleMargin: $margin * 2;
 
+@keyframes badPulse {
+  from {
+    background-color: #f5a623;
+    box-shadow: 0 40px 40px -30px rgba(245, 166, 35, 0.9);
+  }
+  50% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+  to {
+    background-color: #f5a623;
+    box-shadow: 0 40px 40px -30px rgba(245, 166, 35, 0.9);
+  }
+}
+
 :host {
   display: flex;
   flex-direction: row;
   align-items: center;
 
-  border-radius: 5px;
+  border-radius: 11px;
   background-color: white;
   box-shadow: 0 40px 40px -30px rgba(0, 0, 0, 0.6);
 
@@ -61,6 +76,21 @@ $doubleMargin: $margin * 2;
     height: calc(16.5% - #{$doubleMargin});
   }
 
+  &.bad {
+    animation-name: badPulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+
+    h3 {
+      color: #ffffff;
+    }
+
+    p {
+      color: #ffffff;
+      opacity: 0.5;
+    }
+  }
+
 }
 
 img {
@@ -99,31 +129,4 @@ img {
     opacity: 0.6;
     margin: 0;
   }
-}
-
-$level-size: 30px;
-
-.work-user-level {
-  width: $level-size;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-
-  .level {
-    min-width: $level-size;
-    min-height: $level-size;
-    margin-top: 2px;
-    border-radius: 100%;
-
-    &.good {
-      background-color: #30a4d9;
-    }
-
-    &.bad {
-      background-color: #fc0000;
-    }
-
-  }
-
 }
