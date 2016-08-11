@@ -22,12 +22,12 @@ class HashSignatureCreator {
         this.secretPropertiesReader = secretPropertiesReader;
     }
 
-    String createSignatureFor(String payload) throws SecretException {
+    String createSignatureFor(String payload) throws InvalidSecretException {
         String secret = secretPropertiesReader.getSecret();
         return "sha1=" + signatureWith(secret, payload);
     }
 
-    private String signatureWith(String secret, String payload) throws SecretException {
+    private String signatureWith(String secret, String payload) throws InvalidSecretException {
         Mac sha1Hmac = getHmacSha1();
 
         SecretKeySpec secretKey = new SecretKeySpec(getUtf8EncodedBytes(secret), "HmacSHA1");
@@ -37,27 +37,27 @@ class HashSignatureCreator {
         return Hex.encodeHexString(sha1Hmac.doFinal(getUtf8EncodedBytes(payload)));
     }
 
-    private Mac getHmacSha1() throws SecretException {
+    private Mac getHmacSha1() throws InvalidSecretException {
         try {
             return Mac.getInstance("HmacSHA1");
         } catch (NoSuchAlgorithmException e) {
-            throw new SecretException(e);
+            throw new InvalidSecretException(e);
         }
     }
 
-    private byte[] getUtf8EncodedBytes(String value) throws SecretException {
+    private byte[] getUtf8EncodedBytes(String value) throws InvalidSecretException {
         try {
             return value.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new SecretException(e);
+            throw new InvalidSecretException(e);
         }
     }
 
-    private void initMac(Mac sha1Hmac, SecretKeySpec secretKey) throws SecretException {
+    private void initMac(Mac sha1Hmac, SecretKeySpec secretKey) throws InvalidSecretException {
         try {
             sha1Hmac.init(secretKey);
         } catch (InvalidKeyException e) {
-            throw new SecretException(e);
+            throw new InvalidSecretException(e);
         }
     }
 

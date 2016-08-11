@@ -9,7 +9,7 @@ import com.novoda.github.reports.web.hooks.handler.UnhandledEventException;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.WebhookRequest;
 import com.novoda.github.reports.web.hooks.secret.PayloadVerifier;
-import com.novoda.github.reports.web.hooks.secret.SecretException;
+import com.novoda.github.reports.web.hooks.secret.InvalidSecretException;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.FileNotFoundException;
@@ -96,7 +96,7 @@ public class PostGithubWebhookEventHandlerTest {
 
     @Test(expected = RuntimeException.class)
     public void givenAnInvalidRequest_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
-        doThrow(SecretException.class).when(mockPayloadVerifier).checkIfPayloadIsValid(any(WebhookRequest.class));
+        doThrow(InvalidSecretException.class).when(mockPayloadVerifier).checkIfPayloadIsValid(any(WebhookRequest.class));
 
         handler.handleRequest(new StringInputStream(givenAnInvalidJsonRequest()), mock(OutputStream.class), ANY_CONTEXT);
 

@@ -8,7 +8,7 @@ import com.novoda.github.reports.web.hooks.handler.EventForwarder;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.WebhookRequest;
 import com.novoda.github.reports.web.hooks.secret.PayloadVerifier;
-import com.novoda.github.reports.web.hooks.secret.SecretException;
+import com.novoda.github.reports.web.hooks.secret.InvalidSecretException;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.IOException;
@@ -81,7 +81,7 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
     private void breakIfPayloadNotValid(WebhookRequest request) {
         try {
             payloadVerifier.checkIfPayloadIsValid(request);
-        } catch (SecretException e) {
+        } catch (InvalidSecretException e) {
             e.printStackTrace();
             outputWriter.outputException(e);
         }
