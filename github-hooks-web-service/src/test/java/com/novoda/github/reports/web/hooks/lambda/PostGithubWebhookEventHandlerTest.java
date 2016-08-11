@@ -4,7 +4,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.util.StringInputStream;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.novoda.github.reports.web.hooks.Main;
 import com.novoda.github.reports.web.hooks.handler.EventForwarder;
 import com.novoda.github.reports.web.hooks.handler.UnhandledEventException;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
@@ -108,7 +107,7 @@ public class PostGithubWebhookEventHandlerTest {
     }
 
     private static String readFile(String fileName) throws URISyntaxException, IOException {
-        URL url = Main.class.getClassLoader().getResource(fileName);
+        URL url = PostGithubWebhookEventHandlerTest.class.getClassLoader().getResource(fileName);
         if (url == null) {
             throw new FileNotFoundException(fileName + " was not found in the resources directory.");
         }
