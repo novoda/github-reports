@@ -55,7 +55,7 @@ public class PayloadVerifierTest {
         assertEquals(body.toString(), signatureCreatorCaptor.getValue());
     }
 
-    @Test(expected = SecretException.class)
+    @Test(expected = InvalidSecretException.class)
     public void givenSignaturesDoNotMatch_whenCheckingIfItIsValid_thenAnExceptionIsThrown() throws Exception {
         when(mockHashSignatureCreator.createSignatureFor(anyString())).thenReturn("no match");
 

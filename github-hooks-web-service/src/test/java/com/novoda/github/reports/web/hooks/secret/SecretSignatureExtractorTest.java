@@ -32,7 +32,7 @@ public class SecretSignatureExtractorTest {
     }
 
     @Test
-    public void givenARequestWithSignatureHeader_whenExtractSignature_thenSignatureIsExtracted() throws SecretException {
+    public void givenARequestWithSignatureHeader_whenExtractSignature_thenSignatureIsExtracted() throws InvalidSecretException {
         WebhookRequest request = givenARequestWithHeaders(Collections.singletonMap("X-Hub-Signature", ANY_SECRET_KEY));
 
         String actual = secretSignatureExtractor.extractSignatureFrom(request);
@@ -48,8 +48,8 @@ public class SecretSignatureExtractorTest {
     }
 
     @Test
-    public void givenARequestWithoutSignatureHeader_whenExtractSignature_thenExceptionIsThrown() throws SecretException {
-        expectedException.expect(SecretException.class);
+    public void givenARequestWithoutSignatureHeader_whenExtractSignature_thenExceptionIsThrown() throws InvalidSecretException {
+        expectedException.expect(InvalidSecretException.class);
         WebhookRequest request = givenARequestWithHeaders(new HashMap<>(0));
 
         secretSignatureExtractor.extractSignatureFrom(request);

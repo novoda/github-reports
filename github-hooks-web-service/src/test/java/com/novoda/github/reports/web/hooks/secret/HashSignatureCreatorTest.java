@@ -26,7 +26,7 @@ public class HashSignatureCreatorTest {
     }
 
     @Test
-    public void givenAPayload_whenCreatingASignatureForIt_thenItIsTheExpected() throws SecretException {
+    public void givenAPayload_whenCreatingASignatureForIt_thenItIsTheExpected() throws InvalidSecretException {
         String payload = "Deus quer, o homem sonha, a obra nasce";
 
         String actual = hashSignatureCreator.createSignatureFor(payload);
