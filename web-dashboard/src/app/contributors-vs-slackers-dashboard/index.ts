@@ -1,1 +1,1 @@
-export * from './work-dashboard.component';
+export * from './contributors-vs-slackers-dashboard.component';
