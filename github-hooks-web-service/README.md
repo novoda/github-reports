@@ -16,6 +16,8 @@ parsed and stored appropriately.
 aws apigateway get-resources --rest-api-id API_ID
 ```
 
+Remember, you can easily check you API ID through [API gateway's UI](https://console.aws.amazon.com/apigateway/home).
+
 ## Configuration
 
 ### Amazon AWS
@@ -40,11 +42,6 @@ Then, to add the necessary policies to your role, run the following commands:
 aws iam attach-role-policy --role-name github-reports-role --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaRole
 aws iam attach-role-policy --role-name github-reports-role --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 ```
-
-#### Lambda upload
-
-To upload or update the Lambda on your Amazon AWS account, just run the Gradle task `uploadWebhookLambda` (or `uWL`).
-
 
 #### Create API
 
@@ -96,8 +93,8 @@ Create `/webhook` endpoint with the following commands:
 
 ```shell
 aws apigateway create-resource \
-    --rest-api-id API_ID \
-    --parent-id ROOT_ID \
+    --rest-api-id API ID \
+    --parent-id ROOT ID \
     --path-part webhook
 ```
 
@@ -116,8 +113,8 @@ Take note of the resource ID. Now add a POST method to it:
 
 ```shell
 aws apigateway put-method \
-    --rest-api-id API_ID \
-    --resource-id RESOURCE_ID \
+    --rest-api-id API ID \
+    --resource-id RESOURCE ID \
     --http-method POST \
     --no-api-key-required \
     --authorization-type NONE
@@ -137,11 +134,12 @@ We're now ready to bind the endpoint to the proper lambda:
 
 ```shell
 aws apigateway put-integration \
-    --rest-api-id API_ID \
-    --resource-id RESOURCE_ID \
+    --rest-api-id API ID \
+    --resource-id RESOURCE ID \
     --http-method POST \
     --type AWS \
     --integration-http-method POST \
+    --passthrough-behavior WHEN_NO_TEMPLATES \
     --uri arn:aws:apigateway:AWS_REGION:lambda:path/2015-03-31/functions/arn:aws:lambda:aws-region:YOUR ACCOUNT ID:function:github-reports-webhook-post/invocations
 ```
 
@@ -150,7 +148,7 @@ A result as the following should come up:
 ```json
 {
     "httpMethod": "POST",
-    "passthroughBehavior": "WHEN_NO_MATCH",
+    "passthroughBehavior": "WHEN_NO_TEMPLATES",
     "cacheKeyParameters": [],
     "type": "AWS",
     "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:aws-region:91320918103:function:github-reports-webhook-post/invocations",
@@ -236,6 +234,46 @@ And you should finally see:
 }
 ```
 
+So far you've configured your API to properly handle outgoing responses. Now you need to set it up so our lambda handler can properly handle 
+requests. We'll be moving onto the [API gateway UI](https://console.aws.amazon.com/apigateway/home), taking a step back to reconfigure our 
+integration request.
+
+Select your API - it should have the name you gave it earlier, "Github Reports Webhooks API" - and the `POST` method:
+
+![resources](images/resources.png)
+
+You should now be looking at a map of the whole method execution. Select **Integration Request**.
+
+![integration request](images/integrationrequest.png)
+
+If you've done everything right so far, the _Integration type_ should be **Lambda Function**, referring to the lambda that was set up. A bit
+further down a section named **Body Mapping Templates** should be folded. Expand it and make sure the _Request body passthrough_ rule is
+**When there are no templates defined** (which should already be selected). Now on to configuring a mapping template for incoming requests.
+
+![mapping templates](images/mappingtemplates.png)
+
+Press **Add mapping template** and fill out the _Content-Type_ text field with "_application/json_" type.
+
+![content type](images/contenttype.png)
+
+A new section, for you to type your template in, should be displayed. Copy and paste the following template onto it.
+
+```json
+{
+  "method": "$context.httpMethod",
+  "body" : $input.json('$'),
+  "headers": {
+    #foreach($param in $input.params().header.keySet())
+    "$param": "$util.escapeJavaScript($input.params().header.get($param))" #if($foreach.hasNext),#end
+    #end
+  }
+}
+```
+
+Now you just need to press **Save**.
+
+![mapping](images/mapping.png)
+
 #### Deploy
 
 Use the [API Gateway Web console](https://console.aws.amazon.com/apigateway) to ship your Web Service to
@@ -262,8 +300,33 @@ Currently we support a limited set of all the events (and not all the actions fo
 - Pull request
 - Pull request review comment
 
-The "Active" checkbox should be selected by default. Now press the "**Add webhook**" button to finish the process.
+##### Security
+
+Given your API gateway is now exposed to the world we need to make sure the Github webhooks play nice with it, as any event that gets POSTed to 
+it will be ignored unless we're sure it's coming from Github.
+
+This means you now need to pick a _secret_ and fill out the "**Secret**" text box with it. Github suggests you generate a random string and use it:
+
+```shell
+ruby -rsecurerandom -e 'puts SecureRandom.hex(20)'
+```
+
+Copy that secret to your clipboard as you'll need it after finishing setting up the webhook.  
+
+The "**Active**" checkbox should be selected by default. Now press the "**Add webhook**" button to finish the process.
 
 You might want to visit this section of your organisation's settings every now and then, as you can easily check the most recent webhook 
 deliveries, with details such as the POST request body (the actual event) and the AWS Lambda's response.
 
+Under the "_resources_" dir on this module you should find a "secret.properties.sample". Duplicate that file and remove the ".sample" extension.
+Now open the file and paste your secret there, so it reads:
+
+```
+SECRET=your_secret
+```
+
+Make sure to save the file and you should be set for the last step, which is uploading your lambda.
+
+#### Lambda upload
+
+To upload or update the Lambda on your Amazon AWS account, just run the Gradle task `uploadWebhookLambda` (or `uWL`).
