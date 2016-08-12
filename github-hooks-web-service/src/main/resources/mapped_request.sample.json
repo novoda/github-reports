@@ -31,15 +31,17 @@
         "type": "User",
         "site_admin": false
       },
-      "labels": [],
+      "labels": [
+      ],
       "state": "open",
       "locked": false,
       "assignee": null,
-      "assignees": [],
+      "assignees": [
+      ],
       "milestone": null,
-      "comments": 1,
+      "comments": 2,
       "created_at": "2016-08-09T08:58:23Z",
-      "updated_at": "2016-08-10T08:31:56Z",
+      "updated_at": "2016-08-10T14:45:27Z",
       "closed_at": null,
       "pull_request": {
         "url": "https://api.github.com/repos/takecare/dump/pulls/5",
@@ -50,10 +52,10 @@
       "body": "wut wut wut"
     },
     "comment": {
-      "url": "https://api.github.com/repos/takecare/dump/issues/comments/238800444",
-      "html_url": "https://github.com/takecare/dump/pull/5#issuecomment-238800444",
+      "url": "https://api.github.com/repos/takecare/dump/issues/comments/238889574",
+      "html_url": "https://github.com/takecare/dump/pull/5#issuecomment-238889574",
       "issue_url": "https://api.github.com/repos/takecare/dump/issues/5",
-      "id": 238800444,
+      "id": 238889574,
       "user": {
         "login": "takecare",
         "id": 212528,
@@ -73,9 +75,9 @@
         "type": "User",
         "site_admin": false
       },
-      "created_at": "2016-08-10T08:31:56Z",
-      "updated_at": "2016-08-10T08:31:56Z",
-      "body": "comment"
+      "created_at": "2016-08-10T14:45:27Z",
+      "updated_at": "2016-08-10T14:45:27Z",
+      "body": "another one"
     },
     "repository": {
       "id": 63702872,
@@ -194,7 +196,7 @@
     "CloudFront-Is-Tablet-Viewer": "false",
     "CloudFront-Viewer-Country": "US",
     "content-type": "application/json",
-    "Host": "***REMOVED***",
+    "Host": "wufbtotsae.execute-api.us-east-1.amazonaws.com",
     "User-Agent": "GitHub-Hookshot/c80b888",
     "Via": "1.1 2a47832c458ab2a6b20c8363f5aa35ea.cloudfront.net (CloudFront)",
     "X-Amz-Cf-Id": "YSBi0HH1G0_z9GlVWpGzkmftfLA_BaH2lUlN6MSxUJV01ZL_aspI4g==",
@@ -202,6 +204,7 @@
     "X-Forwarded-Port": "443",
     "X-Forwarded-Proto": "https",
     "X-GitHub-Delivery": "e5a12600-5ed4-11e6-84ed-c4d5378e149c",
-    "X-GitHub-Event": "issue_comment"
+    "X-GitHub-Event": "issue_comment",
+    "X-Hub-Signature": "sha1=0245b9d1f8012444a121aeadc0acf6669a9d0c53"
   }
 }

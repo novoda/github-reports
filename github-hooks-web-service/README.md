@@ -16,6 +16,8 @@ parsed and stored appropriately.
 aws apigateway get-resources --rest-api-id API_ID
 ```
 
+Remember, you can easily check you API ID through [API gateway's UI](https://console.aws.amazon.com/apigateway/home).
+
 ## Configuration
 
 ### Amazon AWS
@@ -91,8 +93,8 @@ Create `/webhook` endpoint with the following commands:
 
 ```shell
 aws apigateway create-resource \
-    --rest-api-id API_ID \
-    --parent-id ROOT_ID \
+    --rest-api-id API ID \
+    --parent-id ROOT ID \
     --path-part webhook
 ```
 
@@ -111,8 +113,8 @@ Take note of the resource ID. Now add a POST method to it:
 
 ```shell
 aws apigateway put-method \
-    --rest-api-id API_ID \
-    --resource-id RESOURCE_ID \
+    --rest-api-id API ID \
+    --resource-id RESOURCE ID \
     --http-method POST \
     --no-api-key-required \
     --authorization-type NONE
@@ -132,11 +134,12 @@ We're now ready to bind the endpoint to the proper lambda:
 
 ```shell
 aws apigateway put-integration \
-    --rest-api-id API_ID \
-    --resource-id RESOURCE_ID \
+    --rest-api-id API ID \
+    --resource-id RESOURCE ID \
     --http-method POST \
     --type AWS \
     --integration-http-method POST \
+    --passthrough-behavior WHEN_NO_TEMPLATES \
     --uri arn:aws:apigateway:AWS_REGION:lambda:path/2015-03-31/functions/arn:aws:lambda:aws-region:YOUR ACCOUNT ID:function:github-reports-webhook-post/invocations
 ```
 
@@ -145,7 +148,7 @@ A result as the following should come up:
 ```json
 {
     "httpMethod": "POST",
-    "passthroughBehavior": "WHEN_NO_MATCH",
+    "passthroughBehavior": "WHEN_NO_TEMPLATES",
     "cacheKeyParameters": [],
     "type": "AWS",
     "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:aws-region:91320918103:function:github-reports-webhook-post/invocations",
@@ -231,7 +234,45 @@ And you should finally see:
 }
 ```
 
-**TODO** @RUI add bit explaining how to setup body mapping in an integration request 
+So far you've configured your API to properly handle outgoing responses. Now you need to set it up so our lambda handler can properly handle 
+requests. We'll be moving onto the [API gateway UI](https://console.aws.amazon.com/apigateway/home), taking a step back to reconfigure our 
+integration request.
+
+Select your API - it should have the name you gave it earlier, "Github Reports Webhooks API" - and the `POST` method:
+
+![resources](images/resources.png)
+
+You should now be looking at a map of the whole method execution. Select **Integration Request**.
+
+![integration request](images/integrationrequest.png)
+
+If you've done everything right so far, the _Integration type_ should be **Lambda Function**, referring to the lambda that was set up. A bit
+further down a section named **Body Mapping Templates** should be folded. Expand it and make sure the _Request body passthrough_ rule is
+**When there are no templates defined** (which should already be selected). Now on to configuring a mapping template for incoming requests.
+
+![mapping templates](images/mappingtemplates.png)
+
+Press **Add mapping template** and fill out the _Content-Type_ text field with "_application/json_" type.
+
+![content type](images/contenttype.png)
+
+A new section, for you to type your template in, should be displayed. Copy and paste the following template onto it.
+
+```json
+{
+  "method": "$context.httpMethod",
+  "body" : $input.json('$'),
+  "headers": {
+    #foreach($param in $input.params().header.keySet())
+    "$param": "$util.escapeJavaScript($input.params().header.get($param))" #if($foreach.hasNext),#end
+    #end
+  }
+}
+```
+
+Now you just need to press **Save**.
+
+![mapping](images/mapping.png)
 
 #### Deploy
 

@@ -6,13 +6,13 @@ import java.util.Map;
 
 class SecretSignatureExtractor {
 
-    String extractSignatureFrom(WebhookRequest request) throws SecurityException {
+    String extractSignatureFrom(WebhookRequest request) throws InvalidSecretException {
 
         Map<String, String> headers = request.headers();
         String signature = headers.get("X-Hub-Signature");
 
         if (signature == null) {
-            throw new SecurityException("Request does not contain a signature.");
+            throw new InvalidSecretException("Request does not contain a signature.");
         }
 
         return signature;
