@@ -1,8 +1,8 @@
 /* tslint:disable:no-unused-variable */
 
-import {addProviders, inject} from '@angular/core/testing';
-import {WeekCalculator} from './week-calculator.service';
-import {SystemClock} from './system-clock';
+import { addProviders, inject } from '@angular/core/testing';
+import { WeekCalculator } from './week-calculator.service';
+import { SystemClock } from './system-clock';
 
 describe('Service: WeekCalculator', () => {
 

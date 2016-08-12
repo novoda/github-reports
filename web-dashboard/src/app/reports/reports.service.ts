@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
-import {Http, URLSearchParams, Response} from '@angular/http';
-import {Observable} from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Http, URLSearchParams, Response } from '@angular/http';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class ReportsService {
