@@ -196,7 +196,7 @@
     "CloudFront-Is-Tablet-Viewer": "false",
     "CloudFront-Viewer-Country": "US",
     "content-type": "application/json",
-    "Host": "***REMOVED***",
+    "Host": "wufbtotsae.execute-api.us-east-1.amazonaws.com",
     "User-Agent": "GitHub-Hookshot/c80b888",
     "Via": "1.1 2a47832c458ab2a6b20c8363f5aa35ea.cloudfront.net (CloudFront)",
     "X-Amz-Cf-Id": "YSBi0HH1G0_z9GlVWpGzkmftfLA_BaH2lUlN6MSxUJV01ZL_aspI4g==",

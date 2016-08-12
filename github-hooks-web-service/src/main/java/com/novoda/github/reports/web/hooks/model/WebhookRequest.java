@@ -4,6 +4,7 @@ import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Map;
 
@@ -17,9 +18,11 @@ public abstract class WebhookRequest {
     public static TypeAdapter<WebhookRequest> typeAdapter(Gson gson) {
         return new AutoValue_WebhookRequest.GsonTypeAdapter(gson);
     }
-    
+
+    @SerializedName("body")
     public abstract JsonObject body();
 
+    @SerializedName("headers")
     public abstract Map<String, String> headers();
 
     @AutoValue.Builder
