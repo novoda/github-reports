@@ -1,21 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SystemClock } from '../system-clock';
 import { WeekCalculator } from '../week-calculator.service';
 import { ReportsClient } from '../reports/reports-client.service';
 import { CompanyStats } from '../reports/company-stats';
 import { UserStats } from '../reports/user-stats';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'contributors-vs-slackers-dashboard',
   templateUrl: 'contributors-vs-slackers-dashboard.component.html',
   styleUrls: ['contributors-vs-slackers-dashboard.component.scss']
 })
-export class ContributorsVsSlackersDashboardComponent implements OnInit {
+export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestroy {
 
   static NUMBER_OF_CONTRIBUTORS = 5;
 
-  private contributors: Array<UserStats>;
-  private slackers: Array<UserStats>;
+  public contributors: Array<UserStats>;
+  public slackers: Array<UserStats>;
+  public subscription: Subscription;
 
   constructor(private weekCalculator: WeekCalculator,
               private clock: SystemClock,
@@ -24,7 +26,7 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.reportsServiceClient
+    this.subscription = this.reportsServiceClient
       .getCompanyStats(
         this.weekCalculator.getLastMonday(),
         this.clock.getDate()
@@ -35,25 +37,34 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit {
       });
   }
 
-  private pickRandomContributors(stats: CompanyStats): Array<UserStats> {
-    let contributors = this.cloneArray(stats.contributors);
+  ngOnDestroy(): void {
+    if (!this.subscription.isUnsubscribed) {
+      this.subscription.unsubscribe();
+    }
+  }
 
-    let randomContributors: Array<UserStats> = new Array(ContributorsVsSlackersDashboardComponent.NUMBER_OF_CONTRIBUTORS);
-    for (let index = 0; index < ContributorsVsSlackersDashboardComponent.NUMBER_OF_CONTRIBUTORS; index++) {
+  pickRandomContributors(stats: CompanyStats): Array<UserStats> {
+    const contributors = this.cloneArray(stats.contributors);
+
+    const numberOfContributors = Math.min(contributors.length, ContributorsVsSlackersDashboardComponent.NUMBER_OF_CONTRIBUTORS);
+    const randomContributors: Array<UserStats> = new Array(numberOfContributors);
+
+    for (let index = 0; index < numberOfContributors; index++) {
       randomContributors[index] = this.pickAndRemoveRandomContributor(contributors);
     }
 
     return randomContributors;
   }
 
-  private cloneArray(array: Array<any>) {
+  cloneArray(array: Array<any>) {
     return array.slice(0);
   }
 
-  private pickAndRemoveRandomContributor(users: Array<UserStats>): UserStats {
-    const index = Math.floor(Math.random() * users.length);
-    const user = users[index];
-    users.splice(index, 1);
+  pickAndRemoveRandomContributor(users: Array<UserStats>): UserStats {
+    const usersOrEmpty = users || [];
+    const index = Math.floor(Math.random() * usersOrEmpty.length);
+    const user = usersOrEmpty[index];
+    usersOrEmpty.splice(index, 1);
     return user;
   }
 
