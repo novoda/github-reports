@@ -6,8 +6,9 @@ import { addProviders, async, inject } from '@angular/core/testing';
 import { ContributorsComponent } from './contributors.component';
 
 describe('Component: Contributors', () => {
-  it('should create an instance', () => {
+  it('creates an instance', () => {
     let component = new ContributorsComponent();
     expect(component).toBeTruthy();
   });
 });
+

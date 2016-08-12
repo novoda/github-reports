@@ -2,8 +2,8 @@
 
 import { ContributorComponent } from './contributor.component';
 
-describe('Component: WorkUser', () => {
-  it('should create an instance', () => {
+describe('Component: Contributor', () => {
+  it('creates an instance', () => {
     let component = new ContributorComponent();
     expect(component).toBeTruthy();
   });
