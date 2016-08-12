@@ -1,8 +1,6 @@
 package com.novoda.github.reports.web.hooks.secret;
 
-import com.novoda.github.reports.service.GithubUser;
-import com.novoda.github.reports.web.hooks.model.GithubAction;
-import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
+import com.google.gson.JsonObject;
 import com.novoda.github.reports.web.hooks.model.WebhookRequest;
 
 import java.util.Collections;
@@ -21,8 +19,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class SecretSignatureExtractorTest {
 
     private static final String ANY_SECRET_KEY = "s3c®37k3y";
-    private static final GithubAction ANY_ACTION = GithubAction.OPENED;
-    private static final GithubUser ANY_GITHUB_USER = new GithubUser(88L);
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -36,7 +32,7 @@ public class SecretSignatureExtractorTest {
     }
 
     @Test
-    public void givenARequestWithSignatureHeader_whenExtractSignature_thenSignatureIsExtracted() {
+    public void givenARequestWithSignatureHeader_whenExtractSignature_thenSignatureIsExtracted() throws InvalidSecretException {
         WebhookRequest request = givenARequestWithHeaders(Collections.singletonMap("X-Hub-Signature", ANY_SECRET_KEY));
 
         String actual = secretSignatureExtractor.extractSignatureFrom(request);
@@ -45,20 +41,15 @@ public class SecretSignatureExtractorTest {
     }
 
     private WebhookRequest givenARequestWithHeaders(Map<String, String> headers) {
-        GithubWebhookEvent event = GithubWebhookEvent.builder()
-                .action(ANY_ACTION)
-                .sender(ANY_GITHUB_USER)
-                .build();
-
         return WebhookRequest.builder()
                 .headers(headers)
-                .event(event)
+                .body(new JsonObject())
                 .build();
     }
 
     @Test
-    public void givenARequestWithoutSignatureHeader_whenExtractSignature_thenExceptionIsThrown() {
-        expectedException.expect(SecurityException.class);
+    public void givenARequestWithoutSignatureHeader_whenExtractSignature_thenExceptionIsThrown() throws InvalidSecretException {
+        expectedException.expect(InvalidSecretException.class);
         WebhookRequest request = givenARequestWithHeaders(new HashMap<>(0));
 
         secretSignatureExtractor.extractSignatureFrom(request);
