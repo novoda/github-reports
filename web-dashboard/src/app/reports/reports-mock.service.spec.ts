@@ -1,7 +1,7 @@
 /* tslint:disable:no-unused-variable */
 
-import {addProviders, inject} from '@angular/core/testing';
-import {ReportsMockService} from './reports-mock.service';
+import { addProviders, inject } from '@angular/core/testing';
+import { ReportsMockService } from './reports-mock.service';
 
 describe('Service: ReportsMock', () => {
   beforeEach(() => {

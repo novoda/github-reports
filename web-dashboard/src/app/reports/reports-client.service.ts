@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ReportsService } from './reports.service';
 import { Observable } from 'rxjs';
 import { UserStats } from './user-stats';
+import { CompanyStats } from './company-stats';
 
 @Injectable()
 export class ReportsClient {
@@ -9,15 +10,30 @@ export class ReportsClient {
   constructor(private reportsService: ReportsService) {
   }
 
-  getAggregatedStats(from: Date, to: Date): Observable<Array<UserStats>> {
+  getCompanyStats(from: Date, to: Date): Observable<CompanyStats> {
 
     return this.reportsService
       .getAggregatedStats(from, to)
-      .map((stats: {usersStats: any}) => {
-        return Object
-          .keys(stats.usersStats)
-          .map(this.toUserStats(stats));
-      });
+      .mergeMap((stats: {usersStats: any}) => {
+        return Observable
+          .from(Object
+            .keys(stats.usersStats)
+            .map(this.toUserStats(stats))
+          );
+      })
+      .filter(this.excludeUsersWithNoAssignedContributions)
+      .toArray()
+      .map(this.into);
+  }
+
+  private into(users: Array<UserStats>): CompanyStats {
+    const contributors: Array<UserStats> = users.filter((userStats: UserStats) => {
+      return userStats.externalCount > 0;
+    });
+    const slackers: Array<UserStats> = users.filter((userStats: UserStats) => {
+      return userStats.externalCount <= 0;
+    });
+    return new CompanyStats(contributors, slackers);
   }
 
   private toUserStats(stats: {usersStats: any}) {
@@ -38,17 +54,21 @@ export class ReportsClient {
     };
   }
 
-  private normaliseProjects(projects: string[]) {
+  private normaliseProjects(projects: string[]): string[] {
     return projects
       .map(project => {
         return project.replace(/(: (Scheduled|Verified))/g, '');
       });
   }
 
-  private removeDuplicates(normalizedProjects: string[]) {
+  private removeDuplicates(normalizedProjects: string[]): string {
     return Array
       .from(new Set(normalizedProjects))
       .join(', ');
+  }
+
+  private excludeUsersWithNoAssignedContributions(userStats: UserStats): boolean {
+    return userStats.assignedCount > 0;
   }
 
 }
