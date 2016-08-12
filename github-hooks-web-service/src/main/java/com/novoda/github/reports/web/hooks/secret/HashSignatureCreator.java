@@ -11,6 +11,8 @@ import org.apache.commons.codec.binary.Hex;
 
 class HashSignatureCreator {
 
+    private static final String HMAC_SHA_1_ALGORITHM = "HmacSHA1";
+
     private final SecretPropertiesReader secretPropertiesReader;
 
     public static HashSignatureCreator newInstance() {
@@ -30,7 +32,7 @@ class HashSignatureCreator {
     private String signatureWith(String secret, String payload) throws InvalidSecretException {
         Mac sha1Hmac = getHmacSha1();
 
-        SecretKeySpec secretKey = new SecretKeySpec(getUtf8EncodedBytes(secret), "HmacSHA1");
+        SecretKeySpec secretKey = new SecretKeySpec(getUtf8EncodedBytes(secret), HMAC_SHA_1_ALGORITHM);
 
         initMac(sha1Hmac, secretKey);
 
@@ -39,7 +41,7 @@ class HashSignatureCreator {
 
     private Mac getHmacSha1() throws InvalidSecretException {
         try {
-            return Mac.getInstance("HmacSHA1");
+            return Mac.getInstance(HMAC_SHA_1_ALGORITHM);
         } catch (NoSuchAlgorithmException e) {
             throw new InvalidSecretException(e);
         }
