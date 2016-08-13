@@ -4,10 +4,10 @@ import com.novoda.github.reports.batch.local.retry.RateLimitResetTimerSubject;
 import com.novoda.github.reports.batch.local.retry.RateLimitResetTimerSubjectContainer;
 import com.novoda.github.reports.batch.local.retry.RetryWhenTokenResets;
 import com.novoda.github.reports.service.issue.GithubIssue;
-import com.novoda.github.reports.service.issue.GithubIssueService;
-import com.novoda.github.reports.service.issue.IssueService;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
+import com.novoda.github.reports.service.network.GithubApiService;
+import com.novoda.github.reports.service.network.GithubCachingServiceContainer;
 import com.novoda.github.reports.service.network.PagedTransformer;
 import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
 import com.novoda.github.reports.service.persistence.RepositoryIssuePersistTransformer;
@@ -25,7 +25,7 @@ public class IssuesServiceClient {
     private static final int FIRST_PAGE = 1;
     private static final GithubIssue.State DEFAULT_STATE = GithubIssue.State.ALL;
 
-    private final IssueService issueService;
+    private final GithubApiService apiService;
     private final DateToISO8601Converter dateConverter;
     private final RepositoryIssuePersistTransformer repositoryIssuePersistTransformer;
 
@@ -33,25 +33,25 @@ public class IssuesServiceClient {
     private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
 
     public static IssuesServiceClient newInstance() {
-        IssueService issueService = GithubIssueService.newCachingInstance();
+        GithubApiService apiService = GithubCachingServiceContainer.getGithubService();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         RepositoryIssuePersistTransformer repositoryIssuePersistTransformer = RepositoryIssuePersistTransformer.newInstance();
         RateLimitDelayTransformer<GithubIssue> issueRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
         RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
-        return new IssuesServiceClient(issueService,
+        return new IssuesServiceClient(apiService,
                                        dateConverter,
                                        repositoryIssuePersistTransformer,
                                        rateLimitResetTimerSubject,
                                        issueRateLimitDelayTransformer);
     }
 
-    private IssuesServiceClient(IssueService issueService,
+    private IssuesServiceClient(GithubApiService apiService,
                                 DateToISO8601Converter dateConverter,
                                 RepositoryIssuePersistTransformer repositoryIssuePersistTransformer,
                                 RateLimitResetTimerSubject rateLimitResetTimerSubject,
                                 RateLimitDelayTransformer<GithubIssue> issueRateLimitDelayTransformer) {
 
-        this.issueService = issueService;
+        this.apiService = apiService;
         this.dateConverter = dateConverter;
         this.repositoryIssuePersistTransformer = repositoryIssuePersistTransformer;
         this.issueRateLimitDelayTransformer = issueRateLimitDelayTransformer;
@@ -73,7 +73,7 @@ public class IssuesServiceClient {
                                                                       int pageCount) {
 
         String date = dateConverter.toISO8601NoMillisOrNull(since);
-        return issueService.getIssuesFor(organisation, repository, DEFAULT_STATE, date, page, pageCount)
+        return apiService.getIssuesResponseForPage(organisation, repository, DEFAULT_STATE, date, page, pageCount)
                 .compose(issueRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedIssuesFor(organisation, repository, since, nextPage, pageCount)));
     }
