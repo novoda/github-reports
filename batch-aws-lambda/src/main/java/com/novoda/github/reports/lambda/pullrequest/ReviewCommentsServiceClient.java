@@ -13,8 +13,8 @@ import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
-import com.novoda.github.reports.service.pullrequest.GithubPullRequestService;
-import com.novoda.github.reports.service.pullrequest.PullRequestService;
+import com.novoda.github.reports.service.network.GithubApiService;
+import com.novoda.github.reports.service.network.GithubCachingServiceContainer;
 
 import rx.Observable;
 import rx.functions.Func3;
@@ -23,42 +23,42 @@ public class ReviewCommentsServiceClient {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
 
-    private final PullRequestService pullRequestService;
+    private final GithubApiService apiService;
     private final DateToISO8601Converter dateConverter;
     private final ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer;
 
     public static ReviewCommentsServiceClient newInstance() {
-        PullRequestService pullRequestService = GithubPullRequestService.newInstance();
+        GithubApiService apiService = GithubCachingServiceContainer.getGithubService();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance();
 
-        return new ReviewCommentsServiceClient(pullRequestService, dateConverter, responseRepositoryIssueEventPersistTransformer);
+        return new ReviewCommentsServiceClient(apiService, dateConverter, responseRepositoryIssueEventPersistTransformer);
     }
 
     public static ReviewCommentsServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
 
-        PullRequestService pullRequestService = GithubPullRequestService.newInstance();
+        GithubApiService apiService = GithubCachingServiceContainer.getGithubService();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
 
-        return new ReviewCommentsServiceClient(pullRequestService, dateConverter, responseRepositoryIssueEventPersistTransformer);
+        return new ReviewCommentsServiceClient(apiService, dateConverter, responseRepositoryIssueEventPersistTransformer);
     }
 
-    private ReviewCommentsServiceClient(PullRequestService pullRequestService,
+    private ReviewCommentsServiceClient(GithubApiService apiService,
                                         DateToISO8601Converter dateConverter,
                                         ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer) {
 
-        this.pullRequestService = pullRequestService;
+        this.apiService = apiService;
         this.dateConverter = dateConverter;
         this.responseRepositoryIssueEventPersistTransformer = responseRepositoryIssueEventPersistTransformer;
     }
 
     public Observable<AmazonQueueMessage> retrieveReviewCommentsFromPullRequest(AmazonGetReviewCommentsQueueMessage message) {
         String date = dateConverter.toISO8601NoMillisOrNull(message.sinceOrNull());
-        return pullRequestService
-                .getPullRequestReviewCommentsFor(
+        return apiService
+                .getReviewCommentsResponseForPullRequestAndPage(
                         message.organisationName(),
                         message.repositoryName(),
                         issueNumberFrom(message),
