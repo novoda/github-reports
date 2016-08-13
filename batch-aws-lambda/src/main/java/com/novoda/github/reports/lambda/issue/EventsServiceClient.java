@@ -10,7 +10,7 @@ import com.novoda.github.reports.service.issue.GithubEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventEvent;
 import com.novoda.github.reports.service.network.GithubApiService;
-import com.novoda.github.reports.service.network.GithubCachingServiceContainer;
+import com.novoda.github.reports.service.network.GithubServiceContainer;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -42,12 +42,12 @@ public class EventsServiceClient {
     private final ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer;
 
     public static EventsServiceClient newInstance() {
-        GithubApiService apiService = GithubCachingServiceContainer.getGithubService();
+        GithubApiService apiService = GithubServiceContainer.getGithubService();
         return new EventsServiceClient(apiService, ResponseRepositoryIssueEventPersistTransformer.newInstance());
     }
 
     public static EventsServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
-        GithubApiService apiService = GithubCachingServiceContainer.getGithubService();
+        GithubApiService apiService = GithubServiceContainer.getGithubService();
         ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
 
