@@ -45,7 +45,7 @@ public class RateLimitHandlerInterceptorTest {
     }
 
     @Test
-    public void whenTheRequestIsIntercepted_thenTheTokenIsInjected() throws Exception {
+    public void whenTheRequestIsIntercepted_thenTheRateLimitErrorIsThrown() throws Exception {
         expectedException.expect(RateLimitEncounteredException.class);
 
         interceptor.intercept(mockChain);
