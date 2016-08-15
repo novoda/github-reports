@@ -21,7 +21,8 @@ describe('Service: Reports', () => {
         useFactory: (backend, defaultOptions) => new Http(backend, defaultOptions),
         deps: [MockBackend, BaseRequestOptions]
       },
-      ReportsService]);
+      ReportsService
+    ]);
   });
 
   beforeEach(inject([MockBackend, ReportsService], (_mockBackend_: MockBackend, _reportsService_: ReportsService) => {
