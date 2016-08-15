@@ -215,8 +215,8 @@ public class FloatServiceClient {
     }
 
     private Func1<Task, Boolean> excludingHolidays() {
-        return task -> task.getName() != null &&
-                !(task.getName().contains("holiday") || task.getName().contains("Holiday"));
+        return task -> task.getName() == null ||
+                !(task.getName().toUpperCase().contains("HOLIDAY"));
     }
 
     private Function<Task, UserAssignments> taskToUserAssignments() {
