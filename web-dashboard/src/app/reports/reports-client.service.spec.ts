@@ -9,7 +9,6 @@ import { Observable } from 'rxjs';
 import { async } from '@angular/core/testing/async';
 import { CompanyStats } from './company-stats';
 import { UserStats } from './user-stats';
-import any = jasmine.any;
 
 describe('Service: ReportsClient', () => {
 
