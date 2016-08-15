@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class ReportsMockService {
@@ -14,34 +14,20 @@ export class ReportsMockService {
           'tasomaniac': {
             'assignedProjectsStats': {},
             'assignedProjectsContributions': 0,
-            'externalRepositoriesStats': {
-              'gradle-android-command-plugin': 3,
-              'spikes': 8,
-              'notils': 4,
-              'oddschecker-android': 3,
-              'novoda': 2
-            },
-            'externalRepositoriesContributions': 20
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'takecare': {
             'assignedProjectsStats': {'R \u0026 D: Scheduled': 253},
             'assignedProjectsContributions': 253,
-            'externalRepositoriesStats': {
-              'all-4': 17,
-              'sqlite-provider': 6,
-              'github-reports': 5,
-              'spikes': 9,
-              'project-d': 4,
-              'piriform-ccleaner': 3,
-              'oddschecker-android': 11
-            },
-            'externalRepositoriesContributions': 55
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'Mecharyry': {
             'assignedProjectsStats': {'The Times: Scheduled': 252},
             'assignedProjectsContributions': 252,
-            'externalRepositoriesStats': {'spikes': 6, 'simple-chrome-custom-tabs': 2, 'project-d': 9},
-            'externalRepositoriesContributions': 17
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'alexstyl': {
             'assignedProjectsStats': {'OddsChecker: Verified': 128, 'OddsChecker: Scheduled': 128},
@@ -52,14 +38,14 @@ export class ReportsMockService {
           'florianmski': {
             'assignedProjectsStats': {'Creators: Scheduled': 161},
             'assignedProjectsContributions': 161,
-            'externalRepositoriesStats': {'all-4': 9, 'spikes': 9, 'soundcloud-creators': 16},
-            'externalRepositoriesContributions': 34
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'dominicfreeston': {
             'assignedProjectsStats': {'OddsChecker: Scheduled': 167},
             'assignedProjectsContributions': 167,
-            'externalRepositoriesStats': {'spikes': 47, 'oddschecker-ios': 2},
-            'externalRepositoriesContributions': 49
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'wltrup': {
             'assignedProjectsStats': {'OddsChecker: Verified': 59, 'OddsChecker: Scheduled': 98},
@@ -82,46 +68,26 @@ export class ReportsMockService {
           'mr-archano': {
             'assignedProjectsStats': {},
             'assignedProjectsContributions': 0,
-            'externalRepositoriesStats': {'spikes': 15, 'soundcloud-creators': 6},
-            'externalRepositoriesContributions': 21
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'amlcurran': {
             'assignedProjectsStats': {},
             'assignedProjectsContributions': 0,
-            'externalRepositoriesStats': {
-              'all-4': 3,
-              'spikes': 2,
-              'oddschecker-apiary': 4,
-              'oddschecker-ios': 42,
-              'oddschecker-android': 50
-            },
-            'externalRepositoriesContributions': 101
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'gbasile': {
             'assignedProjectsStats': {'OddsChecker: Verified': 43},
             'assignedProjectsContributions': 43,
-            'externalRepositoriesStats': {'spikes': 11, 'oddschecker-ios': 32},
-            'externalRepositoriesContributions': 43
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'blundell': {
             'assignedProjectsStats': {'R \u0026 D: Scheduled': 53},
             'assignedProjectsContributions': 53,
-            'externalRepositoriesStats': {
-              'all-4': 28,
-              'sqlite-provider': 4,
-              'gradle-android-command-plugin': 2,
-              'download-manager': 1,
-              'merlin': 1,
-              'spikes': 56,
-              'snowy-village-wallpaper': 1,
-              'notils': 1,
-              'piriform-ccleaner': 1,
-              'bonfire-firebase-sample': 1,
-              'oddschecker-android': 5,
-              'soundcloud-creators': 2,
-              'novoda': 3
-            },
-            'externalRepositoriesContributions': 106
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'yvettecook': {
             'assignedProjectsStats': {'OddsChecker: Verified': 26, 'OddsChecker: Scheduled': 42},
@@ -132,15 +98,8 @@ export class ReportsMockService {
           'danybony': {
             'assignedProjectsStats': {'R \u0026 D: Scheduled': 62},
             'assignedProjectsContributions': 62,
-            'externalRepositoriesStats': {
-              'all-4': 9,
-              'github-reports': 19,
-              'spikes': 45,
-              'aosp.changelog.to': 8,
-              'snowy-village-wallpaper': 4,
-              'oddschecker-android': 49
-            },
-            'externalRepositoriesContributions': 134
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'frapontillo': {
             'assignedProjectsStats': {'R \u0026 D: Scheduled': 352},
@@ -158,27 +117,20 @@ export class ReportsMockService {
           'qqipp': {
             'assignedProjectsStats': {'OddsChecker: Scheduled': 1},
             'assignedProjectsContributions': 1,
-            'externalRepositoriesStats': {'piriform-ccleaner': 2},
-            'externalRepositoriesContributions': 2
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'tobiasheine': {
             'assignedProjectsStats': {},
             'assignedProjectsContributions': 0,
-            'externalRepositoriesStats': {'piriform-ccleaner': 4},
-            'externalRepositoriesContributions': 4
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'joetimmins': {
             'assignedProjectsStats': {'R \u0026 D: Scheduled': 8},
             'assignedProjectsContributions': 8,
-            'externalRepositoriesStats': {
-              'sqlite-provider': 4,
-              'merlin': 33,
-              'spikes': 25,
-              'notils': 1,
-              'piriform-ccleaner': 1,
-              'novoda': 3
-            },
-            'externalRepositoriesContributions': 67
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'ouchadam': {
             'assignedProjectsStats': {'All4: Verified': 472, 'All4: Scheduled': 472},
@@ -196,33 +148,26 @@ export class ReportsMockService {
           'fourlastor': {
             'assignedProjectsStats': {'All4: Verified': 657, 'All4: Scheduled': 657},
             'assignedProjectsContributions': 1314,
-            'externalRepositoriesStats': {'merlin': 8, 'spikes': 12, 'oddschecker-android': 28},
-            'externalRepositoriesContributions': 48
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'eduardourso': {
             'assignedProjectsStats': {},
             'assignedProjectsContributions': 0,
-            'externalRepositoriesStats': {'oddschecker-ios': 3},
-            'externalRepositoriesContributions': 3
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'Hutch4': {
             'assignedProjectsStats': {},
             'assignedProjectsContributions': 0,
-            'externalRepositoriesStats': {'all-4': 1, 'piriform-ccleaner': 150},
-            'externalRepositoriesContributions': 151
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'Dorvaryn': {
             'assignedProjectsStats': {'R \u0026 D: Scheduled': 15},
             'assignedProjectsContributions': 15,
-            'externalRepositoriesStats': {
-              'all-4': 11,
-              'download-manager': 6,
-              'spikes': 77,
-              'project-d': 76,
-              'bonfire-firebase-sample': 13,
-              'novoda': 1
-            },
-            'externalRepositoriesContributions': 184
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'lgvalle': {
             'assignedProjectsStats': {'The Times: Scheduled': 223},
@@ -233,26 +178,14 @@ export class ReportsMockService {
           'xrigau': {
             'assignedProjectsStats': {'Creators: Scheduled': 190},
             'assignedProjectsContributions': 190,
-            'externalRepositoriesStats': {
-              'all-4': 2,
-              'sqlite-provider': 5,
-              'github-reports': 61,
-              'gradle-android-command-plugin': 8,
-              'merlin': 3,
-              'spikes': 48,
-              'aosp.changelog.to': 3,
-              'bintray-release': 2,
-              'oddschecker-android': 4,
-              'soundcloud-creators': 25,
-              'novoda': 1
-            },
-            'externalRepositoriesContributions': 162
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'hhaouat': {
             'assignedProjectsStats': {},
             'assignedProjectsContributions': 0,
-            'externalRepositoriesStats': {'all-4': 131},
-            'externalRepositoriesContributions': 131
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'PaNaVTEC': {
             'assignedProjectsStats': {'All4: Verified': 223, 'All4: Scheduled': 223},
@@ -269,8 +202,8 @@ export class ReportsMockService {
           'Electryc': {
             'assignedProjectsStats': {'OddsChecker: Scheduled': 230},
             'assignedProjectsContributions': 230,
-            'externalRepositoriesStats': {'github-reports': 7},
-            'externalRepositoriesContributions': 7
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'stefanhoth': {
             'assignedProjectsStats': {},
@@ -291,28 +224,14 @@ export class ReportsMockService {
           'eduardb': {
             'assignedProjectsStats': {'The Times: Scheduled': 60, 'R \u0026 D: Scheduled': 11},
             'assignedProjectsContributions': 71,
-            'externalRepositoriesStats': {
-              'sqlite-provider': 6,
-              'github-reports': 7,
-              'spikes': 5,
-              'project-d': 11,
-              'oddschecker-android': 8
-            },
-            'externalRepositoriesContributions': 37
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'ataulm': {
             'assignedProjectsStats': {'All4: Verified': 419, 'All4: Scheduled': 419},
             'assignedProjectsContributions': 838,
-            'externalRepositoriesStats': {
-              'all-4': 21,
-              'sqlite-provider': 4,
-              'merlin': 24,
-              'spikes': 72,
-              'project-d': 10,
-              'novoda': 6,
-              'soundcloud-creators': 51
-            },
-            'externalRepositoriesContributions': 188
+            'externalRepositoriesStats': {},
+            'externalRepositoriesContributions': 0
           },
           'JozefCeluch': {
             'assignedProjectsStats': {'OddsChecker: Verified': 64, 'OddsChecker: Scheduled': 64},

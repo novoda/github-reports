@@ -1,9 +1,9 @@
 /* tslint:disable:no-unused-variable */
 
-import {addProviders, inject} from '@angular/core/testing';
-import {ReportsService} from './reports.service';
-import {Http, BaseRequestOptions, ResponseOptions, Response} from '@angular/http';
-import {MockBackend} from '@angular/http/testing/mock_backend';
+import { addProviders, inject } from '@angular/core/testing';
+import { ReportsService } from './reports.service';
+import { Http, BaseRequestOptions, ResponseOptions, Response } from '@angular/http';
+import { MockBackend } from '@angular/http/testing/mock_backend';
 
 describe('Service: Reports', () => {
 
@@ -21,7 +21,8 @@ describe('Service: Reports', () => {
         useFactory: (backend, defaultOptions) => new Http(backend, defaultOptions),
         deps: [MockBackend, BaseRequestOptions]
       },
-      ReportsService]);
+      ReportsService
+    ]);
   });
 
   beforeEach(inject([MockBackend, ReportsService], (_mockBackend_: MockBackend, _reportsService_: ReportsService) => {
