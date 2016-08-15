@@ -39,7 +39,7 @@ export class ReportsClient {
   private toUserStats(stats: {usersStats: any}) {
     return (key: string) => {
       const userStats = stats.usersStats[key];
-      let projects = Object.keys(userStats.assignedProjectsStats);
+      let projects = Object.keys(userStats.assignedProjectsStats || {});
       if (projects.length === 0) {
         projects = ['No assignment'];
       }
@@ -49,7 +49,7 @@ export class ReportsClient {
         key,
         allProjects,
         userStats.assignedProjectsContributions,
-        userStats.externalRepositoriesContributions
+        userStats.externalRepositoriesContributions || 0
       );
     };
   }
@@ -68,7 +68,7 @@ export class ReportsClient {
   }
 
   private excludeUsersWithNoAssignedContributions(userStats: UserStats): boolean {
-    return userStats.assignedCount > 0;
+    return (userStats.assignedCount || 0) > 0;
   }
 
 }
