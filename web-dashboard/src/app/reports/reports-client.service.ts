@@ -57,7 +57,7 @@ export class ReportsClient {
   private normaliseProjects(projects: string[]): string[] {
     return projects
       .map(project => {
-        return project.replace(/(: (Scheduled|Verified))/g, '');
+        return project.replace(/(: (Scheduled|Verified)$)/g, '');
       });
   }
 

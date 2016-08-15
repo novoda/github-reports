@@ -172,6 +172,27 @@ describe('Service: ReportsClient', () => {
       });
   }));
 
+  it('does not remove "Verified" and "Scheduled" from project names if they are in valid positions', async(() => {
+    givenStats({
+      'usersStats': {
+        'alexstyl': {
+          'assignedProjectsStats': {': Verified YOLO :': 128, ': Scheduled DAWG :': 128},
+          'assignedProjectsContributions': 256
+        }
+      }
+    });
+
+    client.getCompanyStats(ANY_DATE, ANY_DATE)
+      .subscribe((actual: CompanyStats) => {
+        let expected: CompanyStats = new CompanyStats(
+          [],
+          [new UserStats('alexstyl', ': Verified YOLO :, : Scheduled DAWG :', jasmine.any(Number), jasmine.any(Number))]
+        );
+
+        expect(actual).toEqual(expected);
+      });
+  }));
+
   it('removes duplicates after removing "Verified" and "Scheduled" from project names when concatenating', async(() => {
     givenStats({
       'usersStats': {
