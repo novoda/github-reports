@@ -3,11 +3,10 @@ package com.novoda.floatschedule.task;
 import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.network.FloatApiService;
 import com.novoda.floatschedule.network.FloatServiceContainer;
-
-import java.util.Date;
-
 import retrofit2.Response;
 import rx.Observable;
+
+import java.util.Date;
 
 public class TaskServiceClient {
 
@@ -32,7 +31,8 @@ public class TaskServiceClient {
                 .map(Assignments::getAssignments)
                 .flatMapIterable(assignments -> assignments)
                 .map(Assignment::getTasks)
-                .flatMapIterable(tasks -> tasks);
+                .flatMapIterable(tasks -> tasks)
+                .filter(task -> task != null);
     }
 
 }
