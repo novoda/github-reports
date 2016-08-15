@@ -205,7 +205,6 @@ public class FloatServiceClient {
                     .toList()
                     .toBlocking()
                     .first();
-            System.out.println(personTasks);
             String floatUsername = person.getName();
             String githubUsername = floatToGithubUsernames.get(floatUsername);
 
