@@ -198,12 +198,14 @@ public class FloatServiceClient {
                                                                                           Map<String, String> floatToGithubUsernames) {
 
         return person -> {
+            System.out.println(person);
             List<Task> personTasks = taskServiceClient
                     .getTasks(startDate, numberOfWeeks, person.getId())
                     .filter(excludingHolidays())
                     .toList()
                     .toBlocking()
                     .first();
+            System.out.println(personTasks);
             String floatUsername = person.getName();
             String githubUsername = floatToGithubUsernames.get(floatUsername);
 
