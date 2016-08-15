@@ -20,8 +20,7 @@ export class ReportsMockService {
           'takecare': {
             'assignedProjectsStats': {'R \u0026 D: Scheduled': 253},
             'assignedProjectsContributions': 253,
-            'externalRepositoriesStats': {
-            },
+            'externalRepositoriesStats': {},
             'externalRepositoriesContributions': 0
           },
           'Mecharyry': {
