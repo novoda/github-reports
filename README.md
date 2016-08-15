@@ -40,4 +40,5 @@ User interfaces allow to execute all the processes implemented in the project.
   database
 * [`reports-stats-google-sheets`](reports-stats-google-sheets/README.md) contains a Google Apps Script project to query
   for statistics on data available in the remote/RDS database and output them in a Google Spreadsheet
-
+* [`web-dashboard`](web-dashboard/README.md) contains an Angular 2 Web app with dashboards that use organisation data
+  retrieved and manipulated by other modules
