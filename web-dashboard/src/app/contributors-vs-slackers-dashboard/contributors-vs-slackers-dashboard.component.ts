@@ -29,7 +29,9 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestr
   ngOnInit() {
     this.subscription = Observable
       .timer(0, ContributorsVsSlackersDashboardComponent.REFRESH_RATE_IN_MILLISECONDS)
-      .map(this.getCompanyStats)
+      .map(() => {
+        return this.getCompanyStats();
+      })
       .switch()
       .subscribe((stats: CompanyStats) => {
         this.contributors = this.pickRandomContributors(stats);
@@ -37,7 +39,7 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestr
       });
   }
 
-  private getCompanyStats() {
+  private getCompanyStats(): Observable<CompanyStats> {
     return this.reportsServiceClient
       .getCompanyStats(
         this.weekCalculator.getLastMonday(),
