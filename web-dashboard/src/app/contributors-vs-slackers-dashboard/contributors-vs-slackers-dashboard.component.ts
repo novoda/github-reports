@@ -13,7 +13,7 @@ import { Subscription, Observable } from 'rxjs';
 })
 export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestroy {
 
-  static NUMBER_OF_CONTRIBUTORS = 5;
+  static NUMBER_OF_CONTRIBUTORS = 4;
   static REFRESH_RATE_IN_MILLISECONDS = 30 * 1000;
 
   public contributors: Array<UserStats>;
