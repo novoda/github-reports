@@ -30,7 +30,7 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestr
   ngOnInit() {
     this.subscription = Observable
       .timer(0, ContributorsVsSlackersDashboardComponent.REFRESH_RATE_IN_MILLISECONDS)
-      .flatMap(() => {
+      .switchMap(() => {
         return this.getCompanyStats();
       })
       .subscribe((stats: CompanyStats) => {
