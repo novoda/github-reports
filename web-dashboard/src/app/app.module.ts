@@ -15,6 +15,7 @@ import { reportsServiceProvider } from './reports/reports.service.provider';
 import { ContributorsComponent } from './contributors/contributors.component';
 import { SlackerComponent } from './slacker/slacker.component';
 import { SlackersComponent } from './slackers/slackers.component';
+import { ConfigService } from './config.service';
 
 @NgModule({
   imports: [
@@ -36,6 +37,7 @@ import { SlackersComponent } from './slackers/slackers.component';
   providers: [
     SystemClock,
     WeekCalculator,
+    ConfigService,
     reportsServiceProvider,
     ReportsClient
   ],
