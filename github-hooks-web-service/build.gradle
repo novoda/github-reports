@@ -1,0 +1,69 @@
+import com.amazonaws.services.lambda.model.Runtime
+import jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask
+
+buildscript {
+    dependencies {
+        classpath 'jp.classmethod.aws:gradle-aws-plugin:0.29'
+    }
+}
+
+plugins {
+    id 'net.ltgt.apt' version '0.6'
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'jp.classmethod.aws.lambda'
+
+idea {
+    module {
+        generatedSourceDirs += project.file('build/generated/source/apt')
+    }
+}
+
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile project(':core')
+    compile project(':github')
+
+    compileOnly 'com.google.auto.value:auto-value:1.2'
+    apt 'com.google.auto.value:auto-value:1.2'
+    apt 'com.ryanharter.auto.value:auto-value-gson:0.3.1'
+
+    compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
+    compile 'com.amazonaws:aws-lambda-java-events:1.3.0'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.0.71-beta'
+    testCompile 'org.assertj:assertj-core:3.5.2'
+}
+
+jar {
+    exclude '*.credentials.sample'
+    exclude '*.json.sample'
+}
+
+task zip(type: Zip) {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtime
+    }
+    exclude '*.sample'
+}
+
+task uploadWebhookLambda(type: AWSLambdaMigrateFunctionTask, dependsOn: zip) {
+    functionName = 'github-reports-webhook-post'
+    role = "arn:aws:iam::${aws.accountId}:role/github-reports-role"
+    zipFile = zip.archivePath
+    handler = 'com.novoda.github.reports.web.hooks.lambda.PostGithubWebhookEventHandler::handleRequest'
+    runtime = Runtime.Java8
+    memorySize = 256
+    timeout = 300
+}
