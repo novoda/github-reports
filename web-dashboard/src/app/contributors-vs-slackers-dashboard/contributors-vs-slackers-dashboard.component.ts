@@ -5,6 +5,7 @@ import { ReportsClient } from '../reports/reports-client.service';
 import { CompanyStats } from '../reports/company-stats';
 import { UserStats } from '../reports/user-stats';
 import { Subscription, Observable } from 'rxjs';
+import { OnErrorIgnoreOperator } from '../shared/OnErrorIgnoreOperator';
 
 @Component({
   selector: 'contributors-vs-slackers-dashboard',
@@ -29,10 +30,9 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestr
   ngOnInit() {
     this.subscription = Observable
       .timer(0, ContributorsVsSlackersDashboardComponent.REFRESH_RATE_IN_MILLISECONDS)
-      .map(() => {
+      .flatMap(() => {
         return this.getCompanyStats();
       })
-      .switch()
       .subscribe((stats: CompanyStats) => {
         this.contributors = this.pickRandomContributors(stats);
         this.slackers = stats.slackers;
@@ -45,7 +45,7 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestr
         this.weekCalculator.getLastMonday(),
         this.clock.getDate()
       )
-      .retry();
+      .lift(new OnErrorIgnoreOperator<CompanyStats>());
   }
 
   ngOnDestroy(): void {
