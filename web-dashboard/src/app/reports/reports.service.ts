@@ -14,7 +14,7 @@ export class ReportsService {
   getAggregatedStats(from: Date, to: Date): Observable<{usersStats: any}> {
     let params = new URLSearchParams();
     params.set('from', from.toISOString());
-    params.set('from', to.toISOString());
+    params.set('to', to.toISOString());
 
     return this.http
       .get(ReportsService.API_BASE + ReportsService.API_STATS_AGGREGATED, {

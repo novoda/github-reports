@@ -4,7 +4,7 @@ import { WeekCalculator } from '../week-calculator.service';
 import { ReportsClient } from '../reports/reports-client.service';
 import { CompanyStats } from '../reports/company-stats';
 import { UserStats } from '../reports/user-stats';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 
 @Component({
   selector: 'contributors-vs-slackers-dashboard',
@@ -13,7 +13,8 @@ import { Subscription } from 'rxjs';
 })
 export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestroy {
 
-  static NUMBER_OF_CONTRIBUTORS = 5;
+  static NUMBER_OF_CONTRIBUTORS = 4;
+  static REFRESH_RATE_IN_MILLISECONDS = 30 * 1000;
 
   public contributors: Array<UserStats>;
   public slackers: Array<UserStats>;
@@ -26,15 +27,25 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestr
   }
 
   ngOnInit() {
-    this.subscription = this.reportsServiceClient
-      .getCompanyStats(
-        this.weekCalculator.getLastMonday(),
-        this.clock.getDate()
-      )
+    this.subscription = Observable
+      .timer(0, ContributorsVsSlackersDashboardComponent.REFRESH_RATE_IN_MILLISECONDS)
+      .map(() => {
+        return this.getCompanyStats();
+      })
+      .switch()
       .subscribe((stats: CompanyStats) => {
         this.contributors = this.pickRandomContributors(stats);
         this.slackers = stats.slackers;
       });
+  }
+
+  private getCompanyStats(): Observable<CompanyStats> {
+    return this.reportsServiceClient
+      .getCompanyStats(
+        this.weekCalculator.getLastMonday(),
+        this.clock.getDate()
+      )
+      .retry();
   }
 
   ngOnDestroy(): void {
