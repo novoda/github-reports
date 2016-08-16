@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 
 public class FloatServiceClient {
 
+    private static final String HOLIDAY_TASK_DESCRIPTOR = "HOLIDAY";
+
     private final FloatGithubUserConverter floatGithubUserConverter;
     private final FloatGithubProjectConverter floatGithubProjectConverter;
     private final PeopleServiceClient peopleServiceClient;
@@ -215,8 +217,8 @@ public class FloatServiceClient {
     }
 
     private Func1<Task, Boolean> excludingHolidays() {
-        return task -> task.getName() != null &&
-                !(task.getName().contains("holiday") || task.getName().contains("Holiday"));
+        return task -> task.getName() == null ||
+                !(task.getName().toUpperCase().contains(HOLIDAY_TASK_DESCRIPTOR));
     }
 
     private Function<Task, UserAssignments> taskToUserAssignments() {
