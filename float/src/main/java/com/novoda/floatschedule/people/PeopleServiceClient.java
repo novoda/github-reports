@@ -2,7 +2,6 @@ package com.novoda.floatschedule.people;
 
 import com.novoda.floatschedule.network.FloatApiService;
 import com.novoda.floatschedule.network.FloatServiceContainer;
-
 import retrofit2.Response;
 import rx.Observable;
 
