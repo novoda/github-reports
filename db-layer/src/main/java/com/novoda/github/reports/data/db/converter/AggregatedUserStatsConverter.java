@@ -13,7 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import static com.novoda.github.reports.data.db.builder.EventUserAssignmentsQueryBuilder.*;
+import static com.novoda.github.reports.data.db.builder.EventUserAggregatedWorkQueryBuilder.*;
 
 public class AggregatedUserStatsConverter {
 
@@ -28,25 +28,26 @@ public class AggregatedUserStatsConverter {
     private Map<String, AggregatedUserStats> buildUserStatsMap(Map<String, ? extends Result<? extends Record>> resultsGroupedByUsername) {
         return resultsGroupedByUsername.entrySet()
                 .stream()
-                .map(userRecordToAggregatedUserStats())
+                .map(userGroupToAggregatedUserStats())
                 .collect(toMap());
     }
 
-    private Function<Map.Entry<String, ? extends Result<? extends Record>>, SimpleImmutableEntry<String, AggregatedUserStats>> userRecordToAggregatedUserStats() {
+    private Function<Map.Entry<String, ? extends Result<? extends Record>>, SimpleImmutableEntry<String, AggregatedUserStats>> userGroupToAggregatedUserStats() {
         return userStats -> {
             String username = userStats.getKey();
-            AggregatedUserStats aggregatedUserStats = buildAggregatedUserStatsFromRecords(userStats.getValue());
+            Result<? extends Record> allUserRecords = userStats.getValue();
+            AggregatedUserStats aggregatedUserStats = buildAggregatedUserStatsFromAllUserRecords(allUserRecords);
 
             return new SimpleImmutableEntry<>(username, aggregatedUserStats);
         };
     }
 
-    private AggregatedUserStats buildAggregatedUserStatsFromRecords(Result<? extends Record> userStats) {
+    private AggregatedUserStats buildAggregatedUserStatsFromAllUserRecords(Result<? extends Record> userStats) {
         return userStats
                 .intoGroups(WAS_SCHEDULED_WORK_FIELD)
                 .entrySet()
                 .stream()
-                .map(assignedOrExternalRecordsToMapEntries())
+                .map(assignedOrExternalRecordGroupsToMapEntries())
                 .collect(
                         AggregatedUserStats::builder,
                         mapEntriesIntoAggregatedUserStats(),
@@ -55,18 +56,22 @@ public class AggregatedUserStatsConverter {
                 .build();
     }
 
-    private Function<Map.Entry<Boolean, ? extends Result<? extends Record>>, SimpleImmutableEntry<Boolean, Map<String, Integer>>> assignedOrExternalRecordsToMapEntries() {
-        return assignedOrExternalEntries -> {
-            Boolean isAssigned = assignedOrExternalEntries.getKey();
+    private Function<Map.Entry<Boolean, ? extends Result<? extends Record>>, SimpleImmutableEntry<Boolean, Map<String, Integer>>> assignedOrExternalRecordGroupsToMapEntries() {
+        return assignedOrExternalRecordGroup -> {
+            Boolean isAssigned = assignedOrExternalRecordGroup.getKey();
             Field<String> groupKey = getGroupingProjectOrRepositoryKey(isAssigned);
 
             Map<String, Integer> projectOrRepositorySetStats = buildProjectOrRepositorySetStatsFromRecords(
                     groupKey,
-                    assignedOrExternalEntries.getValue()
+                    assignedOrExternalRecordGroup.getValue()
             );
 
             return new SimpleImmutableEntry<>(isAssigned, projectOrRepositorySetStats);
         };
+    }
+
+    private Field<String> getGroupingProjectOrRepositoryKey(boolean isAssigned) {
+        return isAssigned ? PROJECT_ASSIGNED_FIELD : REPOSITORY_WORKED_NAME_FIELD;
     }
 
     private Map<String, Integer> buildProjectOrRepositorySetStatsFromRecords(Field<String> groupKey, Result<? extends Record> records) {
@@ -76,10 +81,6 @@ public class AggregatedUserStatsConverter {
                         .stream()
                         .map(projectOrRepositoryRecordsToCount())
                         .collect(toMap());
-    }
-
-    private Field<String> getGroupingProjectOrRepositoryKey(boolean isAssigned) {
-        return isAssigned ? PROJECT_ASSIGNED_FIELD : REPOSITORY_WORKED_NAME_FIELD;
     }
 
     private Function<Map.Entry<String, ? extends Result<? extends Record>>, SimpleImmutableEntry<String, Integer>> projectOrRepositoryRecordsToCount() {

@@ -1,0 +1,26 @@
+<form>
+    <div class="control-group">
+        <label for="date-from">From date</label>
+        <input type="date" id="date-from" class="large">
+    </div>
+    <div class="control-group">
+        <label for="date-to">To date</label>
+        <input type="date" id="date-to" class="large">
+    </div>
+
+    <div class="control-group">
+        <label for="select-users">Users</label>
+        <div class="control-group row">
+            <select multiple id="select-users" data-placeholder="Users to be filtered on (all when empty)">
+            </select>
+        </div>
+        <div class="control-group row">
+            <input type="button" id="select-all-users" class="action flex-1" value="Select all">
+            <input type="button" id="clear-all-users" class="flex-1" value="Clear">
+        </div>
+    </div>
+
+    <div class="control-group row">
+        <input type="submit" id="get-aggregated-stats" value="Get aggregated stats!" class="action large">
+    </div>
+</form>

@@ -29,84 +29,134 @@ To build and deploy all lambdas, run the `uploadActionLambdas` Gradle task.
 #### Create REST API
 
 You can create the REST API with the [AWS Web UI](https://console.aws.amazon.com/apigateway), by adding resources and
-methods manually, or you can do it with the AWS CLI.
+methods manually.
 
-To create the REST API with the AWS CLI, launch the following:
+**Important**: please note that all resources need ane `OPTIONS` method to allow CORS requests.
 
-```shell
-aws apigateway create-rest-api --name "Github Reports API"
-```
+Please do the following for all the resources you create:
 
-AWS CLI will return something like:
+1. Select Actions -> Enable CORS.
+2. Make sure that `Access-Control-Allow-Origin` is set to `'*'`.
+3. Click on the "Enable CORS and replace existing CORS headers" button, then confirm.
 
-```json
+##### /users/org
+
+Create a `/users/org` resource and add a `GET` method to it.
+
+In the "Integration Request" section map the endpoint to the `github-reports-users-organisation-get` lambda function.
+
+##### /repositories
+
+Create a `/repositories` resource and add a `GET` method to it.
+
+In the "Integration Request" section map the endpoint to the `github-reports-repositories-get` lambda function.
+
+##### /stats
+
+Create a `/stats` resource.
+
+###### /stats/pr
+
+Create a `/pr` sub-resource and add a `GET` method to it.
+
+In the "Method Request" add the following URL Query String Parameters:
+
+* `from`
+* `to`
+* `repos`
+* `groupBy`
+* `withAverage`
+
+In the "Integration Request" section map the endpoint to the `github-reports-stats-pr-get` lambda function.
+
+In the "Integration Request" section select "When there are no templates defined (recommended)" as "Request body 
+passthrough" and add `application/json` as Content-Type  with the following mapping template:
+
+```velocity
+#set($params = $input.params().querystring)
+## ------------------------------------ ##
+#if($params.from != "")
+#set($from = """${params.from}""")
+#else
+#set($from = "null")
+#end
+## ------------------------------------ ##
+#if($params.to != "")
+#set($to = """${params.to}""")
+#else
+#set($to = "null")
+#end
+## ------------------------------------ ##
+#if($params.repos != "")
+#set($repos = $params.repos)
+#else
+#set($repos = "[]")
+#end
+## ------------------------------------ ##
+#if($params.groupBy != "")
+#set($groupBy = """$params.groupBy""")
+#else
+#set($groupBy = "null")
+#end
+## ------------------------------------ ##
+#if($params.withAverage != "")
+#set($withAverage = $params.withAverage)
+#else
+#set($withAverage = "false")
+#end
+## ------------------------------------ ##
 {
-    "name": "Github Reports API",
-    "id": "API_ID",
-    "createdDate": 1467815537
+    "from": $from,
+    "to": $to,
+    "repos": $repos,
+    "groupBy": $groupBy,
+    "withAverage": $withAverage
+}
+```               
+
+###### /stats/aggregated
+
+Create a `/aggregated` sub-resource and add a `GET` method to it.
+
+In the "Method Request" add the following URL Query String Parameters:
+
+* `from`
+* `to`
+* `users`
+
+In the "Integration Request" section map the endpoint to the `github-reports-stats-aggregated-get` lambda function.
+
+In the "Integration Request" section select "When there are no templates defined (recommended)" as "Request body 
+passthrough" and add `application/json` as Content-Type  with the following mapping template:
+
+```velocity
+#set($params = $input.params().querystring)
+## ------------------------------------ ##
+#if($params.from != "")
+#set($from = """${params.from}""")
+#else
+#set($from = "null")
+#end
+## ------------------------------------ ##
+#if($params.to != "")
+#set($to = """${params.to}""")
+#else
+#set($to = "null")
+#end
+## ------------------------------------ ##
+#if($params.users != "")
+#set($users = $params.users)
+#else
+#set($users = "[]")
+#end
+
+## ------------------------------------ ##
+{
+    "from": $from,
+    "to": $to,
+    "users": $users
 }
 ```
-
-Take note of the ID, as we will use it in the following steps.
-
-Now grab the root of your API with the command:
-
-```shell
-aws apigateway get-resources --rest-api-id API_ID
-```
-
-The output will be something like:
-
-```json
-{
-    "items": [
-        {
-            "path": "/",
-            "id": "API_ROOT_ID"
-        }
-    ]
-}
-```
-
-Take note of the root path ID as well.
-
-#### Create endpoint mappings
-
-##### Repositories
-
-Create `/repositories` endpoint with the following commands:
-
-```shell
-aws apigateway create-resource --rest-api-id API_ID --parent-id API_ROOT_ID --path-part repositories
-```
-
-The output will be something like:
-
-```shell
-{
-    "path": "/repositories",
-    "pathPart": "repositories",
-    "id": "RESOURCE_ID",
-    "parentId": "API_ROOT_ID"
-}
-```
-
-Take note of the resource ID.
-
-```shell
-aws apigateway put-method --rest-api-id API_ID --resource-id RESOURCE_ID \
-    --http-method GET --no-api-key-required --authorization-type NONE
-```
-
-We're now ready to bind the endpoint to the proper lambda:
-
-```shell
-aws apigateway put-integration --rest-api-id API_ID --resource-id RESOURCE_ID \
-    --http-method GET --type AWS
-    --uri arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:YOUR_ACCOUNT_ID:function:github-reports-repositories-get
-```
-
-**TODO**: add more.
 
 #### Deploy
 

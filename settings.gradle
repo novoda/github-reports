@@ -22,6 +22,7 @@ include ':batch-aws-lambda'
 
 // Web Service for AWS Lambda / Gateway
 include ':web-service'
+include ':github-hooks-web-service'
 
 // batch CLI
 include ':reports-batch'
@@ -29,6 +30,5 @@ include ':reports-batch'
 // query interfaces
 include ':reports-stats'
 include ':reports-stats-google-sheets'
-
-include ':github-hooks-web-service'
+include ':web-dashboard'
 

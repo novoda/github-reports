@@ -11,13 +11,17 @@ function MockSheet() {
     'clear',
     'setName',
     'setBold',
+    'alignToCenter',
+    'alignToMiddle',
     'alignToCenterMiddle',
     'setRowHeight',
     'setWrap',
     'setFrozenRows',
     'setFrozenColumns',
     'setBottomBorder',
-    'setBackground'
+    'setBackground',
+    'autoResizeColumns',
+    'mergeRange'
   ]);
 
 }
