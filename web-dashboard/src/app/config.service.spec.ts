@@ -70,8 +70,8 @@ describe('Service: Config', () => {
     it('executes the input handler with a null API base', () => {
       configService
         .getApiBase()
-        .subscribe((apiBase: string) => {
-          expect(apiBase).toBe(null);
+        .subscribe(null, (error: Error) => {
+          expect(error.message).toContain('config.json');
         });
     });
 
