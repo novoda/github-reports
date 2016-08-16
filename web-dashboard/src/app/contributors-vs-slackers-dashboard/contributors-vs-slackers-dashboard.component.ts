@@ -29,19 +29,21 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestr
   ngOnInit() {
     this.subscription = Observable
       .timer(0, ContributorsVsSlackersDashboardComponent.REFRESH_RATE_IN_MILLISECONDS)
-      .map(() => {
-        return this.reportsServiceClient
-          .getCompanyStats(
-            this.weekCalculator.getLastMonday(),
-            this.clock.getDate()
-          )
-          .retry();
-      })
+      .map(this.getCompanyStats)
       .switch()
       .subscribe((stats: CompanyStats) => {
         this.contributors = this.pickRandomContributors(stats);
         this.slackers = stats.slackers;
       });
+  }
+
+  private getCompanyStats() {
+    return this.reportsServiceClient
+      .getCompanyStats(
+        this.weekCalculator.getLastMonday(),
+        this.clock.getDate()
+      )
+      .retry();
   }
 
   ngOnDestroy(): void {
