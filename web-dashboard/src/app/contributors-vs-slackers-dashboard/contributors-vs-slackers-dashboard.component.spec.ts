@@ -11,12 +11,13 @@ import { CompanyStats } from '../reports/company-stats';
 import { Observable, Scheduler } from 'rxjs';
 import { Http, BaseRequestOptions } from '@angular/http';
 import { MockBackend } from '@angular/http/testing/mock_backend';
+import { ReportsMockService } from '../reports/reports-mock.service';
 
 describe('Component: ContributorsVsSlackersDashboard', () => {
 
   let clock: SystemClock;
   let weekCalculator: WeekCalculator;
-  let reportsService: ReportsService;
+  let reportsService: ReportsMockService;
   let reportsServiceClient: ReportsClient;
 
   let component: ContributorsVsSlackersDashboardComponent;
@@ -25,22 +26,19 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
     addProviders([
       SystemClock,
       WeekCalculator,
-      MockBackend,
-      BaseRequestOptions,
       {
-        provide: Http,
-        useFactory: (backend, defaultOptions) => new Http(backend, defaultOptions),
-        deps: [MockBackend, BaseRequestOptions]
+        provide: ReportsService,
+        useClass: ReportsMockService
       },
-      ReportsService]);
+      ReportsClient]);
   });
 
-  beforeEach(inject([SystemClock, WeekCalculator, ReportsService],
-    (_clock_, _weekCalculator_, _reportsService_) => {
+  beforeEach(inject([SystemClock, WeekCalculator, ReportsService, ReportsClient],
+    (_clock_, _weekCalculator_, _reportsService_, _reportsServiceClient_) => {
       clock = _clock_;
       weekCalculator = _weekCalculator_;
       reportsService = _reportsService_;
-      reportsServiceClient = new ReportsClient(_reportsService_);
+      reportsServiceClient = _reportsServiceClient_;
     }));
 
   beforeEach(() => {
