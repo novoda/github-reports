@@ -145,13 +145,13 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
       expect(companyStats.contributors.length).toBe(6);
     });
 
-    it('returns 5 random contributors', () => {
+    it('returns 4 random contributors', () => {
       const randomContributors = component.pickRandomContributors(companyStats);
 
-      expect(randomContributors.length).toBe(5);
+      expect(randomContributors.length).toBe(4);
     });
 
-    it('returns all contributors if they are less than 5', () => {
+    it('returns all contributors if they are less than 4', () => {
       const statsWithFewContributors = new CompanyStats(
         [newUserStats('contributor-1'), newUserStats('contributor-2')],
         slackers
