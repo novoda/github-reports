@@ -11,7 +11,6 @@ import { CompanyStats } from '../reports/company-stats';
 import { Observable, Scheduler } from 'rxjs';
 import { Http, BaseRequestOptions } from '@angular/http';
 import { MockBackend } from '@angular/http/testing/mock_backend';
-import { async } from '@angular/core/testing/async';
 
 describe('Component: ContributorsVsSlackersDashboard', () => {
 
@@ -175,27 +174,6 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
 
   describe('ngOnInit', () => {
 
-    beforeEach(() => {
-      spyOn(reportsService, 'getAggregatedStats').and.returnValue(Observable.from([{
-        'usersStats': {
-          'tasomaniac': {
-            'assignedProjectsStats': {},
-            'assignedProjectsContributions': 0,
-            'externalRepositoriesStats': {},
-            'externalRepositoriesContributions': 0
-          },
-          'takecare': {
-            'assignedProjectsStats': {'R \u0026 D: Scheduled': 253},
-            'assignedProjectsContributions': 253,
-            'externalRepositoriesStats': {
-              'something': 10
-            },
-            'externalRepositoriesContributions': 10
-          }
-        }
-      }]));
-    });
-
     it('subscribes to the service', () => {
       component.ngOnInit();
 
@@ -212,7 +190,40 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
       expect(reportsService.getAggregatedStats).toHaveBeenCalled();
     });
 
-    // TODO: add tests wrt refresh of statistics (https://github.com/ReactiveX/rxjs/issues/1791)
+    xit('refreshes statistics every 30 seconds', () => {
+      // TODO: add tests wrt refresh of statistics (https://github.com/ReactiveX/rxjs/issues/1791)
+    });
+
+    // TODO: fix refresh test with proper scheduelr (https://github.com/ReactiveX/rxjs/issues/1791)
+    xit('retries the get statistics operation when it fails', () => {
+      const failTimes = 3;
+      let failCounter = 0;
+
+      spyOn(reportsService, 'getAggregatedStats').and.callFake((): Observable<any> => {
+        if (failCounter < failTimes) {
+          failCounter += 1;
+          return Observable.throw(new Error('Some network error'));
+        }
+
+        return Observable.from([{
+          'usersStats': {
+            'tasomaniac': {
+              'assignedProjectsStats': {},
+              'assignedProjectsContributions': 0,
+              'externalRepositoriesStats': {},
+              'externalRepositoriesContributions': 0
+            }
+          }
+        }]);
+      });
+
+      component.ngOnInit();
+
+      component.subscription
+        .add(() => {
+          expect(reportsService.getAggregatedStats).toHaveBeenCalledTimes(failTimes + 1);
+        });
+    });
 
     it('sets contributors and slackers', () => {
       component.ngOnInit();
