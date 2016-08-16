@@ -30,6 +30,11 @@ To get more help on the `angular-cli` use `ng --help` or go check out the
 
 To install application and development dependencies, simply run `npm install`.
 
+#### Configuration
+
+To configure the application, you need to create a `src/config.json` (see [`src/config.sample.json`]
+(src/config.sample.json)) containing an `api` attribute that points to the Web Service.
+
 #### Available tasks
 
 The available `ng` tasks are:
