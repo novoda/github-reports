@@ -15,6 +15,11 @@ export class ConfigService {
       .map((response: Response) => {
         return <Config> response.json();
       })
+      .catch(() => {
+        const errorMessage = 'No config.json has been found!';
+        console.error(errorMessage);
+        return Observable.throw(new Error(errorMessage));
+      })
       .subscribe(this.subject);
   }
 
@@ -26,9 +31,6 @@ export class ConfigService {
     return this.getConfig()
       .map((config: Config) => {
         return config.api;
-      })
-      .catch(() => {
-        return Observable.from([null]);
       })
       .first();
   }
