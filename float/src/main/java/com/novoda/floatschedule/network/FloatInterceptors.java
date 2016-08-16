@@ -12,10 +12,15 @@ public class FloatInterceptors extends Interceptors {
         FloatCredentialsReader floatCredentialsReader = FloatCredentialsReader.newInstance();
         String token = floatCredentialsReader.getAuthToken();
         return new FloatInterceptors()
-                .withOAuthTokenInterceptor(token);
+                .withOAuthTokenInterceptor(token)
+                .withRateLimitHandlerInterceptor();
     }
 
     FloatInterceptors withOAuthTokenInterceptor(String token) {
         return (FloatInterceptors) with(new OAuthTokenInterceptor(FLOAT_AUTH_TOKEN_PREFIX, token));
+    }
+
+    FloatInterceptors withRateLimitHandlerInterceptor() {
+        return (FloatInterceptors) with(new RateLimitHandlerInterceptor());
     }
 }

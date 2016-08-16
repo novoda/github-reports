@@ -2,12 +2,10 @@ package com.novoda.github.reports.stats;
 
 import com.beust.jcommander.JCommander;
 import com.novoda.floatschedule.FloatServiceClient;
-import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.github.reports.data.db.*;
 import com.novoda.github.reports.data.model.Stats;
-import com.novoda.github.reports.reader.UsersServiceClient;
 import com.novoda.github.reports.stats.command.*;
 import com.novoda.github.reports.stats.handler.*;
 
@@ -67,27 +65,19 @@ public class Main {
         } else if (command.equals(COMMAND_OVERALL)) {
             DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
             FloatServiceClient floatServiceClient = FloatServiceClient.newInstance();
-            FloatDateConverter floatDateConverter = new FloatDateConverter();
-            UsersServiceClient usersServiceClient = UsersServiceClient.newInstance();
 
             OverallCommandHandler handler = new OverallCommandHandler(
                     eventDataLayer,
-                    floatServiceClient,
-                    floatDateConverter,
-                    usersServiceClient
+                    floatServiceClient
             );
             stats = handler.handle(overallOptions);
         } else if (command.equals(COMMAND_AGGREGATE)) {
             DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
             FloatServiceClient floatServiceClient = FloatServiceClient.newInstance();
-            FloatDateConverter floatDateConverter = new FloatDateConverter();
-            UsersServiceClient usersServiceClient = UsersServiceClient.newInstance();
 
             AggregateCommandHandler handler = new AggregateCommandHandler(
                     eventDataLayer,
-                    floatServiceClient,
-                    floatDateConverter,
-                    usersServiceClient
+                    floatServiceClient
             );
             stats = handler.handle(aggregateOptions);
         } else {

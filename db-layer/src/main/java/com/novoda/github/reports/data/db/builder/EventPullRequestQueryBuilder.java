@@ -145,7 +145,7 @@ public class EventPullRequestQueryBuilder {
     }
 
     private SelectConditionStep<Record1<String>> selectDateGroups(DSLContext create, PullRequestStatsParameters parameters) {
-        Field<String> groupField = parameters.getGroupFieldForMySQLOnly();
+        Field<String> groupField = parameters.getGroupFieldForMySqlOnly();
         Condition whereClause = conditionalBetween(EVENT.DATE, parameters.getFrom(), parameters.getTo());
 
         return create

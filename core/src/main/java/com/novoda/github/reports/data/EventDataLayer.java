@@ -23,10 +23,14 @@ public interface EventDataLayer extends DataLayer<Event> {
                                           PullRequestStatsGroupBy groupBy,
                                           Boolean withAverage) throws DataLayerException;
 
-    UserAssignmentsStats getUserAssignmentsStats(Map<String, List<UserAssignments>> usersAssignments)
+    UserAssignmentsStats getUserAssignmentsStats(Date from,
+                                                 Date to,
+                                                 Map<String, List<UserAssignments>> usersAssignments)
             throws DataLayerException;
 
-    AggregatedStats getAggregatedUserAssignmentsStats(Map<String, List<UserAssignments>> usersAssignments)
+    AggregatedStats getAggregatedUserAssignmentsStats(Date from,
+                                                      Date to,
+                                                      Map<String, List<UserAssignments>> usersAssignments)
             throws DataLayerException;
 
     enum PullRequestStatsGroupBy {

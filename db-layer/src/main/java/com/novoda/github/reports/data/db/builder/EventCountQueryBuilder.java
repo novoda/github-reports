@@ -127,7 +127,7 @@ public class EventCountQueryBuilder {
     }
 
     private SelectHavingConditionStep<Record4<BigDecimal, Long, String, String>> getUserStatsForRelevantUsers(Table<Record3<Long, String, String>> userTable) {
-        Field<String> groupField = parameters.getGroupFieldForMySQLOnly();
+        Field<String> groupField = parameters.getGroupFieldForMySqlOnly();
 
         SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCount = selectCountEventsGroupBy(groupField);
         SelectJoinStep<Record4<BigDecimal, Long, String, String>> selectCountForRelevantUsers = innerJoinRelevantUsers(selectCount, userTable);
