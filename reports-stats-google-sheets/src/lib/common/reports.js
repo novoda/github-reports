@@ -1,6 +1,8 @@
 'use strict';
 
-var API_BASE = 'https://t6lqw400oe.execute-api.us-east-1.amazonaws.com/api/';
+<!-- inject:api -->
+var API_BASE = 'https://your-website.com/api/';
+<!-- endinject -->
 var API_REPOS = 'repositories';
 var API_STATS_PR = 'stats/pr';
 var API_ORGANISATION_USERS = '/users/org';

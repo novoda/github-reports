@@ -48,6 +48,19 @@ gulp.task('clean:bower', function() {
     .pipe(clean());
 });
 
+gulp.task('config', function() {
+  return gulp.src(['src/lib/common/reports.js'], {base: './src/'})
+    .pipe(inject(gulp.src('src/config.json'), {
+      starttag: '<!-- inject:api -->',
+      transform: function(filePath, file) {
+        const fileContents = file.contents.toString('utf8');
+        const config = JSON.parse(fileContents);
+        return `var API_BASE = '${config.api}';`;
+      }
+    }))
+    .pipe(gulp.dest('./.tmp'));
+});
+
 const wrapTagJs = function(content) {
   return `<script type="text/javascript">
 ${content}
@@ -93,6 +106,8 @@ const buildSidebarTask = function(forBuild) {
   let allSourceFiles = [
     'src/sidebar/**/*.css',
     'src/lib/common/**/*.js',
+    '!src/lib/common/reports.js',
+    '.tmp/lib/common/reports.js',
     'src/lib/web/**/*.js',
     '!src/lib/web/**/*.controller.js'
   ];
@@ -128,18 +143,29 @@ const buildSidebarTask = function(forBuild) {
   };
 };
 
-gulp.task('build:sidebar:dev', ['test', 'clean:sidebar:dev'], buildSidebarTask(false));
+gulp.task('build:sidebar:dev', ['test', 'clean:sidebar:dev', 'config'], buildSidebarTask(false));
 
-gulp.task('build:sidebar', ['test', 'clean:sidebar'], buildSidebarTask(true));
+gulp.task('build:sidebar', ['test', 'clean:sidebar', 'config'], buildSidebarTask(true));
 
 gulp.task('copy:lib', ['test', 'clean:lib'], function() {
   return gulp
     .src([
       'src/*.js',
       'src/lib/apps/**/*.js',
-      'src/lib/common/**/*.js'
+      'src/lib/common/**/*.js',
+      '!src/lib/common/reports.js'
     ], {
       base: './src'
+    })
+    .pipe(gulp.dest('build/'));
+});
+
+gulp.task('copy:config', ['config'], function() {
+  return gulp
+    .src([
+      '.tmp/lib/common/reports.js'
+    ], {
+      base: './.tmp'
     })
     .pipe(gulp.dest('build/'));
 });
@@ -158,7 +184,7 @@ gulp.task('bower', ['clean:bower'], function() {
     .pipe(gulp.dest('build/bower_components'))
 });
 
-gulp.task('build', ['build:sidebar', 'copy:lib', 'bower']);
+gulp.task('build', ['build:sidebar', 'copy:lib', 'copy:config', 'bower']);
 
 gulp.task('upload', ['build'], shell.task(['gapps upload']));
 
@@ -169,7 +195,7 @@ gulp.task('build:dev', ['build:sidebar:dev'], function() {
 
 gulp.task('start:server', ['build:dev'], function() {
   connect.server({
-    root: ['.tmp/sidebar', '.'],
+    root: ['.tmp/sidebar', '.tmp/lib', '.'],
     livereload: true,
     host: '0.0.0.0',
     port: 9000

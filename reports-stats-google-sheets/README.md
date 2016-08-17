@@ -33,6 +33,8 @@ npm install -g node-google-apps-script
 
 #### Configuration
 
+##### Google Apps Script
+
 For the first time, you need to create a Google Apps Script project:
 
 1. Go to [https://script.google.com](https://script.google.com) and create a new project
@@ -47,6 +49,11 @@ For the first time, you need to create a Google Apps Script project:
    ([detailed instructions here](https://github.com/danthareja/node-google-apps-script#31-an-existing-apps-script-project))
 
 Now you're ready to develop on this project!
+
+##### Local configuration
+
+To configure the plugin, you need to create a `src/config.json` (see [`src/config.sample.json`]
+(src/config.sample.json)) containing an `api` attribute that points to the Web Service.
 
 #### Available tasks
 
