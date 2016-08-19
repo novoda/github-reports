@@ -10,69 +10,65 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import rx.Observable;
-import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
+import rx.functions.Action1;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
+import static com.novoda.floatschedule.TestSubscriberAssert.assertThatAnObservable;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static junit.framework.TestCase.assertEquals;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-@SuppressWarnings("Duplicates")
+@SuppressWarnings({"Duplicates", "ArraysAsListWithZeroOrOneArgument", "ConstantConditions"})
 public class FloatServiceClientTest {
 
     private static final Date ANY_START_DATE = new GregorianCalendar(2016, 6, 27).getTime();
-    private static final Date ANY_END_DATE = Date.from(Instant.ofEpochMilli(ANY_START_DATE.getTime())
-            .plus(Duration.ofDays(8)));
+    private static final Date ANY_END_DATE = Date.from(Instant.ofEpochMilli(ANY_START_DATE.getTime()).plus(Duration.ofDays(8)));
     private static final String ANY_FLOAT_START_DATE = "2016-07-27";
     private static final String ANY_FLOAT_END_DATE = "2016-08-04";
-
     private static final int ANY_NUMBER_OF_WEEKS = 42;
-    private static final int ANY_PERSON_ID = 23;
 
-    private static final String ANY_FLOAT_USERNAME = "Super Mario";
-    private static final String ANY_OTHER_FLOAT_USERNAME = "Super Luigi";
-    private static final String YET_ANOTHER_FLOAT_USERNAME = "Princess Peach";
+    private static final String FLOAT_MARIO = "Super Mario";
+    private static final String FLOAT_LUIGI = "Super Luigi";
+    private static final String FLOAT_PEACH = "Princess Peach";
 
-    private static final String ANY_GITHUB_USERNAME = "mario";
-    private static final String ANY_OTHER_GITHUB_USERNAME = "luigi";
-    private static final String YET_ANOTHER_GITHUB_USERNAME = "peach";
+    private static final String GITHUB_MARIO = "mario";
+    private static final String GITHUB_LUIGI = "luigi";
+    private static final String GITHUB_PEACH = "peach";
 
-    private static final String ANY_FLOAT_PROJECT_NAME = "All-4";
-    private static final String ANY_OTHER_FLOAT_PROJECT_NAME = "Project X";
-    private static final String YET_ANOTHER_FLOAT_PROJECT_NAME = "Novoda BBQs";
-    private static final String ANY_OTHER_GITHUB_REPO_NAME = "all-4-android-tv";
+    private static final Person PERSON_MARIO = givenAPerson(23, FLOAT_MARIO);
+    private static final Person PERSON_LUIGI = givenAPerson(13, FLOAT_LUIGI);
+    private static final Person PERSON_PEACH = givenAPerson(74, FLOAT_PEACH);
 
-    private static final String ANY_GITHUB_REPO_NAME = "all-4";
-    private static final Person ANY_PERSON = givenAPerson(ANY_PERSON_ID, ANY_FLOAT_USERNAME);
-    private static final Person ANY_OTHER_PERSON = givenAPerson(13, ANY_OTHER_FLOAT_USERNAME);
+    private static final String FLOAT_PROJECT_ALL_4 = "All-4";
+    private static final String FLOAT_PROJECT_X = "Project X";
+    private static final String FLOAT_PROJECT_BBQS = "Novoda BBQs";
+    private static final String FLOAT_PROJECT_NOVODA_TV = "all-4-android-tv";
 
-    private static final Person YET_ANOTHER_PERSON = givenAPerson(74, YET_ANOTHER_FLOAT_USERNAME);
-    private static final Task ANY_TASK = givenATask("All-4 Verified", ANY_FLOAT_PROJECT_NAME, ANY_PERSON);
-    private static final Task ANY_OTHER_TASK = givenATask("Do something secret", ANY_OTHER_FLOAT_PROJECT_NAME, ANY_OTHER_PERSON);
-    private static final Task YET_ANOTHER_TASK = givenATask("Don't tell anyone", ANY_OTHER_FLOAT_PROJECT_NAME, YET_ANOTHER_PERSON);
-    private static final Task ONE_MORE_TASK = givenATask("Party hard", YET_ANOTHER_FLOAT_PROJECT_NAME, ANY_PERSON);
-    private static final Task HOLIDAYS_TASK = givenATask("Holidays", "Holiday / Sick Leave", ANY_PERSON);
+    private static final String GITHUB_ALL_4 = "all-4";
 
-    private static final List<Task> ANY_TASKS = asList(
-            ANY_TASK,
-            ANY_OTHER_TASK,
-            YET_ANOTHER_TASK,
-            ONE_MORE_TASK,
-            HOLIDAYS_TASK
-    );
+    private static final Task TASK_MARIO_ALL_4 = givenATask("All-4 Verified", FLOAT_PROJECT_ALL_4, PERSON_MARIO);
+    private static final Task TASK_LUIGI_X = givenATask("Do something secret", FLOAT_PROJECT_X, PERSON_LUIGI);
+    private static final Task TASK_PEACH_X = givenATask("Don't tell anyone", FLOAT_PROJECT_X, PERSON_PEACH);
+    private static final Task TASK_MARIO_BBQ = givenATask("Party hard", FLOAT_PROJECT_BBQS, PERSON_MARIO);
+    private static final Task TASK_MARIO_HOLIDAYS = givenATask("Holidays", "Holiday / Sick Leave", PERSON_MARIO);
+
+    private static final Task[] ALL_TASKS = new Task[]{
+            TASK_MARIO_ALL_4,
+            TASK_LUIGI_X,
+            TASK_PEACH_X,
+            TASK_MARIO_BBQ,
+            TASK_MARIO_HOLIDAYS
+    };
 
     @Mock
     private FloatGithubUserConverter mockFloatGithubUserConverter;
@@ -103,191 +99,168 @@ public class FloatServiceClientTest {
     }
 
     private static Task givenATask(String taskName, String projectName, Person person) {
-        return new Task(taskName, person.getName(), projectName);
+        return new Task(taskName, projectName, person.getName(), Integer.toString(person.getId()));
     }
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
 
-        givenPersons();
+        given(mockPeopleServiceClient)
+                .hasPeople(PERSON_MARIO, PERSON_LUIGI, PERSON_PEACH);
 
-        setUserConversion(ANY_FLOAT_USERNAME, ANY_GITHUB_USERNAME);
-        setUserConversion(ANY_OTHER_FLOAT_USERNAME, ANY_OTHER_GITHUB_USERNAME);
-        setUserConversion(YET_ANOTHER_FLOAT_USERNAME, YET_ANOTHER_GITHUB_USERNAME);
+        given(mockFloatGithubUserConverter)
+                .hasMapping(GITHUB_MARIO, PERSON_MARIO.getName())
+                .hasMapping(GITHUB_LUIGI, PERSON_LUIGI.getName())
+                .hasMapping(GITHUB_PEACH, PERSON_PEACH.getName())
+                .hasGithubUsers(GITHUB_MARIO, GITHUB_LUIGI, GITHUB_PEACH);
 
-        given(mockFloatGithubProjectConverter.getRepositories(ANY_FLOAT_PROJECT_NAME))
-                .willReturn(asList(ANY_GITHUB_REPO_NAME, ANY_OTHER_GITHUB_REPO_NAME));
+        BDDMockito.given(mockFloatGithubProjectConverter.getRepositories(FLOAT_PROJECT_ALL_4))
+                .willReturn(asList(GITHUB_ALL_4, FLOAT_PROJECT_NOVODA_TV));
 
-        given(mockNumberOfWeeksCalculator.getNumberOfWeeksOrNullIn(ANY_START_DATE, ANY_END_DATE))
+        BDDMockito.given(mockNumberOfWeeksCalculator.getNumberOfWeeksOrNullIn(ANY_START_DATE, ANY_END_DATE))
                 .willReturn(ANY_NUMBER_OF_WEEKS);
 
-        given(floatDateConverter.fromFloatDateFormatOrNoDate(ANY_FLOAT_START_DATE)).willReturn(ANY_START_DATE);
-        given(floatDateConverter.fromFloatDateFormatOrNoDate(ANY_FLOAT_END_DATE)).willReturn(ANY_END_DATE);
-        given(floatDateConverter.toFloatDateFormat(ANY_START_DATE)).willReturn(ANY_FLOAT_START_DATE);
-        given(floatDateConverter.toFloatDateFormat(ANY_END_DATE)).willReturn(ANY_FLOAT_END_DATE);
-
-        given(mockFloatGithubUserConverter.getGithubUsers()).willReturn(asList(
-                ANY_GITHUB_USERNAME,
-                ANY_OTHER_GITHUB_USERNAME,
-                YET_ANOTHER_GITHUB_USERNAME
-        ));
+        BDDMockito.given(floatDateConverter.fromFloatDateFormatOrNoDate(ANY_FLOAT_START_DATE)).willReturn(ANY_START_DATE);
+        BDDMockito.given(floatDateConverter.fromFloatDateFormatOrNoDate(ANY_FLOAT_END_DATE)).willReturn(ANY_END_DATE);
+        BDDMockito.given(floatDateConverter.toFloatDateFormat(ANY_START_DATE)).willReturn(ANY_FLOAT_START_DATE);
+        BDDMockito.given(floatDateConverter.toFloatDateFormat(ANY_END_DATE)).willReturn(ANY_FLOAT_END_DATE);
     }
 
-    private void givenPersons() {
-        List<Person> persons = asList(ANY_PERSON, ANY_OTHER_PERSON, YET_ANOTHER_PERSON);
-        Observable<Person> mockPersonsObservable = Observable.from(persons);
-        given(mockPeopleServiceClient.getPersons()).willReturn(mockPersonsObservable);
+    private GivenTaskServiceClient given(TaskServiceClient taskServiceClient) {
+        return new GivenTaskServiceClient(taskServiceClient);
     }
 
-    private void setUserConversion(String floatUsername, String githubUsername) throws IOException {
-        given(mockFloatGithubUserConverter.getGithubUser(floatUsername)).willReturn(githubUsername);
-        given(mockFloatGithubUserConverter.getFloatUser(githubUsername)).willReturn(floatUsername);
+    private GivenPeopleServiceClient given(PeopleServiceClient peopleServiceClient) {
+        return new GivenPeopleServiceClient(peopleServiceClient);
+    }
+
+    private GivenFloatGithubUserConverter given(FloatGithubUserConverter floatGithubUserConverter) {
+        return new GivenFloatGithubUserConverter(floatGithubUserConverter);
     }
 
     @Test
-    public void givenPersonsAndTasks_whenGettingRepositoryNamesForFloatUser_thenTheExpectedRepositoryNamesAreEmitted() {
-        givenTasks(ANY_TASKS);
+    public void givenAllTasks_whenGettingRepositoryNamesForFloatUser_thenTheExpectedRepositoryNamesAreEmitted() {
+        given(mockTaskServiceClient).hasAllTasks();
 
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        floatServiceClient.getRepositoryNamesForFloatUser(ANY_FLOAT_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(testSubscriber);
+        Observable<String> actual = floatServiceClient
+                .getRepositoryNamesForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
 
-        testSubscriber.assertReceivedOnNext(asList(ANY_GITHUB_REPO_NAME, ANY_OTHER_GITHUB_REPO_NAME));
+        assertThatAnObservable(actual).hasEmittedValues(GITHUB_ALL_4, FLOAT_PROJECT_NOVODA_TV);
     }
 
     @Test
-    public void givenPersonsAndTasks_whenGettingRepositoryNamesForGithubUser_thenTheExpectedRepositoryNamesAreEmitted()
+    public void givenAllTasks_whenGettingRepositoryNamesForGithubUser_thenTheExpectedRepositoryNamesAreEmitted()
             throws IOException, NoMatchFoundException {
 
-        givenTasks(ANY_TASKS);
+        given(mockTaskServiceClient).hasAllTasks();
 
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        floatServiceClient.getRepositoryNamesForGithubUser(ANY_GITHUB_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(testSubscriber);
+        Observable<String> actual = floatServiceClient
+                .getRepositoryNamesForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
 
-        testSubscriber.assertReceivedOnNext(asList(ANY_GITHUB_REPO_NAME, ANY_OTHER_GITHUB_REPO_NAME));
+        assertThatAnObservable(actual).hasEmittedValues(GITHUB_ALL_4, FLOAT_PROJECT_NOVODA_TV);
     }
 
     @Test
-    public void givenPersonsAndTasks_whenGettingRepositoryNamesForGithubUserWithNoTasksAssigned_thenNoItemsAreEmitted() {
-        Observable<Task> mockTasksObservable = Observable.from(emptyList());
-        given(mockTaskServiceClient.getTasks(any(Date.class), anyInt(), anyInt())).willReturn(mockTasksObservable);
+    public void givenNoTasks_whenGettingRepositoryNamesForGithubUserWithNoTasksAssigned_thenNoItemsAreEmitted() {
+        given(mockTaskServiceClient).hasNoTasks();
 
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        floatServiceClient.getRepositoryNamesForFloatUser(ANY_FLOAT_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(testSubscriber);
+        Observable<String> actual = floatServiceClient
+                .getRepositoryNamesForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
 
-        testSubscriber.assertNoValues();
+        assertThatAnObservable(actual).hasEmittedNoValues();
     }
 
     @Test
-    public void givenPersonsAndTasks_whenGettingTasksForFloatUser_thenWeOnlyGetTasksForThatUser() throws Exception {
-        givenTasks(asList(ANY_TASK, ONE_MORE_TASK));
+    public void givenTasksForPerson_whenGettingTasksForFloatRelatedUser_thenWeOnlyGetTasksForThatUser() throws Exception {
+        given(mockTaskServiceClient).hasTasks(TASK_MARIO_ALL_4, TASK_MARIO_BBQ);
 
-        TestSubscriber<Task> testSubscriber = new TestSubscriber<>();
-        floatServiceClient.getTasksForFloatUser(ANY_FLOAT_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(testSubscriber);
-        List<Task> actualTasks = testSubscriber.getOnNextEvents();
+        Observable<Task> actual = floatServiceClient
+                .getTasksForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
 
-        assertTasksAreExpected(asList(ANY_TASK, ONE_MORE_TASK), actualTasks);
-    }
-
-    @Test
-    public void givenPersonsAndTasks_whenGettingTasksForFloatUser_thenWeOnlyGetTasksThatAreNotHolidays()
-            throws Exception {
-
-        givenTasks(ANY_TASKS);
-
-        TestSubscriber<Task> testSubscriber = new TestSubscriber<>();
-        floatServiceClient.getTasksForFloatUser(ANY_FLOAT_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(testSubscriber);
-        List<Task> actualTasks = testSubscriber.getOnNextEvents();
-
-        assertTasksDoNotHaveHolidays(actualTasks);
-    }
-
-    private void assertTasksDoNotHaveHolidays(List<Task> actualTasks) {
-        List<Task> expectedTasks = ANY_TASKS
-                .stream()
-                .filter(task -> !task.getName().contains("Holiday"))
-                .collect(Collectors.toList());
-        assertTasksAreExpected(expectedTasks, actualTasks);
-    }
-
-    @Test
-    public void givenPersonsAndTasks_whenGettingTasksForGithubUser_thenWeOnlyGetTasksForCorrespondingFloatUser()
-            throws Exception {
-
-        givenTasks(asList(ANY_TASK, ONE_MORE_TASK));
-
-        TestSubscriber<Task> testSubscriber = new TestSubscriber<>();
-        floatServiceClient.getTasksForGithubUser(ANY_GITHUB_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(testSubscriber);
-        List<Task> actualTasks = testSubscriber.getOnNextEvents();
-
-        assertTasksAreExpected(asList(ANY_TASK, ONE_MORE_TASK), actualTasks);
-    }
-
-    private void givenTasks(List<Task> tasks) {
-        Observable<Task> mockTasksObservable = Observable.from(tasks);
-        given(mockTaskServiceClient.getTasks(any(Date.class), anyInt(), anyInt())).willReturn(mockTasksObservable);
-    }
-
-    private void assertTasksAreExpected(List<Task> expectedTasks, List<Task> actualTasks) {
-        assertEquals(expectedTasks.size(), actualTasks.size());
-        for (int i = 0; i < expectedTasks.size(); i++) {
-            assertEquals(expectedTasks.get(i).getName(), actualTasks.get(i).getName());
-        }
-    }
-
-    @Test
-    public void givenPersonsAndTasks_whenGettingTasksForMultipleGithubUsers_thenWeGetTasksMappedToGithubUsers() {
-        givenTasksForPerson(asList(ANY_TASK, ONE_MORE_TASK), ANY_PERSON);
-        givenTasksForPerson(singletonList(YET_ANOTHER_TASK), YET_ANOTHER_PERSON);
-
-        TestSubscriber<Map.Entry<String, List<Task>>> testSubscriber = new TestSubscriber<>();
-        List<String> someGithubUsers = asList(ANY_GITHUB_USERNAME, YET_ANOTHER_GITHUB_USERNAME);
-        floatServiceClient.getTasksForGithubUsers(someGithubUsers, ANY_START_DATE, ANY_END_DATE)
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(testSubscriber);
-
-        List<Map.Entry<String, List<Task>>> expectedTasks = asList(
-                new AbstractMap.SimpleImmutableEntry<>(ANY_GITHUB_USERNAME, asList(ANY_TASK, ONE_MORE_TASK)),
-                new AbstractMap.SimpleImmutableEntry<>(YET_ANOTHER_GITHUB_USERNAME, singletonList(YET_ANOTHER_TASK))
+        assertThatAnObservable(actual).hasEmittedValues(
+                assertTaskNameIsEqual(),
+                TASK_MARIO_ALL_4, TASK_MARIO_BBQ
         );
-        testSubscriber.assertReceivedOnNext(expectedTasks);
     }
 
     @Test
-    public void givenPersonsAndTasksAndFailingFloatUsernameLookup_whenGettingTasksForGithubUser_thenWeGetErroringObservable()
+    public void givenAllTasks_whenGettingTasksForFloatUser_thenWeOnlyGetTasksThatAreNotHolidays()
+            throws Exception {
+
+        given(mockTaskServiceClient).hasAllTasks();
+
+        Observable<Task> actual = floatServiceClient
+                .getTasksForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
+
+        assertThatAnObservable(actual)
+                .hasEmittedValues(assertTaskNameDoesNotContainHoliday());
+
+    }
+
+    private Action1<Task> assertTaskNameDoesNotContainHoliday() {
+        return task -> assertEquals(false, task.getName().contains("Holiday"));
+    }
+
+    @Test
+    public void givenTasksForPerson_whenGettingTasksForRelatedGithubUser_thenWeOnlyGetTasksForCorrespondingFloatUser()
+            throws Exception {
+
+        given(mockTaskServiceClient)
+                .hasTasksForOnePerson(PERSON_MARIO, TASK_MARIO_ALL_4, TASK_MARIO_BBQ);
+
+        Observable<Task> actual = floatServiceClient
+                .getTasksForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
+
+        assertThatAnObservable(actual).hasEmittedValues(assertTaskNameIsEqual(), TASK_MARIO_ALL_4, TASK_MARIO_BBQ);
+    }
+
+    private TestSubscriberAssert.TestSubscriberCustomAssert<Task> assertTaskNameIsEqual() {
+        return (expectedTask, actualTask) -> assertEquals(expectedTask.getName(), actualTask.getName());
+    }
+
+    @Test
+    public void givenAllTasks_whenGettingTasksForMultipleGithubUsers_thenWeGetTasksMappedToGithubUsers() {
+        given(mockTaskServiceClient).hasAllTasks();
+
+        List<String> someGithubUsers = asList(GITHUB_MARIO, GITHUB_PEACH);
+
+        Observable<Map.Entry<String, List<Task>>> actual = floatServiceClient
+                .getTasksForGithubUsers(someGithubUsers, ANY_START_DATE, ANY_END_DATE);
+
+        assertThatAnObservable(actual)
+                .hasEmittedValues(
+                        aMapEntry(GITHUB_MARIO, asList(TASK_MARIO_ALL_4, TASK_MARIO_BBQ)),
+                        aMapEntry(GITHUB_PEACH, asList(TASK_PEACH_X))
+                );
+    }
+
+    private Map.Entry aMapEntry(String githubMario, List<Task> tasks) {
+        return new AbstractMap.SimpleImmutableEntry<>(githubMario, tasks);
+    }
+
+    @Test
+    public void givenFailingFloatUsernameLookup_whenGettingTasksForGithubUser_thenWeGetErroringObservable()
             throws IOException {
 
-        given(mockFloatGithubUserConverter.getFloatUser(ANY_GITHUB_USERNAME)).willThrow(IOException.class);
+        given(mockFloatGithubUserConverter).failsLookupForGithubUsername(GITHUB_MARIO);
 
-        TestSubscriber<Task> testSubscriber = new TestSubscriber<>();
-        floatServiceClient.getTasksForGithubUser(ANY_GITHUB_USERNAME, ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(testSubscriber);
+        Observable<Task> actual = floatServiceClient
+                .getTasksForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
 
-        testSubscriber.assertError(IOException.class);
+        assertThatAnObservable(actual).hasThrown(IOException.class);
     }
 
     @Test
     public void givenListOfGithubUsernames_whenConvertToFloatUsernames_thenReturnMatchingFloatUsernames() {
-        List<String> githubUsernames = asList(ANY_GITHUB_USERNAME, YET_ANOTHER_GITHUB_USERNAME);
+        List<String> githubUsernames = asList(GITHUB_MARIO, GITHUB_PEACH);
+
+        Map<String, String> expected = new HashMap<>();
+        expected.put(FLOAT_MARIO, GITHUB_MARIO);
+        expected.put(FLOAT_PEACH, GITHUB_PEACH);
 
         Map<String, String> actual = floatServiceClient.mapFloatToGithubUsernames(githubUsernames);
 
-        Map<String, String> expected = new HashMap<>();
-        expected.put(ANY_FLOAT_USERNAME, ANY_GITHUB_USERNAME);
-        expected.put(YET_ANOTHER_FLOAT_USERNAME, YET_ANOTHER_GITHUB_USERNAME);
         assertEquals(expected, actual);
     }
 
@@ -295,51 +268,51 @@ public class FloatServiceClientTest {
     public void givenListOfGithubUsernamesWithUsernameNotMatchedInFloat_whenConvertToFloatUsernames_thenThrowGithubToFloatUserMatchNotFoundException()
             throws IOException {
 
+        // given
         String nonExistingGithubUsername = "this-user-does-not-exist-on-float";
-        given(mockFloatGithubUserConverter.getFloatUser(nonExistingGithubUsername)).willThrow(IOException.class);
-        List<String> githubUsernames = asList(ANY_GITHUB_USERNAME, YET_ANOTHER_GITHUB_USERNAME, nonExistingGithubUsername);
+        given(mockFloatGithubUserConverter).failsLookupForGithubUsername(nonExistingGithubUsername);
 
+        // expect exception
         expectedException.expect(GithubToFloatUserMatchNotFoundException.class);
+
+        // when
+        List<String> githubUsernames = asList(GITHUB_MARIO, GITHUB_PEACH, nonExistingGithubUsername);
         floatServiceClient.mapFloatToGithubUsernames(githubUsernames);
     }
 
     @Test
-    public void givenListOfGithubUsernamesWithTasks_whenGetGithubUsersAssignmentsInDateRange_thenReturnMapOfUserAssignments() {
-        List<String> githubUsernames = asList(ANY_GITHUB_USERNAME, YET_ANOTHER_GITHUB_USERNAME);
-        givenTasksForPerson(asList(ANY_TASK, ONE_MORE_TASK), ANY_PERSON);
-        givenTasksForPerson(singletonList(YET_ANOTHER_TASK), YET_ANOTHER_PERSON);
+    public void givenListOfGithubUsernamesAndAllTasks_whenGetGithubUsersAssignmentsInDateRange_thenReturnMapOfUserAssignments() {
+        given(mockTaskServiceClient).hasAllTasks();
+
+        Map<String, List<UserAssignments>> expected = new HashMap<>();
+        expected.put(GITHUB_MARIO, asList(
+                createUserAssignments(FLOAT_PROJECT_ALL_4, GITHUB_ALL_4, FLOAT_PROJECT_NOVODA_TV),
+                createUserAssignments(FLOAT_PROJECT_BBQS)
+        ));
+        expected.put(GITHUB_PEACH, asList(
+                createUserAssignments(FLOAT_PROJECT_X)
+        ));
 
         Map<String, List<UserAssignments>> actual = floatServiceClient.getGithubUsersAssignmentsInDateRange(
-                githubUsernames,
+                asList(GITHUB_MARIO, GITHUB_PEACH),
                 ANY_START_DATE,
                 ANY_END_DATE
         );
 
-        Map<String, List<UserAssignments>> expected = new HashMap<>();
-        expected.put(ANY_GITHUB_USERNAME, asList(
-                UserAssignments.builder()
-                        .assignedProject(ANY_FLOAT_PROJECT_NAME)
-                        .assignedRepositories(asList(ANY_GITHUB_REPO_NAME, ANY_OTHER_GITHUB_REPO_NAME))
-                        .build(),
-                UserAssignments.builder()
-                        .assignedProject(YET_ANOTHER_FLOAT_PROJECT_NAME)
-                        .assignedRepositories(emptyList())
-                        .build()
-        ));
-        expected.put(YET_ANOTHER_GITHUB_USERNAME, singletonList(
-                UserAssignments.builder()
-                        .assignedProject(ANY_OTHER_FLOAT_PROJECT_NAME)
-                        .assignedRepositories(emptyList())
-                        .build()
-        ));
-
         assertEquals(expected, actual);
     }
 
+    private UserAssignments createUserAssignments(String projectName, String... repositories) {
+        return UserAssignments.builder()
+                .assignedProject(projectName)
+                .assignedRepositories(asList(repositories))
+                .build();
+    }
+
     @Test
-    public void givenEmptyListOfGithubUsernamesWithTasks_whenGetGithubUsersAssignmentsInDateRange_thenReturnMapOfAllGithubUsers() {
+    public void givenEmptyListOfGithubUsernamesAndAllTasks_whenGetGithubUsersAssignmentsInDateRange_thenReturnMapOfAllGithubUsers() {
         List<String> emptyGithubUsernames = emptyList();
-        givenTasksForAllPersons();
+        given(mockTaskServiceClient).hasAllTasks();
 
         Map<String, List<UserAssignments>> actualMap = floatServiceClient.getGithubUsersAssignmentsInDateRange(
                 emptyGithubUsernames,
@@ -351,9 +324,9 @@ public class FloatServiceClientTest {
     }
 
     @Test
-    public void givenNullListOfGithubUsernamesWithTasks_whenGetGithubUsersAssignmentsInDateRange_thenReturnMapOfAllGithubUsers() {
+    public void givenNullListOfGithubUsernamesAndAllTasks_whenGetGithubUsersAssignmentsInDateRange_thenReturnMapOfAllGithubUsers() {
         List<String> nullGithubUsernames = null;
-        givenTasksForAllPersons();
+        given(mockTaskServiceClient).hasAllTasks();
 
         Map<String, List<UserAssignments>> actualMap = floatServiceClient.getGithubUsersAssignmentsInDateRange(
                 nullGithubUsernames,
@@ -364,29 +337,102 @@ public class FloatServiceClientTest {
         assertAllPersonsInKeySet(actualMap.keySet());
     }
 
-    private void givenTasksForAllPersons() {
-        givenTasksForPerson(asList(ANY_TASK, ONE_MORE_TASK), ANY_PERSON);
-        givenTasksForPerson(emptyList(), ANY_OTHER_PERSON);
-        givenTasksForPerson(singletonList(YET_ANOTHER_TASK), YET_ANOTHER_PERSON);
-    }
-
-    private void givenTasksForPerson(List<Task> tasks, Person person) {
-        Observable<Task> mockTasksObservable = Observable.from(tasks);
-        given(
-                mockTaskServiceClient.getTasks(
-                        any(Date.class),
-                        anyInt(),
-                        eq(person.getId())
-                )
-        ).willReturn(mockTasksObservable);
-    }
-
     private void assertAllPersonsInKeySet(Set<String> actual) {
         assertEquals(new HashSet<>(asList(
-                ANY_GITHUB_USERNAME,
-                ANY_OTHER_GITHUB_USERNAME,
-                YET_ANOTHER_GITHUB_USERNAME
+                GITHUB_MARIO,
+                GITHUB_LUIGI,
+                GITHUB_PEACH
         )), actual);
     }
 
+    private class GivenTaskServiceClient {
+        private final TaskServiceClient taskServiceClient;
+
+        GivenTaskServiceClient(TaskServiceClient taskServiceClient) {
+            this.taskServiceClient = taskServiceClient;
+        }
+
+        GivenTaskServiceClient hasTasksForOnePerson(Person person, Task... tasks) {
+            return hasTasksForOnePerson(person.getId(), tasks);
+        }
+
+        GivenTaskServiceClient hasTasksForOnePerson(int personId, Task... tasks) {
+            Observable<Task> mockTasksObservable = Observable.from(Arrays.asList(tasks));
+
+            BDDMockito.given(taskServiceClient.getTasks(
+                    any(Date.class),
+                    anyInt(),
+                    eq(personId))
+            ).willReturn(mockTasksObservable);
+
+            return this;
+        }
+
+        GivenTaskServiceClient hasAllTasks() {
+            return hasTasks(ALL_TASKS);
+        }
+
+        private GivenTaskServiceClient hasNoTasks() {
+            return hasTasks();
+        }
+
+        private GivenTaskServiceClient hasTasks(Task... tasks) {
+            Observable<Task> mockTasksObservable = Observable.from(Arrays.asList(tasks));
+
+            BDDMockito.given(
+                    taskServiceClient.getTasksForAllPeople(
+                            any(Date.class),
+                            anyInt()
+                    )
+            ).willReturn(mockTasksObservable);
+
+            Observable.from(tasks)
+                    .groupBy(Task::getPersonId)
+                    .flatMap(Observable::toList)
+                    .subscribe(userTasks -> this.hasTasksForOnePerson(
+                            Integer.parseInt(userTasks.get(0).getPersonId()),
+                            userTasks.toArray(new Task[]{}))
+                    );
+
+            return this;
+        }
+    }
+
+    private class GivenFloatGithubUserConverter {
+        private final FloatGithubUserConverter floatGithubUserConverter;
+
+        GivenFloatGithubUserConverter(FloatGithubUserConverter floatGithubUserConverter) {
+            this.floatGithubUserConverter = floatGithubUserConverter;
+        }
+
+        GivenFloatGithubUserConverter hasMapping(String githubUsername, String floatUsername) throws IOException {
+            BDDMockito.given(floatGithubUserConverter.getGithubUser(floatUsername)).willReturn(githubUsername);
+            BDDMockito.given(floatGithubUserConverter.getFloatUser(githubUsername)).willReturn(floatUsername);
+            return this;
+        }
+
+        GivenFloatGithubUserConverter hasGithubUsers(String... githubUsernames) throws IOException {
+            BDDMockito.given(floatGithubUserConverter.getGithubUsers()).willReturn(asList(githubUsernames));
+            return this;
+        }
+
+        GivenFloatGithubUserConverter failsLookupForGithubUsername(String githubUsername) throws IOException {
+            BDDMockito.given(floatGithubUserConverter.getFloatUser(githubUsername)).willThrow(IOException.class);
+            return this;
+        }
+    }
+
+    private class GivenPeopleServiceClient {
+        private final PeopleServiceClient peopleServiceClient;
+
+        GivenPeopleServiceClient(PeopleServiceClient peopleServiceClient) {
+            this.peopleServiceClient = peopleServiceClient;
+        }
+
+        GivenPeopleServiceClient hasPeople(Person... people) {
+            Observable<Person> mockPersonsObservable = Observable.from(people);
+            BDDMockito.given(peopleServiceClient.getPersons()).willReturn(mockPersonsObservable);
+            return this;
+        }
+    }
 }
