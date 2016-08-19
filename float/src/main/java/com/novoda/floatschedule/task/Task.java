@@ -10,6 +10,9 @@ public class Task {
     @SerializedName("task_name")
     private String name;
 
+    @SerializedName("people_id")
+    private String personId;
+
     @SerializedName("person_name")
     private String personName;
 
@@ -33,10 +36,11 @@ public class Task {
         this.name = name;
     }
 
-    public Task(String name, String personName, String projectName) {
+    public Task(String name, String projectName, String personName, String personId) {
         this.name = name;
-        this.personName = personName;
         this.projectName = projectName;
+        this.personName = personName;
+        this.personId = personId;
     }
 
     public String getName() {
@@ -45,6 +49,10 @@ public class Task {
 
     public String getProjectName() {
         return projectName;
+    }
+
+    public String getPersonId() {
+        return personId;
     }
 
     public String getPersonName() {
