@@ -4,17 +4,19 @@ import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
-import com.novoda.github.reports.web.hooks.model.IssueComment;
+import com.novoda.github.reports.web.hooks.model.PullRequestComment;
 
-public class IssueCommentExtractor implements PayloadExtractor<IssueComment> {
+public class PullRequestCommentExtractor implements PayloadExtractor<PullRequestComment> {
+
     @Override
-    public IssueComment extractFrom(GithubWebhookEvent event) throws ExtractException {
+    public PullRequestComment extractFrom(GithubWebhookEvent event) throws ExtractException {
         GithubComment comment = event.comment();
         GithubRepository repository = event.repository();
         GithubIssue issue = event.issue();
-        if (comment == null || issue == null || repository == null || issue.isPullRequest()) {
+        if (comment == null || issue == null || repository == null || !issue.isPullRequest()) {
             throw new ExtractException(event);
         }
-        return new IssueComment(comment, repository, issue, event.action());
+        return new PullRequestComment(comment, repository, issue, event.action());
     }
+
 }

@@ -18,6 +18,7 @@ public class EventForwarder {
         HANDLERS.put(EventType.ISSUE, IssueHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
         HANDLERS.put(EventType.REVIEW_COMMENT, ReviewCommentHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
         HANDLERS.put(EventType.ISSUE_COMMENT, IssueCommentHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
+        HANDLERS.put(EventType.PULL_REQUEST_COMMENT, PullRequestCommentHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
         HANDLERS.put(EventType.COMMIT_COMMENT, CommitCommentHandler.newInstance(ConnectionManagerContainer.getConnectionManager()));
     }
 
