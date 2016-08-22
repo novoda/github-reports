@@ -7,4 +7,14 @@
   justify-content: center;
   align-items: flex-start;
   align-content: flex-start;
+
+  .no-slackers {
+    width: 100%;
+    color: white;
+    text-align: center;
+
+    img {
+      width: 100%;
+    }
+  }
 }
