@@ -1,7 +1,7 @@
-$margin: 20px;
+$margin: 15px;
 $doubleMargin: $margin * 2;
 $contributor-padding: 15px;
-$contributor-height: 150px;
+$contributor-height: 130px;
 
 @mixin ellipsis() {
   white-space: nowrap;
@@ -39,12 +39,16 @@ $contributor-height: 150px;
     flex-basis: calc(50% - #{$doubleMargin});
   }
 
-  @media screen and (min-width: 900px) and (max-width: 1500px) {
+  @media screen and (min-width: 900px) and (max-width: 1200px) {
     flex-basis: calc(33% - #{$doubleMargin});
   }
 
-  @media screen and (min-width: 1500px) {
+  @media screen and (min-width: 1200px) and (max-width: 1500px) {
     flex-basis: calc(25% - #{$doubleMargin});
+  }
+
+  @media screen and (min-width: 1500px) {
+    flex-basis: calc(20% - #{$doubleMargin});
   }
 
 }
@@ -58,23 +62,14 @@ img {
   padding: $contributor-padding;
   @include ellipsis();
 
-  div.title {
+  h3 {
     font-family: 'Bitter', serif;
     font-weight: 700;
     @include ellipsis();
 
     margin-top: 10px;
     margin-bottom: 5px;
-
-    h3 {
-      display: inline;
-    }
-
-    span {
-      font-size: 0.9em;
-      font-weight: 900;
-      opacity: 0.5;
-    }
+    display: block;
   }
 
   p {
