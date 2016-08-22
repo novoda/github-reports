@@ -8,6 +8,12 @@
   overflow-y: hidden;
   overflow-x: hidden;
 
+  hr {
+    border: 3px dashed white;
+    opacity: 0.5;
+    width: 100%;
+  }
+
   .contributors, .slackers {
     color: white;
     text-align: center;
