@@ -14,6 +14,7 @@ public class GithubWebhookPullRequest extends GithubIssue {
 
     public GithubWebhookPullRequest(long id, Date updatedAt, GithubUser user, boolean wasMerged) {
         super(id, updatedAt, user, new GithubPullRequest(wasMerged));
+        this.wasMerged = wasMerged;
     }
 
     @Override

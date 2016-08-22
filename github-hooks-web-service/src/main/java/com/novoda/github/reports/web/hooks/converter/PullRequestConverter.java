@@ -72,6 +72,6 @@ public class PullRequestConverter implements EventConverter<PullRequest> {
     }
 
     private boolean isMerged(PullRequest pullRequest) {
-        return pullRequest.getWebhookPullRequest().getPullRequest().isMerged();
+        return pullRequest.getWebhookPullRequest().wasMerged();
     }
 }
