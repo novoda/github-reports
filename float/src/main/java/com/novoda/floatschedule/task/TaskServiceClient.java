@@ -3,11 +3,10 @@ package com.novoda.floatschedule.task;
 import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.network.FloatApiService;
 import com.novoda.floatschedule.network.FloatServiceContainer;
-
-import java.util.Date;
-
 import retrofit2.Response;
 import rx.Observable;
+
+import java.util.Date;
 
 public class TaskServiceClient {
 
@@ -23,6 +22,10 @@ public class TaskServiceClient {
     TaskServiceClient(FloatApiService floatApiService, FloatDateConverter floatDateConverter) {
         this.floatApiService = floatApiService;
         this.floatDateConverter = floatDateConverter;
+    }
+
+    public Observable<Task> getTasksForAllPeople(Date startDate, Integer numberOfWeeks) {
+        return getTasks(startDate, numberOfWeeks, null);
     }
 
     public Observable<Task> getTasks(Date startDate, Integer numberOfWeeks, Integer personId) {

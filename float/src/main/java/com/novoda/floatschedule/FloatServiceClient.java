@@ -152,22 +152,8 @@ public class FloatServiceClient {
 
         return peopleServiceClient.getPersons()
                 .filter(byFloatUsernames(floatToGithubUsernames.keySet()))
-                .map(personToGithubUserWithTasksEntry(startDate, numberOfWeeks, floatToGithubUsernames));
-    }
-
-    private Func1<Person, Boolean> byFloatUsernames(Collection<String> floatUsernames) {
-        return person -> floatUsernames
-                .stream()
-                .filter(byPersonName(person))
-                .count() > 0;
-    }
-
-    private Predicate<String> byPersonName(Person person) {
-        return floatUsername -> personHasFloatUsername(person, floatUsername);
-    }
-
-    private boolean personHasFloatUsername(Person person, String floatUsername) {
-        return person.getName().equalsIgnoreCase(floatUsername);
+                .toList()
+                .flatMap(peopleToGithubUserWithTasksEntry(startDate, numberOfWeeks, floatToGithubUsernames));
     }
 
     Map<String, String> mapFloatToGithubUsernames(List<String> githubUsernames)
@@ -195,30 +181,52 @@ public class FloatServiceClient {
         };
     }
 
-    private Func1<Person, Map.Entry<String, List<Task>>> personToGithubUserWithTasksEntry(Date startDate,
-                                                                                          Integer numberOfWeeks,
-                                                                                          Map<String, String> floatToGithubUsernames) {
+    private Func1<Person, Boolean> byFloatUsernames(Collection<String> floatUsernames) {
+        return person -> floatUsernames
+                .stream()
+                .filter(byPersonName(person))
+                .count() > 0;
+    }
 
-        return person -> {
-            List<Task> personTasks = taskServiceClient
-                    .getTasks(startDate, numberOfWeeks, person.getId())
-                    .filter(excludingHolidays())
-                    .toList()
-                    .toBlocking()
-                    .first();
-            String floatUsername = person.getName();
-            String githubUsername = floatToGithubUsernames.get(floatUsername);
+    private Predicate<String> byPersonName(Person person) {
+        return floatUsername -> personHasFloatUsername(person, floatUsername);
+    }
 
-            return new AbstractMap.SimpleImmutableEntry<>(
-                    githubUsername,
-                    personTasks
-            );
-        };
+    private boolean personHasFloatUsername(Person person, String floatUsername) {
+        return person.getName().equalsIgnoreCase(floatUsername);
+    }
+
+    private Func1<List<Person>, Observable<? extends Map.Entry<String, List<Task>>>> peopleToGithubUserWithTasksEntry(Date startDate, Integer numberOfWeeks, Map<String, String> floatToGithubUsernames) {
+        return persons -> taskServiceClient
+                .getTasksForAllPeople(startDate, numberOfWeeks)
+                .filter(excludingHolidays())
+                .filter(excludingTaskForNonRequestedPeople(persons))
+                .groupBy(Task::getPersonId)
+                .flatMap(Observable::toList)
+                .map(personTasksToGithubUserWithTasksEntry(floatToGithubUsernames));
+    }
+
+    private Func1<Task, Boolean> excludingTaskForNonRequestedPeople(List<Person> persons) {
+        return task -> persons
+                .stream()
+                .anyMatch(person -> Integer.toString(person.getId()).equals(task.getPersonId()));
     }
 
     private Func1<Task, Boolean> excludingHolidays() {
         return task -> task.getName() == null ||
                 !(task.getName().toUpperCase().contains(HOLIDAY_TASK_DESCRIPTOR));
+    }
+
+    private Func1<List<Task>, AbstractMap.SimpleImmutableEntry<String, List<Task>>> personTasksToGithubUserWithTasksEntry(Map<String, String> floatToGithubUsernames) {
+        return tasks -> {
+            String floatUsername = tasks.get(0).getPersonName();
+            String githubUsername = floatToGithubUsernames.get(floatUsername);
+
+            return new AbstractMap.SimpleImmutableEntry<>(
+                    githubUsername,
+                    tasks
+            );
+        };
     }
 
     private Function<Task, UserAssignments> taskToUserAssignments() {

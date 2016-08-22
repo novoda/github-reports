@@ -16,10 +16,10 @@ To get more help on the `angular-cli` use `ng --help` or go check out the
 
 This project was generated with [angular-cli](https://github.com/angular/angular-cli) version 1.0.0-beta.11-webpack.2.
 
-Simply install the CLI globally with:
+Simply install angular-cli and gulp-cli globally with:
 
 ```shell
-$ npm install -g angular-cli@webpack
+$ npm install -g angular-cli@webpack gulp-cli
 ```
 
 To get more help on the `angular-cli` use `ng --help` or go check out the 
@@ -37,6 +37,8 @@ To configure the application, you need to create a `src/config.json` (see [`src/
 
 #### Available tasks
 
+##### angular-cli
+
 The available `ng` tasks are:
 
 * `ng serve` to start a dev server. Just navigate to `http://localhost:4200/`: the app will automatically reload if you
@@ -52,6 +54,15 @@ The available `ng` tasks are:
 * `ng github-pages:deploy` to deploy to Github Pages.
 
 The Gradle `test` task simply delegates to `ng test --watch false` to provide compatibility with the root project.
+
+##### gulp
+
+The available `gulp` tasks are:
+
+* `gulp test`, same as `ng test --watch false`
+* `gulp test:watch`, same as `ng test`
+* `gulp build`, same as `ng build`
+* `gulp shipit`, builds and zips the versioned application in the `zip/` directory
 
 #### Conventions
 

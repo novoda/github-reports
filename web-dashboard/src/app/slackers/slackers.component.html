@@ -1,2 +1,7 @@
 <app-slacker *ngFor="let user of slackers" [user]="user">
 </app-slacker>
+
+<div class="no-slackers" *ngIf="slackers?.length === 0">
+  <h3 class="title">Woohoo! Everyone is amazing!</h3>
+  <img src="nyancat.gif"/>
+</div>
