@@ -21,7 +21,7 @@ public class PullRequestConverter implements EventConverter<PullRequest> {
         return Event.create(
                 webhookPullRequest.getId(),
                 repository.getId(),
-                webhookPullRequest.getUserId(),
+                pullRequest.getSender().getId(),
                 webhookPullRequest.getUserId(),
                 eventType,
                 webhookPullRequest.getUpdatedAt()

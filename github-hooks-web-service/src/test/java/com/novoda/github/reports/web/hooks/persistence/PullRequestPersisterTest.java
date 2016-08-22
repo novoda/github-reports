@@ -14,14 +14,13 @@ import com.novoda.github.reports.web.hooks.converter.EventConverter;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
-
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -32,7 +31,9 @@ public class PullRequestPersisterTest {
 
     private static final long ANY_ISSUE_ID = 23L;
     private static final long ANY_REPOSITORY_ID = 42L;
-    private static final long ANY_USER_ID = 88L;
+    private static final long AUTHOR_USER_ID = 88L;
+    private static final GithubUser AUTHOR_USER = new GithubUser(AUTHOR_USER_ID);
+    private static final long OWNER_USER_ID = 66L;
     private static final Date ANY_DATE = new Date();
     private static final EventType ANY_EVENT_TYPE = EventType.BRANCH_DELETE;
     private static final String ANY_USERNAME = "dudelio";
@@ -70,7 +71,7 @@ public class PullRequestPersisterTest {
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(mockUserDataLayer).updateOrInsert(userCaptor.capture());
-        assertThat(userCaptor.getValue()).isEqualToComparingFieldByField(User.create(ANY_USER_ID, ANY_USERNAME));
+        assertThat(userCaptor.getValue()).isEqualToComparingFieldByField(User.create(AUTHOR_USER_ID, ANY_USERNAME));
     }
 
     @Test
@@ -97,17 +98,17 @@ public class PullRequestPersisterTest {
         ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
         verify(mockEventDataLayer).updateOrInsert(eventCaptor.capture());
         assertThat(eventCaptor.getValue()).isEqualToComparingFieldByField(
-                Event.create(ANY_ISSUE_ID, ANY_REPOSITORY_ID, ANY_USER_ID, ANY_USER_ID, ANY_EVENT_TYPE, ANY_DATE)
+                Event.create(ANY_ISSUE_ID, ANY_REPOSITORY_ID, AUTHOR_USER_ID, OWNER_USER_ID, ANY_EVENT_TYPE, ANY_DATE)
         );
     }
 
     private PullRequest givenAPullRequest() {
         GithubWebhookPullRequest webhookPullRequest = givenAnIssue();
-        return new PullRequest(webhookPullRequest, givenARepository(), ANY_ACTION);
+        return new PullRequest(webhookPullRequest, givenARepository(), ANY_ACTION, AUTHOR_USER);
     }
 
     private GithubUser givenAUser() {
-        return new GithubUser(ANY_USER_ID, ANY_USERNAME);
+        return new GithubUser(AUTHOR_USER_ID, ANY_USERNAME);
     }
 
     private GithubWebhookPullRequest givenAnIssue() {
@@ -119,7 +120,7 @@ public class PullRequestPersisterTest {
     }
 
     private void givenAnEvent(PullRequest pullRequest) {
-        Event event = Event.create(ANY_ISSUE_ID, ANY_REPOSITORY_ID, ANY_USER_ID, ANY_USER_ID, ANY_EVENT_TYPE, ANY_DATE);
+        Event event = Event.create(ANY_ISSUE_ID, ANY_REPOSITORY_ID, AUTHOR_USER_ID, OWNER_USER_ID, ANY_EVENT_TYPE, ANY_DATE);
         try {
             given(mockConverter.convertFrom(pullRequest)).willReturn(event);
         } catch (ConverterException e) {
