@@ -16,7 +16,11 @@ gulp.task('clean', () => {
   return del(['./dist']);
 });
 
-gulp.task('build', ['clean'], ng('build'));
+gulp.task('ng-build', ['clean'], ng('build --environment=prod'));
+
+gulp.task('build', ['ng-build'], function() {
+  return del(['./dist/*.sample.json']);
+});
 
 gulp.task('shipit', ['build'], () => {
   return gulp.src('./dist/*')
