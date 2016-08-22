@@ -77,4 +77,11 @@ public class PullRequestExtractorTest {
         extractor.extractFrom(mockEvent);
     }
 
+    @Test(expected = ExtractException.class)
+    public void givenAPullRequestEventWithNoSender_whenExtractingThePayload_thenAnExceptionIsThrown() throws Exception {
+        given(mockEvent.sender()).willReturn(null);
+
+        extractor.extractFrom(mockEvent);
+    }
+
 }
