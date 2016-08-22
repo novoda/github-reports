@@ -25,8 +25,8 @@ public class PullRequestCommentConverterTest {
     private static final long ANY_REPOSITORY_ID = 42L;
     private static final long ANY_COMMENT_ID = 23L;
     private static final Date ANY_DATE = new Date();
-    private static final int ANY_ISSUE_NUMBER = 23;
-    private static final boolean ANY_IS_PULL_REQUEST = true;
+    private static final int ANY_PULL_REQUEST_NUMBER = 23;
+    private static final boolean IS_PULL_REQUEST = true;
 
     @InjectMocks
     private PullRequestCommentConverter converter;
@@ -60,7 +60,7 @@ public class PullRequestCommentConverterTest {
         GithubUser githubUser = new GithubUser(ANY_USER_ID);
         GithubComment githubComment = new GithubComment(ANY_COMMENT_ID, githubUser, ANY_DATE);
         GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID);
-        GithubIssue githubPullRequest = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, ANY_IS_PULL_REQUEST);
+        GithubIssue githubPullRequest = new GithubIssue(ANY_PULL_REQUEST_NUMBER, ANY_OWNER_ID, IS_PULL_REQUEST);
         return new PullRequestComment(githubComment, githubRepository, githubPullRequest, GithubAction.CREATED);
     }
 }

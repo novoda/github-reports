@@ -37,9 +37,9 @@ public class PullRequestCommentPersisterTest {
     private static final Date ANY_DATE = new Date();
     private static final String ANY_REPOSITORY_NAME = "topbantz";
     private static final boolean ANY_IS_PRIVATE_REPOSITORY = true;
-    private static final int ANY_ISSUE_NUMBER = 23;
+    private static final int ANY_PULL_REQUEST_NUMBER = 23;
     private static final long ANY_OWNER_ID = 86L;
-    private static final boolean ANY_IS_PULL_REQUEST = true;
+    private static final boolean IS_PULL_REQUEST = true;
 
     @Mock
     private EventConverter<PullRequestComment> mockConverter;
@@ -105,7 +105,7 @@ public class PullRequestCommentPersisterTest {
         GithubUser githubUser = new GithubUser(ANY_USER_ID, ANY_USERNAME);
         GithubComment githubComment = new GithubComment(ANY_COMMENT_ID, githubUser, ANY_DATE);
         GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_IS_PRIVATE_REPOSITORY);
-        GithubIssue githubIssue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, ANY_IS_PULL_REQUEST);
+        GithubIssue githubIssue = new GithubIssue(ANY_PULL_REQUEST_NUMBER, ANY_OWNER_ID, IS_PULL_REQUEST);
         return new PullRequestComment(githubComment, githubRepository, githubIssue, GithubAction.CREATED);
     }
 

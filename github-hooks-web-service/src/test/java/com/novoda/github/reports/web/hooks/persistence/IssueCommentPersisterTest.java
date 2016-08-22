@@ -39,7 +39,7 @@ public class IssueCommentPersisterTest {
     private static final boolean ANY_IS_PRIVATE_REPOSITORY = true;
     private static final int ANY_ISSUE_NUMBER = 23;
     private static final long ANY_OWNER_ID = 86L;
-    private static final boolean ANY_IS_PULL_REQUEST = false;
+    private static final boolean IS_NOT_PULL_REQUEST = false;
 
     @Mock
     private EventConverter<IssueComment> mockConverter;
@@ -105,7 +105,7 @@ public class IssueCommentPersisterTest {
         GithubUser githubUser = new GithubUser(ANY_USER_ID, ANY_USERNAME);
         GithubComment githubComment = new GithubComment(ANY_COMMENT_ID, githubUser, ANY_DATE);
         GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID, ANY_REPOSITORY_NAME, ANY_IS_PRIVATE_REPOSITORY);
-        GithubIssue githubIssue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, ANY_IS_PULL_REQUEST);
+        GithubIssue githubIssue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, IS_NOT_PULL_REQUEST);
         return new IssueComment(githubComment, githubRepository, githubIssue, GithubAction.CREATED);
     }
 
