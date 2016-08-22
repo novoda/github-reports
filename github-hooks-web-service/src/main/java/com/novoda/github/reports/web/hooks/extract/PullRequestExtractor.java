@@ -13,6 +13,6 @@ public class PullRequestExtractor implements PayloadExtractor<PullRequest> {
         if (webhookPullRequest == null || repository == null) {
             throw new ExtractException(event);
         }
-        return new PullRequest(webhookPullRequest, repository, event.action());
+        return new PullRequest(webhookPullRequest, repository, event.action(), event.sender());
     }
 }

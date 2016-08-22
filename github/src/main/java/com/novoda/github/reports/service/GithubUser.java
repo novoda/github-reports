@@ -9,8 +9,8 @@ public class GithubUser {
     @SerializedName(value = "login", alternate = {"name"}) // "name" as an alternative due to compatibility issues with the Timeline API
     private String username;
 
-    public GithubUser(long ownerId) {
-        this.id = ownerId;
+    public GithubUser(long id) {
+        this.id = id;
     }
 
     public GithubUser(long id, String username) {

@@ -8,17 +8,16 @@ import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.PullRequest;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.mockito.InjectMocks;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
 
 import static com.novoda.github.reports.web.hooks.model.GithubAction.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +41,8 @@ public class PullRequestConverterTest {
 
     private static final long ANY_ISSUE_ID = 23L;
     private static final long ANY_REPOSITORY_ID = 42L;
-    private static final long ANY_USER_ID = 88L;
+    private static final long OWNER_USER_ID = 88L;
+    private static final long AUTHOR_USER_ID = 66L;
     private static final Date ANY_DATE = new Date();
 
     @Parameter(0)
@@ -73,13 +73,14 @@ public class PullRequestConverterTest {
 
     private PullRequest givenAPullRequest() {
         GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID);
-        GithubUser githubUser = new GithubUser(ANY_USER_ID);
-        GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_NUMBER, ANY_DATE, githubUser, isPullRequestMerged);
+        GithubUser ownerUser = new GithubUser(OWNER_USER_ID);
+        GithubUser authorUser = new GithubUser(AUTHOR_USER_ID);
+        GithubWebhookPullRequest webhookPullRequest = new GithubWebhookPullRequest(ANY_ISSUE_NUMBER, ANY_DATE, ownerUser, isPullRequestMerged);
 
-        return new PullRequest(webhookPullRequest, githubRepository, action);
+        return new PullRequest(webhookPullRequest, githubRepository, action, authorUser);
     }
 
     private Event buildExpectedEvent(EventType eventType) {
-        return Event.create(ANY_ISSUE_ID, ANY_REPOSITORY_ID, ANY_USER_ID, ANY_USER_ID, eventType, ANY_DATE);
+        return Event.create(ANY_ISSUE_ID, ANY_REPOSITORY_ID, AUTHOR_USER_ID, OWNER_USER_ID, eventType, ANY_DATE);
     }
 }
