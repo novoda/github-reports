@@ -9,9 +9,8 @@ import { ReportsClient } from '../reports/reports-client.service';
 import { UserStats } from '../reports/user-stats';
 import { CompanyStats } from '../reports/company-stats';
 import { Observable, Scheduler } from 'rxjs';
-import { Http, BaseRequestOptions } from '@angular/http';
-import { MockBackend } from '@angular/http/testing/mock_backend';
 import { ReportsMockService } from '../reports/reports-mock.service';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 describe('Component: ContributorsVsSlackersDashboard', () => {
 
@@ -146,7 +145,7 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
     it('returns 4 random contributors', () => {
       const randomContributors = component.pickRandomContributors(companyStats);
 
-      expect(randomContributors.length).toBe(4);
+      expect(randomContributors.length).toBe(5);
     });
 
     it('returns all contributors if they are less than 4', () => {
@@ -197,7 +196,7 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
       const failTimes = 3;
       let failCounter = 0;
 
-      spyOn(reportsService, 'getAggregatedStats').and.callFake((): Observable<any> => {
+      spyOn(reportsService, 'getAggregatedStats').and.callFake((): any => {
         if (failCounter < failTimes) {
           failCounter += 1;
           return Observable.throw(new Error('Some network error'));

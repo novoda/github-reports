@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { ReplaySubject, Observable } from 'rxjs';
 import { Config } from './Config';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 @Injectable()
 export class ConfigService {
@@ -15,7 +16,7 @@ export class ConfigService {
       .map((response: Response) => {
         return <Config> response.json();
       })
-      .catch(() => {
+      .catch((): ErrorObservable => {
         const errorMessage = 'No config.json has been found!';
         console.error(errorMessage);
         return Observable.throw(new Error(errorMessage));
