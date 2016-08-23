@@ -31,4 +31,9 @@ public class GithubReaction {
     public Date getCreatedAt() {
         return createdAt;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s reacted [%d] @ %s", user.getUsername(), id, createdAt);
+    }
 }
