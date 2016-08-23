@@ -3,24 +3,14 @@ package com.novoda.github.reports.batch.local.issue;
 import com.novoda.github.reports.batch.local.retry.RateLimitResetTimerSubject;
 import com.novoda.github.reports.batch.local.retry.RateLimitResetTimerSubjectContainer;
 import com.novoda.github.reports.batch.local.retry.RetryWhenTokenResets;
-import com.novoda.github.reports.service.issue.GithubEvent;
-import com.novoda.github.reports.service.issue.GithubIssueService;
-import com.novoda.github.reports.service.issue.IssueService;
-import com.novoda.github.reports.service.issue.RepositoryIssue;
-import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
-import com.novoda.github.reports.service.issue.RepositoryIssueEventEvent;
+import com.novoda.github.reports.service.issue.*;
 import com.novoda.github.reports.service.network.PagedTransformer;
 import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
 import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersistTransformer;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import retrofit2.Response;
 import rx.Observable;
+
+import java.util.*;
 
 import static com.novoda.github.reports.service.issue.GithubEvent.Type.*;
 
@@ -30,7 +20,6 @@ public class EventsServiceClient {
     private static final int FIRST_PAGE = 1;
 
     private static final Set<GithubEvent.Type> EVENT_TYPES_TO_BE_STORED = new HashSet<>(Arrays.asList(
-            COMMENTED,
             CLOSED,
             HEAD_REF_DELETED,
             LABELED,
