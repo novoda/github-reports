@@ -6,6 +6,7 @@ import com.novoda.github.reports.service.timeline.TimelineService;
 
 import rx.Observable;
 
+@Deprecated
 public class TimelineServiceClient {
 
     private final TimelineService timelineService;

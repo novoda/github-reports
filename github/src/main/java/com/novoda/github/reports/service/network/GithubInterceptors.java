@@ -36,7 +36,7 @@ class GithubInterceptors extends Interceptors {
     }
 
     GithubInterceptors withCustomMediaTypeInterceptor() {
-        return (GithubInterceptors) with(CustomMediaTypeInterceptor.newInstanceForTimelineApi());
+        return (GithubInterceptors) with(CustomMediaTypeInterceptor.newInstanceForReactionsApi());
     }
 
 }
