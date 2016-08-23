@@ -69,6 +69,13 @@ public class EventConverter implements Converter<RepositoryIssueEvent, Event> {
             return EventType.PULL_REQUEST_MERGE;
         }
 
+        if (type == REACTED) {
+            if (isIssue) {
+                return EventType.ISSUE_REACTION;
+            }
+            return EventType.PULL_REQUEST_REACTION;
+        }
+
         throw new UnsupportedEventTypeException(type);
     }
 

@@ -3,11 +3,10 @@ package com.novoda.github.reports.service.issue;
 import com.novoda.github.reports.service.network.GithubApiService;
 import com.novoda.github.reports.service.network.GithubCachingServiceContainer;
 import com.novoda.github.reports.service.network.GithubServiceContainer;
-
-import java.util.List;
-
 import retrofit2.Response;
 import rx.Observable;
+
+import java.util.List;
 
 public class GithubIssueService implements IssueService {
 
@@ -58,6 +57,22 @@ public class GithubIssueService implements IssueService {
                 repository,
                 issueNumber,
                 since,
+                page,
+                pageCount
+        );
+    }
+
+    @Override
+    public Observable<Response<List<GithubReaction>>> getReactionsFor(String organisation,
+                                                                      String repository,
+                                                                      int issueNumber,
+                                                                      int page,
+                                                                      int pageCount) {
+
+        return githubApiService.getReactionsForIssueAndPage(
+                organisation,
+                repository,
+                issueNumber,
                 page,
                 pageCount
         );

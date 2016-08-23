@@ -54,6 +54,7 @@ public abstract class RepositoryIssueEvent {
         HEAD_REF_DELETED("head_ref_deleted"),
         LABELED("labeled"),
         MERGED("merged"),
+        REACTED("reacted"),
         UNLABELED("unlabeled");
 
         private final String event;
