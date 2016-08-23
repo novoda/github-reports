@@ -33,8 +33,9 @@ public class RepositoryIssueEventEvent extends RepositoryIssueEvent {
     }
 
     @Override
-    public GithubEvent.Type getEventType() {
-        return event.getType();
+    public RepositoryIssueEvent.Type getEventType() {
+        String originalEventValue = event.getType().toString();
+        return RepositoryIssueEvent.Type.valueOf(originalEventValue);
     }
 
     @Override
