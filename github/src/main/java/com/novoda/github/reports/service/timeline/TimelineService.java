@@ -2,7 +2,6 @@ package com.novoda.github.reports.service.timeline;
 
 import rx.Observable;
 
-
 /**
  * If you want to use this, you shall change the {@link com.novoda.github.reports.service.network.CustomMediaTypeInterceptor}
  * and make it inject the "Accept" header with value "application/vnd.github.mockingbird-preview".
