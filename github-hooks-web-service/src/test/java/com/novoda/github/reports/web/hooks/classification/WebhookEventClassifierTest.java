@@ -74,12 +74,27 @@ public class WebhookEventClassifierTest {
     @Test
     public void givenAnIssueCommentEvent_whenClassifyingIt_thenWeGetItsType() throws Exception {
         given(mockRule.check(mockEvent)).willReturn(true);
-        given(mockEvent.issue()).willReturn(mock(GithubIssue.class));
+        GithubIssue mockIssue = mock(GithubIssue.class);
+        given(mockIssue.isPullRequest()).willReturn(false);
+        given(mockEvent.issue()).willReturn(mockIssue);
         given(mockEvent.comment()).willReturn(mock(GithubComment.class));
 
         EventType actual = eventClassifier.classify(mockEvent);
 
         assertEquals(EventType.ISSUE_COMMENT, actual);
+    }
+
+    @Test
+    public void givenAPullRequestCommentEvent_whenClassifyingIt_thenWeGetItsType() throws Exception {
+        given(mockRule.check(mockEvent)).willReturn(true);
+        GithubIssue mockPullRequest = mock(GithubIssue.class);
+        given(mockPullRequest.isPullRequest()).willReturn(true);
+        given(mockEvent.issue()).willReturn(mockPullRequest);
+        given(mockEvent.comment()).willReturn(mock(GithubComment.class));
+
+        EventType actual = eventClassifier.classify(mockEvent);
+
+        assertEquals(EventType.PULL_REQUEST_COMMENT, actual);
     }
 
     @Test
