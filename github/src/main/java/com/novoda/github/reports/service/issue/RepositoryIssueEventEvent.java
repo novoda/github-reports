@@ -34,8 +34,7 @@ public class RepositoryIssueEventEvent extends RepositoryIssueEvent {
 
     @Override
     public RepositoryIssueEvent.Type getEventType() {
-        String originalEventValue = event.getType().toString();
-        return RepositoryIssueEvent.Type.valueOf(originalEventValue);
+        return Type.fromEvent(event.getType().toString());
     }
 
     @Override

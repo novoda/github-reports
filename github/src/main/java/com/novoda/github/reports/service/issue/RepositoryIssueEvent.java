@@ -68,5 +68,14 @@ public abstract class RepositoryIssueEvent {
             return event;
         }
 
+        public static Type fromEvent(String event) {
+            for (Type type : Type.values()) {
+                if (type.toString().equals(event)) {
+                    return type;
+                }
+            }
+            throw new IllegalArgumentException(String.format("No type exists for event \"%s\".", event));
+        }
+
     }
 }
