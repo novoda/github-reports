@@ -20,7 +20,7 @@ class GithubInterceptors extends Interceptors {
                 .withRateLimitHandlerInterceptor()
                 .withRateLimitCountInterceptor()
                 .withRateLimitResetInterceptor()
-                .withCustomMediaTypeInterceptor();
+                .withReactionsMediaTypeInterceptor();
     }
 
     GithubInterceptors withOAuthTokenInterceptor(String token) {
@@ -39,7 +39,15 @@ class GithubInterceptors extends Interceptors {
         return (GithubInterceptors) with(RateLimitResetInterceptor.newInstance());
     }
 
-    GithubInterceptors withCustomMediaTypeInterceptor() {
+    /**
+     * @see com.novoda.github.reports.service.timeline.TimelineService
+     */
+    @Deprecated
+    GithubInterceptors withTimelineMediaTypeInterceptor() {
+        return (GithubInterceptors) with(CustomMediaTypeInterceptor.newInstanceForTimelineApi());
+    }
+
+    GithubInterceptors withReactionsMediaTypeInterceptor() {
         return (GithubInterceptors) with(CustomMediaTypeInterceptor.newInstanceForReactionsApi());
     }
 

@@ -10,9 +10,18 @@ class CustomMediaTypeInterceptor implements Interceptor {
 
     private static final String ACCEPT_HEADER_KEY = "Accept";
 
+    private static final String TIMELINE_API_MEDIA_TYPE = "application/vnd.github.mockingbird-preview";
     private static final String REACTIONS_API_MEDIA_TYPE = "application/vnd.github.squirrel-girl-preview";
 
     private final String customMediaType;
+
+    /**
+     * @see com.novoda.github.reports.service.timeline.TimelineService
+     */
+    @Deprecated
+    static CustomMediaTypeInterceptor newInstanceForTimelineApi() {
+        return new CustomMediaTypeInterceptor(TIMELINE_API_MEDIA_TYPE);
+    }
 
     static CustomMediaTypeInterceptor newInstanceForReactionsApi() {
         return new CustomMediaTypeInterceptor(REACTIONS_API_MEDIA_TYPE);
