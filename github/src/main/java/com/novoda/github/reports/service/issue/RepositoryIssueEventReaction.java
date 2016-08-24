@@ -4,38 +4,38 @@ import com.novoda.github.reports.service.GithubUser;
 
 import java.util.Date;
 
-public class RepositoryIssueEventComment extends RepositoryIssueEvent {
+public class RepositoryIssueEventReaction extends RepositoryIssueEvent {
 
-    private final GithubComment comment;
+    private final GithubReaction reaction;
 
-    public RepositoryIssueEventComment(RepositoryIssue repositoryIssue, GithubComment comment) {
+    public RepositoryIssueEventReaction(RepositoryIssue repositoryIssue, GithubReaction reaction) {
         super(repositoryIssue);
-        this.comment = comment;
+        this.reaction = reaction;
     }
 
     @Override
     public Long getEventId() {
-        return comment.getId();
+        return reaction.getId();
     }
 
     @Override
     public GithubUser getUser() {
-        return comment.getUser();
+        return reaction.getUser();
     }
 
     @Override
     public Date getDate() {
-        return comment.getCreatedAt();
+        return reaction.getCreatedAt();
     }
 
     @Override
     public RepositoryIssueEvent.Type getEventType() {
-        return RepositoryIssueEvent.Type.COMMENTED;
+        return RepositoryIssueEvent.Type.REACTED;
     }
 
     @Override
     public String toString() {
-        return comment.toString() +
+        return reaction.toString() +
                 " on issue " + getIssue().toString() +
                 " for repository " + getRepository().getName();
     }

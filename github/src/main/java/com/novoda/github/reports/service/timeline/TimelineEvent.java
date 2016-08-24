@@ -3,6 +3,10 @@ package com.novoda.github.reports.service.timeline;
 import com.google.gson.annotations.SerializedName;
 import com.novoda.github.reports.service.GithubUser;
 
+/**
+ * @see TimelineService
+ */
+@Deprecated
 public class TimelineEvent {
 
     private long id;

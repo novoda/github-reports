@@ -1,14 +1,12 @@
 package com.novoda.github.reports.service.network;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.stubbing.Answer;
-
 import okhttp3.Interceptor;
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -35,7 +33,7 @@ public class CustomMediaTypeInterceptorTest {
         when(mockChain.request()).thenReturn(oldRequest);
 
         when(mockChain.proceed(any(Request.class))).thenAnswer(
-                (Answer<Response>) invocation -> {
+                invocation -> {
                     Request request = (Request) invocation.getArguments()[0];
                     return new Response.Builder()
                             .protocol(ANY_PROTOCOL)
