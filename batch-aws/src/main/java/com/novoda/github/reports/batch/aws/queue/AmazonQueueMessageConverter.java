@@ -143,7 +143,7 @@ class AmazonQueueMessageConverter {
         AmazonRawQueueMessage.Builder rawQueueMessageBuilder = AmazonRawQueueMessage.builder();
 
         if (message instanceof AmazonGetRepositoriesQueueMessage) {
-            toRepositoriesRawMessage((AmazonGetRepositoriesQueueMessage) message, rawQueueMessageBuilder);
+            toGetRepositoriesRawMessage((AmazonGetRepositoriesQueueMessage) message, rawQueueMessageBuilder);
         } else if (message instanceof AmazonGetIssuesQueueMessage) {
             toGetIssuesRawMessage((AmazonGetIssuesQueueMessage) message, rawQueueMessageBuilder);
         } else if (message instanceof AmazonGetCommentsQueueMessage) {
@@ -155,6 +155,25 @@ class AmazonQueueMessageConverter {
         }
 
         return rawQueueMessageBuilder.build();
+    }
+
+    private void toGetRepositoriesRawMessage(GetRepositoriesQueueMessage message,
+                                             AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+        rawQueueMessageBuilder
+                .type(REPOSITORIES)
+                .organisationName(message.organisationName())
+                .since(message.sinceOrNull())
+                .isTerminal(message.localTerminal())
+                .page(message.page());
+    }
+
+    private void toGetIssuesRawMessage(GetIssuesQueueMessage message,
+                                       AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+        toGetRepositoriesRawMessage(message, rawQueueMessageBuilder);
+        rawQueueMessageBuilder
+                .type(ISSUES)
+                .repositoryName(message.repositoryName())
+                .repositoryId(message.repositoryId());
     }
 
     private void toGetCommentsRawMessage(GetAllEventsQueueMessage message,
@@ -182,24 +201,5 @@ class AmazonQueueMessageConverter {
         rawQueueMessageBuilder.issueNumber(message.issueNumber());
         rawQueueMessageBuilder.issueOwnerId(message.issueOwnerId());
         rawQueueMessageBuilder.isPullRequest(message.isPullRequest());
-    }
-
-    private void toGetIssuesRawMessage(GetIssuesQueueMessage message,
-                                       AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
-        toRepositoriesRawMessage(message, rawQueueMessageBuilder);
-        rawQueueMessageBuilder
-                .type(ISSUES)
-                .repositoryName(message.repositoryName())
-                .repositoryId(message.repositoryId());
-    }
-
-    private void toRepositoriesRawMessage(GetRepositoriesQueueMessage message,
-                                          AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
-        rawQueueMessageBuilder
-                .type(REPOSITORIES)
-                .organisationName(message.organisationName())
-                .since(message.sinceOrNull())
-                .isTerminal(message.localTerminal())
-                .page(message.page());
     }
 }
