@@ -1,14 +1,16 @@
 package com.novoda.github.reports.service.timeline;
 
 import com.novoda.github.reports.service.network.GithubApiService;
-import com.novoda.github.reports.service.network.PagedTransformer;
 import com.novoda.github.reports.service.network.GithubServiceContainer;
-
-import java.util.List;
-
+import com.novoda.github.reports.service.network.PagedTransformer;
 import retrofit2.Response;
 import rx.Observable;
 
+import java.util.List;
+
+/**
+ * @see TimelineService
+ */
 @Deprecated
 public class GithubTimelineService implements TimelineService {
 
