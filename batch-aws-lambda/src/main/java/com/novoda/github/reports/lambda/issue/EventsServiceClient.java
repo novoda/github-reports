@@ -7,6 +7,7 @@ import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.NextMessagesTransformer;
 import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
 import com.novoda.github.reports.service.issue.*;
+import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 import okhttp3.Headers;
 import retrofit2.Response;
 import rx.Observable;
@@ -40,8 +41,10 @@ public class EventsServiceClient {
         return new EventsServiceClient(issueService, ResponseRepositoryIssueEventPersistTransformer.newInstance());
     }
 
-    public static EventsServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
-        IssueService issueService = GithubIssueService.newInstance();
+    public static EventsServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
+                                                  DatabaseCredentialsReader databaseCredentialsReader) {
+
+        IssueService issueService = GithubIssueService.newInstance(githubCredentialsReader);
         ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
 
