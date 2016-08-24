@@ -4,15 +4,20 @@ import com.novoda.github.reports.service.issue.GithubComment;
 import com.novoda.github.reports.service.network.GithubApiService;
 import com.novoda.github.reports.service.network.GithubCachingServiceContainer;
 import com.novoda.github.reports.service.network.GithubServiceContainer;
-
-import java.util.List;
-
+import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 import retrofit2.Response;
 import rx.Observable;
+
+import java.util.List;
 
 public class GithubPullRequestService implements PullRequestService {
 
     private final GithubApiService githubApiService;
+
+    public static GithubPullRequestService newInstance(GithubCredentialsReader githubCredentialsReader) {
+        GithubApiService githubApiService = GithubServiceContainer.getGithubService(githubCredentialsReader);
+        return new GithubPullRequestService(githubApiService);
+    }
 
     public static GithubPullRequestService newInstance() {
         GithubApiService githubApiService = GithubServiceContainer.getGithubService();

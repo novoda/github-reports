@@ -6,11 +6,13 @@ import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.NextMessagesTransformer;
 import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
-import com.novoda.github.reports.service.issue.GithubEvent;
-import com.novoda.github.reports.service.issue.GithubIssueService;
-import com.novoda.github.reports.service.issue.IssueService;
-import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
-import com.novoda.github.reports.service.issue.RepositoryIssueEventEvent;
+import com.novoda.github.reports.service.issue.*;
+import com.novoda.github.reports.service.properties.GithubCredentialsReader;
+import okhttp3.Headers;
+import retrofit2.Response;
+import rx.Observable;
+import rx.functions.Func1;
+import rx.functions.Func3;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -18,19 +20,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import okhttp3.Headers;
-import retrofit2.Response;
-import rx.Observable;
-import rx.functions.Func1;
-import rx.functions.Func3;
-
 import static com.novoda.github.reports.service.issue.GithubEvent.Type.*;
 
 public class EventsServiceClient {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
     private static final Set<GithubEvent.Type> EVENT_TYPES_TO_BE_STORED = new HashSet<>(Arrays.asList(
-            COMMENTED,
             CLOSED,
             HEAD_REF_DELETED,
             LABELED,
@@ -46,8 +41,10 @@ public class EventsServiceClient {
         return new EventsServiceClient(issueService, ResponseRepositoryIssueEventPersistTransformer.newInstance());
     }
 
-    public static EventsServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
-        IssueService issueService = GithubIssueService.newInstance();
+    public static EventsServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
+                                                  DatabaseCredentialsReader databaseCredentialsReader) {
+
+        IssueService issueService = GithubIssueService.newInstance(githubCredentialsReader);
         ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
 

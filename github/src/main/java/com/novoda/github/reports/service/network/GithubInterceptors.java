@@ -10,6 +10,10 @@ class GithubInterceptors extends Interceptors {
 
     static Interceptors defaultInterceptors() {
         GithubCredentialsReader githubCredentialsReader = GithubCredentialsReader.newInstance();
+        return defaultInterceptors(githubCredentialsReader);
+    }
+
+    static Interceptors defaultInterceptors(GithubCredentialsReader githubCredentialsReader) {
         String token = githubCredentialsReader.getAuthToken();
         return new GithubInterceptors()
                 .withOAuthTokenInterceptor(token)

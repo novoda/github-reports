@@ -4,10 +4,9 @@ import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
-
-import org.jetbrains.annotations.Nullable;
 
 @AutoValue
 public abstract class AmazonRawQueueMessage {
@@ -87,7 +86,10 @@ public abstract class AmazonRawQueueMessage {
         EVENTS("events"),
 
         @SerializedName("review_comments")
-        REVIEW_COMMENTS("review_comments");
+        REVIEW_COMMENTS("review_comments"),
+
+        @SerializedName("reactions")
+        REACTIONS("reactions");
 
         private final String type;
 

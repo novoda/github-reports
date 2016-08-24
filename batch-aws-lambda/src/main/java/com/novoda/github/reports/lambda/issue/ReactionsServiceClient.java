@@ -1,63 +1,54 @@
 package com.novoda.github.reports.lambda.issue;
 
-import com.novoda.github.reports.batch.aws.queue.AmazonGetCommentsQueueMessage;
+import com.novoda.github.reports.batch.aws.queue.AmazonGetReactionsQueueMessage;
 import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.NextMessagesTransformer;
 import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
 import com.novoda.github.reports.service.issue.*;
-import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 import rx.Observable;
 import rx.functions.Func3;
 
-public class CommentsServiceClient {
+public class ReactionsServiceClient {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
 
     private final IssueService issueService;
-    private final DateToISO8601Converter dateConverter;
     private final ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer;
 
-    public static CommentsServiceClient newInstance() {
+    public static ReactionsServiceClient newInstance() {
         IssueService issueService = GithubIssueService.newInstance();
-        DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssueEvent> persistRepositoryIssueEventsTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance();
 
-        return new CommentsServiceClient(issueService, dateConverter, persistRepositoryIssueEventsTransformer);
+        return new ReactionsServiceClient(issueService, persistRepositoryIssueEventsTransformer);
     }
 
-    public static CommentsServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
-                                                    DatabaseCredentialsReader databaseCredentialsReader) {
+    public static ReactionsServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
+                                                     DatabaseCredentialsReader databaseCredentialsReader) {
 
         IssueService issueService = GithubIssueService.newInstance(githubCredentialsReader);
-        DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssueEvent> persistRepositoryIssueEventsTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
 
-        return new CommentsServiceClient(issueService, dateConverter, persistRepositoryIssueEventsTransformer);
+        return new ReactionsServiceClient(issueService, persistRepositoryIssueEventsTransformer);
     }
 
-    private CommentsServiceClient(IssueService issueService,
-                                  DateToISO8601Converter dateConverter,
-                                  ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer) {
+    private ReactionsServiceClient(IssueService issueService,
+                                   ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer) {
 
         this.issueService = issueService;
-        this.dateConverter = dateConverter;
         this.responseRepositoryIssueEventPersistTransformer = responseRepositoryIssueEventPersistTransformer;
     }
 
-    public Observable<AmazonQueueMessage> retrieveCommentsAsEventsFrom(AmazonGetCommentsQueueMessage message) {
-        String date = dateConverter.toISO8601NoMillisOrNull(message.sinceOrNull());
-
+    public Observable<AmazonQueueMessage> retrieveReactionsAsEventsFrom(AmazonGetReactionsQueueMessage message) {
         return issueService
-                .getCommentsFor(
+                .getReactionsFor(
                         message.organisationName(),
                         message.repositoryName(),
                         Math.toIntExact(message.issueNumber()),
-                        date,
                         pageFrom(message),
                         DEFAULT_PER_PAGE_COUNT
                 )
@@ -70,25 +61,25 @@ public class CommentsServiceClient {
         return Math.toIntExact(message.page());
     }
 
-    private TransformToRepositoryIssueEvent<GithubComment, RepositoryIssueEventComment> transformToRepositoryIssueEvents(AmazonGetCommentsQueueMessage message) {
+    private TransformToRepositoryIssueEvent<GithubReaction, RepositoryIssueEventReaction> transformToRepositoryIssueEvents(AmazonGetReactionsQueueMessage message) {
         return new TransformToRepositoryIssueEvent<>(
                 message.repositoryId(),
                 message.issueNumber(),
                 message.issueOwnerId(),
                 message.isPullRequest(),
-                RepositoryIssueEventComment::new
+                RepositoryIssueEventReaction::new
         );
     }
 
-    private NextMessagesTransformer<RepositoryIssueEvent, AmazonGetCommentsQueueMessage> getNextQueueMessages(AmazonGetCommentsQueueMessage message) {
+    private NextMessagesTransformer<RepositoryIssueEvent, AmazonGetReactionsQueueMessage> getNextQueueMessages(AmazonGetReactionsQueueMessage message) {
         return NextMessagesIssueEventTransformer.newInstance(
                 message,
-                buildAmazonGetCommentsQueueMessage()
+                buildAmazonGetReactionsQueueMessage()
         );
     }
 
-    private Func3<Boolean, Long, AmazonGetCommentsQueueMessage, AmazonGetCommentsQueueMessage> buildAmazonGetCommentsQueueMessage() {
-        return (isTerminal, nextPage, amazonGetCommentsQueueMessage) -> AmazonGetCommentsQueueMessage.create(
+    private Func3<Boolean, Long, AmazonGetReactionsQueueMessage, AmazonGetReactionsQueueMessage> buildAmazonGetReactionsQueueMessage() {
+        return (isTerminal, nextPage, amazonGetCommentsQueueMessage) -> AmazonGetReactionsQueueMessage.create(
                 isTerminal,
                 nextPage,
                 amazonGetCommentsQueueMessage.receiptHandle(),
