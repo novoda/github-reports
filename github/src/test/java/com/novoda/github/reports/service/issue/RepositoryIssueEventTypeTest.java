@@ -12,7 +12,7 @@ public class RepositoryIssueEventTypeTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void givenExistingEventType_whenCreateTypeFromEvent_thenReturnCorrectMatch() {
+    public void givenSupportedEventType_whenCreateTypeFromEvent_thenReturnCorrectMatch() {
         GithubEvent.Type type = GithubEvent.Type.COMMENTED;
 
         RepositoryIssueEvent.Type actual = RepositoryIssueEvent.Type.fromEvent(type.toString());
@@ -21,7 +21,7 @@ public class RepositoryIssueEventTypeTest {
     }
 
     @Test
-    public void givenNonExistingEventType_whenCreateTypeFromEvent_thenThrowException() {
+    public void givenNonSupportedEventType_whenCreateTypeFromEvent_thenThrowException() {
         GithubEvent.Type type = GithubEvent.Type.UNLOCKED;
 
         expectedException.expect(IllegalArgumentException.class);
