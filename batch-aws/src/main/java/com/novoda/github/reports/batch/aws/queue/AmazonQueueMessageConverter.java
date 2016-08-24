@@ -48,6 +48,9 @@ class AmazonQueueMessageConverter {
             if (messageType == REVIEW_COMMENTS) {
                 return toGetReviewCommentsMessage(rawQueueMessage, message);
             }
+            if (messageType == REACTIONS) {
+                return toGetReactionsMessage(rawQueueMessage, message);
+            }
             throw new MessageConverterException("Can't convert type " + rawQueueMessage.type() + ".");
         }
 
@@ -130,6 +133,21 @@ class AmazonQueueMessageConverter {
         );
     }
 
+    private AmazonQueueMessage toGetReactionsMessage(AmazonRawQueueMessage rawQueueMessage, Message message) {
+        return AmazonGetReactionsQueueMessage.create(
+                rawQueueMessage.isTerminal(),
+                rawQueueMessage.page(),
+                message.getReceiptHandle(),
+                rawQueueMessage.organisationName(),
+                rawQueueMessage.since(),
+                rawQueueMessage.repositoryId(),
+                rawQueueMessage.repositoryName(),
+                rawQueueMessage.issueNumber(),
+                rawQueueMessage.issueOwnerId(),
+                rawQueueMessage.isPullRequest()
+        );
+    }
+
     Message toMessage(AmazonQueueMessage message) {
         AmazonRawQueueMessage rawQueueMessage = toRawMessage(message);
 
@@ -152,6 +170,8 @@ class AmazonQueueMessageConverter {
             toGetEventsRawMessage((AmazonGetEventsQueueMessage) message, rawQueueMessageBuilder);
         } else if (message instanceof AmazonGetReviewCommentsQueueMessage) {
             toGetReviewCommentsRawMessage((AmazonGetReviewCommentsQueueMessage) message, rawQueueMessageBuilder);
+        } else if (message instanceof AmazonGetReactionsQueueMessage) {
+            toGetReactionsRawMessage((AmazonGetReactionsQueueMessage) message, rawQueueMessageBuilder);
         }
 
         return rawQueueMessageBuilder.build();
@@ -194,6 +214,13 @@ class AmazonQueueMessageConverter {
         toGetGenericEventsRawMessage(message, rawQueueMessageBuilder);
         rawQueueMessageBuilder.type(REVIEW_COMMENTS);
     }
+
+    private void toGetReactionsRawMessage(GetAllEventsQueueMessage message,
+                                          AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+        toGetGenericEventsRawMessage(message, rawQueueMessageBuilder);
+        rawQueueMessageBuilder.type(REACTIONS);
+    }
+
 
     private void toGetGenericEventsRawMessage(GetAllEventsQueueMessage message,
                                               AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
