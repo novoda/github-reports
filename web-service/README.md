@@ -15,7 +15,7 @@ Add the following files to the resources, before uploading the lambdas to Amazon
 
 * `database.credentials` (see [sample](src/main/resources/database.credentials.sample)) with the 
   [correct DB credentials](../db-layer/README.md#configuration)
-* `float.credentials` (see [sample](src/main/resources/credentials.credentials.sample))  with the 
+* `float.credentials` (see [sample](src/main/resources/float.credentials.sample))  with the 
   [correct Float credentials](../float/README.md#configuration)
 * `projects.json` (see [sample](src/main/resources/projects.json.sample)) with the project-to-repositories mapping
 * `users.json` (see [sample](src/main/resources/users.json.sample)) with the Float-to-Github username mapping
