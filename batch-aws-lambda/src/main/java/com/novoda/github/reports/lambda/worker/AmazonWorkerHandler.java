@@ -11,6 +11,7 @@ import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.issue.CommentsServiceClient;
 import com.novoda.github.reports.lambda.issue.EventsServiceClient;
 import com.novoda.github.reports.lambda.issue.IssuesServiceClient;
+import com.novoda.github.reports.lambda.issue.ReactionsServiceClient;
 import com.novoda.github.reports.lambda.pullrequest.ReviewCommentsServiceClient;
 import com.novoda.github.reports.lambda.repository.RepositoriesServiceClient;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
@@ -30,6 +31,7 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
     private CommentsServiceClient commentsServiceClient;
     private EventsServiceClient eventsServiceClient;
     private ReviewCommentsServiceClient reviewCommentsServiceClient;
+    private ReactionsServiceClient reactionsServiceClient;
 
     AmazonWorkerHandler(Logger logger) {
         this.logger = logger;
@@ -58,6 +60,9 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
         } else if (queueMessage instanceof AmazonGetReviewCommentsQueueMessage) {
             AmazonGetReviewCommentsQueueMessage message = (AmazonGetReviewCommentsQueueMessage) queueMessage;
             nextMessagesObservable = reviewCommentsServiceClient.retrieveReviewCommentsFromPullRequest(message);
+        } else if (queueMessage instanceof AmazonGetReactionsQueueMessage) {
+            AmazonGetReactionsQueueMessage message = (AmazonGetReactionsQueueMessage) queueMessage;
+            nextMessagesObservable = reactionsServiceClient.retrieveReactionsAsEventsFrom(message);
         } else {
             throw new MessageNotSupportedException(queueMessage);
         }
@@ -74,6 +79,7 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
         eventsServiceClient = EventsServiceClient.newInstance(databaseCredentialsReader);
         commentsServiceClient = CommentsServiceClient.newInstance(databaseCredentialsReader);
         reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance(databaseCredentialsReader);
+        reactionsServiceClient = ReactionsServiceClient.newInstance(databaseCredentialsReader);
     }
 
     private DatabaseCredentialsReader buildDatabaseCredentialsReader(Configuration configuration) {
