@@ -15,6 +15,8 @@ import com.novoda.github.reports.lambda.issue.IssuesServiceClient;
 import com.novoda.github.reports.lambda.issue.ReactionsServiceClient;
 import com.novoda.github.reports.lambda.pullrequest.ReviewCommentsServiceClient;
 import com.novoda.github.reports.lambda.repository.RepositoriesServiceClient;
+import com.novoda.github.reports.service.network.GithubApiService;
+import com.novoda.github.reports.service.network.GithubServiceContainer;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 import rx.Observable;
@@ -28,12 +30,8 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
     private final Logger logger;
 
-    private RepositoriesServiceClient repositoriesServiceClient;
-    private IssuesServiceClient issuesServiceClient;
-    private CommentsServiceClient commentsServiceClient;
-    private EventsServiceClient eventsServiceClient;
-    private ReviewCommentsServiceClient reviewCommentsServiceClient;
-    private ReactionsServiceClient reactionsServiceClient;
+    private DatabaseCredentialsReader databaseCredentialsReader;
+    private GithubApiService githubApiService;
 
     AmazonWorkerHandler(Logger logger) {
         this.logger = logger;
@@ -48,41 +46,28 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
         Observable<AmazonQueueMessage> nextMessagesObservable;
 
         if (queueMessage instanceof AmazonGetRepositoriesQueueMessage) {
-            AmazonGetRepositoriesQueueMessage message = (AmazonGetRepositoriesQueueMessage) queueMessage;
-            nextMessagesObservable = repositoriesServiceClient.retrieveRepositoriesFor(message);
+            nextMessagesObservable = handleGetRepositoriesQueueMessage(queueMessage);
         } else if (queueMessage instanceof AmazonGetIssuesQueueMessage) {
-            AmazonGetIssuesQueueMessage message = (AmazonGetIssuesQueueMessage) queueMessage;
-            nextMessagesObservable = issuesServiceClient.retrieveIssuesFor(message);
+            nextMessagesObservable = handleGetIssuesQueueMessage(queueMessage);
         } else if (queueMessage instanceof AmazonGetEventsQueueMessage) {
-            AmazonGetEventsQueueMessage message = (AmazonGetEventsQueueMessage) queueMessage;
-            nextMessagesObservable = eventsServiceClient.retrieveEventsFrom(message);
+            nextMessagesObservable = handleGetEventsQueueMessage(queueMessage);
         } else if (queueMessage instanceof AmazonGetCommentsQueueMessage) {
-            AmazonGetCommentsQueueMessage message = (AmazonGetCommentsQueueMessage) queueMessage;
-            nextMessagesObservable = commentsServiceClient.retrieveCommentsAsEventsFrom(message);
+            nextMessagesObservable = handleGetCommentsQueueMessage(queueMessage);
         } else if (queueMessage instanceof AmazonGetReviewCommentsQueueMessage) {
-            AmazonGetReviewCommentsQueueMessage message = (AmazonGetReviewCommentsQueueMessage) queueMessage;
-            nextMessagesObservable = reviewCommentsServiceClient.retrieveReviewCommentsFromPullRequest(message);
+            nextMessagesObservable = handleGetReviewCommentsQueueMessage(queueMessage);
         } else if (queueMessage instanceof AmazonGetReactionsQueueMessage) {
-            AmazonGetReactionsQueueMessage message = (AmazonGetReactionsQueueMessage) queueMessage;
-            nextMessagesObservable = reactionsServiceClient.retrieveReactionsAsEventsFrom(message);
+            nextMessagesObservable = handleGetReactionsQueueMessage(queueMessage);
         } else {
             throw new MessageNotSupportedException(queueMessage);
         }
 
-        List<AmazonQueueMessage> nextMessages = collectDerivedMessagesFrom(nextMessagesObservable);
-        return nextMessages;
+        return collectDerivedMessagesFrom(nextMessagesObservable);
     }
 
     private void init(Configuration configuration) {
-        DatabaseCredentialsReader databaseCredentialsReader = buildDatabaseCredentialsReader(configuration);
+        databaseCredentialsReader = buildDatabaseCredentialsReader(configuration);
         GithubCredentialsReader githubCredentialsReader = buildGithubCredentialsReader(configuration);
-
-        repositoriesServiceClient = RepositoriesServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
-        issuesServiceClient = IssuesServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
-        eventsServiceClient = EventsServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
-        commentsServiceClient = CommentsServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
-        reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
-        reactionsServiceClient = ReactionsServiceClient.newInstance(githubCredentialsReader, databaseCredentialsReader);
+        githubApiService = GithubServiceContainer.getGithubService(githubCredentialsReader);
     }
 
     private DatabaseCredentialsReader buildDatabaseCredentialsReader(Configuration configuration) {
@@ -101,6 +86,66 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
         return GithubCredentialsReader.newInstance(githubProperties);
     }
 
+
+    private Observable<AmazonQueueMessage> handleGetRepositoriesQueueMessage(AmazonQueueMessage queueMessage) {
+        AmazonGetRepositoriesQueueMessage message = (AmazonGetRepositoriesQueueMessage) queueMessage;
+        RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance(
+                githubApiService,
+                databaseCredentialsReader
+        );
+
+        return repositoriesServiceClient.retrieveRepositoriesFor(message);
+    }
+
+    private Observable<AmazonQueueMessage> handleGetIssuesQueueMessage(AmazonQueueMessage queueMessage) {
+        AmazonGetIssuesQueueMessage message = (AmazonGetIssuesQueueMessage) queueMessage;
+        IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance(
+                githubApiService,
+                databaseCredentialsReader
+        );
+
+        return issuesServiceClient.retrieveIssuesFor(message);
+    }
+
+    private Observable<AmazonQueueMessage> handleGetEventsQueueMessage(AmazonQueueMessage queueMessage) {
+        AmazonGetEventsQueueMessage message = (AmazonGetEventsQueueMessage) queueMessage;
+        EventsServiceClient eventsServiceClient = EventsServiceClient.newInstance(
+                githubApiService,
+                databaseCredentialsReader
+        );
+
+        return eventsServiceClient.retrieveEventsFrom(message);
+    }
+
+    private Observable<AmazonQueueMessage> handleGetCommentsQueueMessage(AmazonQueueMessage queueMessage) {
+        AmazonGetCommentsQueueMessage message = (AmazonGetCommentsQueueMessage) queueMessage;
+        CommentsServiceClient commentsServiceClient = CommentsServiceClient.newInstance(
+                githubApiService,
+                databaseCredentialsReader
+        );
+
+        return commentsServiceClient.retrieveCommentsAsEventsFrom(message);
+    }
+
+    private Observable<AmazonQueueMessage> handleGetReviewCommentsQueueMessage(AmazonQueueMessage queueMessage) {
+        AmazonGetReviewCommentsQueueMessage message = (AmazonGetReviewCommentsQueueMessage) queueMessage;
+        ReviewCommentsServiceClient reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance(
+                githubApiService,
+                databaseCredentialsReader
+        );
+
+        return reviewCommentsServiceClient.retrieveReviewCommentsFromPullRequest(message);
+    }
+
+    private Observable<AmazonQueueMessage> handleGetReactionsQueueMessage(AmazonQueueMessage queueMessage) {
+        AmazonGetReactionsQueueMessage message = (AmazonGetReactionsQueueMessage) queueMessage;
+        ReactionsServiceClient reactionsServiceClient = ReactionsServiceClient.newInstance(
+                githubApiService,
+                databaseCredentialsReader
+        );
+
+        return reactionsServiceClient.retrieveReactionsAsEventsFrom(message);
+    }
     private ArrayList<AmazonQueueMessage> collectDerivedMessagesFrom(Observable<AmazonQueueMessage> nextMessagesObservable)
             throws RateLimitEncounteredException, RetriableNetworkException {
 

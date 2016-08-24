@@ -7,7 +7,7 @@ import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.NextMessagesTransformer;
 import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
 import com.novoda.github.reports.service.issue.*;
-import com.novoda.github.reports.service.properties.GithubCredentialsReader;
+import com.novoda.github.reports.service.network.GithubApiService;
 import rx.Observable;
 import rx.functions.Func3;
 
@@ -26,10 +26,10 @@ public class ReactionsServiceClient {
         return new ReactionsServiceClient(issueService, persistRepositoryIssueEventsTransformer);
     }
 
-    public static ReactionsServiceClient newInstance(GithubCredentialsReader githubCredentialsReader,
+    public static ReactionsServiceClient newInstance(GithubApiService githubApiService,
                                                      DatabaseCredentialsReader databaseCredentialsReader) {
 
-        IssueService issueService = GithubIssueService.newInstance(githubCredentialsReader);
+        IssueService issueService = GithubIssueService.newInstance(githubApiService);
         ResponsePersistTransformer<RepositoryIssueEvent> persistRepositoryIssueEventsTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
 

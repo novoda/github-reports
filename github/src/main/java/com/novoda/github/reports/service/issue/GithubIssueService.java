@@ -3,7 +3,6 @@ package com.novoda.github.reports.service.issue;
 import com.novoda.github.reports.service.network.GithubApiService;
 import com.novoda.github.reports.service.network.GithubCachingServiceContainer;
 import com.novoda.github.reports.service.network.GithubServiceContainer;
-import com.novoda.github.reports.service.properties.GithubCredentialsReader;
 import retrofit2.Response;
 import rx.Observable;
 
@@ -15,8 +14,7 @@ public class GithubIssueService implements IssueService {
 
     private final GithubApiService githubApiService;
 
-    public static IssueService newInstance(GithubCredentialsReader githubCredentialsReader) {
-        GithubApiService githubApiService = GithubServiceContainer.getGithubService(githubCredentialsReader);
+    public static IssueService newInstance(GithubApiService githubApiService) {
         return new GithubIssueService(githubApiService);
     }
 
