@@ -179,6 +179,7 @@ class AmazonQueueMessageConverter {
 
     private void toGetRepositoriesRawMessage(GetRepositoriesQueueMessage message,
                                              AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
         rawQueueMessageBuilder
                 .type(REPOSITORIES)
                 .organisationName(message.organisationName())
@@ -189,6 +190,7 @@ class AmazonQueueMessageConverter {
 
     private void toGetIssuesRawMessage(GetIssuesQueueMessage message,
                                        AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
         toGetRepositoriesRawMessage(message, rawQueueMessageBuilder);
         rawQueueMessageBuilder
                 .type(ISSUES)
@@ -205,18 +207,21 @@ class AmazonQueueMessageConverter {
 
     private void toGetEventsRawMessage(GetAllEventsQueueMessage message,
                                        AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
         toGetGenericEventsRawMessage(message, rawQueueMessageBuilder);
         rawQueueMessageBuilder.type(EVENTS);
     }
 
     private void toGetReviewCommentsRawMessage(GetAllEventsQueueMessage message,
                                                AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
         toGetGenericEventsRawMessage(message, rawQueueMessageBuilder);
         rawQueueMessageBuilder.type(REVIEW_COMMENTS);
     }
 
     private void toGetReactionsRawMessage(GetAllEventsQueueMessage message,
                                           AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
         toGetGenericEventsRawMessage(message, rawQueueMessageBuilder);
         rawQueueMessageBuilder.type(REACTIONS);
     }
@@ -224,6 +229,7 @@ class AmazonQueueMessageConverter {
 
     private void toGetGenericEventsRawMessage(GetAllEventsQueueMessage message,
                                               AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
         toGetIssuesRawMessage(message, rawQueueMessageBuilder);
         rawQueueMessageBuilder.issueNumber(message.issueNumber());
         rawQueueMessageBuilder.issueOwnerId(message.issueOwnerId());
