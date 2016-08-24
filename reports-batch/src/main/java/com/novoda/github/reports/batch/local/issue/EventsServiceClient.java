@@ -9,6 +9,7 @@ import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
 import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersistTransformer;
 import retrofit2.Response;
 import rx.Observable;
+import rx.functions.Func1;
 
 import java.util.*;
 
@@ -63,7 +64,7 @@ public class EventsServiceClient {
                                  FIRST_PAGE,
                                  DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body)
-                .filter(event -> since == null || event.getCreatedAt().after(since))
+                .filter(onlyCreatedAfter(since))
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
                 .filter(this::shouldStoreEvent)
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
@@ -79,6 +80,10 @@ public class EventsServiceClient {
         return issueService.getEventsFor(organisation, repository, issueNumber, page, pageCount)
                 .compose(eventRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedEventsFor(organisation, repository, issueNumber, nextPage, pageCount)));
+    }
+
+    private Func1<GithubEvent, Boolean> onlyCreatedAfter(Date since) {
+        return event -> since == null || event.getCreatedAt().after(since);
     }
 
     private boolean shouldStoreEvent(GithubEvent event) {

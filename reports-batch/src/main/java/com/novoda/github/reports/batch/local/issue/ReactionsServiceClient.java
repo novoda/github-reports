@@ -9,6 +9,7 @@ import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
 import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersistTransformer;
 import retrofit2.Response;
 import rx.Observable;
+import rx.functions.Func1;
 
 import java.util.Date;
 import java.util.List;
@@ -58,7 +59,7 @@ public class ReactionsServiceClient {
         int issueNumber = repositoryIssue.getIssueNumber();
         return getPagedReactionsFor(organisation, repository, issueNumber, FIRST_PAGE, DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body)
-                .filter(event -> since == null || event.getCreatedAt().after(since))
+                .filter(onlyCreatedAfter(since))
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject));
     }
 
@@ -77,5 +78,9 @@ public class ReactionsServiceClient {
                         nextPage,
                         pageCount
                 )));
+    }
+
+    private Func1<GithubReaction, Boolean> onlyCreatedAfter(Date since) {
+        return event -> since == null || event.getCreatedAt().after(since);
     }
 }
