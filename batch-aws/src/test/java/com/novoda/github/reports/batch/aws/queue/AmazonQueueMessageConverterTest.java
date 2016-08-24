@@ -110,54 +110,54 @@ public class AmazonQueueMessageConverterTest {
     public void givenRepositoriesMessage_whenFromMessage_thenReturnGetRepositoriesMessage() throws IOException, MessageConverterException {
         Message message = givenMessageFromJson("repositories.json");
 
-        AmazonQueueMessage converted = converter.fromMessage(message);
+        AmazonQueueMessage expected = converter.fromMessage(message);
 
-        assertEquals(AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE, converted);
+        assertEquals(AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE, expected);
     }
 
     @Test
     public void givenIssuesMessage_whenFromMessage_thenReturnGetIssuesMessage() throws IOException, MessageConverterException {
         Message message = givenMessageFromJson("issues.json");
 
-        AmazonQueueMessage converted = converter.fromMessage(message);
+        AmazonQueueMessage expected = converter.fromMessage(message);
 
-        assertEquals(AMAZON_GET_ISSUES_QUEUE_MESSAGE, converted);
+        assertEquals(AMAZON_GET_ISSUES_QUEUE_MESSAGE, expected);
     }
 
     @Test
     public void givenCommentsMessage_whenFromMessage_thenReturnGetCommentsMessage() throws IOException, MessageConverterException {
         Message message = givenMessageFromJson("comments.json");
 
-        AmazonQueueMessage converted = converter.fromMessage(message);
+        AmazonQueueMessage expected = converter.fromMessage(message);
 
-        assertEquals(AMAZON_GET_COMMENTS_QUEUE_MESSAGE, converted);
+        assertEquals(AMAZON_GET_COMMENTS_QUEUE_MESSAGE, expected);
     }
 
     @Test
     public void givenEventsMessage_whenFromMessage_thenReturnGetEventsMessage() throws IOException, MessageConverterException {
         Message message = givenMessageFromJson("events.json");
 
-        AmazonQueueMessage converted = converter.fromMessage(message);
+        AmazonQueueMessage expected = converter.fromMessage(message);
 
-        assertEquals(AMAZON_GET_EVENTS_QUEUE_MESSAGE, converted);
+        assertEquals(AMAZON_GET_EVENTS_QUEUE_MESSAGE, expected);
     }
 
     @Test
     public void givenReviewCommentsMessage_whenFromMessage_thenReturnGetReviewCommentsMessage() throws IOException, MessageConverterException {
         Message message = givenMessageFromJson("review_comments.json");
 
-        AmazonQueueMessage converted = converter.fromMessage(message);
+        AmazonQueueMessage expected = converter.fromMessage(message);
 
-        assertEquals(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE, converted);
+        assertEquals(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE, expected);
     }
 
     @Test
     public void givenReactionsMessage_whenFromMessage_thenReturnGetReactionsMessage() throws IOException, MessageConverterException {
         Message message = givenMessageFromJson("reactions.json");
 
-        AmazonQueueMessage converted = converter.fromMessage(message);
+        AmazonQueueMessage expected = converter.fromMessage(message);
 
-        assertEquals(AMAZON_GET_REACTIONS_QUEUE_MESSAGE, converted);
+        assertEquals(AMAZON_GET_REACTIONS_QUEUE_MESSAGE, expected);
     }
 
     @Test
