@@ -10,13 +10,13 @@ import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.data.db.tables.records.RepositoryRecord;
 import com.novoda.github.reports.data.model.Repository;
 import com.novoda.github.reports.lambda.persistence.PersistOperator;
+import com.novoda.github.reports.service.network.GithubApiService;
 import com.novoda.github.reports.service.persistence.ConnectionManagerContainer;
 import com.novoda.github.reports.service.persistence.converter.Converter;
 import com.novoda.github.reports.service.persistence.converter.RepositoryConverter;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.service.repository.GithubRepositoryService;
 import com.novoda.github.reports.service.repository.RepositoryService;
-
 import rx.Observable;
 
 public class RepositoriesServiceClient {
@@ -32,12 +32,14 @@ public class RepositoriesServiceClient {
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager();
         DbDataLayer<Repository, RepositoryRecord> repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
         Converter<GithubRepository, Repository> converter = RepositoryConverter.newInstance();
+
         return new RepositoriesServiceClient(repositoriesService, repoDataLayer, converter);
     }
 
-    public static RepositoriesServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
+    public static RepositoriesServiceClient newInstance(GithubApiService githubApiService,
+                                                        DatabaseCredentialsReader databaseCredentialsReader) {
 
-        RepositoryService repositoriesService = GithubRepositoryService.newInstance();
+        RepositoryService repositoriesService = GithubRepositoryService.newInstance(githubApiService);
         ConnectionManager connectionManager = ConnectionManagerContainer.getConnectionManager(databaseCredentialsReader);
         DbDataLayer<Repository, RepositoryRecord> repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
         Converter<GithubRepository, Repository> converter = RepositoryConverter.newInstance();

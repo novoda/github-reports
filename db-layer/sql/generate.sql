@@ -22,12 +22,14 @@ INSERT INTO `event_type` VALUES (101, 'issue_close');
 INSERT INTO `event_type` VALUES (102, 'issue_comment');
 INSERT INTO `event_type` VALUES (103, 'issue_label_add');
 INSERT INTO `event_type` VALUES (104, 'issue_label_remove');
+INSERT INTO `event_type` VALUES (110, 'issue_reaction');
 INSERT INTO `event_type` VALUES (200, 'pr_open');
 INSERT INTO `event_type` VALUES (201, 'pr_close');
 INSERT INTO `event_type` VALUES (202, 'pr_comment');
 INSERT INTO `event_type` VALUES (203, 'pr_label_add');
 INSERT INTO `event_type` VALUES (204, 'pr_label_remove');
 INSERT INTO `event_type` VALUES (205, 'pr_merge');
+INSERT INTO `event_type` VALUES (210, 'pr_reaction');
 INSERT INTO `event_type` VALUES (300, 'branch_delete');
 
 --

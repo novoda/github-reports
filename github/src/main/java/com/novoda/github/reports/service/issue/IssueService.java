@@ -1,9 +1,9 @@
 package com.novoda.github.reports.service.issue;
 
-import java.util.List;
-
 import retrofit2.Response;
 import rx.Observable;
+
+import java.util.List;
 
 public interface IssueService {
 
@@ -22,5 +22,11 @@ public interface IssueService {
                                                              String since,
                                                              int page,
                                                              int pageCount);
+
+    Observable<Response<List<GithubReaction>>> getReactionsFor(String organisation,
+                                                               String repository,
+                                                               int issueNumber,
+                                                               int page,
+                                                               int pageCount);
 
 }

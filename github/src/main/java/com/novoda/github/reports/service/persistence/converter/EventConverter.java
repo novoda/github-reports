@@ -2,10 +2,9 @@ package com.novoda.github.reports.service.persistence.converter;
 
 import com.novoda.github.reports.data.model.Event;
 import com.novoda.github.reports.data.model.EventType;
-import com.novoda.github.reports.service.issue.GithubEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 
-import static com.novoda.github.reports.service.issue.GithubEvent.Type.*;
+import static com.novoda.github.reports.service.issue.RepositoryIssueEvent.Type.*;
 
 public class EventConverter implements Converter<RepositoryIssueEvent, Event> {
 
@@ -33,7 +32,7 @@ public class EventConverter implements Converter<RepositoryIssueEvent, Event> {
         );
     }
 
-    private EventType convertEventType(GithubEvent.Type type, boolean isIssue) throws UnsupportedEventTypeException {
+    private EventType convertEventType(RepositoryIssueEvent.Type type, boolean isIssue) throws UnsupportedEventTypeException {
         if (type == HEAD_REF_DELETED) {
             return EventType.BRANCH_DELETE;
         }
@@ -68,6 +67,13 @@ public class EventConverter implements Converter<RepositoryIssueEvent, Event> {
 
         if (type == MERGED) {
             return EventType.PULL_REQUEST_MERGE;
+        }
+
+        if (type == REACTED) {
+            if (isIssue) {
+                return EventType.ISSUE_REACTION;
+            }
+            return EventType.PULL_REQUEST_REACTION;
         }
 
         throw new UnsupportedEventTypeException(type);

@@ -1,10 +1,6 @@
 package com.novoda.github.reports.lambda.issue;
 
-import com.novoda.github.reports.batch.aws.queue.AmazonGetCommentsQueueMessage;
-import com.novoda.github.reports.batch.aws.queue.AmazonGetEventsQueueMessage;
-import com.novoda.github.reports.batch.aws.queue.AmazonGetIssuesQueueMessage;
-import com.novoda.github.reports.batch.aws.queue.AmazonGetReviewCommentsQueueMessage;
-import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
+import com.novoda.github.reports.batch.aws.queue.*;
 import com.novoda.github.reports.lambda.NextMessagesTransformer;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.network.LastPageExtractor;
@@ -21,7 +17,10 @@ class NextMessagesIssueTransformer extends NextMessagesTransformer<RepositoryIss
         return new NextMessagesIssueTransformer(currentMessage, nextPageExtractor, lastPageExtractor);
     }
 
-    private NextMessagesIssueTransformer(AmazonGetIssuesQueueMessage currentMessage, NextPageExtractor nextPageExtractor, LastPageExtractor lastPageExtractor) {
+    private NextMessagesIssueTransformer(AmazonGetIssuesQueueMessage currentMessage,
+                                         NextPageExtractor nextPageExtractor,
+                                         LastPageExtractor lastPageExtractor) {
+
         super(currentMessage, nextPageExtractor, lastPageExtractor);
     }
 
@@ -71,6 +70,19 @@ class NextMessagesIssueTransformer extends NextMessagesTransformer<RepositoryIss
         ));
 
         derived.add(AmazonGetEventsQueueMessage.create(
+                ALWAYS_TERMINAL_MESSAGE,
+                FIRST_PAGE,
+                currentMessage.receiptHandle(),
+                currentMessage.organisationName(),
+                currentMessage.sinceOrNull(),
+                currentMessage.repositoryId(),
+                currentMessage.repositoryName(),
+                (long) item.getIssueNumber(),
+                item.getUserId(),
+                item.isPullRequest()
+        ));
+
+        derived.add(AmazonGetReactionsQueueMessage.create(
                 ALWAYS_TERMINAL_MESSAGE,
                 FIRST_PAGE,
                 currentMessage.receiptHandle(),
