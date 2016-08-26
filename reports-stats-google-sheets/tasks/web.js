@@ -64,8 +64,8 @@ ${content}
       `${config.src}/shared/**/*.js`,
       `!${config.src}/shared/**/*.spec.js`,
       // exclude and re-include the compiled ones
-      `!${config.src}/shared/reports.js`,
-      `${config.tmp}/shared/reports.js`
+      `!${config.src}/shared/config/config.js`,
+      `${config.tmp}/shared/config/config.js`
     ];
     let allBowerFiles = bowerFiles();
     let destFolder = getDestinationFolder(forBuild);

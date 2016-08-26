@@ -3,6 +3,7 @@
     "jasmine": true
   },
   "globals": {
+    "config": true,
     "QueryStringifier": true,
     "AppsHttp": true,
     "Reports": true,

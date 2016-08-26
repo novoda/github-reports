@@ -5,13 +5,12 @@ const inject = require('gulp-inject');
 module.exports = (gulp, config) => {
 
   gulp.task('config', () => {
-    return gulp.src([`${config.src}/shared/reports/reports.js`], {base: `${config.src}/`})
+    return gulp.src([`${config.src}/shared/config/config.js`], {base: `${config.src}/`})
       .pipe(inject(gulp.src(`${config.src}/config.json`), {
-        starttag: '<!-- inject:api -->',
+        starttag: '<!-- inject:config -->',
         transform: (filePath, file) => {
           const fileContents = file.contents.toString('utf8');
-          const appConfig = JSON.parse(fileContents);
-          return `var API_BASE = '${appConfig.api}';`;
+          return `var config = ${fileContents};`;
         }
       }))
       .pipe(gulp.dest(config.tmp));

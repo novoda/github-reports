@@ -21,7 +21,7 @@ module.exports = (gulp, config) => {
         `${config.src}/shared/**/*.js`,
         `!${config.src}/shared/**/*.spec.js`,
         `!${config.src}/shared/**/*.mock.js`,
-        `!${config.src}/shared/reports/reports.js`
+        `!${config.src}/shared/config/config.js`
       ], {
         base: `./${config.src}`
       })
@@ -30,7 +30,7 @@ module.exports = (gulp, config) => {
 
   gulp.task('copy:config', ['config'], () => {
     return gulp
-      .src([`${config.tmp}/shared/reports/reports.js`], {
+      .src([`${config.tmp}/shared/config/config.js`], {
         base: `${config.tmp}`
       })
       .pipe(gulp.dest(`${config.build}/`));
