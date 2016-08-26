@@ -8,10 +8,18 @@ const flatmap = require('gulp-flatmap');
 
 module.exports = (gulp, config) => {
 
+  const isJsFile = (filePath) => {
+    return filePath.slice(-3) === '.js';
+  };
+
   const wrapTagJs = (content) => {
     return `<script type="text/javascript">
 ${content}
 </script>`;
+  };
+
+  const isCssFile = (filePath) => {
+    return filePath.slice(-4) === '.css';
   };
 
   const wrapTagCss = (content) => {
@@ -26,10 +34,10 @@ ${content}
     }
     return function(filePath, file) {
       let fileContents = file.contents.toString('utf8');
-      if (filePath.slice(-3) === '.js') {
+      if (isJsFile(filePath)) {
         return wrapTagJs(fileContents);
       }
-      if (filePath.slice(-4) === '.css') {
+      if (isCssFile(filePath)) {
         return wrapTagCss(fileContents);
       }
     };
