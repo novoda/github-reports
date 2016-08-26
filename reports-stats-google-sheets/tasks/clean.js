@@ -4,6 +4,12 @@ const clean = require('gulp-clean');
 
 module.exports = (gulp, config) => {
 
+  gulp.task('clean:plugin', function() {
+    return gulp
+      .src(`${config.build}/plugin`, {read: false})
+      .pipe(clean());
+  });
+
   gulp.task('clean:web', function() {
     return gulp
       .src(`${config.build}/web`, {read: false})
@@ -16,9 +22,9 @@ module.exports = (gulp, config) => {
       .pipe(clean());
   });
 
-  gulp.task('clean:lib', function() {
+  gulp.task('clean:shared', function() {
     return gulp
-      .src([`${config.build}/lib`, `${config.build}/*.js`], {read: false})
+      .src([`${config.build}/shared`, `${config.build}/*.js`], {read: false})
       .pipe(clean());
   });
 

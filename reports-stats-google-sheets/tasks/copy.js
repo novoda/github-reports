@@ -2,13 +2,26 @@
 
 module.exports = (gulp, config) => {
 
-  gulp.task('copy:lib', ['test', 'clean:lib'], () => {
+  gulp.task('copy:plugin', ['clean:plugin'], () => {
     return gulp
       .src([
         `${config.src}/*.js`,
-        `${config.src}/lib/apps/**/*.js`,
-        `${config.src}/lib/common/**/*.js`,
-        `!${config.src}/lib/common/reports.js`
+        `${config.src}/plugin/**/*.js`,
+        `!${config.src}/plugin/**/*.spec.js`,
+        `!${config.src}/plugin/**/*.mock.js`,
+      ], {
+        base: `${config.src}`
+      })
+      .pipe(gulp.dest(`${config.build}/`));
+  });
+
+  gulp.task('copy:shared', ['test', 'clean:shared'], () => {
+    return gulp
+      .src([
+        `${config.src}/shared/**/*.js`,
+        `!${config.src}/shared/**/*.spec.js`,
+        `!${config.src}/shared/**/*.mock.js`,
+        `!${config.src}/shared/reports/reports.js`
       ], {
         base: `./${config.src}`
       })
@@ -17,7 +30,7 @@ module.exports = (gulp, config) => {
 
   gulp.task('copy:config', ['config'], () => {
     return gulp
-      .src([`${config.tmp}/lib/common/reports.js`], {
+      .src([`${config.tmp}/shared/reports/reports.js`], {
         base: `${config.tmp}`
       })
       .pipe(gulp.dest(`${config.build}/`));

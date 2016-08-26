@@ -58,13 +58,14 @@ ${content}
       `${config.src}/web/**/*.css`,
       // all scripts BUT tests and controllers
       `${config.src}/web/**/*.js`,
-      `${config.src}/web/**/*.spec.js`,
+      `!${config.src}/web/**/*.spec.js`,
       `!${config.src}/web/**/*.controller.js`,
-      // all shared files
-      `${config.src}/lib/common/**/*.js`,
+      // all shared files BUT tests
+      `${config.src}/shared/**/*.js`,
+      `!${config.src}/shared/**/*.spec.js`,
       // exclude and re-include the compiled ones
-      `!${config.src}/lib/common/reports.js`,
-      `${config.tmp}/lib/common/reports.js`
+      `!${config.src}/shared/reports.js`,
+      `${config.tmp}/shared/reports.js`
     ];
     let allBowerFiles = bowerFiles();
     let destFolder = getDestinationFolder(forBuild);

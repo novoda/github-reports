@@ -16,8 +16,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      `${gulpConfig.src}/lib/**/*.js`,
-      `${gulpConfig.test}/**/*.js`,
+      `${gulpConfig.src}/**/*.js`,
       'bower_components/es6-promise/promise.js',
       'node_modules/lodash/lodash.js'
     ],
@@ -25,7 +24,8 @@ module.exports = function(config) {
 
     // list of files to exclude
     exclude: [
-      `${gulpConfig.src}/lib/web/**/*.js`
+      `${gulpConfig.src}/plugin/index.js`,
+      `${gulpConfig.src}/web/**/*.js`
     ],
 
 
