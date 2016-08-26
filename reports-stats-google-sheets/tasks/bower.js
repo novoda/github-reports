@@ -4,7 +4,7 @@ const bowerFiles = require('main-bower-files');
 
 module.exports = (gulp, config) => {
 
-  gulp.task('bower-server-dependencies', ['clean:bower-server-dependencies'], () => {
+  gulp.task('bower-web-dependencies', ['clean:bower-web-dependencies'], () => {
     return gulp
       .src(bowerFiles({
         overrides: {

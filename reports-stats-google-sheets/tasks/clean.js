@@ -4,15 +4,15 @@ const clean = require('gulp-clean');
 
 module.exports = (gulp, config) => {
 
-  gulp.task('clean:sidebar', function() {
+  gulp.task('clean:web', function() {
     return gulp
-      .src(`${config.build}/sidebar`, {read: false})
+      .src(`${config.build}/web`, {read: false})
       .pipe(clean());
   });
 
-  gulp.task('clean:sidebar:dev', function() {
+  gulp.task('clean:web:dev', function() {
     return gulp
-      .src(`${config.tmp}/sidebar`, {read: false})
+      .src(`${config.tmp}/web`, {read: false})
       .pipe(clean());
   });
 
@@ -22,7 +22,7 @@ module.exports = (gulp, config) => {
       .pipe(clean());
   });
 
-  gulp.task('clean:bower-server-dependencies', function() {
+  gulp.task('clean:bower-web-dependencies', function() {
     return gulp
       .src(`${config.build}/bower_components`, {read: false})
       .pipe(clean());

@@ -7,7 +7,7 @@ module.exports = (gulp, config) => {
 
   gulp.task('start:server', ['build:dev'], function() {
     connect.server({
-      root: [`${config.tmp}/sidebar`, `${config.tmp}/lib`, '.'],
+      root: [`${config.tmp}/web`, `${config.tmp}/lib`, '.'],
       livereload: true,
       host: `${config.host}`,
       port: config.port
