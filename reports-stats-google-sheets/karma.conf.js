@@ -1,7 +1,9 @@
 // Karma configuration
 
+const gulpConfig = require('./gulpfile.config.json');
+
 module.exports = function(config) {
-  config.set({
+  const karmaConfig = {
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
@@ -14,8 +16,8 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'src/lib/**/*.js',
-      'test/**/*.js',
+      `${gulpConfig.src}/lib/**/*.js`,
+      `${gulpConfig.test}/**/*.js`,
       'bower_components/es6-promise/promise.js',
       'node_modules/lodash/lodash.js'
     ],
@@ -23,14 +25,13 @@ module.exports = function(config) {
 
     // list of files to exclude
     exclude: [
-      'src/lib/web/**/*.js'
+      `${gulpConfig.src}/lib/web/**/*.js`
     ],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'src/**/*.js': ['coverage']
     },
 
 
@@ -85,5 +86,11 @@ module.exports = function(config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity
-  })
+  };
+
+  // preprocess matching files before serving them to the browser
+  // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+  karmaConfig.preprocessors[`${gulpConfig.src}/**/*.js`] = ['coverage'];
+
+  config.set(karmaConfig);
 };
