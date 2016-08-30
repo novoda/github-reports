@@ -18,7 +18,7 @@ module.exports = function(config) {
     files: [
       `${gulpConfig.src}/**/*.js`,
       'bower_components/es6-promise/promise.js',
-      'node_modules/lodash/lodash.js'
+      'bower_components/lodash/lodash.js'
     ],
 
 

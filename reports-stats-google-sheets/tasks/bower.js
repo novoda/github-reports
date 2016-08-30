@@ -10,6 +10,9 @@ module.exports = (gulp, config) => {
         overrides: {
           jquery: {
             ignore: true
+          },
+          lodash: {
+            ignore: true
           }
         }
       }), {
