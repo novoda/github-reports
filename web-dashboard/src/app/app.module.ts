@@ -16,6 +16,7 @@ import { ContributorsComponent } from './contributors/contributors.component';
 import { SlackerComponent } from './slacker/slacker.component';
 import { SlackersComponent } from './slackers/slackers.component';
 import { ConfigService } from './config.service';
+import { TimezoneDetectorService } from './timezone-detector.service';
 
 @NgModule({
   imports: [
@@ -29,19 +30,19 @@ import { ConfigService } from './config.service';
     AppComponent,
     PageNotFoundComponent,
     ContributorsVsSlackersDashboardComponent,
-    ContributorComponent,
     ContributorsComponent,
-    SlackerComponent,
-    SlackersComponent
+    SlackersComponent,
+    ContributorComponent,
+    SlackerComponent
   ],
   providers: [
     SystemClock,
     WeekCalculator,
     ConfigService,
     reportsServiceProvider,
-    ReportsClient
+    ReportsClient,
+    TimezoneDetectorService
   ],
-  entryComponents: [AppComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule {

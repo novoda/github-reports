@@ -10,10 +10,10 @@ export class ReportsClient {
   constructor(private reportsService: ReportsService) {
   }
 
-  getCompanyStats(from: Date, to: Date): Observable<CompanyStats> {
+  getCompanyStats(from: Date, to: Date, timezone: string): Observable<CompanyStats> {
 
     return this.reportsService
-      .getAggregatedStats(from, to)
+      .getAggregatedStats(from, to, timezone)
       .mergeMap((stats: {usersStats: any}) => {
         return Observable
           .from(Object

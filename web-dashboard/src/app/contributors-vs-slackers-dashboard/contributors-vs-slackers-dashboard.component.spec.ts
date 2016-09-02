@@ -10,7 +10,7 @@ import { UserStats } from '../reports/user-stats';
 import { CompanyStats } from '../reports/company-stats';
 import { Observable, Scheduler } from 'rxjs';
 import { ReportsMockService } from '../reports/reports-mock.service';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { TimezoneDetectorService } from '../timezone-detector.service';
 
 describe('Component: ContributorsVsSlackersDashboard', () => {
 
@@ -18,6 +18,7 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
   let weekCalculator: WeekCalculator;
   let reportsService: ReportsMockService;
   let reportsServiceClient: ReportsClient;
+  let timezoneDetectorService: TimezoneDetectorService;
 
   let component: ContributorsVsSlackersDashboardComponent;
 
@@ -29,19 +30,27 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
         provide: ReportsService,
         useClass: ReportsMockService
       },
-      ReportsClient]);
+      ReportsClient,
+      TimezoneDetectorService
+    ]);
   });
 
-  beforeEach(inject([SystemClock, WeekCalculator, ReportsService, ReportsClient],
-    (_clock_, _weekCalculator_, _reportsService_, _reportsServiceClient_) => {
+  beforeEach(inject([SystemClock, WeekCalculator, ReportsService, ReportsClient, TimezoneDetectorService],
+    (_clock_, _weekCalculator_, _reportsService_, _reportsServiceClient_, _timezoneDetectorService_) => {
       clock = _clock_;
       weekCalculator = _weekCalculator_;
       reportsService = _reportsService_;
       reportsServiceClient = _reportsServiceClient_;
+      timezoneDetectorService = _timezoneDetectorService_;
     }));
 
   beforeEach(() => {
-    component = new ContributorsVsSlackersDashboardComponent(weekCalculator, clock, reportsServiceClient);
+    component = new ContributorsVsSlackersDashboardComponent(
+      weekCalculator,
+      clock,
+      reportsServiceClient,
+      timezoneDetectorService
+    );
   });
 
   let contributors;
@@ -184,6 +193,7 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
 
       Scheduler.async.flush();
 
+      expect(timezoneDetectorService.getTimezone).toHaveBeenCalled();
       expect(reportsService.getAggregatedStats).toHaveBeenCalled();
     });
 
