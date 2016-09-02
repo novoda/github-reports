@@ -1,5 +1,7 @@
 package com.novoda.floatschedule.convert;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -16,12 +18,9 @@ public class FloatDateConverter {
     private static final Date NO_DATE = null;
     private static final String NO_STRING = null;
 
-    public String toFloatDateFormat(Date date, TimeZone timezone) {
+    public String toFloatDateFormat(Date date, @NotNull TimeZone timezone) {
         if (date == null) {
             return NO_STRING;
-        }
-        if (timezone == null) {
-            timezone = TimeZone.getDefault();
         }
         ZoneId zoneId = timezone.toZoneId();
         LocalDateTime localDateTime = LocalDateTime.ofInstant(date.toInstant(), zoneId);
