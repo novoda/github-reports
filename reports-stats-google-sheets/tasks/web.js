@@ -47,28 +47,29 @@ ${content}
     return file.contents.toString('utf8');
   };
 
-  const getDestinationFolder = function(forBuild) {
-    let destFolder = forBuild ? config.build : config.tmp;
+  const getDestinationFolder = function(isProd) {
+    let destFolder = isProd ? config.build : config.tmp;
     return `${destFolder}/web`;
   };
 
-  const buildWebTask = (forBuild) => {
-    let allSourceFiles = [
-      // all styles
-      `${config.src}/web/**/*.css`,
-      // all scripts BUT tests and controllers
-      `${config.src}/web/**/*.js`,
-      `!${config.src}/web/**/*.spec.js`,
-      `!${config.src}/web/**/*.controller.js`,
-      // all shared files BUT tests
-      `${config.src}/shared/**/*.js`,
-      `!${config.src}/shared/**/*.spec.js`,
-      // exclude and re-include the compiled ones
-      `!${config.src}/shared/config/config.js`,
-      `${config.tmp}/shared/config/config.js`
-    ];
-    let allBowerFiles = bowerFiles();
-    let destFolder = getDestinationFolder(forBuild);
+  const allSourceFiles = [
+    // all styles
+    `${config.src}/web/*.css`,
+    // all scripts BUT tests and controllers
+    `${config.src}/web/**/*.js`,
+    `!${config.src}/web/**/*.spec.js`,
+    `!${config.src}/web/**/*.controller.js`,
+    // all shared files BUT tests
+    `${config.src}/shared/**/*.js`,
+    `!${config.src}/shared/**/*.spec.js`,
+    // exclude and re-include the compiled ones
+    `!${config.src}/shared/config/config.js`,
+    `${config.tmp}/shared/config/config.js`
+  ];
+  const allBowerFiles = bowerFiles();
+
+  const buildPartialTask = (isProd) => {
+    const destFolder = getDestinationFolder(isProd);
 
     return function() {
       return gulp.src(`${config.src}/web/**/*.partial.html`)
@@ -84,28 +85,76 @@ ${content}
 
           return gulp
             .src(`${config.src}/web/**/${templatePageName}.template.html`, {base: `${config.src}/web`})
-            .pipe(inject(gulp.src(allBowerFiles), {
-              starttag: '<!-- inject:bower:{{ext}} -->',
-              transform: getContentsOrReferences(forBuild)
-            }))
-            .pipe(inject(gulp.src(allSourceFiles), {
-              transform: getContentsOrReferences(forBuild)
-            }))
-            .pipe(inject(partialHtmlStream, {
-              transform: getHtmlContents
-            }))
-            .pipe(inject(gulp.src(`${partialDirectory}/${templatePageName}-${partialPageName}.controller.js`), {
-              starttag: '<!-- inject:controller:js -->',
-              transform: getContentsOrReferences(forBuild)
-            }))
-            .pipe(rename(`${templatePageName}-${partialPageName}.html`));
+            .pipe(flatmap(function(templateHtmlStream, templateHtmlFile) {
+              const templateDirectory = path.dirname(templateHtmlFile.path);
+
+              return templateHtmlStream
+                .pipe(inject(gulp.src(allBowerFiles), {
+                  starttag: '<!-- inject:bower:{{ext}} -->',
+                  transform: getContentsOrReferences(isProd)
+                }))
+                .pipe(inject(gulp.src(allSourceFiles.concat(
+                  `${templateDirectory}/${templatePageName}.css`,
+                  `${partialDirectory}/${templatePageName}-${partialPageName}.css`
+                )), {
+                  transform: getContentsOrReferences(isProd)
+                }))
+                .pipe(inject(partialHtmlStream, {
+                  transform: getHtmlContents
+                }))
+                .pipe(inject(gulp.src(`${partialDirectory}/${templatePageName}-${partialPageName}.controller.js`), {
+                  starttag: '<!-- inject:controller:js -->',
+                  transform: getContentsOrReferences(isProd)
+                }))
+                .pipe(rename(`${templatePageName}-${partialPageName}.html`));
+            }));
         }))
         .pipe(gulp.dest(destFolder));
     };
   };
 
-  gulp.task('build:web:dev', ['test', 'clean:web:dev', 'config'], buildWebTask(false));
+  gulp.task('build:partial:dev', ['test', 'clean:web:dev', 'config'], buildPartialTask(false));
 
-  gulp.task('build:web', ['test', 'clean:web', 'config'], buildWebTask(true));
+  gulp.task('build:partial', ['test', 'clean:web', 'config'], buildPartialTask(true));
+
+  const buildSimpleTask = (isProd) => {
+    const destFolder = getDestinationFolder(isProd);
+
+    return function() {
+      return gulp.src(`${config.src}/web/**/!(*.partial|*.template).html`)
+        .pipe(flatmap(function(pageHtmlStream, pageHtmlFile) {
+          const pageHtmlFilePath = pageHtmlFile.relative;
+          const pageHtmlFileName = path.basename(pageHtmlFilePath);
+          const regExp = /^(.*)(?:\.html)$/g;
+          const matches = regExp.exec(pageHtmlFileName);
+
+          const pageDirectory = path.dirname(pageHtmlFile.path);
+          const pageName = matches[1];
+
+          return pageHtmlStream
+            .pipe(inject(gulp.src(allBowerFiles), {
+              starttag: '<!-- inject:bower:{{ext}} -->',
+              transform: getContentsOrReferences(isProd)
+            }))
+            .pipe(inject(gulp.src(allSourceFiles.concat(`${pageDirectory}/${pageName}.css`)), {
+              transform: getContentsOrReferences(isProd)
+            }))
+            .pipe(inject(gulp.src(`${pageDirectory}/${pageName}.controller.js`), {
+              starttag: '<!-- inject:controller:js -->',
+              transform: getContentsOrReferences(isProd)
+            }))
+            .pipe(rename(`${pageName}.html`));
+        }))
+        .pipe(gulp.dest(destFolder));
+    };
+  };
+
+  gulp.task('build:simple:dev', ['test', 'clean:web:dev', 'config'], buildSimpleTask(false));
+
+  gulp.task('build:simple', ['test', 'clean:web', 'config'], buildSimpleTask(true));
+
+  gulp.task('build:web:dev', ['build:partial:dev', 'build:simple:dev']);
+
+  gulp.task('build:web', ['build:partial', 'build:simple']);
 
 };
