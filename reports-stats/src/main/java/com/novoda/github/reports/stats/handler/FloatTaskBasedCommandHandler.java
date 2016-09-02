@@ -29,7 +29,8 @@ abstract class FloatTaskBasedCommandHandler<S extends Stats, O extends FloatTask
         Map<String, List<UserAssignments>> usersAssignments = floatServiceClient.getGithubUsersAssignmentsInDateRange(
                 options.getUsers(),
                 options.getFrom(),
-                options.getTo()
+                options.getTo(),
+                options.getTimezone()
         );
 
         try {

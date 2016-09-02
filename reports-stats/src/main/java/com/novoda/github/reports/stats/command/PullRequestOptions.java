@@ -5,6 +5,7 @@ import com.beust.jcommander.Parameters;
 
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Parameters(commandDescription = "Retrieve statistics about Pull Requests filtered on date, users, projects and repositories")
 public class PullRequestOptions extends FloatTaskBasedOptions {
@@ -14,9 +15,10 @@ public class PullRequestOptions extends FloatTaskBasedOptions {
                               PullRequestOptionsGroupBy groupBy,
                               boolean withAverage,
                               Date from,
-                              Date to) {
+                              Date to,
+                              TimeZone timezone) {
 
-        super(organisationUsers, from, to);
+        super(organisationUsers, from, to, timezone);
         this.repositories = repositories;
         this.groupBy = groupBy;
         this.withAverage = withAverage;

@@ -1,20 +1,30 @@
 package com.novoda.floatschedule.convert;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class FloatDateConverter {
 
-    private static final SimpleDateFormat FLOAT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final String FLOAT_DATE_FORMAT = "yyyy-MM-dd";
+    private static final DateTimeFormatter FLOAT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(FLOAT_DATE_FORMAT);
+    private static final SimpleDateFormat FLOAT_SIMPLE_DATE_FORMATTER = new SimpleDateFormat(FLOAT_DATE_FORMAT);
     private static final Date NO_DATE = null;
     private static final String NO_STRING = null;
 
-    public String toFloatDateFormat(Date date) {
+    public String toFloatDateFormat(Date date, @NotNull TimeZone timezone) {
         if (date == null) {
             return NO_STRING;
         }
-        return FLOAT_DATE_FORMAT.format(date);
+        ZoneId zoneId = timezone.toZoneId();
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(date.toInstant(), zoneId);
+        return localDateTime.format(FLOAT_DATE_TIME_FORMATTER);
     }
 
     public Date fromFloatDateFormatOrNoDate(String date) {
@@ -27,7 +37,7 @@ public class FloatDateConverter {
 
     Date fromFloatDateFormat(String date) throws InvalidFloatDateException {
         try {
-            return FLOAT_DATE_FORMAT.parse(date);
+            return FLOAT_SIMPLE_DATE_FORMATTER.parse(date);
         } catch (ParseException e) {
             throw new InvalidFloatDateException(date, e);
         }
