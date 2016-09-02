@@ -5,10 +5,10 @@ import { ReportsMockService } from './reports-mock.service';
 import { ConfigService } from '../config.service';
 
 let reportsServiceFactory = (http: Http, configService: ConfigService): any => {
-  if (environment.production) {
-    return new ReportsService(http, configService);
+  if (environment.mockReports) {
+    return new ReportsMockService();
   }
-  return new ReportsMockService();
+  return new ReportsService(http, configService);
 };
 
 export const reportsServiceProvider = {

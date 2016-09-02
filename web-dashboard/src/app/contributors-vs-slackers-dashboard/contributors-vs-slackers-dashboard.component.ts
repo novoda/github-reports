@@ -6,6 +6,7 @@ import { CompanyStats } from '../reports/company-stats';
 import { UserStats } from '../reports/user-stats';
 import { Subscription, Observable } from 'rxjs';
 import { OnErrorIgnoreOperator } from '../shared/OnErrorIgnoreOperator';
+import { TimezoneDetectorService } from '../timezone-detector.service';
 
 @Component({
   selector: 'contributors-vs-slackers-dashboard',
@@ -23,7 +24,8 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestr
 
   constructor(private weekCalculator: WeekCalculator,
               private clock: SystemClock,
-              private reportsServiceClient: ReportsClient) {
+              private reportsServiceClient: ReportsClient,
+              private timezoneDetector: TimezoneDetectorService) {
     // noop
   }
 
@@ -43,7 +45,8 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestr
     return this.reportsServiceClient
       .getCompanyStats(
         this.weekCalculator.getLastMonday(),
-        this.clock.getDate()
+        this.clock.getDate(),
+        this.timezoneDetector.getTimezone()
       )
       .lift(new OnErrorIgnoreOperator<CompanyStats>());
   }
