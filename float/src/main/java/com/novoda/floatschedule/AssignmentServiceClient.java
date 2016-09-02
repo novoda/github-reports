@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 public class AssignmentServiceClient {
@@ -40,7 +41,7 @@ public class AssignmentServiceClient {
     public Observable<String> getGithubUsernamesAssignedToRepositories(List<String> repositoryNames,
                                                                        Date startDate,
                                                                        int numberOfWeeks,
-                                                                       String timezone) {
+                                                                       TimeZone timezone) {
 
         List<String> floatProjectNames = getFloatProjectNamesFrom(repositoryNames);
         return getGithubUsernamesAssignedToProjects(floatProjectNames, startDate, numberOfWeeks, timezone);
@@ -62,7 +63,11 @@ public class AssignmentServiceClient {
         }
     }
 
-    public Observable<String> getGithubUsernamesAssignedToProjects(List<String> floatProjectNames, Date startDate, int numberOfWeeks, String timezone) {
+    public Observable<String> getGithubUsernamesAssignedToProjects(List<String> floatProjectNames,
+                                                                   Date startDate,
+                                                                   int numberOfWeeks,
+                                                                   TimeZone timezone) {
+
         return taskServiceClient.getTasks(startDate, numberOfWeeks, timezone, NO_PERSON_ID)
                 .filter(byProjectNameIn(floatProjectNames))
                 .map(Task::getPersonName)

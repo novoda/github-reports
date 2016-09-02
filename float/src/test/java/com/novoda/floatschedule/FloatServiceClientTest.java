@@ -35,7 +35,7 @@ public class FloatServiceClientTest {
     private static final Date ANY_END_DATE = Date.from(Instant.ofEpochMilli(ANY_START_DATE.getTime()).plus(Duration.ofDays(8)));
     private static final String ANY_FLOAT_START_DATE = "2016-07-27";
     private static final String ANY_FLOAT_END_DATE = "2016-08-04";
-    private static final String ANY_TIMEZONE = "Europe/London";
+    private static final TimeZone ANY_TIMEZONE = TimeZone.getTimeZone("Europe/London");
     private static final int ANY_NUMBER_OF_WEEKS = 42;
 
     private static final String FLOAT_MARIO = "Super Mario";
@@ -366,7 +366,7 @@ public class FloatServiceClientTest {
             BDDMockito.given(taskServiceClient.getTasks(
                     any(Date.class),
                     anyInt(),
-                    anyString(),
+                    any(TimeZone.class),
                     eq(personId))
             ).willReturn(mockTasksObservable);
 
@@ -388,7 +388,7 @@ public class FloatServiceClientTest {
                     taskServiceClient.getTasksForAllPeople(
                             any(Date.class),
                             anyInt(),
-                            anyString()
+                            any(TimeZone.class)
                     )
             ).willReturn(mockTasksObservable);
 

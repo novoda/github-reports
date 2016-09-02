@@ -61,13 +61,13 @@ public class FloatServiceClient {
         this.floatDateConverter = floatDateConverter;
     }
 
-    Observable<String> getRepositoryNamesForGithubUser(String githubUsername, Date startDate, int numberOfWeeks, String timezone)
+    Observable<String> getRepositoryNamesForGithubUser(String githubUsername, Date startDate, int numberOfWeeks, TimeZone timezone)
             throws IOException, NoMatchFoundException {
 
         return getRepositoryNamesForFloatUser(getFloatUsername(githubUsername), startDate, numberOfWeeks, timezone);
     }
 
-    Observable<String> getRepositoryNamesForFloatUser(String floatUsername, Date startDate, int numberOfWeeks, String timezone) {
+    Observable<String> getRepositoryNamesForFloatUser(String floatUsername, Date startDate, int numberOfWeeks, TimeZone timezone) {
         return getTasksForFloatUser(floatUsername, startDate, numberOfWeeks, timezone)
                 .map(this::getRepositoriesFor)
                 .collect((Func0<List<String>>) ArrayList::new, List::addAll)
@@ -75,7 +75,7 @@ public class FloatServiceClient {
                 .distinct();
     }
 
-    Observable<Task> getTasksForGithubUser(String githubUsername, Date startDate, Integer numberOfWeeks, String timezone) {
+    Observable<Task> getTasksForGithubUser(String githubUsername, Date startDate, Integer numberOfWeeks, TimeZone timezone) {
         String floatUsername;
         try {
             floatUsername = getFloatUsername(githubUsername);
@@ -89,7 +89,7 @@ public class FloatServiceClient {
         return floatGithubUserConverter.getFloatUser(githubUsername);
     }
 
-    Observable<Task> getTasksForFloatUser(String floatUsername, Date startDate, Integer numberOfWeeks, String timezone) {
+    Observable<Task> getTasksForFloatUser(String floatUsername, Date startDate, Integer numberOfWeeks, TimeZone timezone) {
         return peopleServiceClient.getPersons()
                 .filter(byFloatUsername(floatUsername))
                 .flatMap(toTasks(startDate, numberOfWeeks, timezone))
@@ -100,14 +100,14 @@ public class FloatServiceClient {
         return person -> personHasFloatUsername(person, floatUsername);
     }
 
-    private Func1<Person, Observable<Task>> toTasks(Date startDate, Integer numberOfWeeks, String timezone) {
+    private Func1<Person, Observable<Task>> toTasks(Date startDate, Integer numberOfWeeks, TimeZone timezone) {
         return person -> taskServiceClient.getTasks(startDate, numberOfWeeks, timezone, person.getId());
     }
 
     public HashMap<String, List<UserAssignments>> getGithubUsersAssignmentsInDateRange(List<String> githubUsers,
                                                                                        Date from,
                                                                                        Date to,
-                                                                                       String timezone) {
+                                                                                       TimeZone timezone) {
 
         if (listIsNullOrEmpty(githubUsers)) {
             githubUsers = getGithubUsersOrEmpty();
@@ -135,7 +135,7 @@ public class FloatServiceClient {
     Observable<Map.Entry<String, List<Task>>> getTasksForGithubUsers(List<String> githubUsernames,
                                                                      Date startDate,
                                                                      Date endDate,
-                                                                     String timezone) {
+                                                                     TimeZone timezone) {
 
         Integer numberOfWeeks = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
         return getTasksForGithubUsers(githubUsernames, startDate, numberOfWeeks, timezone);
@@ -144,7 +144,7 @@ public class FloatServiceClient {
     private Observable<Map.Entry<String, List<Task>>> getTasksForGithubUsers(List<String> githubUsernames,
                                                                              Date startDate,
                                                                              Integer numberOfWeeks,
-                                                                             String timezone) {
+                                                                             TimeZone timezone) {
 
         Map<String, String> floatToGithubUsernames;
         try {
@@ -201,7 +201,7 @@ public class FloatServiceClient {
 
     private Func1<List<Person>, Observable<? extends Map.Entry<String, List<Task>>>> peopleToGithubUserWithTasksEntry(Date startDate,
                                                                                                                       Integer numberOfWeeks,
-                                                                                                                      String timezone,
+                                                                                                                      TimeZone timezone,
                                                                                                                       Map<String, String> floatToGithubUsernames) {
 
         return persons -> taskServiceClient

@@ -11,10 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -29,7 +26,7 @@ public class PullRequestCommandHandlerTest {
     private static final Boolean ANY_WITH_AVERAGE = true;
     private static final Date ANY_FROM = new Date();
     private static final Date ANY_TO = new Date();
-    private static final String ANY_TIMEZONE = "Europe/London";
+    private static final TimeZone ANY_TIMEZONE = TimeZone.getTimeZone("Europe/London");
     private static final List<String> ALL_USERS = Arrays.asList("all", "users", "in", "organisation", "here");
 
     @Mock

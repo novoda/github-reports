@@ -16,14 +16,13 @@ public class FloatDateConverter {
     private static final Date NO_DATE = null;
     private static final String NO_STRING = null;
 
-    public String toFloatDateFormat(Date date, String timezoneName) {
+    public String toFloatDateFormat(Date date, TimeZone timezone) {
         if (date == null) {
             return NO_STRING;
         }
-        if (timezoneName == null) {
-            timezoneName = TimeZone.getDefault().getID();
+        if (timezone == null) {
+            timezone = TimeZone.getDefault();
         }
-        TimeZone timezone = TimeZone.getTimeZone(timezoneName);
         ZoneId zoneId = timezone.toZoneId();
         LocalDateTime localDateTime = LocalDateTime.ofInstant(date.toInstant(), zoneId);
         return localDateTime.format(FLOAT_DATE_TIME_FORMATTER);

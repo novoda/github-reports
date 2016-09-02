@@ -22,7 +22,7 @@ public class FloatDateConverterTest {
     public void givenADate_whenConvertingToFloatFormat_thenItConvertsAppropriately() throws Exception {
         Date date = givenADate(2016, Calendar.JULY, 1);
 
-        String actual = dateConverter.toFloatDateFormat(date, "Europe/London");
+        String actual = dateConverter.toFloatDateFormat(date, TimeZone.getTimeZone("Europe/London"));
 
         assertEquals("2016-07-01", actual);
     }
@@ -31,7 +31,7 @@ public class FloatDateConverterTest {
     public void givenNonExistingDateInFebruary_whenConvertingToFloatFormat_thenItShiftsDaysToMarchAndConvertsAppropriately() throws Exception {
         Date date = givenADate(1994, Calendar.FEBRUARY, 30);
 
-        String actual = dateConverter.toFloatDateFormat(date, "Europe/London");
+        String actual = dateConverter.toFloatDateFormat(date, TimeZone.getTimeZone("Europe/London"));
 
         assertEquals("1994-03-02", actual);
     }
@@ -40,7 +40,7 @@ public class FloatDateConverterTest {
     public void givenNullDate_whenConvertingToFloatFormat_thenItReturnsNullString() throws Exception {
         Date aNullDate = null;
 
-        String actual = dateConverter.toFloatDateFormat(aNullDate, "Europe/London");
+        String actual = dateConverter.toFloatDateFormat(aNullDate, TimeZone.getTimeZone("Europe/London"));
 
         assertNull(actual);
     }
@@ -76,7 +76,7 @@ public class FloatDateConverterTest {
     public void givenMidnightInLondonAsUTC_whenConvertingToFloatFormat_thenItReturnsDayAfterMidnight() {
         Date date = givenUTCDateWithHour(2016, Calendar.SEPTEMBER, 1, 23);
 
-        String actual = dateConverter.toFloatDateFormat(date, "Europe/London");
+        String actual = dateConverter.toFloatDateFormat(date, TimeZone.getTimeZone("Europe/London"));
 
         assertEquals("2016-09-02", actual);
     }
@@ -85,7 +85,7 @@ public class FloatDateConverterTest {
     public void givenDateAt22InLondonAsUTC_whenConvertingToFloatFormat_thenItReturnsDayBeforeMidnight() {
         Date date = givenUTCDateWithHour(2016, Calendar.SEPTEMBER, 1, 22);
 
-        String actual = dateConverter.toFloatDateFormat(date, "Europe/London");
+        String actual = dateConverter.toFloatDateFormat(date, TimeZone.getTimeZone("Europe/London"));
 
         assertEquals("2016-09-01", actual);
     }

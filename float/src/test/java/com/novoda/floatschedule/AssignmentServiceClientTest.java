@@ -15,10 +15,7 @@ import rx.schedulers.Schedulers;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
@@ -28,7 +25,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class AssignmentServiceClientTest {
 
     private static final Date ANY_START_DATE = Date.from(Instant.now());
-    private static final String ANY_TIMEZONE = "Europe/London";
+    private static final TimeZone ANY_TIMEZONE = TimeZone.getTimeZone("Europe/London");
     private static final Integer ANY_NUMBER_OF_WEEKS = 40;
     private static final Integer NO_PERSON_ID = null;
 
@@ -71,7 +68,8 @@ public class AssignmentServiceClientTest {
 
     private void givenTasks(List<Task> tasks) {
         Observable<Task> mockTasksObservable = Observable.from(tasks);
-        when(mockTaskServiceClient.getTasks(any(Date.class), anyInt(), anyString(), eq(NO_PERSON_ID))).thenReturn(mockTasksObservable);
+        when(mockTaskServiceClient.getTasks(any(Date.class), anyInt(), any(TimeZone.class), eq(NO_PERSON_ID)))
+                .thenReturn(mockTasksObservable);
     }
 
     private Task givenATask(String projectName, String personName) {

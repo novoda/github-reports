@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @AutoValue
 public abstract class GetAggregatedStatsRequest {
@@ -26,7 +27,7 @@ public abstract class GetAggregatedStatsRequest {
     public abstract Date to();
 
     @Nullable
-    public abstract String timezone();
+    public abstract TimeZone timezone();
 
     @Nullable
     public abstract List<String> users();
@@ -38,7 +39,7 @@ public abstract class GetAggregatedStatsRequest {
 
         public abstract Builder to(@Nullable Date to);
 
-        public abstract Builder timezone(@Nullable String timezone);
+        public abstract Builder timezone(@Nullable TimeZone timezone);
 
         public abstract Builder users(@Nullable List<String> users);
 

@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.TimeZone;
 
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -23,7 +24,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class TaskServiceClientTest {
 
     private static final Date ANY_START_DATE = Date.from(Instant.now());
-    private static final String ANY_TIMEZONE = "Europe/London";
+    private static final TimeZone ANY_TIMEZONE = TimeZone.getTimeZone("Europe/London");
     private static final Integer ANY_NUMBER_OF_WEEKS = 42;
     private static final Integer ANY_PERSON_ID = 23;
 
