@@ -14,9 +14,10 @@ public class PullRequestOptions extends FloatTaskBasedOptions {
                               PullRequestOptionsGroupBy groupBy,
                               boolean withAverage,
                               Date from,
-                              Date to) {
+                              Date to,
+                              String timezone) {
 
-        super(organisationUsers, from, to);
+        super(organisationUsers, from, to, timezone);
         this.repositories = repositories;
         this.groupBy = groupBy;
         this.withAverage = withAverage;

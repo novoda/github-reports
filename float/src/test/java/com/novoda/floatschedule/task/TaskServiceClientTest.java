@@ -2,20 +2,18 @@ package com.novoda.floatschedule.task;
 
 import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.network.FloatApiService;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import retrofit2.Response;
+import rx.Observable;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-
-import retrofit2.Response;
-import rx.Observable;
-import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
 
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -25,6 +23,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class TaskServiceClientTest {
 
     private static final Date ANY_START_DATE = Date.from(Instant.now());
+    private static final String ANY_TIMEZONE = "Europe/London";
     private static final Integer ANY_NUMBER_OF_WEEKS = 42;
     private static final Integer ANY_PERSON_ID = 23;
 
@@ -52,7 +51,7 @@ public class TaskServiceClientTest {
 
         testSubscriber = new TestSubscriber<>();
 
-        when(mockFloatDateConverter.toFloatDateFormat(ANY_START_DATE)).thenReturn("2014-09-11");
+        when(mockFloatDateConverter.toFloatDateFormat(ANY_START_DATE, ANY_TIMEZONE)).thenReturn("2014-09-11");
 
         taskServiceClient = new TaskServiceClient(mockFloatApiService, mockFloatDateConverter);
 
@@ -66,7 +65,7 @@ public class TaskServiceClientTest {
     public void givenApiReturnsTasks_whenQueryingForTasks_thenEachSingleTaskIsEmitted() {
         when(mockFloatApiService.getTasks(anyString(), anyInt(), anyInt())).thenReturn(apiObservable);
 
-        taskServiceClient.getTasks(ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_PERSON_ID)
+        taskServiceClient.getTasks(ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE, ANY_PERSON_ID)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 

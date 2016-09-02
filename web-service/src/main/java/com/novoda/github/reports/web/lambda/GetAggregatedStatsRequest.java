@@ -26,6 +26,9 @@ public abstract class GetAggregatedStatsRequest {
     public abstract Date to();
 
     @Nullable
+    public abstract String timezone();
+
+    @Nullable
     public abstract List<String> users();
 
     @AutoValue.Builder
@@ -34,6 +37,8 @@ public abstract class GetAggregatedStatsRequest {
         public abstract Builder from(@Nullable Date from);
 
         public abstract Builder to(@Nullable Date to);
+
+        public abstract Builder timezone(@Nullable String timezone);
 
         public abstract Builder users(@Nullable List<String> users);
 

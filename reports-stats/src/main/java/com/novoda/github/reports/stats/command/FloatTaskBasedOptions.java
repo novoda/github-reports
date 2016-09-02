@@ -9,8 +9,9 @@ public abstract class FloatTaskBasedOptions extends RangeOptions {
 
     @Parameter(description = "Users to retrieve data for (leave empty for all)")
     private List<String> users;
+    private String timezone;
 
-    public FloatTaskBasedOptions(List<String> users, Date from, Date to) {
+    public FloatTaskBasedOptions(List<String> users, Date from, Date to, String timezone) {
         super(from, to);
         this.users = users;
     }
@@ -23,4 +24,7 @@ public abstract class FloatTaskBasedOptions extends RangeOptions {
         return users;
     }
 
+    public String getTimezone() {
+        return timezone;
+    }
 }

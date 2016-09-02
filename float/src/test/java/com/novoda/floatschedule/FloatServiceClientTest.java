@@ -35,6 +35,7 @@ public class FloatServiceClientTest {
     private static final Date ANY_END_DATE = Date.from(Instant.ofEpochMilli(ANY_START_DATE.getTime()).plus(Duration.ofDays(8)));
     private static final String ANY_FLOAT_START_DATE = "2016-07-27";
     private static final String ANY_FLOAT_END_DATE = "2016-08-04";
+    private static final String ANY_TIMEZONE = "Europe/London";
     private static final int ANY_NUMBER_OF_WEEKS = 42;
 
     private static final String FLOAT_MARIO = "Super Mario";
@@ -123,8 +124,8 @@ public class FloatServiceClientTest {
 
         BDDMockito.given(floatDateConverter.fromFloatDateFormatOrNoDate(ANY_FLOAT_START_DATE)).willReturn(ANY_START_DATE);
         BDDMockito.given(floatDateConverter.fromFloatDateFormatOrNoDate(ANY_FLOAT_END_DATE)).willReturn(ANY_END_DATE);
-        BDDMockito.given(floatDateConverter.toFloatDateFormat(ANY_START_DATE)).willReturn(ANY_FLOAT_START_DATE);
-        BDDMockito.given(floatDateConverter.toFloatDateFormat(ANY_END_DATE)).willReturn(ANY_FLOAT_END_DATE);
+        BDDMockito.given(floatDateConverter.toFloatDateFormat(ANY_START_DATE, ANY_TIMEZONE)).willReturn(ANY_FLOAT_START_DATE);
+        BDDMockito.given(floatDateConverter.toFloatDateFormat(ANY_END_DATE, ANY_TIMEZONE)).willReturn(ANY_FLOAT_END_DATE);
     }
 
     private GivenTaskServiceClient given(TaskServiceClient taskServiceClient) {
@@ -144,7 +145,7 @@ public class FloatServiceClientTest {
         given(mockTaskServiceClient).hasAllTasks();
 
         Observable<String> actual = floatServiceClient
-                .getRepositoryNamesForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
+                .getRepositoryNamesForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
 
         assertThatAnObservable(actual).hasEmittedValues(GITHUB_ALL_4, FLOAT_PROJECT_NOVODA_TV);
     }
@@ -156,7 +157,7 @@ public class FloatServiceClientTest {
         given(mockTaskServiceClient).hasAllTasks();
 
         Observable<String> actual = floatServiceClient
-                .getRepositoryNamesForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
+                .getRepositoryNamesForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
 
         assertThatAnObservable(actual).hasEmittedValues(GITHUB_ALL_4, FLOAT_PROJECT_NOVODA_TV);
     }
@@ -166,7 +167,7 @@ public class FloatServiceClientTest {
         given(mockTaskServiceClient).hasNoTasks();
 
         Observable<String> actual = floatServiceClient
-                .getRepositoryNamesForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
+                .getRepositoryNamesForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
 
         assertThatAnObservable(actual).hasEmittedNoValues();
     }
@@ -176,7 +177,7 @@ public class FloatServiceClientTest {
         given(mockTaskServiceClient).hasTasks(TASK_MARIO_ALL_4, TASK_MARIO_BBQ);
 
         Observable<Task> actual = floatServiceClient
-                .getTasksForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
+                .getTasksForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
 
         assertThatAnObservable(actual).hasEmittedValues(
                 assertTaskNameIsEqual(),
@@ -191,7 +192,7 @@ public class FloatServiceClientTest {
         given(mockTaskServiceClient).hasAllTasks();
 
         Observable<Task> actual = floatServiceClient
-                .getTasksForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
+                .getTasksForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
 
         assertThatAnObservable(actual)
                 .hasEmittedValues(assertTaskNameDoesNotContainHoliday());
@@ -210,7 +211,7 @@ public class FloatServiceClientTest {
                 .hasTasksForOnePerson(PERSON_MARIO, TASK_MARIO_ALL_4, TASK_MARIO_BBQ);
 
         Observable<Task> actual = floatServiceClient
-                .getTasksForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
+                .getTasksForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
 
         assertThatAnObservable(actual).hasEmittedValues(assertTaskNameIsEqual(), TASK_MARIO_ALL_4, TASK_MARIO_BBQ);
     }
@@ -226,7 +227,7 @@ public class FloatServiceClientTest {
         List<String> someGithubUsers = asList(GITHUB_MARIO, GITHUB_PEACH);
 
         Observable<Map.Entry<String, List<Task>>> actual = floatServiceClient
-                .getTasksForGithubUsers(someGithubUsers, ANY_START_DATE, ANY_END_DATE);
+                .getTasksForGithubUsers(someGithubUsers, ANY_START_DATE, ANY_END_DATE, ANY_TIMEZONE);
 
         assertThatAnObservable(actual)
                 .hasEmittedValues(
@@ -246,7 +247,7 @@ public class FloatServiceClientTest {
         given(mockFloatGithubUserConverter).failsLookupForGithubUsername(GITHUB_MARIO);
 
         Observable<Task> actual = floatServiceClient
-                .getTasksForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS);
+                .getTasksForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
 
         assertThatAnObservable(actual).hasThrown(IOException.class);
     }
@@ -296,7 +297,8 @@ public class FloatServiceClientTest {
         Map<String, List<UserAssignments>> actual = floatServiceClient.getGithubUsersAssignmentsInDateRange(
                 asList(GITHUB_MARIO, GITHUB_PEACH),
                 ANY_START_DATE,
-                ANY_END_DATE
+                ANY_END_DATE,
+                ANY_TIMEZONE
         );
 
         assertEquals(expected, actual);
@@ -317,7 +319,8 @@ public class FloatServiceClientTest {
         Map<String, List<UserAssignments>> actualMap = floatServiceClient.getGithubUsersAssignmentsInDateRange(
                 emptyGithubUsernames,
                 ANY_START_DATE,
-                ANY_END_DATE
+                ANY_END_DATE,
+                ANY_TIMEZONE
         );
 
         assertAllPersonsInKeySet(actualMap.keySet());
@@ -331,7 +334,8 @@ public class FloatServiceClientTest {
         Map<String, List<UserAssignments>> actualMap = floatServiceClient.getGithubUsersAssignmentsInDateRange(
                 nullGithubUsernames,
                 ANY_START_DATE,
-                ANY_END_DATE
+                ANY_END_DATE,
+                ANY_TIMEZONE
         );
 
         assertAllPersonsInKeySet(actualMap.keySet());
@@ -362,6 +366,7 @@ public class FloatServiceClientTest {
             BDDMockito.given(taskServiceClient.getTasks(
                     any(Date.class),
                     anyInt(),
+                    anyString(),
                     eq(personId))
             ).willReturn(mockTasksObservable);
 
@@ -382,7 +387,8 @@ public class FloatServiceClientTest {
             BDDMockito.given(
                     taskServiceClient.getTasksForAllPeople(
                             any(Date.class),
-                            anyInt()
+                            anyInt(),
+                            anyString()
                     )
             ).willReturn(mockTasksObservable);
 

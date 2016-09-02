@@ -24,12 +24,12 @@ public class TaskServiceClient {
         this.floatDateConverter = floatDateConverter;
     }
 
-    public Observable<Task> getTasksForAllPeople(Date startDate, Integer numberOfWeeks) {
-        return getTasks(startDate, numberOfWeeks, null);
+    public Observable<Task> getTasksForAllPeople(Date startDate, Integer numberOfWeeks, String timezone) {
+        return getTasks(startDate, numberOfWeeks, timezone, null);
     }
 
-    public Observable<Task> getTasks(Date startDate, Integer numberOfWeeks, Integer personId) {
-        String date = floatDateConverter.toFloatDateFormat(startDate);
+    public Observable<Task> getTasks(Date startDate, Integer numberOfWeeks, String timezone, Integer personId) {
+        String date = floatDateConverter.toFloatDateFormat(startDate, timezone);
         return floatApiService.getTasks(date, numberOfWeeks, personId)
                 .map(Response::body)
                 .map(Assignments::getAssignments)

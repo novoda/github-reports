@@ -10,8 +10,8 @@ public class AggregateOptions extends FloatTaskBasedOptions {
 
     // all parameters are in super class (from, to, users)
 
-    public AggregateOptions(List<String> users, Date from, Date to) {
-        super(users, from, to);
+    public AggregateOptions(List<String> users, Date from, Date to, String timezone) {
+        super(users, from, to, timezone);
     }
 
     public AggregateOptions() {

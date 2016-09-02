@@ -29,6 +29,7 @@ public class PullRequestCommandHandlerTest {
     private static final Boolean ANY_WITH_AVERAGE = true;
     private static final Date ANY_FROM = new Date();
     private static final Date ANY_TO = new Date();
+    private static final String ANY_TIMEZONE = "Europe/London";
     private static final List<String> ALL_USERS = Arrays.asList("all", "users", "in", "organisation", "here");
 
     @Mock
@@ -76,7 +77,7 @@ public class PullRequestCommandHandlerTest {
     }
 
     private PullRequestOptions givenPullRequestOptionsWith(List<String> users) {
-        return new PullRequestOptions(ANY_REPOSITORIES, users, ANY_GROUP_BY, ANY_WITH_AVERAGE, ANY_FROM, ANY_TO);
+        return new PullRequestOptions(ANY_REPOSITORIES, users, ANY_GROUP_BY, ANY_WITH_AVERAGE, ANY_FROM, ANY_TO, ANY_TIMEZONE);
     }
 
     private void verifyDataLayerWasCalledWith(List<String> users) throws DataLayerException {

@@ -43,7 +43,8 @@ public class GetAggregatedStatsAction implements RequestStreamHandler {
         Map<String, List<UserAssignments>> usersAssignments = floatServiceClient.getGithubUsersAssignmentsInDateRange(
                 request.users(),
                 request.from(),
-                request.to()
+                request.to(),
+                request.timezone()
         );
 
         try {
