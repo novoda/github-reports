@@ -94,7 +94,7 @@ $(function() {
 
   var queryStringifier = new QueryStringifier();
   var http = new WebHttp(queryStringifier);
-  var reports = new Reports(http);
+  var reports = new Reports(http, config);
   var reportsExecutor = new ReportsExecutor();
 
   initUsersSelect();

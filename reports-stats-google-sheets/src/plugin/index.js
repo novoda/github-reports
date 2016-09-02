@@ -51,7 +51,7 @@ function buildMain_(main) {
 
   var stringifier = new QueryStringifier();
   var http = new AppsHttp(stringifier);
-  var reports = new Reports(http);
+  var reports = new Reports(http, config);
   var geometry = new Geometry();
   var spreadsheet = new Spreadsheet(geometry);
 

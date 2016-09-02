@@ -1,5 +1,9 @@
 {
+  "env": {
+    "jasmine": true
+  },
   "globals": {
+    "config": true,
     "QueryStringifier": true,
     "AppsHttp": true,
     "Reports": true,
@@ -14,6 +18,11 @@
     "DocumentApp": true,
     "Promise": true,
     "Utilities": true,
-    "Range": true
+    "Range": true,
+    "AppsMockHttp": true,
+    "MockHttp": true,
+    "MockSheet": true,
+    "MockSpreadsheet": true,
+    "_": true
   }
 }
