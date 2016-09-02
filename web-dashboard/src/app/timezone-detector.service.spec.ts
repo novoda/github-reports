@@ -1,6 +1,6 @@
 /* tslint:disable:no-unused-variable */
 
-import { addProviders, async, inject } from '@angular/core/testing';
+import { addProviders, inject } from '@angular/core/testing';
 import { TimezoneDetectorService } from './timezone-detector.service';
 
 describe('Service: TimezoneDetector', () => {
@@ -8,9 +8,8 @@ describe('Service: TimezoneDetector', () => {
     addProviders([TimezoneDetectorService]);
   });
 
-  it('should ...',
-    inject([TimezoneDetectorService],
-      (service: TimezoneDetectorService) => {
-        expect(service).toBeTruthy();
-      }));
+  it('creates an instance of TimezoneDetector',
+    inject([TimezoneDetectorService], (service: TimezoneDetectorService) => {
+      expect(service).toBeTruthy();
+    }));
 });
