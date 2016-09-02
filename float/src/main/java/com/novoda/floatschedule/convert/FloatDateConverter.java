@@ -20,6 +20,9 @@ public class FloatDateConverter {
         if (date == null) {
             return NO_STRING;
         }
+        if (timezoneName == null) {
+            timezoneName = TimeZone.getDefault().getID();
+        }
         TimeZone timezone = TimeZone.getTimeZone(timezoneName);
         ZoneId zoneId = timezone.toZoneId();
         LocalDateTime localDateTime = LocalDateTime.ofInstant(date.toInstant(), zoneId);
