@@ -53,14 +53,14 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
     );
   });
 
-  let contributors;
+  let companyStats: CompanyStats;
 
   const newUserStats = (username: string): UserStats => {
     return new UserStats(username, null, null, null);
   };
 
   beforeEach(() => {
-    contributors = [
+    const contributors = [
       newUserStats('banana'),
       newUserStats('joe'),
       newUserStats('trinity'),
@@ -68,69 +68,6 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
       newUserStats('boss'),
       newUserStats('goku')
     ];
-  });
-
-  it('creates an instance', () => {
-    expect(component).toBeTruthy();
-  });
-
-  describe('cloneArray', () => {
-
-    it('clones an array', () => {
-      const array = [1, 2, 3];
-
-      const actualCloned = component.cloneArray(array);
-
-      expect(actualCloned).toEqual(array);
-    });
-
-    it('creates a copy of the input array', () => {
-      const array = [1, 2, 3];
-
-      const actualCloned = component.cloneArray(array);
-
-      expect(actualCloned).not.toBe(array);
-    });
-
-  });
-
-  describe('pickAndRemoveRandomContributor', () => {
-
-    it('returns an element that existed in the input array', () => {
-      const copyOfContributors = contributors.slice(0);
-
-      const oneUserStats = component.pickAndRemoveRandomContributor(copyOfContributors);
-
-      expect(contributors.indexOf(oneUserStats)).toBeGreaterThan(-1);
-    });
-
-    it('modifies the input array be removing the returned element', () => {
-      const oneUserStats = component.pickAndRemoveRandomContributor(contributors);
-
-      expect(contributors.indexOf(oneUserStats)).toBe(-1);
-    });
-
-    it('decreases the size of the input array by 1', () => {
-      component.pickAndRemoveRandomContributor(contributors);
-
-      expect(contributors.length).toBe(5);
-    });
-
-    it('returns undefined if the array has no elements', () => {
-      const actual = component.pickAndRemoveRandomContributor([]);
-
-      expect(actual).toBeUndefined();
-    });
-
-    it('returns undefined if the array is undefined', () => {
-      const actual = component.pickAndRemoveRandomContributor(undefined);
-
-      expect(actual).toBeUndefined();
-    });
-
-  });
-
-  describe('pickRandomContributors', () => {
 
     const slackers = [
       newUserStats('blundell'),
@@ -139,43 +76,11 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
       newUserStats('takecare')
     ];
 
-    let companyStats: CompanyStats;
+    companyStats = new CompanyStats(contributors, slackers);
+  });
 
-    beforeEach(() => {
-      companyStats = new CompanyStats(contributors, slackers);
-    });
-
-    it('does not alter the input company stats', () => {
-      component.pickRandomContributors(companyStats);
-
-      expect(companyStats.contributors.length).toBe(6);
-    });
-
-    it('returns 4 random contributors', () => {
-      const randomContributors = component.pickRandomContributors(companyStats);
-
-      expect(randomContributors.length).toBe(5);
-    });
-
-    it('returns all contributors if they are less than 4', () => {
-      const statsWithFewContributors = new CompanyStats(
-        [newUserStats('contributor-1'), newUserStats('contributor-2')],
-        slackers
-      );
-
-      const randomContributors = component.pickRandomContributors(statsWithFewContributors);
-
-      expect(randomContributors.length).toBe(2);
-    });
-
-    it('returns an empty array if there are no contributors', () => {
-      const statsWithFewContributors = new CompanyStats([], slackers);
-
-      const randomContributors = component.pickRandomContributors(statsWithFewContributors);
-
-      expect(randomContributors).toEqual([]);
-    });
-
+  it('creates an instance', () => {
+    expect(component).toBeTruthy();
   });
 
   describe('ngOnInit', () => {
