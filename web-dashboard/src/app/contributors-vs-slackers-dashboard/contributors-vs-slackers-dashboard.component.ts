@@ -15,7 +15,6 @@ import { TimezoneDetectorService } from '../timezone-detector.service';
 })
 export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestroy {
 
-  static NUMBER_OF_CONTRIBUTORS = 5;
   static REFRESH_RATE_IN_MILLISECONDS = 30 * 1000;
 
   public contributors: Array<UserStats>;
