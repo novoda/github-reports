@@ -15,6 +15,7 @@ describe('Service: ReportsClient', () => {
   let service: ReportsService;
   let client: ReportsClient;
   const ANY_DATE: Date = new Date();
+  const ANY_TIMEZONE = 'Europe/London';
 
   beforeEach(() => {
     addProviders([
@@ -54,7 +55,7 @@ describe('Service: ReportsClient', () => {
       }
     });
 
-    client.getCompanyStats(ANY_DATE, ANY_DATE)
+    client.getCompanyStats(ANY_DATE, ANY_DATE, ANY_TIMEZONE)
       .subscribe((actual: CompanyStats) => {
         let expected: CompanyStats = new CompanyStats(
           [new UserStats('takecare', jasmine.any(String), 567, 456)],
@@ -79,7 +80,7 @@ describe('Service: ReportsClient', () => {
       }
     });
 
-    client.getCompanyStats(ANY_DATE, ANY_DATE)
+    client.getCompanyStats(ANY_DATE, ANY_DATE, ANY_TIMEZONE)
       .subscribe((actual: CompanyStats) => {
         let expected: UserStats[] = [
           new UserStats('frapontillo', jasmine.any(String), 234, 123),
@@ -104,7 +105,7 @@ describe('Service: ReportsClient', () => {
       }
     });
 
-    client.getCompanyStats(ANY_DATE, ANY_DATE)
+    client.getCompanyStats(ANY_DATE, ANY_DATE, ANY_TIMEZONE)
       .subscribe((actual: CompanyStats) => {
         let expected: UserStats[] = [
           new UserStats('frapontillo', jasmine.any(String), 234, 0),
@@ -133,7 +134,7 @@ describe('Service: ReportsClient', () => {
       }
     });
 
-    client.getCompanyStats(ANY_DATE, ANY_DATE)
+    client.getCompanyStats(ANY_DATE, ANY_DATE, ANY_TIMEZONE)
       .subscribe((actual: CompanyStats) => {
         let expected: CompanyStats = new CompanyStats(
           [new UserStats('alexstyl', 'OddsChecker, Something', jasmine.any(Number), jasmine.any(Number))],
@@ -160,7 +161,7 @@ describe('Service: ReportsClient', () => {
       }
     });
 
-    client.getCompanyStats(ANY_DATE, ANY_DATE)
+    client.getCompanyStats(ANY_DATE, ANY_DATE, ANY_TIMEZONE)
       .subscribe((actual: CompanyStats) => {
         let expected: CompanyStats = new CompanyStats(
           [new UserStats('alexstyl', 'OddsChecker, Something', jasmine.any(Number), jasmine.any(Number))],
@@ -181,7 +182,7 @@ describe('Service: ReportsClient', () => {
       }
     });
 
-    client.getCompanyStats(ANY_DATE, ANY_DATE)
+    client.getCompanyStats(ANY_DATE, ANY_DATE, ANY_TIMEZONE)
       .subscribe((actual: CompanyStats) => {
         let expected: CompanyStats = new CompanyStats(
           [],
@@ -206,7 +207,7 @@ describe('Service: ReportsClient', () => {
       }
     });
 
-    client.getCompanyStats(ANY_DATE, ANY_DATE)
+    client.getCompanyStats(ANY_DATE, ANY_DATE, ANY_TIMEZONE)
       .subscribe((actual: CompanyStats) => {
         let expected: CompanyStats = new CompanyStats(
           [],

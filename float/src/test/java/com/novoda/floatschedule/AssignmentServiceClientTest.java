@@ -5,22 +5,17 @@ import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
 import rx.Observable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.util.*;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
@@ -30,6 +25,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class AssignmentServiceClientTest {
 
     private static final Date ANY_START_DATE = Date.from(Instant.now());
+    private static final TimeZone ANY_TIMEZONE = TimeZone.getTimeZone("Europe/London");
     private static final Integer ANY_NUMBER_OF_WEEKS = 40;
     private static final Integer NO_PERSON_ID = null;
 
@@ -54,12 +50,12 @@ public class AssignmentServiceClientTest {
     public void setUp() throws Exception {
         initMocks(this);
 
-        when(floatDateConverter.toFloatDateFormat(ANY_START_DATE)).thenReturn("2014-01-01");
+        when(floatDateConverter.toFloatDateFormat(ANY_START_DATE, ANY_TIMEZONE)).thenReturn("2014-01-01");
 
         testSubscriber = new TestSubscriber<>();
 
         List<Task> tasks = Arrays.asList(givenATask("proj1", "persA"), givenATask("proj1", "persD"), givenATask("proj2", "persB"),
-                                         givenATask("proj3", "persC"), givenATask("proj4", "persA"), givenATask("proj5", "persE"));
+                givenATask("proj3", "persC"), givenATask("proj4", "persA"), givenATask("proj5", "persE"));
 
         givenTasks(tasks);
         givenGithubUsersFor(tasks);
@@ -72,7 +68,8 @@ public class AssignmentServiceClientTest {
 
     private void givenTasks(List<Task> tasks) {
         Observable<Task> mockTasksObservable = Observable.from(tasks);
-        when(mockTaskServiceClient.getTasks(any(Date.class), anyInt(), eq(NO_PERSON_ID))).thenReturn(mockTasksObservable);
+        when(mockTaskServiceClient.getTasks(any(Date.class), anyInt(), any(TimeZone.class), eq(NO_PERSON_ID)))
+                .thenReturn(mockTasksObservable);
     }
 
     private Task givenATask(String projectName, String personName) {
@@ -97,7 +94,12 @@ public class AssignmentServiceClientTest {
     @Test
     public void givenTasksAndUsers_whenGettingGithubUsernamesForARepository_thenTheCorrectUsernameIsEmitted() {
 
-        assignmentServiceClient.getGithubUsernamesAssignedToRepositories(Collections.singletonList("repoZ"), ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
+        assignmentServiceClient.getGithubUsernamesAssignedToRepositories(
+                Collections.singletonList("repoZ"),
+                ANY_START_DATE,
+                ANY_NUMBER_OF_WEEKS,
+                ANY_TIMEZONE
+        )
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
@@ -107,9 +109,12 @@ public class AssignmentServiceClientTest {
     @Test
     public void givenTasksAndUsers_whenGettingGithubUsernamesForRepositories_thenTheCorrectUsernamesAreEmittedWithoutDuplicates() {
 
-        assignmentServiceClient.getGithubUsernamesAssignedToRepositories(Arrays.asList("repoX", "repoZ", "repoK"),
-                                                                         ANY_START_DATE,
-                                                                         ANY_NUMBER_OF_WEEKS)
+        assignmentServiceClient.getGithubUsernamesAssignedToRepositories(
+                Arrays.asList("repoX", "repoZ", "repoK"),
+                ANY_START_DATE,
+                ANY_NUMBER_OF_WEEKS,
+                ANY_TIMEZONE
+        )
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
@@ -117,9 +122,14 @@ public class AssignmentServiceClientTest {
     }
 
     @Test
-    public void givenTasksAndUsers_whenGettingGithubUsernamesForAProject_thenTheCorrectUsernameIsEmitted()  {
+    public void givenTasksAndUsers_whenGettingGithubUsernamesForAProject_thenTheCorrectUsernameIsEmitted() {
 
-        assignmentServiceClient.getGithubUsernamesAssignedToProjects(Collections.singletonList("proj2"), ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
+        assignmentServiceClient.getGithubUsernamesAssignedToProjects(
+                Collections.singletonList("proj2"),
+                ANY_START_DATE,
+                ANY_NUMBER_OF_WEEKS,
+                ANY_TIMEZONE
+        )
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
@@ -129,7 +139,12 @@ public class AssignmentServiceClientTest {
     @Test
     public void givenTasksAndUsers_whenGettingGithubUsernamesForProjects_thenTheCorrectUsernamesAreEmittedWithoutDuplicates() {
 
-        assignmentServiceClient.getGithubUsernamesAssignedToProjects(Arrays.asList("proj1", "proj4"), ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
+        assignmentServiceClient.getGithubUsernamesAssignedToProjects(
+                Arrays.asList("proj1", "proj4"),
+                ANY_START_DATE,
+                ANY_NUMBER_OF_WEEKS,
+                ANY_TIMEZONE
+        )
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
@@ -139,7 +154,12 @@ public class AssignmentServiceClientTest {
     @Test
     public void givenTasksAndUsers_whenGettingGithubUsernamesForANonExistentProject_thenTheNothingIsEmitted() {
 
-        assignmentServiceClient.getGithubUsernamesAssignedToProjects(Collections.singletonList("proj88"), ANY_START_DATE, ANY_NUMBER_OF_WEEKS)
+        assignmentServiceClient.getGithubUsernamesAssignedToProjects(
+                Collections.singletonList("proj88"),
+                ANY_START_DATE,
+                ANY_NUMBER_OF_WEEKS,
+                ANY_TIMEZONE
+        )
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 

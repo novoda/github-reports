@@ -4,15 +4,15 @@ import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
+import rx.Observable;
+import rx.functions.Func1;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
-
-import rx.Observable;
-import rx.functions.Func1;
 
 public class AssignmentServiceClient {
 
@@ -38,9 +38,13 @@ public class AssignmentServiceClient {
         this.floatGithubProjectConverter = floatGithubProjectConverter;
     }
 
-    public Observable<String> getGithubUsernamesAssignedToRepositories(List<String> repositoryNames, Date startDate, int numberOfWeeks) {
+    public Observable<String> getGithubUsernamesAssignedToRepositories(List<String> repositoryNames,
+                                                                       Date startDate,
+                                                                       int numberOfWeeks,
+                                                                       TimeZone timezone) {
+
         List<String> floatProjectNames = getFloatProjectNamesFrom(repositoryNames);
-        return getGithubUsernamesAssignedToProjects(floatProjectNames, startDate, numberOfWeeks);
+        return getGithubUsernamesAssignedToProjects(floatProjectNames, startDate, numberOfWeeks, timezone);
     }
 
     private List<String> getFloatProjectNamesFrom(List<String> repositoryNames) {
@@ -59,8 +63,12 @@ public class AssignmentServiceClient {
         }
     }
 
-    public Observable<String> getGithubUsernamesAssignedToProjects(List<String> floatProjectNames, Date startDate, int numberOfWeeks) {
-        return taskServiceClient.getTasks(startDate, numberOfWeeks, NO_PERSON_ID)
+    public Observable<String> getGithubUsernamesAssignedToProjects(List<String> floatProjectNames,
+                                                                   Date startDate,
+                                                                   int numberOfWeeks,
+                                                                   TimeZone timezone) {
+
+        return taskServiceClient.getTasks(startDate, numberOfWeeks, timezone, NO_PERSON_ID)
                 .filter(byProjectNameIn(floatProjectNames))
                 .map(Task::getPersonName)
                 .map(toGithubUsernameOrNull())

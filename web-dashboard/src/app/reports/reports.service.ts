@@ -11,10 +11,11 @@ export class ReportsService {
   constructor(private http: Http, private config: ConfigService) {
   }
 
-  getAggregatedStats(from: Date, to: Date): Observable<{usersStats: any}> {
+  getAggregatedStats(from: Date, to: Date, timezone: string): Observable<{usersStats: any}> {
     let params = new URLSearchParams();
     params.set('from', from.toISOString());
     params.set('to', to.toISOString());
+    params.set('timezone', timezone);
 
     return this.config
       .getApiBase()

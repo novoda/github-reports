@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 describe('Service: Reports', () => {
 
   const ANY_DATE = new Date();
+  const ANY_TIMEZONE = 'Europe/London';
 
   let mockBackend: MockBackend;
   let configService: ConfigService;
@@ -49,7 +50,7 @@ describe('Service: Reports', () => {
     let response = new Response(new ResponseOptions({body: '{"some": "string", "one": 1}'}));
     mockBackend.connections.subscribe(connection => connection.mockRespond(response));
 
-    reportsService.getAggregatedStats(ANY_DATE, ANY_DATE)
+    reportsService.getAggregatedStats(ANY_DATE, ANY_DATE, ANY_TIMEZONE)
       .subscribe(value => {
         expect(value).toEqual({
           some: 'string',

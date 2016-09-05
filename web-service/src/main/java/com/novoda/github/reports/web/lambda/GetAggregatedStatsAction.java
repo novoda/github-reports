@@ -17,12 +17,14 @@ import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class GetAggregatedStatsAction implements RequestStreamHandler {
 
     private static final String ISO_8601_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
     private static final Gson gson = new GsonBuilder()
             .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
+            .registerTypeAdapter(TimeZone.class, new TimeZoneTypeAdapter())
             .setDateFormat(ISO_8601_DATE_TIME_FORMAT)
             .create();
 
@@ -43,7 +45,8 @@ public class GetAggregatedStatsAction implements RequestStreamHandler {
         Map<String, List<UserAssignments>> usersAssignments = floatServiceClient.getGithubUsersAssignmentsInDateRange(
                 request.users(),
                 request.from(),
-                request.to()
+                request.to(),
+                request.timezone()
         );
 
         try {
