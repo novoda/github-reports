@@ -1,5 +1,5 @@
-$margin: 15px;
-$doubleMargin: $margin * 2;
+@import "contributor.dimen";
+
 $contributor-padding: 15px;
 $contributor-height: 130px;
 
@@ -23,34 +23,13 @@ $contributor-height: 130px;
   box-shadow: 0 40px 40px -30px rgba(0, 0, 0, 0.6);
 
   padding: 15px;
-  margin: $margin;
+  margin: $contributor-margin 0 $contributor-margin $contributor-margin;
   box-sizing: border-box;
 
   overflow-x: auto;
   overflow-y: hidden;
 
-  // min width
-
-  @media screen and (max-width: 600px) {
-    flex-basis: calc(100% - #{$doubleMargin});
-  }
-
-  @media screen and (min-width: 600px) and (max-width: 900px) {
-    flex-basis: calc(50% - #{$doubleMargin});
-  }
-
-  @media screen and (min-width: 900px) and (max-width: 1200px) {
-    flex-basis: calc(33% - #{$doubleMargin});
-  }
-
-  @media screen and (min-width: 1200px) and (max-width: 1500px) {
-    flex-basis: calc(25% - #{$doubleMargin});
-  }
-
-  @media screen and (min-width: 1500px) {
-    flex-basis: calc(20% - #{$doubleMargin});
-  }
-
+  flex-basis: calc(var(--contributor-size));
 }
 
 img {
