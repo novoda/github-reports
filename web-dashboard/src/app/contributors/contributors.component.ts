@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, HostBinding, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { UserStats } from '../reports/user-stats';
 import { Subscription, Observable } from 'rxjs';
 
@@ -41,7 +41,7 @@ export class ContributorsComponent implements OnInit, OnDestroy {
   }
 
   private getVisibleContributorQuantity(): number {
-    return parseInt(window.getComputedStyle(this.element.nativeElement, null).getPropertyValue(this.CONTRIBUTOR_QTY));
+    return parseInt(window.getComputedStyle(this.element.nativeElement, null).getPropertyValue(this.CONTRIBUTOR_QTY), 10);
   }
 
   private setContributorPosition(position: number) {
