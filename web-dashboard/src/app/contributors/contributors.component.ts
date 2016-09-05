@@ -28,16 +28,19 @@ export class ContributorsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.animation = Observable
       .timer(ContributorsComponent.ROTATE_RATE_IN_MILLISECONDS, ContributorsComponent.ROTATE_RATE_IN_MILLISECONDS)
-      .subscribe(time => {
-        const visibleContributorQuantity = this.getVisibleContributorQuantity();
-        console.log(visibleContributorQuantity);
-        if (this.contributors.length - this.position >= visibleContributorQuantity) {
-          this.position += 1;
-        } else {
-          this.position = 1;
-        }
-        this.setContributorPosition(this.position);
+      .subscribe(() => {
+        this.slideToNextPosition();
       });
+  }
+
+  private slideToNextPosition() {
+    const visibleContributorQuantity = this.getVisibleContributorQuantity();
+    if (this.contributors.length - this.position >= visibleContributorQuantity) {
+      this.position += 1;
+    } else {
+      this.position = 1;
+    }
+    this.setContributorPosition(this.position);
   }
 
   private getVisibleContributorQuantity(): number {
