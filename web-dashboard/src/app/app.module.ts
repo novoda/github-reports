@@ -43,6 +43,7 @@ import { TimezoneDetectorService } from './timezone-detector.service';
     ReportsClient,
     TimezoneDetectorService
   ],
+  entryComponents: [AppComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule {
