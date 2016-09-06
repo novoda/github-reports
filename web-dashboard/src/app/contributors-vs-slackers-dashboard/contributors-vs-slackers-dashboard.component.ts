@@ -15,7 +15,6 @@ import { TimezoneDetectorService } from '../timezone-detector.service';
 })
 export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestroy {
 
-  static NUMBER_OF_CONTRIBUTORS = 5;
   static REFRESH_RATE_IN_MILLISECONDS = 30 * 1000;
 
   public contributors: Array<UserStats>;
@@ -36,7 +35,7 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestr
         return this.getCompanyStats();
       })
       .subscribe((stats: CompanyStats) => {
-        this.contributors = this.pickRandomContributors(stats);
+        this.contributors = stats.contributors;
         this.slackers = stats.slackers;
       });
   }
@@ -55,31 +54,6 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestr
     if (!this.subscription.isUnsubscribed) {
       this.subscription.unsubscribe();
     }
-  }
-
-  pickRandomContributors(stats: CompanyStats): Array<UserStats> {
-    const contributors = this.cloneArray(stats.contributors);
-
-    const numberOfContributors = Math.min(contributors.length, ContributorsVsSlackersDashboardComponent.NUMBER_OF_CONTRIBUTORS);
-    const randomContributors: Array<UserStats> = new Array(numberOfContributors);
-
-    for (let index = 0; index < numberOfContributors; index++) {
-      randomContributors[index] = this.pickAndRemoveRandomContributor(contributors);
-    }
-
-    return randomContributors;
-  }
-
-  cloneArray(array: Array<any>) {
-    return array.slice(0);
-  }
-
-  pickAndRemoveRandomContributor(users: Array<UserStats>): UserStats {
-    const usersOrEmpty = users || [];
-    const index = Math.floor(Math.random() * usersOrEmpty.length);
-    const user = usersOrEmpty[index];
-    usersOrEmpty.splice(index, 1);
-    return user;
   }
 
 }
