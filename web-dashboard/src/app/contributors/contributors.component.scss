@@ -25,7 +25,7 @@
   }
 
   // the 4 margins are: peeks for previous and next boxes, margins between previous and next boxes
-  --contributor-size: calc((100% / var(--contributor-qty)) - 15px - (45px / var(--contributor-qty)));
+  --contributor-size: calc((100% / var(--contributor-qty)) - #{$contributor-margin} - (#{$contributor-margin} * 3 / var(--contributor-qty)));
   --contributor-position: 1;
 
   position: relative;
