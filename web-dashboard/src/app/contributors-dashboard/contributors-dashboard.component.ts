@@ -9,16 +9,16 @@ import { OnErrorIgnoreOperator } from '../shared/OnErrorIgnoreOperator';
 import { TimezoneDetectorService } from '../timezone-detector.service';
 
 @Component({
-  selector: 'contributors-vs-slackers-dashboard',
-  templateUrl: 'contributors-vs-slackers-dashboard.component.html',
-  styleUrls: ['contributors-vs-slackers-dashboard.component.scss']
+  selector: 'contributors-dashboard',
+  templateUrl: 'contributors-dashboard.component.html',
+  styleUrls: ['contributors-dashboard.component.scss']
 })
-export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestroy {
+export class ContributorsDashboardComponent implements OnInit, OnDestroy {
 
   static REFRESH_RATE_IN_MILLISECONDS = 30 * 1000;
 
-  public contributors: Array<UserStats>;
-  public slackers: Array<UserStats>;
+  public teamContributors: Array<UserStats>;
+  public projectContributors: Array<UserStats>;
   public subscription: Subscription;
 
   constructor(private weekCalculator: WeekCalculator,
@@ -30,13 +30,13 @@ export class ContributorsVsSlackersDashboardComponent implements OnInit, OnDestr
 
   ngOnInit() {
     this.subscription = Observable
-      .timer(0, ContributorsVsSlackersDashboardComponent.REFRESH_RATE_IN_MILLISECONDS)
+      .timer(0, ContributorsDashboardComponent.REFRESH_RATE_IN_MILLISECONDS)
       .switchMap(() => {
         return this.getCompanyStats();
       })
       .subscribe((stats: CompanyStats) => {
-        this.contributors = stats.contributors;
-        this.slackers = stats.slackers;
+        this.teamContributors = stats.contributors;
+        this.projectContributors = stats.slackers;
       });
   }
 

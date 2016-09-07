@@ -1,7 +1,7 @@
 /* tslint:disable:no-unused-variable */
 
 import { addProviders, inject } from '@angular/core/testing';
-import { ContributorsVsSlackersDashboardComponent } from './contributors-vs-slackers-dashboard.component';
+import { ContributorsDashboardComponent } from './contributors-dashboard.component';
 import { SystemClock } from '../system-clock';
 import { WeekCalculator } from '../week-calculator.service';
 import { ReportsService } from '../reports/reports.service';
@@ -12,7 +12,7 @@ import { Observable, Scheduler } from 'rxjs';
 import { ReportsMockService } from '../reports/reports-mock.service';
 import { TimezoneDetectorService } from '../timezone-detector.service';
 
-describe('Component: ContributorsVsSlackersDashboard', () => {
+describe('Component: ContributorsDashboard', () => {
 
   let clock: SystemClock;
   let weekCalculator: WeekCalculator;
@@ -20,7 +20,7 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
   let reportsServiceClient: ReportsClient;
   let timezoneDetectorService: TimezoneDetectorService;
 
-  let component: ContributorsVsSlackersDashboardComponent;
+  let component: ContributorsDashboardComponent;
 
   beforeEach(() => {
     addProviders([
@@ -45,7 +45,7 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
     }));
 
   beforeEach(() => {
-    component = new ContributorsVsSlackersDashboardComponent(
+    component = new ContributorsDashboardComponent(
       weekCalculator,
       clock,
       reportsServiceClient,
@@ -60,7 +60,7 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
   };
 
   beforeEach(() => {
-    const contributors = [
+    const teamContributors = [
       newUserStats('banana'),
       newUserStats('joe'),
       newUserStats('trinity'),
@@ -69,14 +69,14 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
       newUserStats('goku')
     ];
 
-    const slackers = [
+    const projectContributors = [
       newUserStats('blundell'),
       newUserStats('xavi'),
       newUserStats('frapontillo'),
       newUserStats('takecare')
     ];
 
-    companyStats = new CompanyStats(contributors, slackers);
+    companyStats = new CompanyStats(teamContributors, projectContributors);
   });
 
   it('creates an instance', () => {
@@ -137,13 +137,13 @@ describe('Component: ContributorsVsSlackersDashboard', () => {
         });
     });
 
-    it('sets contributors and slackers', () => {
+    it('sets teamContributors and projectContributors', () => {
       component.ngOnInit();
 
       component.subscription
         .add(() => {
-          expect(component.contributors).toBeDefined();
-          expect(component.slackers).toBeDefined();
+          expect(component.teamContributors).toBeDefined();
+          expect(component.projectContributors).toBeDefined();
         });
     });
 

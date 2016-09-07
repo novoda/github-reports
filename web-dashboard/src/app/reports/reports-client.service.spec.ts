@@ -91,7 +91,7 @@ describe('Service: ReportsClient', () => {
       });
   }));
 
-  it('sets as slackers all people with 0 external contributions and > 0 assigned contributions', async(() => {
+  it('sets as projectContributors all people with 0 external contributions and > 0 assigned contributions', async(() => {
     givenStats({
       'usersStats': {
         'frapontillo': {
