@@ -1,9 +1,9 @@
 import { Routes, RouterModule } from '@angular/router';
-import { ContributorsVsSlackersDashboardComponent } from './contributors-vs-slackers-dashboard/contributors-vs-slackers-dashboard.component';
+import { ContributorsDashboardComponent } from './contributors-dashboard/contributors-dashboard.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 const appRoutes: Routes = [
-  {path: 'work', component: ContributorsVsSlackersDashboardComponent},
+  {path: 'work', component: ContributorsDashboardComponent},
   {path: '**', component: PageNotFoundComponent}
 ];
 

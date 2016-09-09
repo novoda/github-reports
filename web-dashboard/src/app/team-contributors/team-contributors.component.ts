@@ -3,22 +3,22 @@ import { UserStats } from '../reports/user-stats';
 import { Subscription, Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-contributors',
-  templateUrl: 'contributors.component.html',
-  styleUrls: ['contributors.component.scss']
+  selector: 'app-team-contributors',
+  templateUrl: 'team-contributors.component.html',
+  styleUrls: ['team-contributors.component.scss']
 })
-export class ContributorsComponent implements OnInit, OnDestroy {
+export class TeamContributorsComponent implements OnInit, OnDestroy {
 
   static ROTATE_RATE_IN_MILLISECONDS = 3 * 1000;
 
-  private CONTRIBUTOR_POSITION = '--contributor-position';
-  private CONTRIBUTOR_QTY = '--contributor-qty';
+  private TEAM_CONTRIBUTOR_POSITION = '--team-contributor-position';
+  private TEAM_CONTRIBUTOR_QTY = '--team-contributor-qty';
 
   animation: Subscription;
   position: number;
   element;
 
-  @Input() contributors: Array<UserStats>;
+  @Input() teamContributors: Array<UserStats>;
 
   constructor(element: ElementRef) {
     this.element = element;
@@ -27,15 +27,18 @@ export class ContributorsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.animation = Observable
-      .timer(ContributorsComponent.ROTATE_RATE_IN_MILLISECONDS, ContributorsComponent.ROTATE_RATE_IN_MILLISECONDS)
+      .timer(TeamContributorsComponent.ROTATE_RATE_IN_MILLISECONDS, TeamContributorsComponent.ROTATE_RATE_IN_MILLISECONDS)
       .subscribe(() => {
         this.slideToNextPosition();
       });
   }
 
   private slideToNextPosition() {
+    if (!this.teamContributors) {
+      return;
+    }
     const visibleContributorQuantity = this.getVisibleContributorQuantity();
-    if (this.contributors.length - this.position >= visibleContributorQuantity) {
+    if (this.teamContributors.length - this.position >= visibleContributorQuantity) {
       this.position += 1;
     } else {
       this.position = 1;
@@ -44,11 +47,11 @@ export class ContributorsComponent implements OnInit, OnDestroy {
   }
 
   private getVisibleContributorQuantity(): number {
-    return parseInt(window.getComputedStyle(this.element.nativeElement, null).getPropertyValue(this.CONTRIBUTOR_QTY), 10);
+    return parseInt(window.getComputedStyle(this.element.nativeElement, null).getPropertyValue(this.TEAM_CONTRIBUTOR_QTY), 10);
   }
 
   private setContributorPosition(position: number) {
-    this.element.nativeElement.style.setProperty(this.CONTRIBUTOR_POSITION, position);
+    this.element.nativeElement.style.setProperty(this.TEAM_CONTRIBUTOR_POSITION, position);
   }
 
   ngOnDestroy(): void {

@@ -1,40 +1,40 @@
-@import "./../contributor/contributor.dimen";
+@import "./../team-contributor/team-contributor.dimen";
 
 :host {
   display: flex;
   flex-direction: row;
 
   @media screen and (max-width: 600px) {
-    --contributor-qty: 1;
+    --team-contributor-qty: 1;
   }
 
   @media screen and (min-width: 600px) and (max-width: 900px) {
-    --contributor-qty: 2;
+    --team-contributor-qty: 2;
   }
 
   @media screen and (min-width: 900px) and (max-width: 1200px) {
-    --contributor-qty: 3;
+    --team-contributor-qty: 3;
   }
 
   @media screen and (min-width: 1200px) and (max-width: 1500px) {
-    --contributor-qty: 4;
+    --team-contributor-qty: 4;
   }
 
   @media screen and (min-width: 1500px) {
-    --contributor-qty: 5;
+    --team-contributor-qty: 5;
   }
 
   // the 4 margins are: peeks for previous and next boxes, margins between previous and next boxes
-  --contributor-size: calc((100% / var(--contributor-qty)) - #{$contributor-margin} - (#{$contributor-margin} * 3 / var(--contributor-qty)));
-  --contributor-position: 1;
+  --team-contributor-size: calc((100% / var(--team-contributor-qty)) - #{$team-contributor-margin} - (#{$team-contributor-margin} * 3 / var(--team-contributor-qty)));
+  --team-contributor-position: 1;
 
   position: relative;
-  left: calc(#{$contributor-margin} - (var(--contributor-position) - 1) * (#{$contributor-margin} + var(--contributor-size)));
+  left: calc(#{$team-contributor-margin} - (var(--team-contributor-position) - 1) * (#{$team-contributor-margin} + var(--team-contributor-size)));
   transition-property: left;
   transition-timing-function: ease-in-out;
   transition-duration: 0.3s;
 
-  .no-contributors {
+  .no-team-contributors {
     flex: 1;
     color: white;
     text-align: center;

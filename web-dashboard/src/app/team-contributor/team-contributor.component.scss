@@ -1,7 +1,7 @@
-@import "contributor.dimen";
+@import "team-contributor.dimen";
 
-$contributor-padding: 15px;
-$contributor-height: 130px;
+$team-contributor-padding: 15px;
+$team-contributor-height: 130px;
 
 @mixin ellipsis() {
   white-space: nowrap;
@@ -13,7 +13,7 @@ $contributor-height: 130px;
   display: flex;
   flex-direction: row;
   flex-shrink: 0;
-  height: $contributor-height;
+  height: $team-contributor-height;
 
   justify-content: flex-start;
   align-items: center;
@@ -23,22 +23,22 @@ $contributor-height: 130px;
   box-shadow: 0 40px 40px -30px rgba(0, 0, 0, 0.6);
 
   padding: 15px;
-  margin: $contributor-margin 0 $contributor-margin $contributor-margin;
+  margin: $team-contributor-margin 0 $team-contributor-margin $team-contributor-margin;
   box-sizing: border-box;
 
   overflow-x: auto;
   overflow-y: hidden;
 
-  flex-basis: calc(var(--contributor-size));
+  flex-basis: calc(var(--team-contributor-size));
 }
 
 img {
   border-radius: 25%;
-  max-height: $contributor-height - $contributor-padding*2;
+  max-height: $team-contributor-height - $team-contributor-padding*2;
 }
 
-.contributor-info {
-  padding: $contributor-padding;
+.team-contributor-info {
+  padding: $team-contributor-padding;
   @include ellipsis();
 
   h3 {
