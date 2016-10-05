@@ -32,8 +32,8 @@ To install application and development dependencies, simply run `npm install`.
 
 #### Configuration
 
-To configure the application, you need to create a `src/config.json` (see [`src/config.sample.json`]
-(src/config.sample.json)) containing an `api` attribute that points to the Web Service.
+To configure the application, you need to create a `config/config.json` (see [`config/config.sample.json`]
+(config/config.sample.json)) containing an `api` attribute that points to the Web Service.
 
 #### Available tasks
 
