@@ -11,8 +11,8 @@
     "tests"
   ],
   "dependencies": {
-    "es6-promise": "^3.2.2",
-    "jquery": "^3.1.0",
-    "lodash": "^4.15.0"
+    "es6-promise": "~3.2.2",
+    "jquery": "~3.1.0",
+    "lodash": "~4.15.0"
   }
 }
