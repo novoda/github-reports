@@ -24,12 +24,6 @@ import rx.Observable;
 import rx.functions.Func1;
 import rx.functions.Func3;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import static com.novoda.github.reports.service.issue.GithubEvent.Type.*;
 
 public class EventsServiceClient {
