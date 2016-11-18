@@ -3,45 +3,52 @@ package com.novoda.github.reports.batch.local.issue;
 import com.novoda.github.reports.batch.local.retry.RateLimitResetTimerSubject;
 import com.novoda.github.reports.batch.local.retry.RateLimitResetTimerSubjectContainer;
 import com.novoda.github.reports.batch.local.retry.RetryWhenTokenResets;
-import com.novoda.github.reports.service.issue.*;
+import com.novoda.github.reports.service.issue.GithubReaction;
+import com.novoda.github.reports.service.issue.RepositoryIssue;
+import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
+import com.novoda.github.reports.service.issue.RepositoryIssueEventReaction;
+import com.novoda.github.reports.service.network.GithubApiService;
+import com.novoda.github.reports.service.network.GithubCachingServiceContainer;
 import com.novoda.github.reports.service.network.PagedTransformer;
 import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
 import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersistTransformer;
-import retrofit2.Response;
-import rx.Observable;
-import rx.functions.Func1;
 
 import java.util.Date;
 import java.util.List;
+
+import retrofit2.Response;
+import rx.Observable;
+import rx.functions.Func1;
 
 public class ReactionsServiceClient {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
     private static final int FIRST_PAGE = 1;
 
-    private final IssueService issueService;
+    private final GithubApiService apiService;
+
     private final RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer;
     private final RateLimitResetTimerSubject rateLimitResetTimerSubject;
     private final RateLimitDelayTransformer<GithubReaction> reactionRateLimitDelayTransformer;
 
     public static ReactionsServiceClient newInstance() {
-        IssueService issueService = GithubIssueService.newCachingInstance();
+        GithubApiService apiService = GithubCachingServiceContainer.getGithubService();
         RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer = RepositoryIssueEventPersistTransformer.newInstance();
         RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
         RateLimitDelayTransformer<GithubReaction> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
 
-        return new ReactionsServiceClient(issueService,
-                repositoryIssueEventPersistTransformer,
-                rateLimitResetTimerSubject,
-                commentRateLimitDelayTransformer);
+        return new ReactionsServiceClient(apiService,
+                                          repositoryIssueEventPersistTransformer,
+                                          rateLimitResetTimerSubject,
+                                          commentRateLimitDelayTransformer);
     }
 
-    private ReactionsServiceClient(IssueService issueService,
+    private ReactionsServiceClient(GithubApiService apiService,
                                    RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer,
                                    RateLimitResetTimerSubject rateLimitResetTimerSubject,
                                    RateLimitDelayTransformer<GithubReaction> reactionRateLimitDelayTransformer) {
 
-        this.issueService = issueService;
+        this.apiService = apiService;
         this.repositoryIssueEventPersistTransformer = repositoryIssueEventPersistTransformer;
         this.rateLimitResetTimerSubject = rateLimitResetTimerSubject;
         this.reactionRateLimitDelayTransformer = reactionRateLimitDelayTransformer;
@@ -69,7 +76,7 @@ public class ReactionsServiceClient {
                                                                             int page,
                                                                             int pageCount) {
 
-        return issueService.getReactionsFor(organisation, repository, issueNumber, page, pageCount)
+        return apiService.getReactionsForIssueAndPage(organisation, repository, issueNumber, page, pageCount)
                 .compose(reactionRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedReactionsFor(
                         organisation,

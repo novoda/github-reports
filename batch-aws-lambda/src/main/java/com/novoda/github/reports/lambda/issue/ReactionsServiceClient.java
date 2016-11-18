@@ -6,8 +6,12 @@ import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.NextMessagesTransformer;
 import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
-import com.novoda.github.reports.service.issue.*;
+import com.novoda.github.reports.service.issue.GithubReaction;
+import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
+import com.novoda.github.reports.service.issue.RepositoryIssueEventReaction;
 import com.novoda.github.reports.service.network.GithubApiService;
+import com.novoda.github.reports.service.network.GithubServiceContainer;
+
 import rx.Observable;
 import rx.functions.Func3;
 
@@ -15,37 +19,36 @@ public class ReactionsServiceClient {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
 
-    private final IssueService issueService;
+    private final GithubApiService apiService;
     private final ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer;
 
     public static ReactionsServiceClient newInstance() {
-        IssueService issueService = GithubIssueService.newInstance();
+        GithubApiService apiService = GithubServiceContainer.getGithubService();
         ResponsePersistTransformer<RepositoryIssueEvent> persistRepositoryIssueEventsTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance();
 
-        return new ReactionsServiceClient(issueService, persistRepositoryIssueEventsTransformer);
+        return new ReactionsServiceClient(apiService, persistRepositoryIssueEventsTransformer);
     }
 
-    public static ReactionsServiceClient newInstance(GithubApiService githubApiService,
+    public static ReactionsServiceClient newInstance(GithubApiService apiService,
                                                      DatabaseCredentialsReader databaseCredentialsReader) {
 
-        IssueService issueService = GithubIssueService.newInstance(githubApiService);
         ResponsePersistTransformer<RepositoryIssueEvent> persistRepositoryIssueEventsTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
 
-        return new ReactionsServiceClient(issueService, persistRepositoryIssueEventsTransformer);
+        return new ReactionsServiceClient(apiService, persistRepositoryIssueEventsTransformer);
     }
 
-    private ReactionsServiceClient(IssueService issueService,
+    private ReactionsServiceClient(GithubApiService apiService,
                                    ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer) {
 
-        this.issueService = issueService;
+        this.apiService = apiService;
         this.responseRepositoryIssueEventPersistTransformer = responseRepositoryIssueEventPersistTransformer;
     }
 
     public Observable<AmazonQueueMessage> retrieveReactionsAsEventsFrom(AmazonGetReactionsQueueMessage message) {
-        return issueService
-                .getReactionsFor(
+        return apiService
+                .getReactionsForIssueAndPage(
                         message.organisationName(),
                         message.repositoryName(),
                         Math.toIntExact(message.issueNumber()),
