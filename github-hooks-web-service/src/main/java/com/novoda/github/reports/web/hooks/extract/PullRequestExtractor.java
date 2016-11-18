@@ -10,9 +10,9 @@ public class PullRequestExtractor implements PayloadExtractor<PullRequest> {
     public PullRequest extractFrom(GithubWebhookEvent event) throws ExtractException {
         GithubWebhookPullRequest webhookPullRequest = event.pullRequest();
         GithubRepository repository = event.repository();
-        if (webhookPullRequest == null || repository == null) {
+        if (webhookPullRequest == null || repository == null || event.sender() == null) {
             throw new ExtractException(event);
         }
-        return new PullRequest(webhookPullRequest, repository, event.action());
+        return new PullRequest(webhookPullRequest, repository, event.action(), event.sender());
     }
 }

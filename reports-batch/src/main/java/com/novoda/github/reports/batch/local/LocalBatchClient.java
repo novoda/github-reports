@@ -3,15 +3,15 @@ package com.novoda.github.reports.batch.local;
 import com.novoda.github.reports.batch.local.issue.CommentsServiceClient;
 import com.novoda.github.reports.batch.local.issue.EventsServiceClient;
 import com.novoda.github.reports.batch.local.issue.IssuesServiceClient;
+import com.novoda.github.reports.batch.local.issue.ReactionsServiceClient;
+import com.novoda.github.reports.batch.local.repository.RepositoriesServiceClient;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.repository.GithubRepository;
-import com.novoda.github.reports.batch.local.repository.RepositoriesServiceClient;
+import rx.Observable;
 
 import java.util.Collections;
 import java.util.Date;
-
-import rx.Observable;
 
 public class LocalBatchClient {
 
@@ -19,6 +19,7 @@ public class LocalBatchClient {
     private static final RepositoriesServiceClient REPOSITORY_SERVICE_CLIENT = RepositoriesServiceClient.newInstance();
     private static final CommentsServiceClient COMMENTS_SERVICE_CLIENT = CommentsServiceClient.newInstance();
     private static final EventsServiceClient EVENTS_SERVICE_CLIENT = EventsServiceClient.newInstance();
+    private static final ReactionsServiceClient REACTIONS_SERVICE_CLIENT = ReactionsServiceClient.newInstance();
 
     private LocalBatchClient() {
         // non-instantiable
@@ -50,7 +51,10 @@ public class LocalBatchClient {
             Observable<RepositoryIssueEvent> events = repositoryIssueObservable
                     .flatMap(repositoryIssue -> EVENTS_SERVICE_CLIENT.retrieveEventsFrom(repositoryIssue, since));
 
-            return Observable.merge(comments, events);
+            Observable<RepositoryIssueEvent> reactions = repositoryIssueObservable
+                    .flatMap(repositoryIssue -> REACTIONS_SERVICE_CLIENT.retrieveReactionsAsEventsFrom(repositoryIssue, since));
+
+            return Observable.merge(comments, events, reactions);
         };
     }
 

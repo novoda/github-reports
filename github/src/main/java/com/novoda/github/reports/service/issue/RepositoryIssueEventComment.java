@@ -29,8 +29,8 @@ public class RepositoryIssueEventComment extends RepositoryIssueEvent {
     }
 
     @Override
-    public GithubEvent.Type getEventType() {
-        return GithubEvent.Type.COMMENTED;
+    public RepositoryIssueEvent.Type getEventType() {
+        return RepositoryIssueEvent.Type.COMMENTED;
     }
 
     @Override

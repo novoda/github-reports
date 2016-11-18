@@ -1,6 +1,6 @@
 .tmp/
 bower_components/
-build/
+build/**
 coverage/
 node_modules/
 gapps.config.json

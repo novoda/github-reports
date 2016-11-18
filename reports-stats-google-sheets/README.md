@@ -89,11 +89,12 @@ project as well, but they both simply delegate work to `gulp test`. This allows 
 
 #### Project structure
 
-The projects is divided into the following directories:
+The projects `src` folder is divided into the following directories:
 
-* `src`, contains all the `js` files that will be uploaded to Google Apps Script (**important**: do not use NodeJS
+* `shared`, contains all the `js` files that will be shared across `web` and `plugin`
+* `plugin` contains all the `js` files that will be uploaded to Google Apps Script (**important**: do not use NodeJS
 modules here, since they won't be available on Apps Script)
-* `test`, contains mock files and specs (tests) for the relevant modules that we want to test and mock
+* `web`, contains pages (templates and partials) that will be compiled and sent to Google Apps Script
 
 #### Dependency Injection
 

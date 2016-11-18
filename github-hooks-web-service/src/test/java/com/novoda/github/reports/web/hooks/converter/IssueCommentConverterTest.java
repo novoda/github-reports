@@ -9,12 +9,11 @@ import com.novoda.github.reports.service.persistence.converter.ConverterExceptio
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.web.hooks.model.GithubAction;
 import com.novoda.github.reports.web.hooks.model.IssueComment;
-
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -27,7 +26,7 @@ public class IssueCommentConverterTest {
     private static final long ANY_COMMENT_ID = 23L;
     private static final Date ANY_DATE = new Date();
     private static final int ANY_ISSUE_NUMBER = 23;
-    private static final boolean ANY_IS_PULL_REQUEST = false;
+    private static final boolean IS_NOT_PULL_REQUEST = false;
 
     @InjectMocks
     private IssueCommentConverter converter;
@@ -61,7 +60,7 @@ public class IssueCommentConverterTest {
         GithubUser githubUser = new GithubUser(ANY_USER_ID);
         GithubComment githubComment = new GithubComment(ANY_COMMENT_ID, githubUser, ANY_DATE);
         GithubRepository githubRepository = new GithubRepository(ANY_REPOSITORY_ID);
-        GithubIssue githubIssue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, ANY_IS_PULL_REQUEST);
+        GithubIssue githubIssue = new GithubIssue(ANY_ISSUE_NUMBER, ANY_OWNER_ID, IS_NOT_PULL_REQUEST);
         return new IssueComment(githubComment, githubRepository, githubIssue, GithubAction.CREATED);
     }
 }

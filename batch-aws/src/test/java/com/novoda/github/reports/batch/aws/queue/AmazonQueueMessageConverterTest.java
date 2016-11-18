@@ -2,6 +2,10 @@ package com.novoda.github.reports.batch.aws.queue;
 
 import com.amazonaws.services.sqs.model.Message;
 import com.novoda.github.reports.batch.queue.MessageConverterException;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,11 +14,6 @@ import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.stream.Collectors;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -84,6 +83,18 @@ public class AmazonQueueMessageConverterTest {
             ANY_ISSUE_OWNER_ID,
             ANY_ISSUE_PR
     );
+    private static final AmazonGetReactionsQueueMessage AMAZON_GET_REACTIONS_QUEUE_MESSAGE = AmazonGetReactionsQueueMessage.create(
+            ANY_TERMINAL,
+            ANY_PAGE,
+            ANY_RECEIPT_HANDLE,
+            ANY_ORGANISATION,
+            ANY_DATE,
+            ANY_REPO_ID,
+            ANY_REPO_NAME,
+            ANY_ISSUE_NUMBER,
+            ANY_ISSUE_OWNER_ID,
+            ANY_ISSUE_PR
+    );
 
     private AmazonQueueMessageConverter converter;
 
@@ -99,45 +110,54 @@ public class AmazonQueueMessageConverterTest {
     public void givenRepositoriesMessage_whenFromMessage_thenReturnGetRepositoriesMessage() throws IOException, MessageConverterException {
         Message message = givenMessageFromJson("repositories.json");
 
-        AmazonQueueMessage converted = converter.fromMessage(message);
+        AmazonQueueMessage expected = converter.fromMessage(message);
 
-        assertEquals(AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE, converted);
+        assertEquals(AMAZON_GET_REPOSITORIES_QUEUE_MESSAGE, expected);
     }
 
     @Test
     public void givenIssuesMessage_whenFromMessage_thenReturnGetIssuesMessage() throws IOException, MessageConverterException {
         Message message = givenMessageFromJson("issues.json");
 
-        AmazonQueueMessage converted = converter.fromMessage(message);
+        AmazonQueueMessage expected = converter.fromMessage(message);
 
-        assertEquals(AMAZON_GET_ISSUES_QUEUE_MESSAGE, converted);
+        assertEquals(AMAZON_GET_ISSUES_QUEUE_MESSAGE, expected);
     }
 
     @Test
     public void givenCommentsMessage_whenFromMessage_thenReturnGetCommentsMessage() throws IOException, MessageConverterException {
         Message message = givenMessageFromJson("comments.json");
 
-        AmazonQueueMessage converted = converter.fromMessage(message);
+        AmazonQueueMessage expected = converter.fromMessage(message);
 
-        assertEquals(AMAZON_GET_COMMENTS_QUEUE_MESSAGE, converted);
+        assertEquals(AMAZON_GET_COMMENTS_QUEUE_MESSAGE, expected);
     }
 
     @Test
     public void givenEventsMessage_whenFromMessage_thenReturnGetEventsMessage() throws IOException, MessageConverterException {
         Message message = givenMessageFromJson("events.json");
 
-        AmazonQueueMessage converted = converter.fromMessage(message);
+        AmazonQueueMessage expected = converter.fromMessage(message);
 
-        assertEquals(AMAZON_GET_EVENTS_QUEUE_MESSAGE, converted);
+        assertEquals(AMAZON_GET_EVENTS_QUEUE_MESSAGE, expected);
     }
 
     @Test
     public void givenReviewCommentsMessage_whenFromMessage_thenReturnGetReviewCommentsMessage() throws IOException, MessageConverterException {
         Message message = givenMessageFromJson("review_comments.json");
 
-        AmazonQueueMessage converted = converter.fromMessage(message);
+        AmazonQueueMessage expected = converter.fromMessage(message);
 
-        assertEquals(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE, converted);
+        assertEquals(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE, expected);
+    }
+
+    @Test
+    public void givenReactionsMessage_whenFromMessage_thenReturnGetReactionsMessage() throws IOException, MessageConverterException {
+        Message message = givenMessageFromJson("reactions.json");
+
+        AmazonQueueMessage expected = converter.fromMessage(message);
+
+        assertEquals(AMAZON_GET_REACTIONS_QUEUE_MESSAGE, expected);
     }
 
     @Test
@@ -249,6 +269,26 @@ public class AmazonQueueMessageConverterTest {
                 .issueNumber(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.issueNumber())
                 .issueOwnerId(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.issueOwnerId())
                 .isPullRequest(AMAZON_GET_REVIEW_COMMENTS_QUEUE_MESSAGE.isPullRequest())
+                .build();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void givenGetReactionsMessage_whenToMessage_thenReturnReactionsMessage() throws IOException {
+
+        AmazonRawQueueMessage actual = converter.toRawMessage(AMAZON_GET_REACTIONS_QUEUE_MESSAGE);
+
+        AmazonRawQueueMessage expected = AmazonRawQueueMessage.builder()
+                .type(AmazonRawQueueMessage.Type.REACTIONS)
+                .organisationName(AMAZON_GET_REACTIONS_QUEUE_MESSAGE.organisationName())
+                .since(AMAZON_GET_REACTIONS_QUEUE_MESSAGE.sinceOrNull())
+                .isTerminal(AMAZON_GET_REACTIONS_QUEUE_MESSAGE.localTerminal())
+                .page(AMAZON_GET_REACTIONS_QUEUE_MESSAGE.page())
+                .repositoryName(AMAZON_GET_REACTIONS_QUEUE_MESSAGE.repositoryName())
+                .repositoryId(AMAZON_GET_REACTIONS_QUEUE_MESSAGE.repositoryId())
+                .issueNumber(AMAZON_GET_REACTIONS_QUEUE_MESSAGE.issueNumber())
+                .issueOwnerId(AMAZON_GET_REACTIONS_QUEUE_MESSAGE.issueOwnerId())
+                .isPullRequest(AMAZON_GET_REACTIONS_QUEUE_MESSAGE.isPullRequest())
                 .build();
         assertEquals(expected, actual);
     }

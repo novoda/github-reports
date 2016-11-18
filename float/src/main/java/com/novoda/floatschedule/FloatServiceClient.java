@@ -61,38 +61,38 @@ public class FloatServiceClient {
         this.floatDateConverter = floatDateConverter;
     }
 
-    Observable<String> getRepositoryNamesForGithubUser(String githubUsername, Date startDate, int numberOfWeeks)
+    Observable<String> getRepositoryNamesForGithubUser(String githubUsername, Date startDate, int numberOfWeeks, TimeZone timezone)
             throws IOException, NoMatchFoundException {
 
-        return getRepositoryNamesForFloatUser(getFloatUsername(githubUsername), startDate, numberOfWeeks);
+        return getRepositoryNamesForFloatUser(getFloatUsername(githubUsername), startDate, numberOfWeeks, timezone);
     }
 
-    Observable<String> getRepositoryNamesForFloatUser(String floatUsername, Date startDate, int numberOfWeeks) {
-        return getTasksForFloatUser(floatUsername, startDate, numberOfWeeks)
+    Observable<String> getRepositoryNamesForFloatUser(String floatUsername, Date startDate, int numberOfWeeks, TimeZone timezone) {
+        return getTasksForFloatUser(floatUsername, startDate, numberOfWeeks, timezone)
                 .map(this::getRepositoriesFor)
                 .collect((Func0<List<String>>) ArrayList::new, List::addAll)
                 .flatMapIterable(UtilityFunctions.identity())
                 .distinct();
     }
 
-    Observable<Task> getTasksForGithubUser(String githubUsername, Date startDate, Integer numberOfWeeks) {
+    Observable<Task> getTasksForGithubUser(String githubUsername, Date startDate, Integer numberOfWeeks, TimeZone timezone) {
         String floatUsername;
         try {
             floatUsername = getFloatUsername(githubUsername);
         } catch (IOException e) {
             return Observable.error(e);
         }
-        return getTasksForFloatUser(floatUsername, startDate, numberOfWeeks);
+        return getTasksForFloatUser(floatUsername, startDate, numberOfWeeks, timezone);
     }
 
     private String getFloatUsername(String githubUsername) throws IOException, NoMatchFoundException {
         return floatGithubUserConverter.getFloatUser(githubUsername);
     }
 
-    Observable<Task> getTasksForFloatUser(String floatUsername, Date startDate, Integer numberOfWeeks) {
+    Observable<Task> getTasksForFloatUser(String floatUsername, Date startDate, Integer numberOfWeeks, TimeZone timezone) {
         return peopleServiceClient.getPersons()
                 .filter(byFloatUsername(floatUsername))
-                .flatMap(toTasks(startDate, numberOfWeeks))
+                .flatMap(toTasks(startDate, numberOfWeeks, timezone))
                 .filter(excludingHolidays());
     }
 
@@ -100,19 +100,20 @@ public class FloatServiceClient {
         return person -> personHasFloatUsername(person, floatUsername);
     }
 
-    private Func1<Person, Observable<Task>> toTasks(Date startDate, Integer numberOfWeeks) {
-        return person -> taskServiceClient.getTasks(startDate, numberOfWeeks, person.getId());
+    private Func1<Person, Observable<Task>> toTasks(Date startDate, Integer numberOfWeeks, TimeZone timezone) {
+        return person -> taskServiceClient.getTasks(startDate, numberOfWeeks, timezone, person.getId());
     }
 
     public HashMap<String, List<UserAssignments>> getGithubUsersAssignmentsInDateRange(List<String> githubUsers,
                                                                                        Date from,
-                                                                                       Date to) {
+                                                                                       Date to,
+                                                                                       TimeZone timezone) {
 
         if (listIsNullOrEmpty(githubUsers)) {
             githubUsers = getGithubUsersOrEmpty();
         }
 
-        return getTasksForGithubUsers(githubUsers, from, to)
+        return getTasksForGithubUsers(githubUsers, from, to, timezone)
                 .map(tasksToUserAssignments())
                 .collect(HashMap<String, List<UserAssignments>>::new, putEntryInMap())
                 .toBlocking()
@@ -133,15 +134,17 @@ public class FloatServiceClient {
 
     Observable<Map.Entry<String, List<Task>>> getTasksForGithubUsers(List<String> githubUsernames,
                                                                      Date startDate,
-                                                                     Date endDate) {
+                                                                     Date endDate,
+                                                                     TimeZone timezone) {
 
         Integer numberOfWeeks = numberOfWeeksCalculator.getNumberOfWeeksOrNullIn(startDate, endDate);
-        return getTasksForGithubUsers(githubUsernames, startDate, numberOfWeeks);
+        return getTasksForGithubUsers(githubUsernames, startDate, numberOfWeeks, timezone);
     }
 
     private Observable<Map.Entry<String, List<Task>>> getTasksForGithubUsers(List<String> githubUsernames,
                                                                              Date startDate,
-                                                                             Integer numberOfWeeks) {
+                                                                             Integer numberOfWeeks,
+                                                                             TimeZone timezone) {
 
         Map<String, String> floatToGithubUsernames;
         try {
@@ -153,7 +156,7 @@ public class FloatServiceClient {
         return peopleServiceClient.getPersons()
                 .filter(byFloatUsernames(floatToGithubUsernames.keySet()))
                 .toList()
-                .flatMap(peopleToGithubUserWithTasksEntry(startDate, numberOfWeeks, floatToGithubUsernames));
+                .flatMap(peopleToGithubUserWithTasksEntry(startDate, numberOfWeeks, timezone, floatToGithubUsernames));
     }
 
     Map<String, String> mapFloatToGithubUsernames(List<String> githubUsernames)
@@ -196,9 +199,13 @@ public class FloatServiceClient {
         return person.getName().equalsIgnoreCase(floatUsername);
     }
 
-    private Func1<List<Person>, Observable<? extends Map.Entry<String, List<Task>>>> peopleToGithubUserWithTasksEntry(Date startDate, Integer numberOfWeeks, Map<String, String> floatToGithubUsernames) {
+    private Func1<List<Person>, Observable<? extends Map.Entry<String, List<Task>>>> peopleToGithubUserWithTasksEntry(Date startDate,
+                                                                                                                      Integer numberOfWeeks,
+                                                                                                                      TimeZone timezone,
+                                                                                                                      Map<String, String> floatToGithubUsernames) {
+
         return persons -> taskServiceClient
-                .getTasksForAllPeople(startDate, numberOfWeeks)
+                .getTasksForAllPeople(startDate, numberOfWeeks, timezone)
                 .filter(excludingHolidays())
                 .filter(excludingTaskForNonRequestedPeople(persons))
                 .groupBy(Task::getPersonId)

@@ -36,7 +36,8 @@ public class ReviewCommentsServiceClient {
         return new ReviewCommentsServiceClient(apiService, dateConverter, responseRepositoryIssueEventPersistTransformer);
     }
 
-    public static ReviewCommentsServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
+    public static ReviewCommentsServiceClient newInstance(GithubApiService githubApiService,
+                                                          DatabaseCredentialsReader databaseCredentialsReader) {
 
         GithubApiService apiService = GithubCachingServiceContainer.getGithubService();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();

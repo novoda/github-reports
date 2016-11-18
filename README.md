@@ -1,4 +1,4 @@
-github-reports
+github-reports ![Build status](https://ci.novoda.com/buildStatus/icon?job=github-reports)
 ==============
 
 _Team statistics from GitHub into your shell._

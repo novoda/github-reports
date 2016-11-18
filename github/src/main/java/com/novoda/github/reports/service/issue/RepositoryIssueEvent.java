@@ -45,5 +45,37 @@ public abstract class RepositoryIssueEvent {
 
     public abstract Date getDate();
 
-    public abstract GithubEvent.Type getEventType();
+    public abstract Type getEventType();
+
+    public enum Type {
+
+        COMMENTED("commented"),
+        CLOSED("closed"),
+        HEAD_REF_DELETED("head_ref_deleted"),
+        LABELED("labeled"),
+        MERGED("merged"),
+        REACTED("reacted"),
+        UNLABELED("unlabeled");
+
+        private final String event;
+
+        Type(String event) {
+            this.event = event;
+        }
+
+        @Override
+        public String toString() {
+            return event;
+        }
+
+        public static Type fromEvent(String event) {
+            for (Type type : Type.values()) {
+                if (type.toString().equals(event)) {
+                    return type;
+                }
+            }
+            throw new IllegalArgumentException(String.format("No type exists for event \"%s\".", event));
+        }
+
+    }
 }

@@ -12,7 +12,7 @@ public class IssueCommentExtractor implements PayloadExtractor<IssueComment> {
         GithubComment comment = event.comment();
         GithubRepository repository = event.repository();
         GithubIssue issue = event.issue();
-        if (comment == null || issue == null || repository == null) {
+        if (comment == null || issue == null || repository == null || issue.isPullRequest()) {
             throw new ExtractException(event);
         }
         return new IssueComment(comment, repository, issue, event.action());

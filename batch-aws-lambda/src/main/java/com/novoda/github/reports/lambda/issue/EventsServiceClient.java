@@ -24,13 +24,18 @@ import rx.Observable;
 import rx.functions.Func1;
 import rx.functions.Func3;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static com.novoda.github.reports.service.issue.GithubEvent.Type.*;
 
 public class EventsServiceClient {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
     private static final Set<GithubEvent.Type> EVENT_TYPES_TO_BE_STORED = new HashSet<>(Arrays.asList(
-            COMMENTED,
             CLOSED,
             HEAD_REF_DELETED,
             LABELED,

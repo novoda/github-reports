@@ -48,6 +48,9 @@ class AmazonQueueMessageConverter {
             if (messageType == REVIEW_COMMENTS) {
                 return toGetReviewCommentsMessage(rawQueueMessage, message);
             }
+            if (messageType == REACTIONS) {
+                return toGetReactionsMessage(rawQueueMessage, message);
+            }
             throw new MessageConverterException("Can't convert type " + rawQueueMessage.type() + ".");
         }
 
@@ -130,6 +133,21 @@ class AmazonQueueMessageConverter {
         );
     }
 
+    private AmazonQueueMessage toGetReactionsMessage(AmazonRawQueueMessage rawQueueMessage, Message message) {
+        return AmazonGetReactionsQueueMessage.create(
+                rawQueueMessage.isTerminal(),
+                rawQueueMessage.page(),
+                message.getReceiptHandle(),
+                rawQueueMessage.organisationName(),
+                rawQueueMessage.since(),
+                rawQueueMessage.repositoryId(),
+                rawQueueMessage.repositoryName(),
+                rawQueueMessage.issueNumber(),
+                rawQueueMessage.issueOwnerId(),
+                rawQueueMessage.isPullRequest()
+        );
+    }
+
     Message toMessage(AmazonQueueMessage message) {
         AmazonRawQueueMessage rawQueueMessage = toRawMessage(message);
 
@@ -143,7 +161,7 @@ class AmazonQueueMessageConverter {
         AmazonRawQueueMessage.Builder rawQueueMessageBuilder = AmazonRawQueueMessage.builder();
 
         if (message instanceof AmazonGetRepositoriesQueueMessage) {
-            toRepositoriesRawMessage((AmazonGetRepositoriesQueueMessage) message, rawQueueMessageBuilder);
+            toGetRepositoriesRawMessage((AmazonGetRepositoriesQueueMessage) message, rawQueueMessageBuilder);
         } else if (message instanceof AmazonGetIssuesQueueMessage) {
             toGetIssuesRawMessage((AmazonGetIssuesQueueMessage) message, rawQueueMessageBuilder);
         } else if (message instanceof AmazonGetCommentsQueueMessage) {
@@ -152,9 +170,32 @@ class AmazonQueueMessageConverter {
             toGetEventsRawMessage((AmazonGetEventsQueueMessage) message, rawQueueMessageBuilder);
         } else if (message instanceof AmazonGetReviewCommentsQueueMessage) {
             toGetReviewCommentsRawMessage((AmazonGetReviewCommentsQueueMessage) message, rawQueueMessageBuilder);
+        } else if (message instanceof AmazonGetReactionsQueueMessage) {
+            toGetReactionsRawMessage((AmazonGetReactionsQueueMessage) message, rawQueueMessageBuilder);
         }
 
         return rawQueueMessageBuilder.build();
+    }
+
+    private void toGetRepositoriesRawMessage(GetRepositoriesQueueMessage message,
+                                             AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
+        rawQueueMessageBuilder
+                .type(REPOSITORIES)
+                .organisationName(message.organisationName())
+                .since(message.sinceOrNull())
+                .isTerminal(message.localTerminal())
+                .page(message.page());
+    }
+
+    private void toGetIssuesRawMessage(GetIssuesQueueMessage message,
+                                       AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
+        toGetRepositoriesRawMessage(message, rawQueueMessageBuilder);
+        rawQueueMessageBuilder
+                .type(ISSUES)
+                .repositoryName(message.repositoryName())
+                .repositoryId(message.repositoryId());
     }
 
     private void toGetCommentsRawMessage(GetAllEventsQueueMessage message,
@@ -166,40 +207,32 @@ class AmazonQueueMessageConverter {
 
     private void toGetEventsRawMessage(GetAllEventsQueueMessage message,
                                        AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
         toGetGenericEventsRawMessage(message, rawQueueMessageBuilder);
         rawQueueMessageBuilder.type(EVENTS);
     }
 
     private void toGetReviewCommentsRawMessage(GetAllEventsQueueMessage message,
                                                AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
         toGetGenericEventsRawMessage(message, rawQueueMessageBuilder);
         rawQueueMessageBuilder.type(REVIEW_COMMENTS);
     }
 
+    private void toGetReactionsRawMessage(GetAllEventsQueueMessage message,
+                                          AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
+        toGetGenericEventsRawMessage(message, rawQueueMessageBuilder);
+        rawQueueMessageBuilder.type(REACTIONS);
+    }
+
+
     private void toGetGenericEventsRawMessage(GetAllEventsQueueMessage message,
                                               AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
+
         toGetIssuesRawMessage(message, rawQueueMessageBuilder);
         rawQueueMessageBuilder.issueNumber(message.issueNumber());
         rawQueueMessageBuilder.issueOwnerId(message.issueOwnerId());
         rawQueueMessageBuilder.isPullRequest(message.isPullRequest());
-    }
-
-    private void toGetIssuesRawMessage(GetIssuesQueueMessage message,
-                                       AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
-        toRepositoriesRawMessage(message, rawQueueMessageBuilder);
-        rawQueueMessageBuilder
-                .type(ISSUES)
-                .repositoryName(message.repositoryName())
-                .repositoryId(message.repositoryId());
-    }
-
-    private void toRepositoriesRawMessage(GetRepositoriesQueueMessage message,
-                                          AmazonRawQueueMessage.Builder rawQueueMessageBuilder) {
-        rawQueueMessageBuilder
-                .type(REPOSITORIES)
-                .organisationName(message.organisationName())
-                .since(message.sinceOrNull())
-                .isTerminal(message.localTerminal())
-                .page(message.page());
     }
 }

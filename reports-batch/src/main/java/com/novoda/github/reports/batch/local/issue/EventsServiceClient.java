@@ -12,15 +12,11 @@ import com.novoda.github.reports.service.network.GithubCachingServiceContainer;
 import com.novoda.github.reports.service.network.PagedTransformer;
 import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
 import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersistTransformer;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import retrofit2.Response;
 import rx.Observable;
+import rx.functions.Func1;
+
+import java.util.*;
 
 import static com.novoda.github.reports.service.issue.GithubEvent.Type.*;
 
@@ -30,7 +26,6 @@ public class EventsServiceClient {
     private static final int FIRST_PAGE = 1;
 
     private static final Set<GithubEvent.Type> EVENT_TYPES_TO_BE_STORED = new HashSet<>(Arrays.asList(
-            COMMENTED,
             CLOSED,
             HEAD_REF_DELETED,
             LABELED,
@@ -74,7 +69,7 @@ public class EventsServiceClient {
                                  FIRST_PAGE,
                                  DEFAULT_PER_PAGE_COUNT)
                 .flatMapIterable(Response::body)
-                .filter(event -> since == null || event.getCreatedAt().after(since))
+                .filter(onlyCreatedAfter(since))
                 .compose(RetryWhenTokenResets.newInstance(rateLimitResetTimerSubject))
                 .filter(this::shouldStoreEvent)
                 .map(event -> RepositoryIssueEventEvent.newInstance(repositoryIssue, event))
@@ -90,6 +85,10 @@ public class EventsServiceClient {
         return apiService.getEventsResponseForIssueAndPage(organisation, repository, issueNumber, page, pageCount)
                 .compose(eventRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedEventsFor(organisation, repository, issueNumber, nextPage, pageCount)));
+    }
+
+    private Func1<GithubEvent, Boolean> onlyCreatedAfter(Date since) {
+        return event -> since == null || event.getCreatedAt().after(since);
     }
 
     private boolean shouldStoreEvent(GithubEvent event) {

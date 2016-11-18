@@ -9,10 +9,23 @@ This Web Service is a collection of Amazon AWS Lambdas exposed through AWS API G
 
 ### Configuration
 
+#### Local properties
+
+Add the following files to the resources, before uploading the lambdas to Amazon AWS:
+
+* `database.credentials` (see [sample](src/main/resources/database.credentials.sample)) with the 
+  [correct DB credentials](../db-layer/README.md#configuration)
+* `float.credentials` (see [sample](src/main/resources/float.credentials.sample))  with the 
+  [correct Float credentials](../float/README.md#configuration)
+* `projects.json` (see [sample](src/main/resources/projects.json.sample)) with the project-to-repositories mapping
+* `users.json` (see [sample](src/main/resources/users.json.sample)) with the Float-to-Github username mapping
+
+#### Amazon AWS
+
 As a first step, install the [AWS CLI](https://aws.amazon.com/cli/) and [configure it with your credentials and region]
 (http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-quick-configuration).
 
-#### Role creation
+##### Role creation
 
 Create a new role for your lambda with the following command:
 
@@ -22,11 +35,11 @@ aws iam create-role \
   --assume-role-policy-document file://assets/github-reports-ws-role.json
 ```
 
-#### Deploy Lambdas
+##### Deploy Lambdas
 
 To build and deploy all lambdas, run the `uploadActionLambdas` Gradle task.
 
-#### Create REST API
+##### Create REST API
 
 You can create the REST API with the [AWS Web UI](https://console.aws.amazon.com/apigateway), by adding resources and
 methods manually.
@@ -39,19 +52,19 @@ Please do the following for all the resources you create:
 2. Make sure that `Access-Control-Allow-Origin` is set to `'*'`.
 3. Click on the "Enable CORS and replace existing CORS headers" button, then confirm.
 
-##### /users/org
+###### /users/org
 
 Create a `/users/org` resource and add a `GET` method to it.
 
 In the "Integration Request" section map the endpoint to the `github-reports-users-organisation-get` lambda function.
 
-##### /repositories
+###### /repositories
 
 Create a `/repositories` resource and add a `GET` method to it.
 
 In the "Integration Request" section map the endpoint to the `github-reports-repositories-get` lambda function.
 
-##### /stats
+###### /stats
 
 Create a `/stats` resource.
 
