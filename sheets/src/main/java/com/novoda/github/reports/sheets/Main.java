@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
 
         SheetsServiceClient sheetsServiceClient = SheetsServiceClient.newInstance();
-        sheetsServiceClient.getDocument()
+        sheetsServiceClient.getEntries()
                 .doOnNext(System.out::println)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe();

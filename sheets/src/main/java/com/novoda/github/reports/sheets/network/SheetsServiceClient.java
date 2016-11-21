@@ -1,5 +1,6 @@
 package com.novoda.github.reports.sheets.network;
 
+import com.novoda.github.reports.sheets.sheet.Entry;
 import com.novoda.github.reports.sheets.sheet.Sheet;
 
 import retrofit2.Response;
@@ -26,6 +27,11 @@ public class SheetsServiceClient {
     public Observable<Sheet> getDocument() {
         return apiService.getDocument(DOCUMENT_ID)
                 .map(Response::body);
+    }
+
+    public Observable<Entry> getEntries() {
+         return apiService.getDocument(DOCUMENT_ID)
+                 .flatMap(sheetResponse -> Observable.from(sheetResponse.body().getFeed().getEntries()));
     }
 
 }
