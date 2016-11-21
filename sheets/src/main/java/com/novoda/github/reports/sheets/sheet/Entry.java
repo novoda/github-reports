@@ -5,18 +5,26 @@ import com.google.gson.annotations.SerializedName;
 public class Entry {
 
     @SerializedName("title")
-    private Content content;
+    private Content key;
 
-    Entry(Content content) {
-        this.content = content;
+    @SerializedName("content")
+    private Content value;
+
+    Entry(Content key, Content value) {
+        this.key = key;
+        this.value = value;
     }
 
-    public Content getContent() {
-        return content;
+    public Content getKey() {
+        return key;
+    }
+
+    public Content getValue() {
+        return value;
     }
 
     @Override
     public String toString() {
-        return "Entry{content=" + content + "}";
+        return "Entry{key=" + key + ", value=" + value + "}";
     }
 }

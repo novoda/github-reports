@@ -10,7 +10,7 @@ public class Main {
 
         SheetsServiceClient sheetsServiceClient = SheetsServiceClient.newInstance();
         sheetsServiceClient.getDocument()
-                .doOnNext(content -> System.out.println(content))
+                .doOnNext(System.out::println)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe();
 
