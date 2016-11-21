@@ -9,7 +9,7 @@ import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.network.GithubApiService;
-import com.novoda.github.reports.service.network.GithubCachingServiceContainer;
+import com.novoda.github.reports.service.network.GithubServiceContainer;
 
 import rx.Observable;
 
@@ -23,7 +23,7 @@ public class IssuesServiceClient {
     private final ResponsePersistTransformer<RepositoryIssue> responseRepositoryIssuePersistTransformer;
 
     public static IssuesServiceClient newInstance() {
-        GithubApiService apiService = GithubCachingServiceContainer.getGithubService();
+        GithubApiService apiService = GithubServiceContainer.getGithubService();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssue> responseRepositoryIssuePersistTransformer =
                 ResponseRepositoryIssuePersistTransformer.newInstance();
@@ -32,7 +32,7 @@ public class IssuesServiceClient {
     }
 
     public static IssuesServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
-        GithubApiService apiService = GithubCachingServiceContainer.getGithubService();
+        GithubApiService apiService = GithubServiceContainer.getGithubService();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssue> responseRepositoryIssuePersistTransformer =
                 ResponseRepositoryIssuePersistTransformer.newInstance(databaseCredentialsReader);
