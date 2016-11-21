@@ -7,6 +7,8 @@ import java.util.Map;
 
 public class UsersReader {
 
+    // FIXME we're leaking float into core
+
     private final JsonMapReader<Map<String, String>> jsonMapReader;
     private final Map<String, String> floatToGithubUser;
 

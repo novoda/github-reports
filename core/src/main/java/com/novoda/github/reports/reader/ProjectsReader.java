@@ -8,6 +8,8 @@ import java.util.Map;
 
 public class ProjectsReader {
 
+    // FIXME we're leaking float into core
+
     private final JsonMapReader<Map<String, List<String>>> jsonMapReader;
     private final Map<String, List<String>> projectToRepositories;
 

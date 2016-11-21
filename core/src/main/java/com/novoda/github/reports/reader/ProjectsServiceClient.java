@@ -1,12 +1,14 @@
 package com.novoda.github.reports.reader;
 
-import rx.Observable;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import rx.Observable;
+
 public class ProjectsServiceClient {
+
+    // FIXME we're leaking float into core
 
     private final ProjectsReader projectsReader;
 

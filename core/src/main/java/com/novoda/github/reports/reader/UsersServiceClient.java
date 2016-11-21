@@ -1,10 +1,12 @@
 package com.novoda.github.reports.reader;
 
-import rx.Observable;
-
 import java.io.IOException;
 
+import rx.Observable;
+
 public class UsersServiceClient {
+
+    // FIXME we're leaking float into core
 
     private final UsersReader usersReader;
 
