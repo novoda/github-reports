@@ -2,8 +2,7 @@ package com.novoda.github.reports.sheets.network;
 
 import com.novoda.github.reports.sheets.sheet.Sheet;
 
-import java.io.IOException;
-
+import retrofit2.Response;
 import rx.Observable;
 
 public class SheetsServiceClient {
@@ -26,18 +25,7 @@ public class SheetsServiceClient {
 
     public Observable<Sheet> getDocument() {
         return apiService.getDocument(DOCUMENT_ID)
-                .map(stringResponse -> stringResponse.body());
-    }
-
-    public String debugGetDocument() {
-
-        try {
-            return apiService.debugGetDocument(DOCUMENT_ID).execute().body();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-
+                .map(Response::body);
     }
 
 }
