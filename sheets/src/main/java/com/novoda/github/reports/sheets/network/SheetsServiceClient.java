@@ -23,17 +23,12 @@ public class SheetsServiceClient {
         this.apiService = apiService;
     }
 
-    public Observable<Sheet> getDocument() {
-        return apiService.getDocument(DOCUMENT_ID)
-                .map(Response::body);
-    }
-
     public Observable<Entry> getEntries() {
          return apiService.getDocument(DOCUMENT_ID)
                  .flatMap(toEntries());
     }
 
-    private Func1<Response<Sheet>, Observable<? extends Entry>> toEntries() {
+    private Func1<Response<Sheet>, Observable<Entry>> toEntries() {
         return sheetResponse -> Observable.from(sheetResponse.body().getFeed().getEntries());
     }
 
