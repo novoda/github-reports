@@ -3,7 +3,6 @@ package com.novoda.github.reports.sheets.sheet;
 public class Entry {
 
     private String title;
-
     private String content;
 
     public Entry(String title, String content) {
