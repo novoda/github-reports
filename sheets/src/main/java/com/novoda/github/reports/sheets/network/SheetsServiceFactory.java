@@ -10,21 +10,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SheetsServiceFactory extends ServiceFactory<SheetsApiService> {
 
-    // @RUI this is going to be an issue 'cause we don't just append on the endpoint
-    // https://spreadsheets.google.com/feeds/list/1rMeGnlugO312to0loBwN3x0QTvAxoHwv4Pe_SYXR1YE/1/public/basic?alt=json
-    // https://spreadsheets.google.com/feeds/list/{ID}/1/public/basic?alt=json
     private static final String ENDPOINT = "https://spreadsheets.google.com/feeds/list/";
 
     public static SheetsServiceFactory newInstance() {
-        //Interceptors floatInterceptors = FloatInterceptors.defaultInterceptors();
-        //HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance(floatInterceptors);
         HttpClientFactory httpClientFactory = OkHttpClientFactory.newInstance();
         return newInstance(httpClientFactory);
     }
 
     public static SheetsServiceFactory newCachingInstance() {
-        //Interceptors floatInterceptors = FloatInterceptors.defaultInterceptors();
-        //HttpClientFactory httpClientFactory = OkHttpClientFactory.newCachingInstance(floatInterceptors);
         HttpClientFactory httpClientFactory = OkHttpClientFactory.newCachingInstance();
         return newInstance(httpClientFactory);
     }
