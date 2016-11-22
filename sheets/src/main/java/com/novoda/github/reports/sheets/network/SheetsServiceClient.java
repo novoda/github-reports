@@ -28,6 +28,11 @@ public class SheetsServiceClient {
         this.keyRemover = keyRemover;
     }
 
+    public Observable<Entry> _getEntries() {
+         return apiService._getDocument(DOCUMENT_ID)
+                 .map(keyRemover::removeFrom);
+    }
+
     public Observable<Entry> getEntries() {
          return apiService.getDocument(DOCUMENT_ID)
                  .flatMap(toEntries())
