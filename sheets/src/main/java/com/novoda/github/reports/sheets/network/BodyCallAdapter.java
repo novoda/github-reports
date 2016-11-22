@@ -37,9 +37,4 @@ class BodyCallAdapter implements CallAdapter<Observable<Entry>> {
                 .flatMap(sheet -> Observable.from(sheet.getFeed().getEntries()));
     }
 
-//    @Override
-//    public <R> Observable<R> adapt(final Call<R> call) {
-//        CallAdapter<Observable<R>> delegate = (CallAdapter<Observable<R>>) retrofit.nextCallAdapter(factory, responseType, annotations);
-//        return delegate.adapt(call);
-//    }
 }

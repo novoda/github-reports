@@ -13,13 +13,13 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import rx.Observable;
 
-public class WutCallAdapterFactory extends CallAdapter.Factory {
+class AlternativeEntryCallAdapterFactory extends CallAdapter.Factory {
 
-    public static WutCallAdapterFactory create() {
-        return new WutCallAdapterFactory();
+    public static AlternativeEntryCallAdapterFactory create() {
+        return new AlternativeEntryCallAdapterFactory();
     }
 
-    private WutCallAdapterFactory() {
+    private AlternativeEntryCallAdapterFactory() {
     }
 
     @Override
@@ -28,8 +28,9 @@ public class WutCallAdapterFactory extends CallAdapter.Factory {
             return null;
         }
         if (!(returnType instanceof ParameterizedType)) {
-            throw new IllegalStateException("CompletableFuture return type must be parameterized"
-                                                    + " as CompletableFuture<Foo> or CompletableFuture<? extends Foo>");
+            throw new IllegalStateException(
+                    "CompletableFuture return type must be parameterized as CompletableFuture<Foo> or CompletableFuture<? extends Foo>"
+            );
         }
         Type innerType = getParameterUpperBound(0, (ParameterizedType) returnType);
 
@@ -41,12 +42,10 @@ public class WutCallAdapterFactory extends CallAdapter.Factory {
 
         // Generic type is Response<T>. Extract T and create the Response version of the adapter.
         if (!(innerType instanceof ParameterizedType)) {
-            throw new IllegalStateException("Response must be parameterized"
-                                                    + " as Response<Foo> or Response<? extends Foo>");
+            throw new IllegalStateException("Response must be parameterized as Response<Foo> or Response<? extends Foo>");
         }
         Type responseType = getParameterUpperBound(0, (ParameterizedType) innerType);
-        //return new ResponseCallAdapter(this, responseType, annotations, retrofit);
-        return new BodyCallAdapter(this, innerType, annotations, retrofit);
+        return new ResponseCallAdapter(this, responseType, annotations, retrofit);
     }
 
 }

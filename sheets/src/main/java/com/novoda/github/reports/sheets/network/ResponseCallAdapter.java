@@ -1,5 +1,8 @@
 package com.novoda.github.reports.sheets.network;
 
+import com.novoda.github.reports.sheets.sheet.Entry;
+import com.novoda.github.reports.sheets.sheet.Sheet;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
@@ -9,7 +12,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import rx.Observable;
 
-class ResponseCallAdapter implements CallAdapter<Observable<?>> {
+class ResponseCallAdapter implements CallAdapter<Observable<Entry>> {
 
     private final CallAdapter.Factory factory;
     private final Type responseType;
@@ -29,8 +32,9 @@ class ResponseCallAdapter implements CallAdapter<Observable<?>> {
     }
 
     @Override
-    public <R> Observable<Response<R>> adapt(final Call<R> call) {
-        CallAdapter<Observable<Response<R>>> delegate = (CallAdapter<Observable<Response<R>>>) retrofit.nextCallAdapter(factory, responseType, annotations);
-        return delegate.adapt(call);
+    public <R> Observable<Entry> adapt(final Call<R> call) {
+        CallAdapter<Observable<Response<Sheet>>> delegate = (CallAdapter<Observable<Response<Sheet>>>) retrofit.nextCallAdapter(factory, responseType, annotations);
+        return delegate.adapt(call)
+                .flatMap(sheetResponse -> Observable.from(sheetResponse.body().getFeed().getEntries()));
     }
 }
