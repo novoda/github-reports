@@ -1,6 +1,5 @@
 package com.novoda.github.reports.sheets.network;
 
-import com.novoda.github.reports.sheets.sheet.Content;
 import com.novoda.github.reports.sheets.sheet.Entry;
 import com.novoda.github.reports.sheets.sheet.Sheet;
 
@@ -27,14 +26,7 @@ public class SheetsServiceClient {
     public Observable<Entry> getEntries() {
          return apiService.getDocument(DOCUMENT_ID)
                  .flatMap(toEntries())
-                 .map(entry -> {
-                     Content value = new Content(
-                             entry.getValue().getType(),
-                             entry.getValue().getValue().replace("githubuser: ", "")
-                     );
-                     return new Entry(entry.getKey(), value);
-                 })
-                 ;
+                 .map(entry -> new Entry(entry.getTitle(), entry.getContent().replace("githubuser: ", ""))); // TODO extract this to class
     }
 
     private Func1<Response<Sheet>, Observable<Entry>> toEntries() {
