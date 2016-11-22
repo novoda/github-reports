@@ -1,6 +1,6 @@
 package com.novoda.github.reports.sheets.network;
 
-import com.novoda.github.reports.sheets.sheet.Content;
+import com.novoda.github.reports.sheets.convert.ValueRemover;
 import com.novoda.github.reports.sheets.sheet.Entry;
 import com.novoda.github.reports.sheets.sheet.Feed;
 import com.novoda.github.reports.sheets.sheet.Sheet;
@@ -18,13 +18,18 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SheetsServiceClientTest {
 
     @Mock
     SheetsApiService mockSheetsApiService;
+
+    @Mock
+    ValueRemover<Entry> mockValueRemover;
 
     private TestSubscriber<Entry> testSubscriber;
 
@@ -38,13 +43,15 @@ public class SheetsServiceClientTest {
     public void setUp() throws Exception {
         initMocks(this);
 
+        when(mockValueRemover.removeFrom(any(Entry.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
         testSubscriber = new TestSubscriber<>();
 
         entries = givenEntries();
         Response<Sheet> response = Response.success(givenASheetWith(entries));
         apiObservable = Observable.from(Collections.singletonList(response));
 
-        sheetsServiceClient = new SheetsServiceClient(mockSheetsApiService);
+        sheetsServiceClient = new SheetsServiceClient(mockSheetsApiService, mockValueRemover);
     }
 
     @Test
@@ -64,9 +71,7 @@ public class SheetsServiceClientTest {
     }
 
     private List<Entry> givenEntries() {
-        Content key = new Content("keyType", "keyValue");
-        Content value = new Content("valueType", "valueValue");
-        Entry entry = new Entry(key, value);
+        Entry entry = new Entry("key", "value");
         return Collections.singletonList(entry);
     }
 
