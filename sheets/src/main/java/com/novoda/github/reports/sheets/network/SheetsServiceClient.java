@@ -5,6 +5,7 @@ import com.novoda.github.reports.sheets.sheet.Sheet;
 
 import retrofit2.Response;
 import rx.Observable;
+import rx.functions.Func1;
 
 public class SheetsServiceClient {
 
@@ -29,7 +30,11 @@ public class SheetsServiceClient {
 
     public Observable<Entry> getEntries() {
          return apiService.getDocument(DOCUMENT_ID)
-                 .flatMap(sheetResponse -> Observable.from(sheetResponse.body().getFeed().getEntries()));
+                 .flatMap(toEntries());
+    }
+
+    private Func1<Response<Sheet>, Observable<? extends Entry>> toEntries() {
+        return sheetResponse -> Observable.from(sheetResponse.body().getFeed().getEntries());
     }
 
 }
