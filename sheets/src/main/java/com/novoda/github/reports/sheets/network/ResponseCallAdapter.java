@@ -38,6 +38,7 @@ class ResponseCallAdapter implements CallAdapter<Observable<Entry>> {
                 .flatMap(sheetResponse -> Observable.from(sheetResponse.body().getFeed().getEntries()));
     }
 
+    @SuppressWarnings("unchecked") // we're forced to cast due to having to implement <R> T adapt(Call<R> call)
     private CallAdapter<Observable<Response<Sheet>>> getDelegateCallAdapter() {
         return (CallAdapter<Observable<Response<Sheet>>>) retrofit.nextCallAdapter(factory, responseType, annotations);
     }

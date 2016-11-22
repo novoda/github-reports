@@ -37,6 +37,7 @@ class BodyCallAdapter implements CallAdapter<Observable<Entry>> {
                 .flatMap(sheet -> Observable.from(sheet.getFeed().getEntries()));
     }
 
+    @SuppressWarnings("unchecked") // we're forced to cast due to having to implement <R> T adapt(Call<R> call)
     private CallAdapter<Observable<Sheet>> getDelegateCallAdapter() {
         return (CallAdapter<Observable<Sheet>>) retrofit.nextCallAdapter(factory, responseType, annotations);
     }
