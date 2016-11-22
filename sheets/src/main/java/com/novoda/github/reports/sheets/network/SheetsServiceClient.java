@@ -1,5 +1,7 @@
 package com.novoda.github.reports.sheets.network;
 
+import com.novoda.github.reports.sheets.convert.GithubUsernameRemover;
+import com.novoda.github.reports.sheets.convert.ValueRemover;
 import com.novoda.github.reports.sheets.sheet.Entry;
 import com.novoda.github.reports.sheets.sheet.Sheet;
 
@@ -13,20 +15,23 @@ public class SheetsServiceClient {
     private static final String DOCUMENT_ID = "1rMeGnlugO312to0loBwN3x0QTvAxoHwv4Pe_SYXR1YE";
 
     private final SheetsApiService apiService;
+    private final ValueRemover<Entry> keyRemover;
 
     public static SheetsServiceClient newInstance() {
         SheetsApiService apiService = SheetsServiceContainer.getSheetsService();
-        return new SheetsServiceClient(apiService);
+        ValueRemover<Entry> keyRemover = new GithubUsernameRemover();
+        return new SheetsServiceClient(apiService, keyRemover);
     }
 
-    SheetsServiceClient(SheetsApiService apiService) {
+    SheetsServiceClient(SheetsApiService apiService, ValueRemover<Entry> keyRemover) {
         this.apiService = apiService;
+        this.keyRemover = keyRemover;
     }
 
     public Observable<Entry> getEntries() {
          return apiService.getDocument(DOCUMENT_ID)
                  .flatMap(toEntries())
-                 .map(entry -> new Entry(entry.getTitle(), entry.getContent().replace("githubuser: ", ""))); // TODO extract this to class
+                 .map(keyRemover::removeFrom);
     }
 
     private Func1<Response<Sheet>, Observable<Entry>> toEntries() {
