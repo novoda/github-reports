@@ -22,8 +22,6 @@ public class SheetsServiceClient {
         this.apiService = apiService;
     }
 
-    // TODO should return obs of map<string,string>, or map.entry<string,string>, or something else?
-
     public Observable<Sheet> getDocument() {
         return apiService.getDocument(DOCUMENT_ID)
                 .map(Response::body);
