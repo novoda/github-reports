@@ -4,12 +4,12 @@ import com.novoda.github.reports.batch.local.retry.RateLimitResetTimerSubject;
 import com.novoda.github.reports.batch.local.retry.RateLimitResetTimerSubjectContainer;
 import com.novoda.github.reports.batch.local.retry.RetryWhenTokenResets;
 import com.novoda.github.reports.service.issue.GithubComment;
-import com.novoda.github.reports.service.issue.GithubIssueService;
-import com.novoda.github.reports.service.issue.IssueService;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
 import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
+import com.novoda.github.reports.service.network.GithubApiService;
+import com.novoda.github.reports.service.network.GithubCachingServiceContainer;
 import com.novoda.github.reports.service.network.PagedTransformer;
 import com.novoda.github.reports.service.network.RateLimitDelayTransformer;
 import com.novoda.github.reports.service.persistence.RepositoryIssueEventPersistTransformer;
@@ -25,7 +25,7 @@ public class CommentsServiceClient {
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
     private static final int FIRST_PAGE = 1;
 
-    private final IssueService issueService;
+    private final GithubApiService apiService;
     private final ReviewCommentsServiceClient reviewCommentsServiceClient;
     private final DateToISO8601Converter dateConverter;
     private final RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer;
@@ -34,7 +34,7 @@ public class CommentsServiceClient {
     private final RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer;
 
     public static CommentsServiceClient newInstance() {
-        IssueService issueService = GithubIssueService.newCachingInstance();
+        GithubApiService apiService = GithubCachingServiceContainer.getGithubService();
         ReviewCommentsServiceClient reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance();
 
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
@@ -44,7 +44,7 @@ public class CommentsServiceClient {
         RateLimitResetTimerSubject rateLimitResetTimerSubject = RateLimitResetTimerSubjectContainer.getInstance();
         RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer = RateLimitDelayTransformer.newInstance();
 
-        return new CommentsServiceClient(issueService,
+        return new CommentsServiceClient(apiService,
                                          reviewCommentsServiceClient,
                                          dateConverter,
                                          repositoryIssueEventPersistTransformer,
@@ -52,14 +52,14 @@ public class CommentsServiceClient {
                                          commentRateLimitDelayTransformer);
     }
 
-    private CommentsServiceClient(IssueService issueService,
+    private CommentsServiceClient(GithubApiService apiService,
                                   ReviewCommentsServiceClient reviewCommentsServiceClient,
                                   DateToISO8601Converter dateConverter,
                                   RepositoryIssueEventPersistTransformer repositoryIssueEventPersistTransformer,
                                   RateLimitResetTimerSubject rateLimitResetTimerSubject,
                                   RateLimitDelayTransformer<GithubComment> commentRateLimitDelayTransformer) {
 
-        this.issueService = issueService;
+        this.apiService = apiService;
         this.reviewCommentsServiceClient = reviewCommentsServiceClient;
         this.dateConverter = dateConverter;
         this.repositoryIssueEventPersistTransformer = repositoryIssueEventPersistTransformer;
@@ -91,7 +91,7 @@ public class CommentsServiceClient {
                                                                           int pageCount) {
 
         String date = dateConverter.toISO8601NoMillisOrNull(since);
-        return issueService.getCommentsFor(organisation, repository, issueNumber, date, page, pageCount)
+        return apiService.getCommentsResponseForIssueAndPage(organisation, repository, issueNumber, date, page, pageCount)
                 .compose(commentRateLimitDelayTransformer)
                 .compose(PagedTransformer.newInstance(nextPage -> getPagedCommentsFor(
                         organisation,

@@ -6,19 +6,23 @@ import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.NextMessagesTransformer;
 import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
-import com.novoda.github.reports.service.issue.*;
+import com.novoda.github.reports.service.issue.GithubEvent;
+import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
+import com.novoda.github.reports.service.issue.RepositoryIssueEventEvent;
 import com.novoda.github.reports.service.network.GithubApiService;
-import okhttp3.Headers;
-import retrofit2.Response;
-import rx.Observable;
-import rx.functions.Func1;
-import rx.functions.Func3;
+import com.novoda.github.reports.service.network.GithubServiceContainer;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import okhttp3.Headers;
+import retrofit2.Response;
+import rx.Observable;
+import rx.functions.Func1;
+import rx.functions.Func3;
 
 import static com.novoda.github.reports.service.issue.GithubEvent.Type.*;
 
@@ -33,34 +37,32 @@ public class EventsServiceClient {
             UNLABELED
     ));
 
-    private final IssueService issueService;
+    private final GithubApiService apiService;
     private final ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer;
 
     public static EventsServiceClient newInstance() {
-        IssueService issueService = GithubIssueService.newInstance();
-        return new EventsServiceClient(issueService, ResponseRepositoryIssueEventPersistTransformer.newInstance());
+        GithubApiService apiService = GithubServiceContainer.getGithubService();
+        return new EventsServiceClient(apiService, ResponseRepositoryIssueEventPersistTransformer.newInstance());
     }
 
-    public static EventsServiceClient newInstance(GithubApiService githubApiService,
-                                                  DatabaseCredentialsReader databaseCredentialsReader) {
-
-        IssueService issueService = GithubIssueService.newInstance(githubApiService);
+    public static EventsServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
+        GithubApiService apiService = GithubServiceContainer.getGithubService();
         ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
 
-        return new EventsServiceClient(issueService, responseRepositoryIssueEventPersistTransformer);
+        return new EventsServiceClient(apiService, responseRepositoryIssueEventPersistTransformer);
     }
 
-    private EventsServiceClient(IssueService issueService,
+    private EventsServiceClient(GithubApiService apiService,
                                 ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer) {
 
-        this.issueService = issueService;
+        this.apiService = apiService;
         this.responseRepositoryIssueEventPersistTransformer = responseRepositoryIssueEventPersistTransformer;
     }
 
     public Observable<AmazonQueueMessage> retrieveEventsFrom(AmazonGetEventsQueueMessage message) {
-        return issueService
-                .getEventsFor(
+        return apiService
+                .getEventsResponseForIssueAndPage(
                         message.organisationName(),
                         message.repositoryName(),
                         Math.toIntExact(message.issueNumber()),
