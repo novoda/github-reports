@@ -33,8 +33,12 @@ class ResponseCallAdapter implements CallAdapter<Observable<Entry>> {
 
     @Override
     public <R> Observable<Entry> adapt(final Call<R> call) {
-        CallAdapter<Observable<Response<Sheet>>> delegate = (CallAdapter<Observable<Response<Sheet>>>) retrofit.nextCallAdapter(factory, responseType, annotations);
+        CallAdapter<Observable<Response<Sheet>>> delegate = getDelegateCallAdapter();
         return delegate.adapt(call)
                 .flatMap(sheetResponse -> Observable.from(sheetResponse.body().getFeed().getEntries()));
+    }
+
+    private CallAdapter<Observable<Response<Sheet>>> getDelegateCallAdapter() {
+        return (CallAdapter<Observable<Response<Sheet>>>) retrofit.nextCallAdapter(factory, responseType, annotations);
     }
 }
