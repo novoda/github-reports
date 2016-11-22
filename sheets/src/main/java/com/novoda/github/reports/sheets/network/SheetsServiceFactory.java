@@ -3,10 +3,10 @@ package com.novoda.github.reports.sheets.network;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonObject;
 import com.novoda.github.reports.network.HttpClientFactory;
 import com.novoda.github.reports.network.OkHttpClientFactory;
 import com.novoda.github.reports.network.ServiceFactory;
+import com.novoda.github.reports.sheets.convert.EntryDeserializer;
 import com.novoda.github.reports.sheets.sheet.Entry;
 
 import okhttp3.OkHttpClient;
@@ -31,14 +31,7 @@ public class SheetsServiceFactory extends ServiceFactory<SheetsApiService> {
         OkHttpClient okHttpClient = httpClientFactory.createClient();
 
         GsonBuilder gsonBuilder = new GsonBuilder();
-        JsonDeserializer<Entry> jsonDeserializer = (json, typeOfT, context) -> { // TODO extract
-            JsonObject jsonObject = json.getAsJsonObject();
-
-            JsonObject titleObject = jsonObject.get("title").getAsJsonObject();
-            JsonObject contentObject = jsonObject.get("content").getAsJsonObject();
-
-            return new Entry(titleObject.get("$t").getAsString(), contentObject.get("$t").getAsString());
-        };
+        JsonDeserializer<Entry> jsonDeserializer = new EntryDeserializer();
         gsonBuilder.registerTypeAdapter(Entry.class, jsonDeserializer);
         Gson gson = gsonBuilder.create();
 
