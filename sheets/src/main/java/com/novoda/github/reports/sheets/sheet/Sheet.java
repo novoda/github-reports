@@ -4,7 +4,7 @@ public class Sheet {
 
     private Feed feed;
 
-    Sheet(Feed feed) {
+    public Sheet(Feed feed) {
         this.feed = feed;
     }
 

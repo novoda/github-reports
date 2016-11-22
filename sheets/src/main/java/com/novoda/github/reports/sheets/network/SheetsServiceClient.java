@@ -19,7 +19,7 @@ public class SheetsServiceClient {
         return new SheetsServiceClient(apiService);
     }
 
-    private SheetsServiceClient(SheetsApiService apiService) {
+    SheetsServiceClient(SheetsApiService apiService) {
         this.apiService = apiService;
     }
 

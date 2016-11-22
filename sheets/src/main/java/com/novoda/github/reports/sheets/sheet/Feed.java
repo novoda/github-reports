@@ -9,7 +9,7 @@ public class Feed {
     @SerializedName("entry")
     private List<Entry> entries;
 
-    Feed(List<Entry> entries) {
+    public Feed(List<Entry> entries) {
         this.entries = entries;
     }
 

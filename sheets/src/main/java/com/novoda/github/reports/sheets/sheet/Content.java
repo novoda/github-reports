@@ -9,7 +9,7 @@ public class Content {
     @SerializedName("$t")
     private String value;
 
-    Content(String type, String value) {
+    public Content(String type, String value) {
         this.type = type;
         this.value = value;
     }

@@ -10,7 +10,7 @@ public class Entry {
     @SerializedName("content")
     private Content value;
 
-    Entry(Content key, Content value) {
+    public Entry(Content key, Content value) {
         this.key = key;
         this.value = value;
     }
