@@ -6,11 +6,11 @@ import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
 import com.novoda.github.reports.service.issue.GithubIssue;
-import com.novoda.github.reports.service.issue.GithubIssueService;
-import com.novoda.github.reports.service.issue.IssueService;
 import com.novoda.github.reports.service.issue.RepositoryIssue;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.network.GithubApiService;
+import com.novoda.github.reports.service.network.GithubServiceContainer;
+
 import rx.Observable;
 
 public class IssuesServiceClient {
@@ -18,43 +18,41 @@ public class IssuesServiceClient {
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
     private static final GithubIssue.State DEFAULT_STATE = GithubIssue.State.ALL;
 
-    private final IssueService issueService;
+    private final GithubApiService apiService;
     private final DateToISO8601Converter dateConverter;
     private final ResponsePersistTransformer<RepositoryIssue> responseRepositoryIssuePersistTransformer;
 
     public static IssuesServiceClient newInstance() {
-        IssueService issueService = GithubIssueService.newInstance();
+        GithubApiService apiService = GithubServiceContainer.getGithubService();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssue> responseRepositoryIssuePersistTransformer =
                 ResponseRepositoryIssuePersistTransformer.newInstance();
 
-        return new IssuesServiceClient(issueService, dateConverter, responseRepositoryIssuePersistTransformer);
+        return new IssuesServiceClient(apiService, dateConverter, responseRepositoryIssuePersistTransformer);
     }
 
-    public static IssuesServiceClient newInstance(GithubApiService githubApiService,
-                                                  DatabaseCredentialsReader databaseCredentialsReader) {
-
-        IssueService issueService = GithubIssueService.newInstance(githubApiService);
+    public static IssuesServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
+        GithubApiService apiService = GithubServiceContainer.getGithubService();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssue> responseRepositoryIssuePersistTransformer =
                 ResponseRepositoryIssuePersistTransformer.newInstance(databaseCredentialsReader);
 
-        return new IssuesServiceClient(issueService, dateConverter, responseRepositoryIssuePersistTransformer);
+        return new IssuesServiceClient(apiService, dateConverter, responseRepositoryIssuePersistTransformer);
     }
 
-    private IssuesServiceClient(IssueService issueService,
+    private IssuesServiceClient(GithubApiService apiService,
                                 DateToISO8601Converter dateConverter,
                                 ResponsePersistTransformer<RepositoryIssue> responseRepositoryIssuePersistTransformer) {
 
-        this.issueService = issueService;
+        this.apiService = apiService;
         this.dateConverter = dateConverter;
         this.responseRepositoryIssuePersistTransformer = responseRepositoryIssuePersistTransformer;
     }
 
     public Observable<AmazonQueueMessage> retrieveIssuesFor(AmazonGetIssuesQueueMessage message) {
         String date = dateConverter.toISO8601NoMillisOrNull(message.sinceOrNull());
-        return issueService
-                .getIssuesFor(
+        return apiService
+                .getIssuesResponseForPage(
                         message.organisationName(),
                         message.repositoryName(),
                         DEFAULT_STATE,
