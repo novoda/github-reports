@@ -1,7 +1,13 @@
 package com.novoda.github.reports.lambda.worker;
 
 import com.novoda.github.reports.batch.MessageNotSupportedException;
-import com.novoda.github.reports.batch.aws.queue.*;
+import com.novoda.github.reports.batch.aws.queue.AmazonGetCommentsQueueMessage;
+import com.novoda.github.reports.batch.aws.queue.AmazonGetEventsQueueMessage;
+import com.novoda.github.reports.batch.aws.queue.AmazonGetIssuesQueueMessage;
+import com.novoda.github.reports.batch.aws.queue.AmazonGetReactionsQueueMessage;
+import com.novoda.github.reports.batch.aws.queue.AmazonGetRepositoriesQueueMessage;
+import com.novoda.github.reports.batch.aws.queue.AmazonGetReviewCommentsQueueMessage;
+import com.novoda.github.reports.batch.aws.queue.AmazonQueueMessage;
 import com.novoda.github.reports.batch.configuration.Configuration;
 import com.novoda.github.reports.batch.configuration.DatabaseConfiguration;
 import com.novoda.github.reports.batch.configuration.GithubConfiguration;
@@ -19,12 +25,13 @@ import com.novoda.github.reports.service.network.GithubApiService;
 import com.novoda.github.reports.service.network.GithubServiceContainer;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
 import com.novoda.github.reports.service.properties.GithubCredentialsReader;
-import rx.Observable;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import rx.Observable;
 
 class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
@@ -89,50 +96,35 @@ class AmazonWorkerHandler implements WorkerHandler<AmazonQueueMessage> {
 
     private Observable<AmazonQueueMessage> handleGetRepositoriesQueueMessage(AmazonQueueMessage queueMessage) {
         AmazonGetRepositoriesQueueMessage message = (AmazonGetRepositoriesQueueMessage) queueMessage;
-        RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance(
-                githubApiService,
-                databaseCredentialsReader
-        );
+        RepositoriesServiceClient repositoriesServiceClient = RepositoriesServiceClient.newInstance(databaseCredentialsReader);
 
         return repositoriesServiceClient.retrieveRepositoriesFor(message);
     }
 
     private Observable<AmazonQueueMessage> handleGetIssuesQueueMessage(AmazonQueueMessage queueMessage) {
         AmazonGetIssuesQueueMessage message = (AmazonGetIssuesQueueMessage) queueMessage;
-        IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance(
-                githubApiService,
-                databaseCredentialsReader
-        );
+        IssuesServiceClient issuesServiceClient = IssuesServiceClient.newInstance(databaseCredentialsReader);
 
         return issuesServiceClient.retrieveIssuesFor(message);
     }
 
     private Observable<AmazonQueueMessage> handleGetEventsQueueMessage(AmazonQueueMessage queueMessage) {
         AmazonGetEventsQueueMessage message = (AmazonGetEventsQueueMessage) queueMessage;
-        EventsServiceClient eventsServiceClient = EventsServiceClient.newInstance(
-                githubApiService,
-                databaseCredentialsReader
-        );
+        EventsServiceClient eventsServiceClient = EventsServiceClient.newInstance(databaseCredentialsReader);
 
         return eventsServiceClient.retrieveEventsFrom(message);
     }
 
     private Observable<AmazonQueueMessage> handleGetCommentsQueueMessage(AmazonQueueMessage queueMessage) {
         AmazonGetCommentsQueueMessage message = (AmazonGetCommentsQueueMessage) queueMessage;
-        CommentsServiceClient commentsServiceClient = CommentsServiceClient.newInstance(
-                githubApiService,
-                databaseCredentialsReader
-        );
+        CommentsServiceClient commentsServiceClient = CommentsServiceClient.newInstance(databaseCredentialsReader);
 
         return commentsServiceClient.retrieveCommentsAsEventsFrom(message);
     }
 
     private Observable<AmazonQueueMessage> handleGetReviewCommentsQueueMessage(AmazonQueueMessage queueMessage) {
         AmazonGetReviewCommentsQueueMessage message = (AmazonGetReviewCommentsQueueMessage) queueMessage;
-        ReviewCommentsServiceClient reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance(
-                githubApiService,
-                databaseCredentialsReader
-        );
+        ReviewCommentsServiceClient reviewCommentsServiceClient = ReviewCommentsServiceClient.newInstance(databaseCredentialsReader);
 
         return reviewCommentsServiceClient.retrieveReviewCommentsFromPullRequest(message);
     }

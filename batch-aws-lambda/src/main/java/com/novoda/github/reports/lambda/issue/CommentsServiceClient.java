@@ -6,9 +6,13 @@ import com.novoda.github.reports.batch.queue.QueueMessage;
 import com.novoda.github.reports.data.db.properties.DatabaseCredentialsReader;
 import com.novoda.github.reports.lambda.NextMessagesTransformer;
 import com.novoda.github.reports.lambda.persistence.ResponsePersistTransformer;
-import com.novoda.github.reports.service.issue.*;
+import com.novoda.github.reports.service.issue.GithubComment;
+import com.novoda.github.reports.service.issue.RepositoryIssueEvent;
+import com.novoda.github.reports.service.issue.RepositoryIssueEventComment;
 import com.novoda.github.reports.service.network.DateToISO8601Converter;
 import com.novoda.github.reports.service.network.GithubApiService;
+import com.novoda.github.reports.service.network.GithubServiceContainer;
+
 import rx.Observable;
 import rx.functions.Func3;
 
@@ -16,35 +20,33 @@ public class CommentsServiceClient {
 
     private static final int DEFAULT_PER_PAGE_COUNT = 100;
 
-    private final IssueService issueService;
+    private final GithubApiService apiService;
     private final DateToISO8601Converter dateConverter;
     private final ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer;
 
     public static CommentsServiceClient newInstance() {
-        IssueService issueService = GithubIssueService.newInstance();
+        GithubApiService apiService = GithubServiceContainer.getGithubService();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssueEvent> persistRepositoryIssueEventsTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance();
 
-        return new CommentsServiceClient(issueService, dateConverter, persistRepositoryIssueEventsTransformer);
+        return new CommentsServiceClient(apiService, dateConverter, persistRepositoryIssueEventsTransformer);
     }
 
-    public static CommentsServiceClient newInstance(GithubApiService githubApiService,
-                                                    DatabaseCredentialsReader databaseCredentialsReader) {
-
-        IssueService issueService = GithubIssueService.newInstance(githubApiService);
+    public static CommentsServiceClient newInstance(DatabaseCredentialsReader databaseCredentialsReader) {
+        GithubApiService apiService = GithubServiceContainer.getGithubService();
         DateToISO8601Converter dateConverter = new DateToISO8601Converter();
         ResponsePersistTransformer<RepositoryIssueEvent> persistRepositoryIssueEventsTransformer =
                 ResponseRepositoryIssueEventPersistTransformer.newInstance(databaseCredentialsReader);
 
-        return new CommentsServiceClient(issueService, dateConverter, persistRepositoryIssueEventsTransformer);
+        return new CommentsServiceClient(apiService, dateConverter, persistRepositoryIssueEventsTransformer);
     }
 
-    private CommentsServiceClient(IssueService issueService,
+    private CommentsServiceClient(GithubApiService apiService,
                                   DateToISO8601Converter dateConverter,
                                   ResponsePersistTransformer<RepositoryIssueEvent> responseRepositoryIssueEventPersistTransformer) {
 
-        this.issueService = issueService;
+        this.apiService = apiService;
         this.dateConverter = dateConverter;
         this.responseRepositoryIssueEventPersistTransformer = responseRepositoryIssueEventPersistTransformer;
     }
@@ -52,8 +54,8 @@ public class CommentsServiceClient {
     public Observable<AmazonQueueMessage> retrieveCommentsAsEventsFrom(AmazonGetCommentsQueueMessage message) {
         String date = dateConverter.toISO8601NoMillisOrNull(message.sinceOrNull());
 
-        return issueService
-                .getCommentsFor(
+        return apiService
+                .getCommentsResponseForIssueAndPage(
                         message.organisationName(),
                         message.repositoryName(),
                         Math.toIntExact(message.issueNumber()),
