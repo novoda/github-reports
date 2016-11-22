@@ -13,13 +13,13 @@ import rx.Observable;
 
 class BodyCallAdapter implements CallAdapter<Observable<Entry>> {
 
-    private final CallAdapter.Factory factory;
+    private final CallAdapter.Factory factoryToSkip;
     private final Type responseType;
     private final Annotation[] annotations;
     private final Retrofit retrofit;
 
-    BodyCallAdapter(CallAdapter.Factory factory, Type responseType, Annotation[] annotations, Retrofit retrofit) {
-        this.factory = factory;
+    BodyCallAdapter(CallAdapter.Factory factoryToSkip, Type responseType, Annotation[] annotations, Retrofit retrofit) {
+        this.factoryToSkip = factoryToSkip;
         this.responseType = responseType;
         this.annotations = annotations;
         this.retrofit = retrofit;
@@ -39,7 +39,7 @@ class BodyCallAdapter implements CallAdapter<Observable<Entry>> {
 
     @SuppressWarnings("unchecked") // we're forced to cast due to having to implement <R> T adapt(Call<R> call)
     private CallAdapter<Observable<Sheet>> getDelegateCallAdapter() {
-        return (CallAdapter<Observable<Sheet>>) retrofit.nextCallAdapter(factory, responseType, annotations);
+        return (CallAdapter<Observable<Sheet>>) retrofit.nextCallAdapter(factoryToSkip, responseType, annotations);
     }
 
 }
