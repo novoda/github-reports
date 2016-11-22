@@ -31,7 +31,7 @@ public class SheetsServiceFactory extends ServiceFactory<SheetsApiService> {
         OkHttpClient okHttpClient = httpClientFactory.createClient();
 
         GsonBuilder gsonBuilder = new GsonBuilder();
-        JsonDeserializer<Entry> jsonDeserializer = (json, typeOfT, context) -> {
+        JsonDeserializer<Entry> jsonDeserializer = (json, typeOfT, context) -> { // TODO extract
             JsonObject jsonObject = json.getAsJsonObject();
 
             JsonObject titleObject = jsonObject.get("title").getAsJsonObject();
