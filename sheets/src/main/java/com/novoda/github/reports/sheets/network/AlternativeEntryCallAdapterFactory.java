@@ -20,6 +20,7 @@ class AlternativeEntryCallAdapterFactory extends CallAdapter.Factory {
     }
 
     private AlternativeEntryCallAdapterFactory() {
+        // no op
     }
 
     @Override
@@ -28,9 +29,7 @@ class AlternativeEntryCallAdapterFactory extends CallAdapter.Factory {
             return null;
         }
         if (!(returnType instanceof ParameterizedType)) {
-            throw new IllegalStateException(
-                    "CompletableFuture return type must be parameterized as CompletableFuture<Foo> or CompletableFuture<? extends Foo>"
-            );
+            throw new IllegalStateException("Observabletype must be parameterized as Observable<Foo> or Observable<? extends Foo>");
         }
         Type innerType = getParameterUpperBound(0, (ParameterizedType) returnType);
 
