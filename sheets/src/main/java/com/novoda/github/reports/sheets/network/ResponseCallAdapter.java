@@ -29,7 +29,7 @@ class ResponseCallAdapter implements CallAdapter<Observable<Entry>> {
 
     @Override
     public Type responseType() {
-        return responseType;
+        return getDelegateCallAdapter().responseType();
     }
 
     @Override
