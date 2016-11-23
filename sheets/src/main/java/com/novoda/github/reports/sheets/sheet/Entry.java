@@ -1,30 +1,25 @@
 package com.novoda.github.reports.sheets.sheet;
 
-import com.google.gson.annotations.SerializedName;
-
 public class Entry {
 
-    @SerializedName("title")
-    private Content key;
+    private final String title;
+    private final String content;
 
-    @SerializedName("content")
-    private Content value;
-
-    public Entry(Content key, Content value) {
-        this.key = key;
-        this.value = value;
+    public Entry(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 
-    public Content getKey() {
-        return key;
+    public String getTitle() {
+        return title;
     }
 
-    public Content getValue() {
-        return value;
+    public String getContent() {
+        return content;
     }
 
     @Override
     public String toString() {
-        return "Entry{key=" + key + ", value=" + value + "}";
+        return "Entry{title='" + title + "\' content='" + content + "\'}";
     }
 }

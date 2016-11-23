@@ -1,8 +1,13 @@
 package com.novoda.github.reports.sheets.network;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.novoda.github.reports.network.HttpClientFactory;
 import com.novoda.github.reports.network.OkHttpClientFactory;
 import com.novoda.github.reports.network.ServiceFactory;
+import com.novoda.github.reports.sheets.convert.EntryDeserializer;
+import com.novoda.github.reports.sheets.sheet.Entry;
 
 import okhttp3.OkHttpClient;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -24,7 +29,13 @@ public class SheetsServiceFactory extends ServiceFactory<SheetsApiService> {
 
     private static SheetsServiceFactory newInstance(HttpClientFactory httpClientFactory) {
         OkHttpClient okHttpClient = httpClientFactory.createClient();
-        GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create();
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        JsonDeserializer<Entry> jsonDeserializer = new EntryDeserializer();
+        gsonBuilder.registerTypeAdapter(Entry.class, jsonDeserializer);
+        Gson gson = gsonBuilder.create();
+
+        GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create(gson);
         RxJavaCallAdapterFactory rxJavaCallAdapterFactory = RxJavaCallAdapterFactory.create();
         return new SheetsServiceFactory(okHttpClient, gsonConverterFactory, rxJavaCallAdapterFactory);
     }

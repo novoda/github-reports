@@ -1,6 +1,5 @@
 package com.novoda.github.reports.sheets.network;
 
-import com.novoda.github.reports.sheets.sheet.Content;
 import com.novoda.github.reports.sheets.sheet.Entry;
 import com.novoda.github.reports.sheets.sheet.Feed;
 import com.novoda.github.reports.sheets.sheet.Sheet;
@@ -44,7 +43,7 @@ public class SheetsServiceClientTest {
         Response<Sheet> response = Response.success(givenASheetWith(entries));
         apiObservable = Observable.from(Collections.singletonList(response));
 
-        sheetsServiceClient = new SheetsServiceClient(mockSheetsApiService);
+        sheetsServiceClient = new SheetsServiceClient(mockSheetsApiService, entry -> entry);
     }
 
     @Test
@@ -64,9 +63,7 @@ public class SheetsServiceClientTest {
     }
 
     private List<Entry> givenEntries() {
-        Content key = new Content("keyType", "keyValue");
-        Content value = new Content("valueType", "valueValue");
-        Entry entry = new Entry(key, value);
+        Entry entry = new Entry("key", "value");
         return Collections.singletonList(entry);
     }
 
