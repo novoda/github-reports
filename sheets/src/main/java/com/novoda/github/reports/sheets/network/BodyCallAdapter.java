@@ -10,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 import rx.Observable;
+import rx.functions.Func1;
 
 class BodyCallAdapter implements CallAdapter<Observable<Entry>> {
 
@@ -34,7 +35,11 @@ class BodyCallAdapter implements CallAdapter<Observable<Entry>> {
     public <R> Observable<Entry> adapt(final Call<R> call) {
         CallAdapter<Observable<Sheet>> delegate = getDelegateCallAdapter();
         return delegate.adapt(call)
-                .flatMap(sheet -> Observable.from(sheet.getFeed().getEntries()));
+                .flatMap(toEntries());
+    }
+
+    private Func1<Sheet, Observable<Entry>> toEntries() {
+        return sheet -> Observable.from(sheet.getFeed().getEntries());
     }
 
     @SuppressWarnings("unchecked") // we're forced to cast due to having to implement <R> T adapt(Call<R> call)
