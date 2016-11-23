@@ -40,7 +40,7 @@ public class EntryCallAdapterTest {
     private List<Entry> entries;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         initMocks(this);
 
         testSubscriber = new TestSubscriber<>();
@@ -49,7 +49,7 @@ public class EntryCallAdapterTest {
     }
 
     @Test
-    public void givenADelegate_whenGettingTheMatchingResponseType_thenItIsTheDelegated() throws Exception {
+    public void givenADelegate_whenGettingTheMatchingResponseType_thenItIsTheDelegated() {
         Type delegateType = mock(Type.class);
         given(mockDelegate.responseType()).willReturn(delegateType);
 
@@ -59,7 +59,7 @@ public class EntryCallAdapterTest {
     }
 
     @Test
-    public void givenAnEntryCall_whenAdaptingIt_thenEachEntryIsEmitted() throws Exception {
+    public void givenAnEntryCall_whenAdaptingIt_thenEachEntryIsEmitted() {
         givenDelegateExecutesCallSuccessfully();
         Call<Observable<Entry>> call = mock(Call.class);
 
