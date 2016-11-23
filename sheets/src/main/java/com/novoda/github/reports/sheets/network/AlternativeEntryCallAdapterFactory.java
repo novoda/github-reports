@@ -28,21 +28,21 @@ class AlternativeEntryCallAdapterFactory extends CallAdapter.Factory {
         if (getRawType(returnType) != Observable.class) {
             return null;
         }
+
         if (!(returnType instanceof ParameterizedType)) {
             throw new IllegalStateException("Observabletype must be parameterized as Observable<Foo> or Observable<? extends Foo>");
         }
-        Type innerType = getParameterUpperBound(0, (ParameterizedType) returnType);
 
+        Type innerType = getParameterUpperBound(0, (ParameterizedType) returnType);
         if (getRawType(innerType) != Response.class) {
-            // Generic type is not Response<T>. Use it for body-only adapter.
             Type t = new TypeToken<Observable<Response<Sheet>>>(){}.getType();
             return new BodyCallAdapter(this, t, annotations, retrofit);
         }
 
-        // Generic type is Response<T>. Extract T and create the Response version of the adapter.
         if (!(innerType instanceof ParameterizedType)) {
             throw new IllegalStateException("Response must be parameterized as Response<Foo> or Response<? extends Foo>");
         }
+
         Type responseType = getParameterUpperBound(0, (ParameterizedType) innerType);
         return new ResponseCallAdapter(this, responseType, annotations, retrofit);
     }
