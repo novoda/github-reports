@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 
 import retrofit2.Call;
 import retrofit2.CallAdapter;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import rx.Observable;
 import rx.functions.Func1;
@@ -28,23 +29,26 @@ class BodyCallAdapter implements CallAdapter<Observable<Entry>> {
 
     @Override
     public Type responseType() {
-        return responseType;
+        return getDelegateCallAdapter().responseType();
     }
 
     @Override
     public <R> Observable<Entry> adapt(final Call<R> call) {
-        CallAdapter<Observable<Sheet>> delegate = getDelegateCallAdapter();
-        return delegate.adapt(call)
+        CallAdapter<Observable<Response<Sheet>>> delegate = getDelegateCallAdapter();
+        Observable<Response<Sheet>> adapt = delegate.adapt(call);
+        return adapt
+                .doOnNext(System.out::println)
+                .doOnNext(sheetResponse -> System.out.println(sheetResponse.body()))
                 .flatMap(toEntries());
     }
 
-    private Func1<Sheet, Observable<Entry>> toEntries() {
-        return sheet -> Observable.from(sheet.getFeed().getEntries());
+    private Func1<Response<Sheet>, Observable<Entry>> toEntries() {
+        return sheet -> Observable.from(sheet.body().getFeed().getEntries());
     }
 
     @SuppressWarnings("unchecked") // we're forced to cast due to having to implement <R> T adapt(Call<R> call)
-    private CallAdapter<Observable<Sheet>> getDelegateCallAdapter() {
-        return (CallAdapter<Observable<Sheet>>) retrofit.nextCallAdapter(factoryToSkip, responseType, annotations);
+    private CallAdapter<Observable<Response<Sheet>>> getDelegateCallAdapter() {
+        return (CallAdapter<Observable<Response<Sheet>>>) retrofit.nextCallAdapter(factoryToSkip, responseType, annotations);
     }
 
 }

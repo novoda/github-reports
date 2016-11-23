@@ -15,7 +15,7 @@ import rx.Observable;
 
 class AlternativeEntryCallAdapterFactory extends CallAdapter.Factory {
 
-    public static AlternativeEntryCallAdapterFactory create() {
+    static AlternativeEntryCallAdapterFactory create() {
         return new AlternativeEntryCallAdapterFactory();
     }
 
@@ -30,13 +30,13 @@ class AlternativeEntryCallAdapterFactory extends CallAdapter.Factory {
         }
 
         if (!(returnType instanceof ParameterizedType)) {
-            throw new IllegalStateException("Observabletype must be parameterized as Observable<Foo> or Observable<? extends Foo>");
+            throw new IllegalStateException("Observable type must be parameterized as Observable<Foo> or Observable<? extends Foo>");
         }
 
         Type innerType = getParameterUpperBound(0, (ParameterizedType) returnType);
         if (getRawType(innerType) != Response.class) {
-            Type t = new TypeToken<Observable<Response<Sheet>>>(){}.getType();
-            return new BodyCallAdapter(this, t, annotations, retrofit);
+            Type responseSheetType = new TypeToken<Observable<Response<Sheet>>>(){}.getType();
+            return new BodyCallAdapter(this, responseSheetType, annotations, retrofit);
         }
 
         if (!(innerType instanceof ParameterizedType)) {
