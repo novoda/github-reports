@@ -45,13 +45,6 @@ public class SheetsServiceFactory extends ServiceFactory<SheetsApiService> {
 
     private SheetsServiceFactory(OkHttpClient okHttpClient,
                                  GsonConverterFactory gsonConverterFactory,
-                                 RxJavaCallAdapterFactory rxJavaCallAdapterFactory) {
-
-        super(okHttpClient, gsonConverterFactory, rxJavaCallAdapterFactory);
-    }
-
-    private SheetsServiceFactory(OkHttpClient okHttpClient,
-                                 GsonConverterFactory gsonConverterFactory,
                                  CallAdapter.Factory factory,
                                  RxJavaCallAdapterFactory rxJavaCallAdapterFactory) {
 
