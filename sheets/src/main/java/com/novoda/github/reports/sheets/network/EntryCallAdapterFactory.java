@@ -13,7 +13,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import rx.Observable;
 
-class EntryAdapterFactory extends CallAdapter.Factory {
+class EntryCallAdapterFactory extends CallAdapter.Factory {
 
     @Override
     public CallAdapter<Observable<Entry>> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {

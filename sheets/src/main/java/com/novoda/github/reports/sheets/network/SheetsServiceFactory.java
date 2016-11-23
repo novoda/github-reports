@@ -37,7 +37,7 @@ public class SheetsServiceFactory extends ServiceFactory<SheetsApiService> {
         Gson gson = gsonBuilder.create();
         GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create(gson);
 
-        CallAdapter.Factory entryAdapterFactory = new EntryAdapterFactory();
+        CallAdapter.Factory entryAdapterFactory = new EntryCallAdapterFactory();
         RxJavaCallAdapterFactory rxJavaCallAdapterFactory = RxJavaCallAdapterFactory.create();
 
         return new SheetsServiceFactory(okHttpClient, gsonConverterFactory, entryAdapterFactory, rxJavaCallAdapterFactory);
