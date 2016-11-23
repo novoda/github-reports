@@ -1,6 +1,7 @@
 package com.novoda.github.reports.sheets.network;
 
 import com.novoda.github.reports.sheets.convert.ValueRemover;
+import com.novoda.github.reports.sheets.properties.DocumentIdReader;
 import com.novoda.github.reports.sheets.sheet.Entry;
 
 import java.util.Collections;
@@ -8,27 +9,32 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import rx.Observable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SheetsServiceClientTest {
+
+    private static final String ANY_DOCUMENT_ID = "1rMeGnlugO312to0loBwN3x0QTvAxoHwv4Pe_SYXR1YE";
 
     @Mock
     SheetsApiService mockSheetsApiService;
 
     @Mock
     ValueRemover<Entry> mockValueRemover;
+
+    @Mock
+    DocumentIdReader mockDocumentIdReader;
 
     private TestSubscriber<Entry> testSubscriber;
 
@@ -44,12 +50,14 @@ public class SheetsServiceClientTest {
 
         when(mockValueRemover.removeFrom(any(Entry.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+        when(mockDocumentIdReader.getDocumentId()).thenReturn(ANY_DOCUMENT_ID);
+
         testSubscriber = new TestSubscriber<>();
 
         entries = givenEntries();
         apiObservable = Observable.from(entries);
 
-        sheetsServiceClient = new SheetsServiceClient(mockSheetsApiService, mockValueRemover);
+        sheetsServiceClient = new SheetsServiceClient(mockSheetsApiService, mockValueRemover, mockDocumentIdReader);
     }
 
     @Test
@@ -74,9 +82,37 @@ public class SheetsServiceClientTest {
         verify(mockValueRemover, times(entries.size())).removeFrom(any(Entry.class));
     }
 
+    @Test
+    public void givenServiceReturnsEntries_whenQueryingForEntries_thenDocumentIdReaderIsUsedToGetTheId() {
+        given(mockSheetsApiService.getEntries(anyString())).willReturn(apiObservable);
+
+        sheetsServiceClient.getEntries()
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(testSubscriber);
+
+        verify(mockDocumentIdReader).getDocumentId();
+    }
+
+    @Test
+    public void givenServiceReturnsEntries_whenQueryingForEntries_thenTheRightIdIsUsed() {
+        given(mockSheetsApiService.getEntries(anyString())).willReturn(apiObservable);
+
+        sheetsServiceClient.getEntries()
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(testSubscriber);
+
+        assertThatTheRightIdIsUsed();
+    }
+
     private List<Entry> givenEntries() {
         Entry entry = new Entry("key", "value");
         return Collections.singletonList(entry);
+    }
+
+    private void assertThatTheRightIdIsUsed() {
+        ArgumentCaptor<String> idCaptor = ArgumentCaptor.forClass(String.class);
+        verify(mockSheetsApiService).getEntries(idCaptor.capture());
+        assertThat(idCaptor.getValue()).isEqualTo(ANY_DOCUMENT_ID);
     }
 
 }
