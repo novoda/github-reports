@@ -14,6 +14,6 @@ public interface SheetsApiService {
     Observable<Response<Sheet>> getDocument(@Path("documentId") String documentId);
 
     @GET("{documentId}/1/public/basic?alt=json")
-    Observable<Entry> _getDocument(@Path("documentId") String documentId);
+    Observable<Entry> getEntries(@Path("documentId") String documentId);
 
 }
