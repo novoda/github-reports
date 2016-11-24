@@ -34,7 +34,8 @@ public class FloatGithubUserConverter implements GithubUserConverter {
 
     public String getFloatUser(String githubUsername) throws IOException, NoMatchFoundException {
         readIfNeeded();
-        return usersReader.getContent().entrySet().stream()
+        return usersReader.getContent().entrySet()
+                .stream()
                 .filter(byGithubUsername(githubUsername))
                 .findFirst()
                 .map(Map.Entry::getKey)
