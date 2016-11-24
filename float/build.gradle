@@ -9,6 +9,7 @@ repositories {
 dependencies {
     compile project(':core')
     compile project(':network')
+    compile project(':sheets')
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.0.71-beta'
