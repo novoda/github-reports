@@ -5,11 +5,13 @@ import com.novoda.github.reports.reader.UsersReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class FloatGithubUserConverter {
+import static com.novoda.floatschedule.convert.FloatNameFilter.byFloatName;
+import static com.novoda.floatschedule.convert.GithubUsernameFilter.byGithubUsername;
+import static com.novoda.floatschedule.convert.NoMatchFoundException.noMatchFoundExceptionFor;
+
+public class FloatGithubUserConverter implements GithubUserConverter {
 
     private final UsersReader usersReader;
 
@@ -36,7 +38,7 @@ public class FloatGithubUserConverter {
                 .filter(byGithubUsername(githubUsername))
                 .findFirst()
                 .map(Map.Entry::getKey)
-                .orElseThrow(noMatchFoundException(githubUsername));
+                .orElseThrow(noMatchFoundExceptionFor(githubUsername));
     }
 
     private void readIfNeeded() throws IOException {
@@ -46,25 +48,14 @@ public class FloatGithubUserConverter {
         usersReader.read();
     }
 
-    private Predicate<Map.Entry<String, String>> byGithubUsername(String githubUsername) {
-        return entry -> entry.getValue().equalsIgnoreCase(githubUsername);
-    }
-
-    private Supplier<RuntimeException> noMatchFoundException(String username) {
-        return () -> new NoMatchFoundException(username);
-    }
-
     public String getGithubUser(String floatName) throws IOException, NoMatchFoundException {
         readIfNeeded();
         return usersReader.getContent().entrySet()
                 .stream()
-                .filter(byFloatUsername(floatName))
+                .filter(byFloatName(floatName))
                 .findFirst()
                 .map(Map.Entry::getValue)
-                .orElseThrow(noMatchFoundException(floatName));
+                .orElseThrow(noMatchFoundExceptionFor(floatName));
     }
 
-    private Predicate<Map.Entry<String, String>> byFloatUsername(String floatName) {
-        return entry -> entry.getKey().equalsIgnoreCase(floatName);
-    }
 }
