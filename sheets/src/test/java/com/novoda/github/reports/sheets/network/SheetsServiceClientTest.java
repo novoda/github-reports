@@ -1,54 +1,68 @@
 package com.novoda.github.reports.sheets.network;
 
+import com.novoda.github.reports.sheets.convert.ValueRemover;
+import com.novoda.github.reports.sheets.properties.DocumentIdReader;
 import com.novoda.github.reports.sheets.sheet.Entry;
-import com.novoda.github.reports.sheets.sheet.Feed;
-import com.novoda.github.reports.sheets.sheet.Sheet;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
-import retrofit2.Response;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SheetsServiceClientTest {
 
+    private static final String ANY_DOCUMENT_ID = "1rMeGnlugO312to0loBwN3x0QTvAxoHwv4Pe_SYXR1YE";
+
     @Mock
     SheetsApiService mockSheetsApiService;
+
+    @Mock
+    ValueRemover<Entry> mockValueRemover;
+
+    @Mock
+    DocumentIdReader mockDocumentIdReader;
 
     private TestSubscriber<Entry> testSubscriber;
 
     private List<Entry> entries;
 
-    private Observable<Response<Sheet>> apiObservable;
+    private Observable<Entry> apiObservable;
 
     private SheetsServiceClient sheetsServiceClient;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         initMocks(this);
+
+        when(mockValueRemover.removeFrom(any(Entry.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        when(mockDocumentIdReader.getDocumentId()).thenReturn(ANY_DOCUMENT_ID);
 
         testSubscriber = new TestSubscriber<>();
 
         entries = givenEntries();
-        Response<Sheet> response = Response.success(givenASheetWith(entries));
-        apiObservable = Observable.from(Collections.singletonList(response));
+        apiObservable = Observable.from(entries);
 
-        sheetsServiceClient = new SheetsServiceClient(mockSheetsApiService, entry -> entry);
+        sheetsServiceClient = new SheetsServiceClient(mockSheetsApiService, mockValueRemover, mockDocumentIdReader);
     }
 
     @Test
-    public void givenServiceReturnsDocument_whenQueryingForADocument_thenEachDocumentEntryIsEmitted() throws Exception {
-        given(mockSheetsApiService.getDocument(anyString())).willReturn(apiObservable);
+    public void givenServiceReturnsEntries_whenQueryingForEntries_thenEachDocumentEntryIsEmitted() {
+        given(mockSheetsApiService.getEntries(anyString())).willReturn(apiObservable);
 
         sheetsServiceClient.getEntries()
                 .subscribeOn(Schedulers.immediate())
@@ -57,14 +71,48 @@ public class SheetsServiceClientTest {
         testSubscriber.assertReceivedOnNext(entries);
     }
 
-    private Sheet givenASheetWith(List<Entry> entries) {
-        Feed feed = new Feed(entries);
-        return new Sheet(feed);
+    @Test
+    public void givenServiceReturnsEntries_whenQueryingForEntries_thenValueRemoverIsAppliedToEachKey() {
+        given(mockSheetsApiService.getEntries(anyString())).willReturn(apiObservable);
+
+        sheetsServiceClient.getEntries()
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(testSubscriber);
+
+        verify(mockValueRemover, times(entries.size())).removeFrom(any(Entry.class));
+    }
+
+    @Test
+    public void givenServiceReturnsEntries_whenQueryingForEntries_thenDocumentIdReaderIsUsedToGetTheId() {
+        given(mockSheetsApiService.getEntries(anyString())).willReturn(apiObservable);
+
+        sheetsServiceClient.getEntries()
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(testSubscriber);
+
+        verify(mockDocumentIdReader).getDocumentId();
+    }
+
+    @Test
+    public void givenServiceReturnsEntries_whenQueryingForEntries_thenTheRightIdIsUsed() {
+        given(mockSheetsApiService.getEntries(anyString())).willReturn(apiObservable);
+
+        sheetsServiceClient.getEntries()
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(testSubscriber);
+
+        assertThatTheRightIdIsUsed();
     }
 
     private List<Entry> givenEntries() {
         Entry entry = new Entry("key", "value");
         return Collections.singletonList(entry);
+    }
+
+    private void assertThatTheRightIdIsUsed() {
+        ArgumentCaptor<String> idCaptor = ArgumentCaptor.forClass(String.class);
+        verify(mockSheetsApiService).getEntries(idCaptor.capture());
+        assertThat(idCaptor.getValue()).isEqualTo(ANY_DOCUMENT_ID);
     }
 
 }
