@@ -67,7 +67,7 @@ public class SheetsFloatGithubUserConverter implements GithubUserConverter {
                 .stream()
                 .filter(byFloatName(floatName))
                 .findFirst()
-                .map(Map.Entry::getKey)
+                .map(Map.Entry::getValue)
                 .orElseThrow(noMatchFoundExceptionFor(floatName));
     }
 
