@@ -41,7 +41,7 @@ public class SheetsFloatGithubUserConverterTest {
     }
 
     @Test(expected = NoMatchFoundException.class)
-    public void givenThereIsNoMatch_whenGettingTheFloatUsernameForAGithubUsername_thenThrowsException() throws Exception {
+    public void givenUsersWereReadButThereIsNoMatch_whenGettingTheFloatUsernameForAGithubUsername_thenThrowsException() throws Exception {
 
         sheetsFloatGithubUserConverter.getFloatUser("sebastião");
 
