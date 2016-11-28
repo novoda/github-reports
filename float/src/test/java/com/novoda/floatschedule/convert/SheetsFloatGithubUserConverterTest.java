@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -29,7 +28,7 @@ public class SheetsFloatGithubUserConverterTest {
     public void setUp() throws Exception {
         initMocks(this);
         given(mockSheetsServiceClient.getEntries()).willReturn(Observable.from(givenEntries()));
-        sheetsFloatGithubUserConverter = new SheetsFloatGithubUserConverter(mockSheetsServiceClient, Schedulers.immediate());
+        sheetsFloatGithubUserConverter = new SheetsFloatGithubUserConverter(mockSheetsServiceClient);
     }
 
     @Test

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
 import static com.novoda.floatschedule.convert.FloatNameFilter.byFloatName;
@@ -17,18 +16,15 @@ import static com.novoda.floatschedule.convert.NoMatchFoundException.noMatchFoun
 public class SheetsFloatGithubUserConverter implements GithubUserConverter {
 
     private final Map<String, String> floatToGithubUser;
-    private final Scheduler scheduler;
     private final SheetsServiceClient sheetsServiceClient;
 
     public static SheetsFloatGithubUserConverter newInstance() {
-        Scheduler scheduler = Schedulers.immediate();
         SheetsServiceClient sheetsServiceClient = SheetsServiceClient.newInstance();
-        return new SheetsFloatGithubUserConverter(sheetsServiceClient, scheduler);
+        return new SheetsFloatGithubUserConverter(sheetsServiceClient);
     }
 
-    SheetsFloatGithubUserConverter(SheetsServiceClient sheetsServiceClient, Scheduler scheduler) {
+    SheetsFloatGithubUserConverter(SheetsServiceClient sheetsServiceClient) {
         floatToGithubUser = new HashMap<>();
-        this.scheduler = scheduler;
         this.sheetsServiceClient = sheetsServiceClient;
     }
 
@@ -45,7 +41,7 @@ public class SheetsFloatGithubUserConverter implements GithubUserConverter {
             return;
         }
         sheetsServiceClient.getEntries()
-                .subscribeOn(scheduler)
+                .subscribeOn(Schedulers.immediate())
                 .subscribe(entry -> floatToGithubUser.put(entry.getTitle(), entry.getContent()));
     }
 
