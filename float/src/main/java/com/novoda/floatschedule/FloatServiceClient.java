@@ -13,7 +13,6 @@ import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
 import com.novoda.github.reports.data.model.UserAssignments;
 
-import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,7 +76,7 @@ public class FloatServiceClient {
     }
 
     Observable<String> getRepositoryNamesForGithubUser(String githubUsername, Date startDate, int numberOfWeeks, TimeZone timezone)
-            throws IOException, NoMatchFoundException {
+            throws FailedToLoadMappingsException, NoMatchFoundException {
 
         return getRepositoryNamesForFloatUser(getFloatUsername(githubUsername), startDate, numberOfWeeks, timezone);
     }

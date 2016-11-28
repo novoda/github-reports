@@ -13,7 +13,6 @@ import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
 import com.novoda.github.reports.data.model.UserAssignments;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.AbstractMap;
@@ -169,7 +168,7 @@ public class FloatServiceClientTest {
 
     @Test
     public void givenAllTasks_whenGettingRepositoryNamesForGithubUser_thenTheExpectedRepositoryNamesAreEmitted()
-            throws IOException, NoMatchFoundException {
+            throws FailedToLoadMappingsException, NoMatchFoundException {
 
         given(mockTaskServiceClient).hasAllTasks();
 
@@ -428,13 +427,13 @@ public class FloatServiceClientTest {
             this.floatGithubUserConverter = floatGithubUserConverter;
         }
 
-        GivenFloatGithubUserConverter hasMapping(String githubUsername, String floatUsername) throws IOException {
+        GivenFloatGithubUserConverter hasMapping(String githubUsername, String floatUsername) throws FailedToLoadMappingsException {
             BDDMockito.given(floatGithubUserConverter.getGithubUser(floatUsername)).willReturn(githubUsername);
             BDDMockito.given(floatGithubUserConverter.getFloatUser(githubUsername)).willReturn(floatUsername);
             return this;
         }
 
-        GivenFloatGithubUserConverter hasGithubUsers(String... githubUsernames) throws IOException {
+        GivenFloatGithubUserConverter hasGithubUsers(String... githubUsernames) throws FailedToLoadMappingsException {
             BDDMockito.given(floatGithubUserConverter.getGithubUsers()).willReturn(asList(githubUsernames));
             return this;
         }

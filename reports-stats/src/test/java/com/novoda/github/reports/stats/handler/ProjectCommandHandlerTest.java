@@ -1,22 +1,23 @@
 package com.novoda.github.reports.stats.handler;
 
+import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.model.EventStats;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
 import com.novoda.github.reports.stats.command.ProjectOptions;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
@@ -66,7 +67,7 @@ public class ProjectCommandHandlerTest {
     }
 
     @Test
-    public void whenHandlingAProjectCommand_thenWeGetStatsForTheArgsPassedIn() throws DataLayerException, IOException {
+    public void whenHandlingAProjectCommand_thenWeGetStatsForTheArgsPassedIn() throws DataLayerException, FailedToLoadMappingsException {
         given(mockConverter.getRepositories(ANY_PROJECT)).willReturn(ANY_PROJECT_REPO_LIST);
         given(mockDataLayer.getStats(ANY_PROJECT_REPO_LIST, ANY_FROM_DATE, ANY_TO_DATE)).willReturn(ANY_PROJECT_STATS);
 
@@ -76,7 +77,7 @@ public class ProjectCommandHandlerTest {
     }
 
     @Test
-    public void whenHandlingAProjectCommand_theReturnedStatsAreMutatedByTheHandler() throws DataLayerException, IOException {
+    public void whenHandlingAProjectCommand_theReturnedStatsAreMutatedByTheHandler() throws DataLayerException, FailedToLoadMappingsException {
         given(mockConverter.getRepositories(ANY_PROJECT)).willReturn(ANY_PROJECT_REPO_LIST);
         given(mockDataLayer.getStats(ANY_PROJECT_REPO_LIST, ANY_FROM_DATE, ANY_TO_DATE)).willReturn(ANY_PROJECT_STATS);
 
