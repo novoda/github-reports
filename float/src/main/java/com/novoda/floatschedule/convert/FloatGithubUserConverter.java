@@ -23,7 +23,7 @@ public class FloatGithubUserConverter implements GithubUserConverter {
         this.usersReader = usersReader;
     }
 
-    public List<String> getGithubUsers() throws IOException {
+    public List<String> getGithubUsers() throws FailedToLoadMappingsException {
         readIfNeeded();
         return usersReader.getContent()
                 .entrySet()
@@ -32,7 +32,7 @@ public class FloatGithubUserConverter implements GithubUserConverter {
                 .collect(Collectors.toList());
     }
 
-    public String getFloatUser(String githubUsername) throws IOException, NoMatchFoundException {
+    public String getFloatUser(String githubUsername) throws FailedToLoadMappingsException, NoMatchFoundException {
         readIfNeeded();
         return usersReader.getContent().entrySet()
                 .stream()
@@ -42,14 +42,18 @@ public class FloatGithubUserConverter implements GithubUserConverter {
                 .orElseThrow(noMatchFoundExceptionFor(githubUsername));
     }
 
-    private void readIfNeeded() throws IOException {
+    private void readIfNeeded() throws FailedToLoadMappingsException {
         if (usersReader.hasContent()) {
             return;
         }
-        usersReader.read();
+        try {
+            usersReader.read();
+        } catch (IOException exception) {
+            throw new FailedToLoadMappingsException(exception);
+        }
     }
 
-    public String getGithubUser(String floatName) throws IOException, NoMatchFoundException {
+    public String getGithubUser(String floatName) throws FailedToLoadMappingsException, NoMatchFoundException {
         readIfNeeded();
         return usersReader.getContent().entrySet()
                 .stream()

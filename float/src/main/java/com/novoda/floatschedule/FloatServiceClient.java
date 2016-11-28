@@ -1,22 +1,37 @@
 package com.novoda.floatschedule;
 
-import com.novoda.floatschedule.convert.*;
+import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
+import com.novoda.floatschedule.convert.FloatDateConverter;
+import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
+import com.novoda.floatschedule.convert.FloatGithubUserConverter;
+import com.novoda.floatschedule.convert.GithubToFloatUserMatchNotFoundException;
+import com.novoda.floatschedule.convert.NoMatchFoundException;
+import com.novoda.floatschedule.convert.NumberOfWeeksCalculator;
 import com.novoda.floatschedule.people.PeopleServiceClient;
 import com.novoda.floatschedule.people.Person;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
 import com.novoda.github.reports.data.model.UserAssignments;
+
+import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import rx.Observable;
 import rx.functions.Action2;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.internal.util.UtilityFunctions;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class FloatServiceClient {
 
@@ -79,13 +94,13 @@ public class FloatServiceClient {
         String floatUsername;
         try {
             floatUsername = getFloatUsername(githubUsername);
-        } catch (IOException e) {
+        } catch (FailedToLoadMappingsException e) {
             return Observable.error(e);
         }
         return getTasksForFloatUser(floatUsername, startDate, numberOfWeeks, timezone);
     }
 
-    private String getFloatUsername(String githubUsername) throws IOException, NoMatchFoundException {
+    private String getFloatUsername(String githubUsername) throws FailedToLoadMappingsException, NoMatchFoundException {
         return floatGithubUserConverter.getFloatUser(githubUsername);
     }
 
@@ -127,7 +142,7 @@ public class FloatServiceClient {
     private List<String> getGithubUsersOrEmpty() {
         try {
             return floatGithubUserConverter.getGithubUsers();
-        } catch (IOException e) {
+        } catch (FailedToLoadMappingsException e) {
             return Collections.emptyList();
         }
     }
@@ -178,7 +193,7 @@ public class FloatServiceClient {
             try {
                 String floatUsername = floatGithubUserConverter.getFloatUser(githubUsername);
                 return new AbstractMap.SimpleImmutableEntry<>(floatUsername, githubUsername);
-            } catch (IOException e) {
+            } catch (FailedToLoadMappingsException e) {
                 throw new GithubToFloatUserMatchNotFoundException(e);
             }
         };
@@ -254,7 +269,7 @@ public class FloatServiceClient {
     private List<String> getRepositoriesFor(Task task) {
         try {
             return floatGithubProjectConverter.getRepositories(task.getProjectName());
-        } catch (IOException | NoMatchFoundException e) {
+        } catch (FailedToLoadMappingsException | NoMatchFoundException e) {
             // ignored
         }
         return Collections.emptyList();

@@ -29,7 +29,7 @@ public class SheetsFloatGithubUserConverter implements GithubUserConverter {
     }
 
     @Override
-    public List<String> getGithubUsers() throws Exception {
+    public List<String> getGithubUsers() {
         readIfNeeded();
         return floatToGithubUser.values()
                 .stream()
@@ -46,7 +46,7 @@ public class SheetsFloatGithubUserConverter implements GithubUserConverter {
     }
 
     @Override
-    public String getFloatUser(String githubUsername) throws Exception {
+    public String getFloatUser(String githubUsername) throws NoMatchFoundException {
         readIfNeeded();
         return floatToGithubUser.entrySet()
                 .stream()
@@ -57,7 +57,7 @@ public class SheetsFloatGithubUserConverter implements GithubUserConverter {
     }
 
     @Override
-    public String getGithubUser(String floatName) throws Exception {
+    public String getGithubUser(String floatName) throws NoMatchFoundException {
         readIfNeeded();
         return floatToGithubUser.entrySet()
                 .stream()
