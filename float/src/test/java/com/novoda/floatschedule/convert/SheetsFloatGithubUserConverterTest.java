@@ -7,19 +7,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.hamcrest.text.IsEqualIgnoringCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.internal.verification.VerificationModeFactory;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SheetsFloatGithubUserConverterTest {
@@ -41,13 +37,14 @@ public class SheetsFloatGithubUserConverterTest {
 
         String actual = sheetsFloatGithubUserConverter.getFloatUser("github meirinho");
 
-        assertThat("float pirata", IsEqualIgnoringCase.equalToIgnoringCase(actual));
+        assertThat(actual).isEqualToIgnoringCase("float pirata");
     }
 
     @Test(expected = NoMatchFoundException.class)
-    public void givenUsersWereReadButThereIsNoMatch_whenGettingTheFloatUsernameForAGithubUsername_thenThrowsException() throws Exception {
+    public void givenThereIsNoMatch_whenGettingTheFloatUsernameForAGithubUsername_thenThrowsException() throws Exception {
 
         sheetsFloatGithubUserConverter.getFloatUser("sebastião");
+
     }
 
     @Test
@@ -55,47 +52,14 @@ public class SheetsFloatGithubUserConverterTest {
 
         String actual = sheetsFloatGithubUserConverter.getGithubUser("float pirata");
 
-        assertThat("github meirinho", IsEqualIgnoringCase.equalToIgnoringCase(actual));
+        assertThat(actual).isEqualToIgnoringCase("github meirinho");
     }
 
     @Test(expected = NoMatchFoundException.class)
     public void givenUsersWereReadButThereIsNoMatch_whenGettingTheGithubUsernameForAFloatUsername_thenThrowsException() throws Exception {
 
         sheetsFloatGithubUserConverter.getGithubUser("palerma");
-    }
 
-    @Test
-    public void givenUsersWereNotRead_whenGettingTheGithubUsername_thenContentIsRead() throws Exception {
-        given(mockSheetsServiceClient.getEntries()).willReturn(Observable.from(Collections.emptyList()));
-
-        sheetsFloatGithubUserConverter.getGithubUser("float pirata");
-
-        verify(mockSheetsServiceClient).getEntries();
-    }
-
-    @Test
-    public void givenUsersWereAlreadyRead_whenGettingTheGithubUsernameAgain_thenContentIsNotReadAgain() throws Exception {
-
-        sheetsFloatGithubUserConverter.getGithubUser("float pirata");
-
-        verify(mockSheetsServiceClient, VerificationModeFactory.times(0)).getEntries();
-    }
-
-    @Test
-    public void givenUsersWereNotRead_whenGettingTheFloatUsername_thenContentIsRead() throws Exception {
-        given(mockSheetsServiceClient.getEntries()).willReturn(Observable.from(Collections.emptyList()));
-
-        sheetsFloatGithubUserConverter.getFloatUser("github meirinho");
-
-        verify(mockSheetsServiceClient).getEntries();
-    }
-
-    @Test
-    public void givenUsersWereAlreadyRead_whenGettingTheFloatUsernameAgain_thenContentIsNotReadAgain() throws Exception {
-
-        sheetsFloatGithubUserConverter.getFloatUser("github meirinho");
-
-        verify(mockSheetsServiceClient, VerificationModeFactory.times(0)).getEntries();
     }
 
     @Test
@@ -103,16 +67,16 @@ public class SheetsFloatGithubUserConverterTest {
 
         List<String> actualGithubUsers = sheetsFloatGithubUserConverter.getGithubUsers();
 
-        assertEquals(Arrays.asList("github meirinho", "sparrow"), actualGithubUsers);
+        assertThat(actualGithubUsers).containsExactlyInAnyOrder("github meirinho", "sparrow");
     }
 
     @Test
-    public void givenUsersWereReadAndHaveNoContent_whenGettingGithubUsers_thenReturnAllUsers() throws Exception {
+    public void givenThereAreNoUsers_whenGettingGithubUsers_thenReturnAllUsers() throws Exception {
         given(mockSheetsServiceClient.getEntries()).willReturn(Observable.from(Collections.emptyList()));
 
         List<String> actualGithubUsers = sheetsFloatGithubUserConverter.getGithubUsers();
 
-        assertEquals(Collections.emptyList(), actualGithubUsers);
+        assertThat(actualGithubUsers).isEmpty();
     }
 
     private List<Entry> givenEntries() {
