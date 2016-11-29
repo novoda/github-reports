@@ -1,11 +1,10 @@
 package com.novoda.floatschedule;
 
+import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.FloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
-import rx.Observable;
-import rx.functions.Func1;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -13,6 +12,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
+
+import rx.Observable;
+import rx.functions.Func1;
 
 public class AssignmentServiceClient {
 
@@ -84,7 +86,7 @@ public class AssignmentServiceClient {
         return floatUsername -> {
             try {
                 return floatGithubUserConverter.getGithubUser(floatUsername);
-            } catch (IOException e) {
+            } catch (FailedToLoadMappingsException e) {
                 e.printStackTrace();
                 return null;
             }

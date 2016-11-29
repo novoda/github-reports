@@ -55,7 +55,7 @@ public class FloatGithubProjectConverter {
         return projectName -> projectName != null;
     }
 
-    public List<String> getRepositories(String floatProject) throws IOException, NoMatchFoundException {
+    public List<String> getRepositories(String floatProject) throws FailedToLoadMappingsException, NoMatchFoundException {
         readIfNeeded();
         return projectsReader.getContent().entrySet()
                 .stream()
@@ -65,11 +65,15 @@ public class FloatGithubProjectConverter {
                 .orElseThrow(noMatchFoundException(floatProject));
     }
 
-    private void readIfNeeded() throws IOException {
+    private void readIfNeeded() throws FailedToLoadMappingsException {
         if (projectsReader.hasContent()) {
             return;
         }
-        projectsReader.read();
+        try {
+            projectsReader.read();
+        } catch (IOException exception) {
+            throw new FailedToLoadMappingsException(exception);
+        }
     }
 
     private Predicate<Map.Entry<String, List<String>>> byProjectHavingRepositories(String floatProject) {

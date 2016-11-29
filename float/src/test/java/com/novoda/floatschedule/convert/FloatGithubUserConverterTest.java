@@ -1,6 +1,14 @@
 package com.novoda.floatschedule.convert;
 
 import com.novoda.github.reports.reader.UsersReader;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.hamcrest.text.IsEqualIgnoringCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,12 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.verification.VerificationModeFactory;
 
-import java.io.IOException;
-import java.util.*;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -98,9 +104,9 @@ public class FloatGithubUserConverterTest {
 
         verify(mockUsersReader, VerificationModeFactory.times(0)).read();
     }
-    
+
     @Test
-    public void givenUsersWhereRead_whenGettingGithubUsers_thenReturnAllUsers() throws IOException {
+    public void givenUsersWhereRead_whenGettingGithubUsers_thenReturnAllUsers() {
         given(mockUsersReader.hasContent()).willReturn(true);
 
         List<String> actualGithubUsers = floatGithubUserConverter.getGithubUsers();
@@ -109,7 +115,7 @@ public class FloatGithubUserConverterTest {
     }
 
     @Test
-    public void givenUsersWereReadAndHaveNoContent_whenGettingGithubUsers_thenReturnAllUsers() throws IOException {
+    public void givenUsersWereReadAndHaveNoContent_whenGettingGithubUsers_thenReturnAllUsers() {
         given(mockUsersReader.hasContent()).willReturn(true);
         given(mockUsersReader.getContent()).willReturn(Collections.emptyMap());
 
@@ -117,4 +123,27 @@ public class FloatGithubUserConverterTest {
 
         assertEquals(Collections.emptyList(), actualGithubUsers);
     }
+
+    @Test(expected = FailedToLoadMappingsException.class)
+    public void givenUsersReaderFails_whenGettingGithubUsers_thenAnExceptionIsThrown() throws Exception {
+        willThrow(IOException.class).given(mockUsersReader).read();
+
+        floatGithubUserConverter.getGithubUsers();
+
+    }
+
+    @Test(expected = FailedToLoadMappingsException.class)
+    public void givenUsersWereReadButThereIsNoMatch_whenGettingTheFloatUsernameForAGithubUsername_thenThrowsFailedToLoadMappingsException() throws Exception {
+        willThrow(IOException.class).given(mockUsersReader).read();
+
+        floatGithubUserConverter.getFloatUser("sebastião");
+    }
+
+    @Test(expected = FailedToLoadMappingsException.class)
+    public void givenUsersWereReadButThereIsNoMatch_whenGettingTheGithubUsernameForAFloatUsername_thenThrowsFailedToLoadMappingsException() throws Exception {
+        willThrow(IOException.class).given(mockUsersReader).read();
+
+        floatGithubUserConverter.getGithubUser("palerma");
+    }
+
 }
