@@ -1,17 +1,22 @@
 package com.novoda.github.reports.stats.handler;
 
-import com.novoda.floatschedule.convert.FloatGithubUserConverter;
+import com.novoda.floatschedule.convert.GithubUserConverter;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.stats.command.PullRequestOptions;
 import com.novoda.github.reports.stats.command.PullRequestOptionsGroupBy;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import java.io.IOException;
-import java.util.*;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -33,7 +38,7 @@ public class PullRequestCommandHandlerTest {
     private EventDataLayer mockDataLayer;
 
     @Mock
-    FloatGithubUserConverter mockConverter;
+    GithubUserConverter mockConverter;
 
     @InjectMocks
     private PullRequestCommandHandler handler;
