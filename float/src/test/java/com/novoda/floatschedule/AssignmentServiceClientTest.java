@@ -3,7 +3,7 @@ package com.novoda.floatschedule;
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
-import com.novoda.floatschedule.convert.FloatGithubUserConverter;
+import com.novoda.floatschedule.convert.GithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
 
@@ -42,7 +42,7 @@ public class AssignmentServiceClientTest {
     private TaskServiceClient mockTaskServiceClient;
 
     @Mock
-    private FloatGithubUserConverter mockFloatGithubUserConverter;
+    private GithubUserConverter mockGithubUserConverter;
 
     @Mock
     private FloatGithubProjectConverter mockFloatGithubProjectConverter;
@@ -91,7 +91,7 @@ public class AssignmentServiceClientTest {
 
     private void givenGithubUser(String githubUsername, String floatUsername) {
         try {
-            when(mockFloatGithubUserConverter.getGithubUser(floatUsername)).thenReturn(githubUsername);
+            when(mockGithubUserConverter.getGithubUser(floatUsername)).thenReturn(githubUsername);
         } catch (FailedToLoadMappingsException e) {
             // nothing
         }
