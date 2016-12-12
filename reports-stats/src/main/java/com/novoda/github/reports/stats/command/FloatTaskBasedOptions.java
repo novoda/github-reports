@@ -11,12 +11,14 @@ public abstract class FloatTaskBasedOptions extends RangeOptions {
     @Parameter(description = "Users to retrieve data for (leave empty for all)")
     private List<String> users;
 
-    @Parameter(description = "Timezone of the dates", converter = TimeZoneConverter.class)
-    private TimeZone timezone;
+    @Parameter(names = {"--timezone", "-tz"},
+            description = "Timezone of the dates", converter = TimeZoneConverter.class)
+    private TimeZone timezone = TimeZone.getDefault();
 
     public FloatTaskBasedOptions(List<String> users, Date from, Date to, TimeZone timezone) {
         super(from, to);
         this.users = users;
+        this.timezone = timezone;
     }
 
     public FloatTaskBasedOptions() {

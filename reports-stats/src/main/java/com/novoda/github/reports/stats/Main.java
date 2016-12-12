@@ -3,11 +3,28 @@ package com.novoda.github.reports.stats;
 import com.beust.jcommander.JCommander;
 import com.novoda.floatschedule.FloatServiceClient;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
-import com.novoda.floatschedule.convert.FloatGithubUserConverter;
-import com.novoda.github.reports.data.db.*;
+import com.novoda.floatschedule.convert.GithubUserConverter;
+import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
+import com.novoda.github.reports.data.db.ConnectionManager;
+import com.novoda.github.reports.data.db.DbConnectionManager;
+import com.novoda.github.reports.data.db.DbEventDataLayer;
+import com.novoda.github.reports.data.db.DbRepoDataLayer;
+import com.novoda.github.reports.data.db.DbUserDataLayer;
+import com.novoda.github.reports.data.db.LogHelper;
 import com.novoda.github.reports.data.model.Stats;
-import com.novoda.github.reports.stats.command.*;
-import com.novoda.github.reports.stats.handler.*;
+import com.novoda.github.reports.stats.command.AggregateOptions;
+import com.novoda.github.reports.stats.command.OptionsNotValidException;
+import com.novoda.github.reports.stats.command.OverallOptions;
+import com.novoda.github.reports.stats.command.ProjectOptions;
+import com.novoda.github.reports.stats.command.PullRequestOptions;
+import com.novoda.github.reports.stats.command.RepoOptions;
+import com.novoda.github.reports.stats.command.UserOptions;
+import com.novoda.github.reports.stats.handler.AggregateCommandHandler;
+import com.novoda.github.reports.stats.handler.OverallCommandHandler;
+import com.novoda.github.reports.stats.handler.ProjectCommandHandler;
+import com.novoda.github.reports.stats.handler.PullRequestCommandHandler;
+import com.novoda.github.reports.stats.handler.RepoCommandHandler;
+import com.novoda.github.reports.stats.handler.UserCommandHandler;
 
 public class Main {
 
@@ -59,7 +76,7 @@ public class Main {
             stats = handler.handle(projectOptions);
         } else if (command.equals(COMMAND_PULL_REQUEST)) {
             DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
-            FloatGithubUserConverter floatGithubUserConverter = FloatGithubUserConverter.newInstance();
+            GithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
             PullRequestCommandHandler handler = new PullRequestCommandHandler(eventDataLayer, floatGithubUserConverter);
             stats = handler.handle(prOptions);
         } else if (command.equals(COMMAND_OVERALL)) {
