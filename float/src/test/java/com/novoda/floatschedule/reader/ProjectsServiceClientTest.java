@@ -1,4 +1,6 @@
-package com.novoda.github.reports.reader;
+package com.novoda.floatschedule.reader;
+
+import com.novoda.floatschedule.project.ProjectsServiceClient;
 
 import org.junit.Before;
 import org.junit.Test;
