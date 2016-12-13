@@ -48,3 +48,5 @@ You first need to create a Google sheets document with whatever name you like. B
 
 Now that you've created and published the document, get its ID and place it in the `sheets.credentials` file, which should
 be next to `sheets.credentials.sample`. 
+
+You're done!
