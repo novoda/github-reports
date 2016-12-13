@@ -20,6 +20,8 @@ Currently we're supporting username mappings only - Float names to Github userna
 | --- | --- |
 | Fernando Pessoa | fpessoa |
 | Carlos Paredes | cparedes |
+| Richard Stallman | richardmstallman |
+| Paulo Blundillo | blundillo |
 
 ## Configuration
 
