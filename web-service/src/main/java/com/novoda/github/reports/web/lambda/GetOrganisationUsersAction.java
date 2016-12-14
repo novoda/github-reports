@@ -2,7 +2,6 @@ package com.novoda.github.reports.web.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.novoda.github.reports.reader.UsersServiceClient;
 
 import java.util.List;
 

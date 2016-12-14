@@ -10,7 +10,6 @@ import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbConnectionManager;
 import com.novoda.github.reports.data.db.DbEventDataLayer;
 import com.novoda.github.reports.data.model.PullRequestStats;
-import com.novoda.github.reports.reader.UsersServiceClient;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.*;

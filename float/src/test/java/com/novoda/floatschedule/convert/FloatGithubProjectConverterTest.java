@@ -1,6 +1,6 @@
 package com.novoda.floatschedule.convert;
 
-import com.novoda.github.reports.reader.ProjectsReader;
+import com.novoda.floatschedule.reader.ProjectsReader;
 
 import java.util.Arrays;
 import java.util.Collections;

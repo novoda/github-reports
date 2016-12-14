@@ -1,4 +1,4 @@
-package com.novoda.github.reports.reader;
+package com.novoda.floatschedule.reader;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

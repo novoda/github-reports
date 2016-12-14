@@ -1,12 +1,12 @@
 package com.novoda.github.reports.stats.handler;
 
+import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
 import com.novoda.github.reports.stats.command.ProjectOptions;
 
-import java.io.IOException;
 import java.util.List;
 
 public class ProjectCommandHandler implements CommandHandler<ProjectRepoStats, ProjectOptions> {
@@ -25,7 +25,7 @@ public class ProjectCommandHandler implements CommandHandler<ProjectRepoStats, P
             List<String> repositories = floatGithubProjectConverter.getRepositories(project);
             ProjectRepoStats stats = dataLayer.getStats(repositories, options.getFrom(), options.getTo());
             return new ProjectRepoStats(project, stats.getEventStats(), stats.getNumberOfParticipatingUsers());
-        } catch (DataLayerException | IOException e) {
+        } catch (DataLayerException | FailedToLoadMappingsException e) {
             e.printStackTrace();
         }
         return null;

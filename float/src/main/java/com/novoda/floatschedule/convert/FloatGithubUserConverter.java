@@ -1,15 +1,17 @@
 package com.novoda.floatschedule.convert;
 
-import com.novoda.github.reports.reader.UsersReader;
+import com.novoda.floatschedule.reader.UsersReader;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class FloatGithubUserConverter {
+import static com.novoda.floatschedule.convert.FloatNameFilter.byFloatName;
+import static com.novoda.floatschedule.convert.GithubUsernameFilter.byGithubUsername;
+import static com.novoda.floatschedule.convert.NoMatchFoundException.noMatchFoundExceptionFor;
+
+public class FloatGithubUserConverter implements GithubUserConverter {
 
     private final UsersReader usersReader;
 
@@ -21,7 +23,7 @@ public class FloatGithubUserConverter {
         this.usersReader = usersReader;
     }
 
-    public List<String> getGithubUsers() throws IOException {
+    public List<String> getGithubUsers() throws FailedToLoadMappingsException {
         readIfNeeded();
         return usersReader.getContent()
                 .entrySet()
@@ -30,41 +32,35 @@ public class FloatGithubUserConverter {
                 .collect(Collectors.toList());
     }
 
-    public String getFloatUser(String githubUsername) throws IOException, NoMatchFoundException {
-        readIfNeeded();
-        return usersReader.getContent().entrySet().stream()
-                .filter(byGithubUsername(githubUsername))
-                .findFirst()
-                .map(Map.Entry::getKey)
-                .orElseThrow(noMatchFoundException(githubUsername));
-    }
-
-    private void readIfNeeded() throws IOException {
-        if (usersReader.hasContent()) {
-            return;
-        }
-        usersReader.read();
-    }
-
-    private Predicate<Map.Entry<String, String>> byGithubUsername(String githubUsername) {
-        return entry -> entry.getValue().equalsIgnoreCase(githubUsername);
-    }
-
-    private Supplier<RuntimeException> noMatchFoundException(String username) {
-        return () -> new NoMatchFoundException(username);
-    }
-
-    public String getGithubUser(String floatName) throws IOException, NoMatchFoundException {
+    public String getFloatUser(String githubUsername) throws FailedToLoadMappingsException, NoMatchFoundException {
         readIfNeeded();
         return usersReader.getContent().entrySet()
                 .stream()
-                .filter(byFloatUsername(floatName))
+                .filter(byGithubUsername(githubUsername))
                 .findFirst()
-                .map(Map.Entry::getValue)
-                .orElseThrow(noMatchFoundException(floatName));
+                .map(Map.Entry::getKey)
+                .orElseThrow(noMatchFoundExceptionFor(githubUsername));
     }
 
-    private Predicate<Map.Entry<String, String>> byFloatUsername(String floatName) {
-        return entry -> entry.getKey().equalsIgnoreCase(floatName);
+    private void readIfNeeded() throws FailedToLoadMappingsException {
+        if (usersReader.hasContent()) {
+            return;
+        }
+        try {
+            usersReader.read();
+        } catch (IOException exception) {
+            throw new FailedToLoadMappingsException(exception);
+        }
     }
+
+    public String getGithubUser(String floatName) throws FailedToLoadMappingsException, NoMatchFoundException {
+        readIfNeeded();
+        return usersReader.getContent().entrySet()
+                .stream()
+                .filter(byFloatName(floatName))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElseThrow(noMatchFoundExceptionFor(floatName));
+    }
+
 }

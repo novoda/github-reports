@@ -1,10 +1,12 @@
-package com.novoda.github.reports.reader;
+package com.novoda.floatschedule.project;
 
-import rx.Observable;
+import com.novoda.floatschedule.reader.ProjectsReader;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import rx.Observable;
 
 public class ProjectsServiceClient {
 
@@ -18,7 +20,7 @@ public class ProjectsServiceClient {
         this.projectsReader = projectsReader;
     }
 
-    Observable<String> getAllProjectNames() {
+    public Observable<String> getAllProjectNames() {
         try {
             readIfNeeded();
             return Observable.from(projectsReader.getContent().keySet());
@@ -28,7 +30,7 @@ public class ProjectsServiceClient {
         return Observable.empty();
     }
 
-    Observable<String> getAllGithubRepositoryNames(List<String> projectNames) {
+    public Observable<String> getAllGithubRepositoryNames(List<String> projectNames) {
         try {
             readIfNeeded();
 

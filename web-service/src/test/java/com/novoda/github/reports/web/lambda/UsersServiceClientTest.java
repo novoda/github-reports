@@ -1,15 +1,18 @@
-package com.novoda.github.reports.reader;
+package com.novoda.github.reports.web.lambda;
+
+import com.novoda.floatschedule.reader.UsersReader;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.verification.VerificationModeFactory;
+
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

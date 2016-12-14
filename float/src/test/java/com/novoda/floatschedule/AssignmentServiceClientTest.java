@@ -1,21 +1,27 @@
 package com.novoda.floatschedule;
 
+import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
-import com.novoda.floatschedule.convert.FloatGithubUserConverter;
+import com.novoda.floatschedule.convert.GithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
+
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
 import rx.Observable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.util.*;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
@@ -36,7 +42,7 @@ public class AssignmentServiceClientTest {
     private TaskServiceClient mockTaskServiceClient;
 
     @Mock
-    private FloatGithubUserConverter mockFloatGithubUserConverter;
+    private GithubUserConverter mockGithubUserConverter;
 
     @Mock
     private FloatGithubProjectConverter mockFloatGithubProjectConverter;
@@ -85,8 +91,8 @@ public class AssignmentServiceClientTest {
 
     private void givenGithubUser(String githubUsername, String floatUsername) {
         try {
-            when(mockFloatGithubUserConverter.getGithubUser(floatUsername)).thenReturn(githubUsername);
-        } catch (IOException e) {
+            when(mockGithubUserConverter.getGithubUser(floatUsername)).thenReturn(githubUsername);
+        } catch (FailedToLoadMappingsException e) {
             // nothing
         }
     }

@@ -1,8 +1,10 @@
-package com.novoda.github.reports.reader;
+package com.novoda.github.reports.web.lambda;
 
-import rx.Observable;
+import com.novoda.floatschedule.reader.UsersReader;
 
 import java.io.IOException;
+
+import rx.Observable;
 
 public class UsersServiceClient {
 

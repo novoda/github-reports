@@ -1,11 +1,11 @@
 package com.novoda.floatschedule;
 
+import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
-import com.novoda.floatschedule.convert.FloatGithubUserConverter;
+import com.novoda.floatschedule.convert.GithubUserConverter;
+import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
-import rx.Observable;
-import rx.functions.Func1;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -14,23 +14,26 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
+import rx.Observable;
+import rx.functions.Func1;
+
 public class AssignmentServiceClient {
 
     private static final Integer NO_PERSON_ID = null;
 
     private final TaskServiceClient taskServiceClient;
-    private final FloatGithubUserConverter floatGithubUserConverter;
+    private final GithubUserConverter floatGithubUserConverter;
     private final FloatGithubProjectConverter floatGithubProjectConverter;
 
     public static AssignmentServiceClient newInstance() {
         TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
-        FloatGithubUserConverter floatGithubUserConverter = FloatGithubUserConverter.newInstance();
+        GithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
         FloatGithubProjectConverter floatGithubProjectConverter = FloatGithubProjectConverter.newInstance();
         return new AssignmentServiceClient(taskServiceClient, floatGithubUserConverter, floatGithubProjectConverter);
     }
 
     private AssignmentServiceClient(TaskServiceClient taskServiceClient,
-                                    FloatGithubUserConverter floatGithubUserConverter,
+                                    GithubUserConverter floatGithubUserConverter,
                                     FloatGithubProjectConverter floatGithubProjectConverter) {
 
         this.taskServiceClient = taskServiceClient;
@@ -84,7 +87,7 @@ public class AssignmentServiceClient {
         return floatUsername -> {
             try {
                 return floatGithubUserConverter.getGithubUser(floatUsername);
-            } catch (IOException e) {
+            } catch (FailedToLoadMappingsException e) {
                 e.printStackTrace();
                 return null;
             }

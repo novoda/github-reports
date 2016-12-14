@@ -1,11 +1,31 @@
 package com.novoda.floatschedule;
 
-import com.novoda.floatschedule.convert.*;
+import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
+import com.novoda.floatschedule.convert.FloatDateConverter;
+import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
+import com.novoda.floatschedule.convert.GithubToFloatUserMatchNotFoundException;
+import com.novoda.floatschedule.convert.GithubUserConverter;
+import com.novoda.floatschedule.convert.NoMatchFoundException;
+import com.novoda.floatschedule.convert.NumberOfWeeksCalculator;
 import com.novoda.floatschedule.people.PeopleServiceClient;
 import com.novoda.floatschedule.people.Person;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
 import com.novoda.github.reports.data.model.UserAssignments;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,13 +33,9 @@ import org.junit.rules.ExpectedException;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
 import rx.Observable;
 import rx.functions.Action1;
-
-import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.*;
 
 import static com.novoda.floatschedule.TestSubscriberAssert.assertThatAnObservable;
 import static java.util.Arrays.asList;
@@ -72,7 +88,7 @@ public class FloatServiceClientTest {
     };
 
     @Mock
-    private FloatGithubUserConverter mockFloatGithubUserConverter;
+    private GithubUserConverter mockFloatGithubUserConverter;
 
     @Mock
     private FloatGithubProjectConverter mockFloatGithubProjectConverter;
@@ -136,7 +152,7 @@ public class FloatServiceClientTest {
         return new GivenPeopleServiceClient(peopleServiceClient);
     }
 
-    private GivenFloatGithubUserConverter given(FloatGithubUserConverter floatGithubUserConverter) {
+    private GivenFloatGithubUserConverter given(GithubUserConverter floatGithubUserConverter) {
         return new GivenFloatGithubUserConverter(floatGithubUserConverter);
     }
 
@@ -152,7 +168,7 @@ public class FloatServiceClientTest {
 
     @Test
     public void givenAllTasks_whenGettingRepositoryNamesForGithubUser_thenTheExpectedRepositoryNamesAreEmitted()
-            throws IOException, NoMatchFoundException {
+            throws FailedToLoadMappingsException, NoMatchFoundException {
 
         given(mockTaskServiceClient).hasAllTasks();
 
@@ -242,14 +258,14 @@ public class FloatServiceClientTest {
 
     @Test
     public void givenFailingFloatUsernameLookup_whenGettingTasksForGithubUser_thenWeGetErroringObservable()
-            throws IOException {
+            throws FailedToLoadMappingsException {
 
         given(mockFloatGithubUserConverter).failsLookupForGithubUsername(GITHUB_MARIO);
 
         Observable<Task> actual = floatServiceClient
                 .getTasksForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
 
-        assertThatAnObservable(actual).hasThrown(IOException.class);
+        assertThatAnObservable(actual).hasThrown(FailedToLoadMappingsException.class);
     }
 
     @Test
@@ -267,7 +283,7 @@ public class FloatServiceClientTest {
 
     @Test
     public void givenListOfGithubUsernamesWithUsernameNotMatchedInFloat_whenConvertToFloatUsernames_thenThrowGithubToFloatUserMatchNotFoundException()
-            throws IOException {
+            throws FailedToLoadMappingsException {
 
         // given
         String nonExistingGithubUsername = "this-user-does-not-exist-on-float";
@@ -405,25 +421,25 @@ public class FloatServiceClientTest {
     }
 
     private class GivenFloatGithubUserConverter {
-        private final FloatGithubUserConverter floatGithubUserConverter;
+        private final GithubUserConverter floatGithubUserConverter;
 
-        GivenFloatGithubUserConverter(FloatGithubUserConverter floatGithubUserConverter) {
+        GivenFloatGithubUserConverter(GithubUserConverter floatGithubUserConverter) {
             this.floatGithubUserConverter = floatGithubUserConverter;
         }
 
-        GivenFloatGithubUserConverter hasMapping(String githubUsername, String floatUsername) throws IOException {
+        GivenFloatGithubUserConverter hasMapping(String githubUsername, String floatUsername) throws FailedToLoadMappingsException {
             BDDMockito.given(floatGithubUserConverter.getGithubUser(floatUsername)).willReturn(githubUsername);
             BDDMockito.given(floatGithubUserConverter.getFloatUser(githubUsername)).willReturn(floatUsername);
             return this;
         }
 
-        GivenFloatGithubUserConverter hasGithubUsers(String... githubUsernames) throws IOException {
+        GivenFloatGithubUserConverter hasGithubUsers(String... githubUsernames) throws FailedToLoadMappingsException {
             BDDMockito.given(floatGithubUserConverter.getGithubUsers()).willReturn(asList(githubUsernames));
             return this;
         }
 
-        GivenFloatGithubUserConverter failsLookupForGithubUsername(String githubUsername) throws IOException {
-            BDDMockito.given(floatGithubUserConverter.getFloatUser(githubUsername)).willThrow(IOException.class);
+        GivenFloatGithubUserConverter failsLookupForGithubUsername(String githubUsername) throws FailedToLoadMappingsException {
+            BDDMockito.given(floatGithubUserConverter.getFloatUser(githubUsername)).willThrow(FailedToLoadMappingsException.class);
             return this;
         }
     }
