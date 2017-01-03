@@ -1,6 +1,6 @@
 package com.novoda.floatschedule.convert;
 
-import com.novoda.github.reports.sheets.network.SheetsServiceClient;
+import com.novoda.github.reports.sheets.network.UserSheetsServiceClient;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,16 +16,16 @@ import static com.novoda.floatschedule.convert.NoMatchFoundException.noMatchFoun
 public class SheetsFloatGithubUserConverter implements GithubUserConverter {
 
     private final Map<String, String> floatToGithubUser;
-    private final SheetsServiceClient sheetsServiceClient;
+    private final UserSheetsServiceClient userSheetsServiceClient;
 
     public static SheetsFloatGithubUserConverter newInstance() {
-        SheetsServiceClient sheetsServiceClient = SheetsServiceClient.newInstance();
-        return new SheetsFloatGithubUserConverter(sheetsServiceClient);
+        UserSheetsServiceClient userSheetsServiceClient = UserSheetsServiceClient.newInstance();
+        return new SheetsFloatGithubUserConverter(userSheetsServiceClient);
     }
 
-    SheetsFloatGithubUserConverter(SheetsServiceClient sheetsServiceClient) {
+    SheetsFloatGithubUserConverter(UserSheetsServiceClient userSheetsServiceClient) {
         floatToGithubUser = new HashMap<>();
-        this.sheetsServiceClient = sheetsServiceClient;
+        this.userSheetsServiceClient = userSheetsServiceClient;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class SheetsFloatGithubUserConverter implements GithubUserConverter {
         if (!floatToGithubUser.isEmpty()) {
             return;
         }
-        sheetsServiceClient.getEntries()
+        userSheetsServiceClient.getUserEntries()
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(entry -> floatToGithubUser.put(entry.getTitle(), entry.getContent()));
     }
