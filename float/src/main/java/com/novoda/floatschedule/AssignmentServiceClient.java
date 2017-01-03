@@ -1,8 +1,9 @@
 package com.novoda.floatschedule;
 
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
-import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
+import com.novoda.floatschedule.convert.GithubProjectConverter;
 import com.novoda.floatschedule.convert.GithubUserConverter;
+import com.novoda.floatschedule.convert.SheetsFloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
@@ -22,18 +23,18 @@ public class AssignmentServiceClient {
 
     private final TaskServiceClient taskServiceClient;
     private final GithubUserConverter floatGithubUserConverter;
-    private final FloatGithubProjectConverter floatGithubProjectConverter;
+    private final GithubProjectConverter floatGithubProjectConverter;
 
     public static AssignmentServiceClient newInstance() {
         TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
         GithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
-        FloatGithubProjectConverter floatGithubProjectConverter = FloatGithubProjectConverter.newInstance();
+        SheetsFloatGithubProjectConverter floatGithubProjectConverter = SheetsFloatGithubProjectConverter.newInstance();
         return new AssignmentServiceClient(taskServiceClient, floatGithubUserConverter, floatGithubProjectConverter);
     }
 
     private AssignmentServiceClient(TaskServiceClient taskServiceClient,
                                     GithubUserConverter floatGithubUserConverter,
-                                    FloatGithubProjectConverter floatGithubProjectConverter) {
+                                    GithubProjectConverter floatGithubProjectConverter) {
 
         this.taskServiceClient = taskServiceClient;
         this.floatGithubUserConverter = floatGithubUserConverter;
