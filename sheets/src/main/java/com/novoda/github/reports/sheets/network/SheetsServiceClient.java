@@ -7,6 +7,7 @@ import com.novoda.github.reports.sheets.sheet.Entry;
 
 import rx.Observable;
 
+// TODO @RUI replace usages outside of module with UserSheetsServiceClient
 public class SheetsServiceClient {
 
     private final SheetsApiService apiService;
