@@ -5,7 +5,6 @@ import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.GithubToFloatUserMatchNotFoundException;
 import com.novoda.floatschedule.convert.GithubUserConverter;
-import com.novoda.floatschedule.convert.NoMatchFoundException;
 import com.novoda.floatschedule.convert.NumberOfWeeksCalculator;
 import com.novoda.floatschedule.people.PeopleServiceClient;
 import com.novoda.floatschedule.people.Person;
@@ -35,7 +34,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import rx.Observable;
-import rx.functions.Action1;
 
 import static com.novoda.floatschedule.TestSubscriberAssert.assertThatAnObservable;
 import static java.util.Arrays.asList;
@@ -157,86 +155,6 @@ public class FloatServiceClientTest {
     }
 
     @Test
-    public void givenAllTasks_whenGettingRepositoryNamesForFloatUser_thenTheExpectedRepositoryNamesAreEmitted() {
-        given(mockTaskServiceClient).hasAllTasks();
-
-        Observable<String> actual = floatServiceClient
-                .getRepositoryNamesForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
-
-        assertThatAnObservable(actual).hasEmittedValues(GITHUB_ALL_4, FLOAT_PROJECT_NOVODA_TV);
-    }
-
-    @Test
-    public void givenAllTasks_whenGettingRepositoryNamesForGithubUser_thenTheExpectedRepositoryNamesAreEmitted()
-            throws FailedToLoadMappingsException, NoMatchFoundException {
-
-        given(mockTaskServiceClient).hasAllTasks();
-
-        Observable<String> actual = floatServiceClient
-                .getRepositoryNamesForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
-
-        assertThatAnObservable(actual).hasEmittedValues(GITHUB_ALL_4, FLOAT_PROJECT_NOVODA_TV);
-    }
-
-    @Test
-    public void givenNoTasks_whenGettingRepositoryNamesForGithubUserWithNoTasksAssigned_thenNoItemsAreEmitted() {
-        given(mockTaskServiceClient).hasNoTasks();
-
-        Observable<String> actual = floatServiceClient
-                .getRepositoryNamesForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
-
-        assertThatAnObservable(actual).hasEmittedNoValues();
-    }
-
-    @Test
-    public void givenTasksForPerson_whenGettingTasksForFloatRelatedUser_thenWeOnlyGetTasksForThatUser() throws Exception {
-        given(mockTaskServiceClient).hasTasks(TASK_MARIO_ALL_4, TASK_MARIO_BBQ);
-
-        Observable<Task> actual = floatServiceClient
-                .getTasksForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
-
-        assertThatAnObservable(actual).hasEmittedValues(
-                assertTaskNameIsEqual(),
-                TASK_MARIO_ALL_4, TASK_MARIO_BBQ
-        );
-    }
-
-    @Test
-    public void givenAllTasks_whenGettingTasksForFloatUser_thenWeOnlyGetTasksThatAreNotHolidays()
-            throws Exception {
-
-        given(mockTaskServiceClient).hasAllTasks();
-
-        Observable<Task> actual = floatServiceClient
-                .getTasksForFloatUser(FLOAT_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
-
-        assertThatAnObservable(actual)
-                .hasEmittedValues(assertTaskNameDoesNotContainHoliday());
-
-    }
-
-    private Action1<Task> assertTaskNameDoesNotContainHoliday() {
-        return task -> assertEquals(false, task.getName().contains("Holiday"));
-    }
-
-    @Test
-    public void givenTasksForPerson_whenGettingTasksForRelatedGithubUser_thenWeOnlyGetTasksForCorrespondingFloatUser()
-            throws Exception {
-
-        given(mockTaskServiceClient)
-                .hasTasksForOnePerson(PERSON_MARIO, TASK_MARIO_ALL_4, TASK_MARIO_BBQ);
-
-        Observable<Task> actual = floatServiceClient
-                .getTasksForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
-
-        assertThatAnObservable(actual).hasEmittedValues(assertTaskNameIsEqual(), TASK_MARIO_ALL_4, TASK_MARIO_BBQ);
-    }
-
-    private TestSubscriberAssert.TestSubscriberCustomAssert<Task> assertTaskNameIsEqual() {
-        return (expectedTask, actualTask) -> assertEquals(expectedTask.getName(), actualTask.getName());
-    }
-
-    @Test
     public void givenAllTasks_whenGettingTasksForMultipleGithubUsers_thenWeGetTasksMappedToGithubUsers() {
         given(mockTaskServiceClient).hasAllTasks();
 
@@ -254,18 +172,6 @@ public class FloatServiceClientTest {
 
     private Map.Entry aMapEntry(String githubMario, List<Task> tasks) {
         return new AbstractMap.SimpleImmutableEntry<>(githubMario, tasks);
-    }
-
-    @Test
-    public void givenFailingFloatUsernameLookup_whenGettingTasksForGithubUser_thenWeGetErroringObservable()
-            throws FailedToLoadMappingsException {
-
-        given(mockFloatGithubUserConverter).failsLookupForGithubUsername(GITHUB_MARIO);
-
-        Observable<Task> actual = floatServiceClient
-                .getTasksForGithubUser(GITHUB_MARIO, ANY_START_DATE, ANY_NUMBER_OF_WEEKS, ANY_TIMEZONE);
-
-        assertThatAnObservable(actual).hasThrown(FailedToLoadMappingsException.class);
     }
 
     @Test
@@ -372,10 +278,6 @@ public class FloatServiceClientTest {
             this.taskServiceClient = taskServiceClient;
         }
 
-        GivenTaskServiceClient hasTasksForOnePerson(Person person, Task... tasks) {
-            return hasTasksForOnePerson(person.getId(), tasks);
-        }
-
         GivenTaskServiceClient hasTasksForOnePerson(int personId, Task... tasks) {
             Observable<Task> mockTasksObservable = Observable.from(Arrays.asList(tasks));
 
@@ -391,10 +293,6 @@ public class FloatServiceClientTest {
 
         GivenTaskServiceClient hasAllTasks() {
             return hasTasks(ALL_TASKS);
-        }
-
-        private GivenTaskServiceClient hasNoTasks() {
-            return hasTasks();
         }
 
         private GivenTaskServiceClient hasTasks(Task... tasks) {
