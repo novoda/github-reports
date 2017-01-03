@@ -2,10 +2,10 @@ package com.novoda.floatschedule;
 
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatDateConverter;
-import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.GithubToFloatUserMatchNotFoundException;
 import com.novoda.floatschedule.convert.GithubUserConverter;
 import com.novoda.floatschedule.convert.NumberOfWeeksCalculator;
+import com.novoda.floatschedule.convert.SheetsFloatGithubProjectConverter;
 import com.novoda.floatschedule.people.PeopleServiceClient;
 import com.novoda.floatschedule.people.Person;
 import com.novoda.floatschedule.task.Task;
@@ -89,7 +89,7 @@ public class FloatServiceClientTest {
     private GithubUserConverter mockFloatGithubUserConverter;
 
     @Mock
-    private FloatGithubProjectConverter mockFloatGithubProjectConverter;
+    private SheetsFloatGithubProjectConverter mockFloatGithubProjectConverter;
 
     @Mock
     private PeopleServiceClient mockPeopleServiceClient;
