@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class FloatGithubProjectConverter {
+public class FloatGithubProjectConverter implements GithubProjectConverter {
 
     private final ProjectsReader projectsReader;
 
@@ -23,7 +23,8 @@ public class FloatGithubProjectConverter {
         this.projectsReader = projectsReader;
     }
 
-    public List<String> getFloatProjects(String repositoryName) throws IOException, NoMatchFoundException {
+    @Override
+    public List<String> getFloatProjects(String repositoryName) throws NoMatchFoundException {
         readIfNeeded();
 
         List<String> projects = projectsReader.getContent().entrySet()
@@ -56,6 +57,7 @@ public class FloatGithubProjectConverter {
         return Objects::nonNull;
     }
 
+    @Override
     public List<String> getRepositories(String floatProject) throws FailedToLoadMappingsException, NoMatchFoundException {
         readIfNeeded();
         return projectsReader.getContent().entrySet()
