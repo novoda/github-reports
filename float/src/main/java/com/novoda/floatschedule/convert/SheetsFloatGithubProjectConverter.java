@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import rx.schedulers.Schedulers;
 
-public class SheetsFloatGithubProjectConverter implements GithubProjectConverter {
+public class SheetsFloatGithubProjectConverter {
 
     private final Map<String, List<String>> projectToRepositories;
     private final ProjectSheetsServiceClient projectSheetsServiceClient;

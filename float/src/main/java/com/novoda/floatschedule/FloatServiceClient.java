@@ -2,7 +2,6 @@ package com.novoda.floatschedule;
 
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatDateConverter;
-import com.novoda.floatschedule.convert.GithubProjectConverter;
 import com.novoda.floatschedule.convert.GithubToFloatUserMatchNotFoundException;
 import com.novoda.floatschedule.convert.GithubUserConverter;
 import com.novoda.floatschedule.convert.NoMatchFoundException;
@@ -36,7 +35,7 @@ public class FloatServiceClient {
     private static final String HOLIDAY_TASK_DESCRIPTOR = "HOLIDAY";
 
     private final GithubUserConverter floatGithubUserConverter;
-    private final GithubProjectConverter floatGithubProjectConverter;
+    private final SheetsFloatGithubProjectConverter floatGithubProjectConverter;
     private final PeopleServiceClient peopleServiceClient;
     private final TaskServiceClient taskServiceClient;
     private final NumberOfWeeksCalculator numberOfWeeksCalculator;
@@ -44,7 +43,7 @@ public class FloatServiceClient {
 
     public static FloatServiceClient newInstance() {
         GithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
-        GithubProjectConverter floatGithubProjectConverter = SheetsFloatGithubProjectConverter.newInstance();
+        SheetsFloatGithubProjectConverter floatGithubProjectConverter = SheetsFloatGithubProjectConverter.newInstance();
         PeopleServiceClient peopleServiceClient = PeopleServiceClient.newInstance();
         TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
         NumberOfWeeksCalculator numberOfWeeksCalculator = new NumberOfWeeksCalculator();
@@ -60,7 +59,7 @@ public class FloatServiceClient {
     }
 
     private FloatServiceClient(GithubUserConverter floatGithubUserConverter,
-                               GithubProjectConverter floatGithubProjectConverter,
+                               SheetsFloatGithubProjectConverter floatGithubProjectConverter,
                                PeopleServiceClient peopleServiceClient,
                                TaskServiceClient taskServiceClient,
                                NumberOfWeeksCalculator numberOfWeeksCalculator,
