@@ -2,12 +2,12 @@ package com.novoda.floatschedule;
 
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatDateConverter;
-import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.GithubProjectConverter;
 import com.novoda.floatschedule.convert.GithubToFloatUserMatchNotFoundException;
 import com.novoda.floatschedule.convert.GithubUserConverter;
 import com.novoda.floatschedule.convert.NoMatchFoundException;
 import com.novoda.floatschedule.convert.NumberOfWeeksCalculator;
+import com.novoda.floatschedule.convert.SheetsFloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
 import com.novoda.floatschedule.people.PeopleServiceClient;
 import com.novoda.floatschedule.people.Person;
@@ -44,7 +44,7 @@ public class FloatServiceClient {
 
     public static FloatServiceClient newInstance() {
         GithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
-        FloatGithubProjectConverter floatGithubProjectConverter = FloatGithubProjectConverter.newInstance();
+        GithubProjectConverter floatGithubProjectConverter = SheetsFloatGithubProjectConverter.newInstance();
         PeopleServiceClient peopleServiceClient = PeopleServiceClient.newInstance();
         TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
         NumberOfWeeksCalculator numberOfWeeksCalculator = new NumberOfWeeksCalculator();
@@ -60,7 +60,7 @@ public class FloatServiceClient {
     }
 
     private FloatServiceClient(GithubUserConverter floatGithubUserConverter,
-                               FloatGithubProjectConverter floatGithubProjectConverter,
+                               GithubProjectConverter floatGithubProjectConverter,
                                PeopleServiceClient peopleServiceClient,
                                TaskServiceClient taskServiceClient,
                                NumberOfWeeksCalculator numberOfWeeksCalculator,
