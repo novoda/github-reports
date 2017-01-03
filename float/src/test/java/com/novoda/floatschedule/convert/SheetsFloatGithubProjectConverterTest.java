@@ -97,7 +97,7 @@ public class SheetsFloatGithubProjectConverterTest {
     }
 
     private void givenServiceIsSetup() {
-        given(mockProjectSheetsServiceClient.getProjectEntries()).willReturn(Observable.empty());
+        given(mockProjectSheetsServiceClient.getProjectEntries()).willReturn(Observable.just(AN_ENTRY));
     }
 
     private void givenApiHasAlreadyBeenHit() {
