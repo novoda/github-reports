@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -52,7 +53,7 @@ public class FloatGithubProjectConverter {
     }
 
     private Predicate<String> notNull() {
-        return projectName -> projectName != null;
+        return Objects::nonNull;
     }
 
     public List<String> getRepositories(String floatProject) throws FailedToLoadMappingsException, NoMatchFoundException {
