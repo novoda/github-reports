@@ -1,6 +1,6 @@
 package com.novoda.github.reports.sheets.network;
 
-import com.novoda.github.reports.sheets.convert.ValueRemover;
+import com.novoda.github.reports.sheets.convert.ContentHeaderRemover;
 import com.novoda.github.reports.sheets.sheet.Entry;
 
 import rx.Observable;
@@ -8,21 +8,22 @@ import rx.Observable;
 public class SheetsServiceClient {
 
     private final SheetsApiService apiService;
-    private final ValueRemover<Entry> keyRemover;
+    private final ContentHeaderRemover contentHeaderRemover;
 
-    public static SheetsServiceClient newInstance(ValueRemover<Entry> keyRemover) {
+    public static SheetsServiceClient newInstance() {
         SheetsApiService apiService = SheetsServiceContainer.getSheetsService();
-        return new SheetsServiceClient(apiService, keyRemover);
+        ContentHeaderRemover contentHeaderRemover = new ContentHeaderRemover();
+        return new SheetsServiceClient(apiService, contentHeaderRemover);
     }
 
-    SheetsServiceClient(SheetsApiService apiService, ValueRemover<Entry> keyRemover) {
+    SheetsServiceClient(SheetsApiService apiService, ContentHeaderRemover contentHeaderRemover) {
         this.apiService = apiService;
-        this.keyRemover = keyRemover;
+        this.contentHeaderRemover = contentHeaderRemover;
     }
 
     public Observable<Entry> getEntries(String documentId) {
          return apiService.getEntries(documentId)
-                 .map(keyRemover::removeFrom);
+                 .map(contentHeaderRemover::removeFrom);
     }
 
 }

@@ -1,7 +1,5 @@
 package com.novoda.github.reports.sheets.network;
 
-import com.novoda.github.reports.sheets.convert.GithubRepositoryNameRemover;
-import com.novoda.github.reports.sheets.convert.ValueRemover;
 import com.novoda.github.reports.sheets.properties.DocumentIdReader;
 import com.novoda.github.reports.sheets.sheet.Entry;
 
@@ -13,9 +11,8 @@ public class ProjectSheetsServiceClient {
     private DocumentIdReader documentIdReader;
 
     public static ProjectSheetsServiceClient newInstance() {
-        ValueRemover<Entry> keyRemover = new GithubRepositoryNameRemover();
         DocumentIdReader documentIdReader = DocumentIdReader.newInstance();
-        SheetsServiceClient sheetsServiceClient = SheetsServiceClient.newInstance(keyRemover);
+        SheetsServiceClient sheetsServiceClient = SheetsServiceClient.newInstance();
         return new ProjectSheetsServiceClient(sheetsServiceClient, documentIdReader);
     }
 

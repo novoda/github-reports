@@ -1,6 +1,6 @@
 package com.novoda.github.reports.sheets.network;
 
-import com.novoda.github.reports.sheets.convert.ValueRemover;
+import com.novoda.github.reports.sheets.convert.ContentHeaderRemover;
 import com.novoda.github.reports.sheets.sheet.Entry;
 
 import java.util.Collections;
@@ -30,7 +30,7 @@ public class SheetsServiceClientTest {
     SheetsApiService mockSheetsApiService;
 
     @Mock
-    ValueRemover<Entry> mockValueRemover;
+    ContentHeaderRemover mockContentHeaderRemover;
 
     private TestSubscriber<Entry> testSubscriber;
 
@@ -44,14 +44,14 @@ public class SheetsServiceClientTest {
     public void setUp() {
         initMocks(this);
 
-        when(mockValueRemover.removeFrom(any(Entry.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(mockContentHeaderRemover.removeFrom(any(Entry.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         testSubscriber = new TestSubscriber<>();
 
         entries = givenEntries();
         apiObservable = Observable.from(entries);
 
-        sheetsServiceClient = new SheetsServiceClient(mockSheetsApiService, mockValueRemover);
+        sheetsServiceClient = new SheetsServiceClient(mockSheetsApiService, mockContentHeaderRemover);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class SheetsServiceClientTest {
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
-        verify(mockValueRemover, times(entries.size())).removeFrom(any(Entry.class));
+        verify(mockContentHeaderRemover, times(entries.size())).removeFrom(any(Entry.class));
     }
 
     @Test
