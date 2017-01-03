@@ -7,7 +7,6 @@ import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -60,7 +59,7 @@ public class AssignmentServiceClient {
     private List<String> getFloatProjectNames(String repositoryName) {
         try {
             return floatGithubProjectConverter.getFloatProjects(repositoryName);
-        } catch (IOException e) {
+        } catch (FailedToLoadMappingsException e) {
             e.printStackTrace();
             return Collections.emptyList();
         }
