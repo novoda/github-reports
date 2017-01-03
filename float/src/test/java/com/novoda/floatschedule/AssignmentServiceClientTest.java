@@ -2,8 +2,8 @@ package com.novoda.floatschedule;
 
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatDateConverter;
-import com.novoda.floatschedule.convert.GithubUserConverter;
 import com.novoda.floatschedule.convert.SheetsFloatGithubProjectConverter;
+import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
 
@@ -42,7 +42,7 @@ public class AssignmentServiceClientTest {
     private TaskServiceClient mockTaskServiceClient;
 
     @Mock
-    private GithubUserConverter mockGithubUserConverter;
+    private SheetsFloatGithubUserConverter mockGithubUserConverter;
 
     @Mock
     private SheetsFloatGithubProjectConverter mockFloatGithubProjectConverter;

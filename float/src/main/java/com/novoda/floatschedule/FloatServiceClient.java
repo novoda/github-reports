@@ -3,7 +3,6 @@ package com.novoda.floatschedule;
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatDateConverter;
 import com.novoda.floatschedule.convert.GithubToFloatUserMatchNotFoundException;
-import com.novoda.floatschedule.convert.GithubUserConverter;
 import com.novoda.floatschedule.convert.NoMatchFoundException;
 import com.novoda.floatschedule.convert.NumberOfWeeksCalculator;
 import com.novoda.floatschedule.convert.SheetsFloatGithubProjectConverter;
@@ -34,7 +33,7 @@ public class FloatServiceClient {
 
     private static final String HOLIDAY_TASK_DESCRIPTOR = "HOLIDAY";
 
-    private final GithubUserConverter floatGithubUserConverter;
+    private final SheetsFloatGithubUserConverter floatGithubUserConverter;
     private final SheetsFloatGithubProjectConverter floatGithubProjectConverter;
     private final PeopleServiceClient peopleServiceClient;
     private final TaskServiceClient taskServiceClient;
@@ -42,7 +41,7 @@ public class FloatServiceClient {
     private final FloatDateConverter floatDateConverter;
 
     public static FloatServiceClient newInstance() {
-        GithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
+        SheetsFloatGithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
         SheetsFloatGithubProjectConverter floatGithubProjectConverter = SheetsFloatGithubProjectConverter.newInstance();
         PeopleServiceClient peopleServiceClient = PeopleServiceClient.newInstance();
         TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
@@ -58,7 +57,7 @@ public class FloatServiceClient {
                 floatDateConverter);
     }
 
-    private FloatServiceClient(GithubUserConverter floatGithubUserConverter,
+    private FloatServiceClient(SheetsFloatGithubUserConverter floatGithubUserConverter,
                                SheetsFloatGithubProjectConverter floatGithubProjectConverter,
                                PeopleServiceClient peopleServiceClient,
                                TaskServiceClient taskServiceClient,

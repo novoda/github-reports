@@ -1,6 +1,6 @@
 package com.novoda.github.reports.stats.handler;
 
-import com.novoda.floatschedule.convert.GithubUserConverter;
+import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.stats.command.PullRequestOptions;
@@ -38,7 +38,7 @@ public class PullRequestCommandHandlerTest {
     private EventDataLayer mockDataLayer;
 
     @Mock
-    GithubUserConverter mockConverter;
+    SheetsFloatGithubUserConverter mockConverter;
 
     @InjectMocks
     private PullRequestCommandHandler handler;
