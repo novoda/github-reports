@@ -30,10 +30,16 @@ public class SheetsFloatGithubProjectConverter implements GithubProjectConverter
     @Override
     public List<String> getFloatProjects(String repositoryName) throws NoMatchFoundException {
         readIfNeeded();
-        return projectToRepositories.entrySet().stream()
+        List<String> floatProjects = projectToRepositories.entrySet().stream()
                 .filter(entry -> entry.getValue().contains(repositoryName.toLowerCase(Locale.UK)))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+
+        if (floatProjects.isEmpty()) {
+            throw new NoMatchFoundException(repositoryName);
+        }
+
+        return floatProjects;
     }
 
     private void readIfNeeded() {
@@ -56,7 +62,13 @@ public class SheetsFloatGithubProjectConverter implements GithubProjectConverter
     @Override
     public List<String> getRepositories(String floatProject) throws NoMatchFoundException {
         readIfNeeded();
-        return projectToRepositories.get(floatProject.toLowerCase(Locale.UK));
+        List<String> repositories = projectToRepositories.get(floatProject.toLowerCase(Locale.UK));
+
+        if (repositories == null || repositories.isEmpty()) {
+            throw new NoMatchFoundException(floatProject);
+        }
+
+        return repositories;
     }
 
 }
