@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import rx.schedulers.Schedulers;
 
-public class SheetsFloatGithubProjectConverter implements GithubProjectConverter {
+public class SheetsFloatGithubProjectConverter {
 
     private final Map<String, List<String>> projectToRepositories;
     private final ProjectSheetsServiceClient projectSheetsServiceClient;
@@ -27,7 +27,6 @@ public class SheetsFloatGithubProjectConverter implements GithubProjectConverter
         this.projectSheetsServiceClient = projectSheetsServiceClient;
     }
 
-    @Override
     public List<String> getFloatProjects(String repositoryName) throws NoMatchFoundException {
         readIfNeeded();
         List<String> floatProjects = projectToRepositories.entrySet().stream()
@@ -59,7 +58,6 @@ public class SheetsFloatGithubProjectConverter implements GithubProjectConverter
         projectToRepositories.put(entry.getTitle().toLowerCase(Locale.UK), lowerCaseRepositoryNames);
     }
 
-    @Override
     public List<String> getRepositories(String floatProject) throws NoMatchFoundException {
         readIfNeeded();
         List<String> repositories = projectToRepositories.get(floatProject.toLowerCase(Locale.UK));

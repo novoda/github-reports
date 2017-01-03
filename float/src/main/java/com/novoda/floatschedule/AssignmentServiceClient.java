@@ -1,7 +1,6 @@
 package com.novoda.floatschedule;
 
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
-import com.novoda.floatschedule.convert.GithubProjectConverter;
 import com.novoda.floatschedule.convert.GithubUserConverter;
 import com.novoda.floatschedule.convert.SheetsFloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
@@ -23,7 +22,7 @@ public class AssignmentServiceClient {
 
     private final TaskServiceClient taskServiceClient;
     private final GithubUserConverter floatGithubUserConverter;
-    private final GithubProjectConverter floatGithubProjectConverter;
+    private final SheetsFloatGithubProjectConverter floatGithubProjectConverter;
 
     public static AssignmentServiceClient newInstance() {
         TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
@@ -34,7 +33,7 @@ public class AssignmentServiceClient {
 
     private AssignmentServiceClient(TaskServiceClient taskServiceClient,
                                     GithubUserConverter floatGithubUserConverter,
-                                    GithubProjectConverter floatGithubProjectConverter) {
+                                    SheetsFloatGithubProjectConverter floatGithubProjectConverter) {
 
         this.taskServiceClient = taskServiceClient;
         this.floatGithubUserConverter = floatGithubUserConverter;
