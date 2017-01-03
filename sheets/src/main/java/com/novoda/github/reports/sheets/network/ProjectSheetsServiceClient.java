@@ -10,20 +10,22 @@ import rx.Observable;
 public class ProjectSheetsServiceClient {
 
     private SheetsServiceClient sheetsServiceClient;
+    private DocumentIdReader documentIdReader;
 
     public static ProjectSheetsServiceClient newInstance() {
-        SheetsApiService apiService = SheetsServiceContainer.getSheetsService();
         ValueRemover<Entry> keyRemover = new GithubRepositoryNameRemover();
         DocumentIdReader documentIdReader = DocumentIdReader.newInstance();
-        SheetsServiceClient sheetsServiceClient = new SheetsServiceClient(apiService, keyRemover, documentIdReader);
-        return new ProjectSheetsServiceClient(sheetsServiceClient);
+        SheetsServiceClient sheetsServiceClient = SheetsServiceClient.newInstance(keyRemover);
+        return new ProjectSheetsServiceClient(sheetsServiceClient, documentIdReader);
     }
 
-    ProjectSheetsServiceClient(SheetsServiceClient sheetsServiceClient) {
+    ProjectSheetsServiceClient(SheetsServiceClient sheetsServiceClient, DocumentIdReader documentIdReader) {
         this.sheetsServiceClient = sheetsServiceClient;
+        this.documentIdReader = documentIdReader;
     }
 
     public Observable<Entry> getProjectEntries() {
-        return null;
+        String documentId = documentIdReader.getUsersDocumentId();
+        return sheetsServiceClient.getEntries(documentId);
     }
 }
