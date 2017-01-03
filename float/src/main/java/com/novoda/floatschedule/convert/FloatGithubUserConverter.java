@@ -23,6 +23,7 @@ public class FloatGithubUserConverter implements GithubUserConverter {
         this.usersReader = usersReader;
     }
 
+    @Override
     public List<String> getGithubUsers() throws FailedToLoadMappingsException {
         readIfNeeded();
         return usersReader.getContent()
@@ -32,6 +33,7 @@ public class FloatGithubUserConverter implements GithubUserConverter {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public String getFloatUser(String githubUsername) throws FailedToLoadMappingsException, NoMatchFoundException {
         readIfNeeded();
         return usersReader.getContent().entrySet()
@@ -53,6 +55,7 @@ public class FloatGithubUserConverter implements GithubUserConverter {
         }
     }
 
+    @Override
     public String getGithubUser(String floatName) throws FailedToLoadMappingsException, NoMatchFoundException {
         readIfNeeded();
         return usersReader.getContent().entrySet()
