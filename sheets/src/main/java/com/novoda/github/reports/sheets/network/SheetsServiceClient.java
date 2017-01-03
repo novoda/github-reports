@@ -1,34 +1,26 @@
 package com.novoda.github.reports.sheets.network;
 
-import com.novoda.github.reports.sheets.convert.GithubUsernameRemover;
 import com.novoda.github.reports.sheets.convert.ValueRemover;
-import com.novoda.github.reports.sheets.properties.DocumentIdReader;
 import com.novoda.github.reports.sheets.sheet.Entry;
 
 import rx.Observable;
 
-// TODO @RUI replace usages outside of module with UserSheetsServiceClient
 public class SheetsServiceClient {
 
     private final SheetsApiService apiService;
     private final ValueRemover<Entry> keyRemover;
-    private final DocumentIdReader documentIdReader;
 
-    public static SheetsServiceClient newInstance() {
+    public static SheetsServiceClient newInstance(ValueRemover<Entry> keyRemover) {
         SheetsApiService apiService = SheetsServiceContainer.getSheetsService();
-        ValueRemover<Entry> keyRemover = new GithubUsernameRemover();
-        DocumentIdReader documentIdReader = DocumentIdReader.newInstance();
-        return new SheetsServiceClient(apiService, keyRemover, documentIdReader);
+        return new SheetsServiceClient(apiService, keyRemover);
     }
 
-    SheetsServiceClient(SheetsApiService apiService, ValueRemover<Entry> keyRemover, DocumentIdReader documentIdReader) {
+    SheetsServiceClient(SheetsApiService apiService, ValueRemover<Entry> keyRemover) {
         this.apiService = apiService;
         this.keyRemover = keyRemover;
-        this.documentIdReader = documentIdReader;
     }
 
-    public Observable<Entry> getEntries() {
-        String documentId = documentIdReader.getDocumentId();
+    public Observable<Entry> getEntries(String documentId) {
          return apiService.getEntries(documentId)
                  .map(keyRemover::removeFrom);
     }
