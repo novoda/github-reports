@@ -25,7 +25,7 @@ public class ProjectSheetsServiceClient {
     }
 
     public Observable<Entry> getProjectEntries() {
-        String documentId = documentIdReader.getUsersDocumentId();
+        String documentId = documentIdReader.getProjectsDocumentId();
         return sheetsServiceClient.getEntries(documentId);
     }
 }
