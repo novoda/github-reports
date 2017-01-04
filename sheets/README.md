@@ -26,7 +26,7 @@ Currently we're supporting username mappings - Float names to GitHub usernames -
 | Paulo Blundillo | blundillo |
 
  - The project mappings document is also composed of two columns, the first one being the Float project name and the second one a list of GitHub
- repository names, separated by a comma - `,`.
+ repository names, separated by a comma - `,`. Spaces are trimmed (i.e. they're optional).
 
  | Float Project name | GitHub Repositories |
  | --- | --- |
