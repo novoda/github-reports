@@ -24,7 +24,7 @@ public class SheetsFloatGithubProjectConverterTest {
     private static final String ANY_REPOSITORY_NAME = "github-reports";
     private static final String ANOTHER_REPOSITORY_NAME = "project-d";
     private static final String ANY_PROJECT_NAME = "R & D";
-    private static final String ANOTHER_PROJECT_NAME = "The Times";
+    private static final String ANOTHER_PROJECT_NAME = "The Times - Scheduled";
     private static final Entry AN_ENTRY = new Entry(ANY_PROJECT_NAME, ANY_REPOSITORY_NAME + ", " + ANOTHER_REPOSITORY_NAME);
     private static final Entry ANOTHER_ENTRY = new Entry(ANOTHER_PROJECT_NAME, ANOTHER_REPOSITORY_NAME);
 

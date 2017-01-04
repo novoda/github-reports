@@ -60,8 +60,14 @@ public class AssignmentServiceClientTest {
 
         testSubscriber = new TestSubscriber<>();
 
-        List<Task> tasks = Arrays.asList(givenATask("proj1", "persA"), givenATask("proj1", "persD"), givenATask("proj2", "persB"),
-                givenATask("proj3", "persC"), givenATask("proj4", "persA"), givenATask("proj5", "persE"));
+        List<Task> tasks = Arrays.asList(
+                givenATask("proj1: scheduled", "persA"),
+                givenATask("proj1: verified", "persA"),
+                givenATask("proj1: verified", "persD"),
+                givenATask("proj2", "persB"),
+                givenATask("proj3", "persC"),
+                givenATask("proj4", "persA"),
+                givenATask("proj5", "persE"));
 
         givenTasks(tasks);
         givenGithubUsersFor(tasks);

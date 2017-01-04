@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import rx.schedulers.Schedulers;
@@ -30,7 +31,7 @@ public class SheetsFloatGithubProjectConverter {
     public List<String> getFloatProjects(String repositoryName) throws NoMatchFoundException {
         readIfNeeded();
         List<String> floatProjects = projectToRepositories.entrySet().stream()
-                .filter(entry -> entry.getValue().contains(repositoryName.toLowerCase(Locale.UK)))
+                .filter(byRepository(repositoryName))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
@@ -39,6 +40,10 @@ public class SheetsFloatGithubProjectConverter {
         }
 
         return floatProjects;
+    }
+
+    private Predicate<Map.Entry<String, List<String>>> byRepository(String name) {
+        return entry -> entry.getValue().contains(name.toLowerCase(Locale.UK));
     }
 
     private void readIfNeeded() {
@@ -60,13 +65,22 @@ public class SheetsFloatGithubProjectConverter {
 
     public List<String> getRepositories(String floatProject) throws NoMatchFoundException {
         readIfNeeded();
-        List<String> repositories = projectToRepositories.get(floatProject.toLowerCase(Locale.UK));
 
-        if (repositories == null || repositories.isEmpty()) {
+        List<String> repositories = projectToRepositories.entrySet().stream()
+                .filter(byFloatProjectName(floatProject))
+                .findFirst()
+                .orElseThrow(NoMatchFoundException.noMatchFoundExceptionFor(floatProject))
+                .getValue();
+
+        if (repositories.isEmpty()) {
             throw new NoMatchFoundException(floatProject);
         }
 
         return repositories;
+    }
+
+    private Predicate<Map.Entry<String, List<String>>> byFloatProjectName(String floatProject) {
+        return entry -> floatProject.toLowerCase(Locale.UK).contains(entry.getKey());
     }
 
 }

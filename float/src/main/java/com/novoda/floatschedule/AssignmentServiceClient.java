@@ -9,6 +9,8 @@ import com.novoda.floatschedule.task.TaskServiceClient;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
@@ -73,12 +75,18 @@ public class AssignmentServiceClient {
                 .filter(byProjectNameIn(floatProjectNames))
                 .map(Task::getPersonName)
                 .map(toGithubUsernameOrNull())
-                .filter(notNull())
+                .filter(Objects::nonNull)
                 .distinct();
     }
 
     private Func1<Task, Boolean> byProjectNameIn(List<String> floatProjectNames) {
-        return task -> floatProjectNames.contains(task.getProjectName());
+        return task -> floatProjectNames.stream()
+                .filter(projectName -> byProjectNameStartingWith(projectName, task))
+                .count() > 0;
+    }
+
+    private boolean byProjectNameStartingWith(String projectName, Task task) {
+        return task.getProjectName().toLowerCase(Locale.UK).startsWith(projectName);
     }
 
     private Func1<String, String> toGithubUsernameOrNull() {
@@ -92,7 +100,4 @@ public class AssignmentServiceClient {
         };
     }
 
-    private Func1<String, Boolean> notNull() {
-        return string -> string != null;
-    }
 }
