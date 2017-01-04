@@ -13,7 +13,7 @@ public class ContentHeaderRemoverTest {
     private final ContentHeaderRemover contentHeaderRemover = new ContentHeaderRemover();
 
     @Test
-    public void givenAnEntryHavingContentWithHeader_whenRemoving_thenItIsRemoved() throws Exception {
+    public void givenAnEntryHavingContentWithHeader_whenRemoving_thenItIsRemoved() {
         Entry entry = new Entry("title", HEADER + " text");
 
         Entry cleanEntry = contentHeaderRemover.removeFrom(entry);
@@ -22,7 +22,16 @@ public class ContentHeaderRemoverTest {
     }
 
     @Test
-    public void givenAnEntryNotHavingHeader_whenRemoving_thenNothingIsRemoved() throws Exception {
+    public void givenAnEntryHavingContentWithHeaderWithExtraColon_whenRemoving_thenItIsRemoved() {
+        Entry entry = new Entry("title", HEADER + " text: extra");
+
+        Entry cleanEntry = contentHeaderRemover.removeFrom(entry);
+
+        assertThat(cleanEntry.getContent()).isEqualTo("text: extra");
+    }
+
+    @Test
+    public void givenAnEntryNotHavingHeader_whenRemoving_thenNothingIsRemoved() {
         Entry entry = new Entry("title", "text");
 
         Entry cleanEntry = contentHeaderRemover.removeFrom(entry);
@@ -31,7 +40,7 @@ public class ContentHeaderRemoverTest {
     }
 
     @Test
-    public void givenAnEntryHavingOnlyTheHeader_whenRemoving_thenEverythingIsRemoved() throws Exception {
+    public void givenAnEntryHavingOnlyTheHeader_whenRemoving_thenEverythingIsRemoved() {
         Entry entry = new Entry("title", HEADER);
 
         Entry cleanEntry = contentHeaderRemover.removeFrom(entry);
