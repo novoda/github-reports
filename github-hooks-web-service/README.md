@@ -234,6 +234,40 @@ And you should finally see:
 }
 ```
 
+When an unsupported event/action is received be the lambda, an exception is thrown, making the lambda fail. If we don't want the delivery for
+these events to be marked as failures by GitHub, instead of the integration response from above, we can have another two, as follows:
+
+ - for error messages that contain `UnhandledEventException`s, we can make our response be 202; obviously, we have to add that status code first
+        
+    ```shell
+    aws apigateway put-method-response \
+        --rest-api-id API_ID \
+        --resource-id RESOURCE_ID \
+        --http-method POST \
+        --status-code 202
+    ```
+    
+    ```shell
+    aws apigateway put-integration-response \
+        --rest-api-id API_ID \
+        --resource-id RESOURCE_ID \
+        --http-method POST \
+        --status-code 202 \
+        --selection-pattern '.*UnhandledEventException.*'
+    ```
+    
+ - for all the other error messages containing "Exception", but not "UnhandledEventException":
+ 
+    ```shell
+    aws apigateway put-integration-response \
+        --rest-api-id API_ID \
+        --resource-id RESOURCE_ID \
+        --http-method POST \
+        --status-code 500 \
+        --selection-pattern '\b(?!.*UnhandledEvent).*Exception.*'
+    ```
+
+
 So far you've configured your API to properly handle outgoing responses. Now you need to set it up so our lambda handler can properly handle 
 requests. We'll be moving onto the [API gateway UI](https://console.aws.amazon.com/apigateway/home), taking a step back to reconfigure our 
 integration request.
