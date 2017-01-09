@@ -2,8 +2,8 @@ package com.novoda.floatschedule;
 
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatDateConverter;
-import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
-import com.novoda.floatschedule.convert.GithubUserConverter;
+import com.novoda.floatschedule.convert.SheetsFloatGithubProjectConverter;
+import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
 
@@ -42,10 +42,10 @@ public class AssignmentServiceClientTest {
     private TaskServiceClient mockTaskServiceClient;
 
     @Mock
-    private GithubUserConverter mockGithubUserConverter;
+    private SheetsFloatGithubUserConverter mockGithubUserConverter;
 
     @Mock
-    private FloatGithubProjectConverter mockFloatGithubProjectConverter;
+    private SheetsFloatGithubProjectConverter mockFloatGithubProjectConverter;
 
     @InjectMocks
     private AssignmentServiceClient assignmentServiceClient;
@@ -60,8 +60,14 @@ public class AssignmentServiceClientTest {
 
         testSubscriber = new TestSubscriber<>();
 
-        List<Task> tasks = Arrays.asList(givenATask("proj1", "persA"), givenATask("proj1", "persD"), givenATask("proj2", "persB"),
-                givenATask("proj3", "persC"), givenATask("proj4", "persA"), givenATask("proj5", "persE"));
+        List<Task> tasks = Arrays.asList(
+                givenATask("proj1: scheduled", "persA"),
+                givenATask("proj1: verified", "persA"),
+                givenATask("proj1: verified", "persD"),
+                givenATask("proj2", "persB"),
+                givenATask("proj3", "persC"),
+                givenATask("proj4", "persA"),
+                givenATask("proj5", "persE"));
 
         givenTasks(tasks);
         givenGithubUsersFor(tasks);

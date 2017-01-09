@@ -1,6 +1,6 @@
 package com.novoda.floatschedule.convert;
 
-import com.novoda.github.reports.sheets.network.SheetsServiceClient;
+import com.novoda.github.reports.sheets.network.UserSheetsServiceClient;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,22 +13,21 @@ import static com.novoda.floatschedule.convert.FloatNameFilter.byFloatName;
 import static com.novoda.floatschedule.convert.GithubUsernameFilter.byGithubUsername;
 import static com.novoda.floatschedule.convert.NoMatchFoundException.noMatchFoundExceptionFor;
 
-public class SheetsFloatGithubUserConverter implements GithubUserConverter {
+public class SheetsFloatGithubUserConverter {
 
     private final Map<String, String> floatToGithubUser;
-    private final SheetsServiceClient sheetsServiceClient;
+    private final UserSheetsServiceClient userSheetsServiceClient;
 
     public static SheetsFloatGithubUserConverter newInstance() {
-        SheetsServiceClient sheetsServiceClient = SheetsServiceClient.newInstance();
-        return new SheetsFloatGithubUserConverter(sheetsServiceClient);
+        UserSheetsServiceClient userSheetsServiceClient = UserSheetsServiceClient.newInstance();
+        return new SheetsFloatGithubUserConverter(userSheetsServiceClient);
     }
 
-    SheetsFloatGithubUserConverter(SheetsServiceClient sheetsServiceClient) {
+    SheetsFloatGithubUserConverter(UserSheetsServiceClient userSheetsServiceClient) {
         floatToGithubUser = new HashMap<>();
-        this.sheetsServiceClient = sheetsServiceClient;
+        this.userSheetsServiceClient = userSheetsServiceClient;
     }
 
-    @Override
     public List<String> getGithubUsers() {
         readIfNeeded();
         return floatToGithubUser.values()
@@ -40,12 +39,11 @@ public class SheetsFloatGithubUserConverter implements GithubUserConverter {
         if (!floatToGithubUser.isEmpty()) {
             return;
         }
-        sheetsServiceClient.getEntries()
+        userSheetsServiceClient.getUserEntries()
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(entry -> floatToGithubUser.put(entry.getTitle(), entry.getContent()));
     }
 
-    @Override
     public String getFloatUser(String githubUsername) throws NoMatchFoundException {
         readIfNeeded();
         return floatToGithubUser.entrySet()
@@ -56,7 +54,6 @@ public class SheetsFloatGithubUserConverter implements GithubUserConverter {
                 .orElseThrow(noMatchFoundExceptionFor(githubUsername));
     }
 
-    @Override
     public String getGithubUser(String floatName) throws NoMatchFoundException {
         readIfNeeded();
         return floatToGithubUser.entrySet()

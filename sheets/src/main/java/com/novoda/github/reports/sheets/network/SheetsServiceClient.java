@@ -1,8 +1,6 @@
 package com.novoda.github.reports.sheets.network;
 
-import com.novoda.github.reports.sheets.convert.GithubUsernameRemover;
-import com.novoda.github.reports.sheets.convert.ValueRemover;
-import com.novoda.github.reports.sheets.properties.DocumentIdReader;
+import com.novoda.github.reports.sheets.convert.ContentHeaderRemover;
 import com.novoda.github.reports.sheets.sheet.Entry;
 
 import rx.Observable;
@@ -10,26 +8,22 @@ import rx.Observable;
 public class SheetsServiceClient {
 
     private final SheetsApiService apiService;
-    private final ValueRemover<Entry> keyRemover;
-    private final DocumentIdReader documentIdReader;
+    private final ContentHeaderRemover contentHeaderRemover;
 
     public static SheetsServiceClient newInstance() {
         SheetsApiService apiService = SheetsServiceContainer.getSheetsService();
-        ValueRemover<Entry> keyRemover = new GithubUsernameRemover();
-        DocumentIdReader documentIdReader = DocumentIdReader.newInstance();
-        return new SheetsServiceClient(apiService, keyRemover, documentIdReader);
+        ContentHeaderRemover contentHeaderRemover = new ContentHeaderRemover();
+        return new SheetsServiceClient(apiService, contentHeaderRemover);
     }
 
-    SheetsServiceClient(SheetsApiService apiService, ValueRemover<Entry> keyRemover, DocumentIdReader documentIdReader) {
+    SheetsServiceClient(SheetsApiService apiService, ContentHeaderRemover contentHeaderRemover) {
         this.apiService = apiService;
-        this.keyRemover = keyRemover;
-        this.documentIdReader = documentIdReader;
+        this.contentHeaderRemover = contentHeaderRemover;
     }
 
-    public Observable<Entry> getEntries() {
-        String documentId = documentIdReader.getDocumentId();
+    public Observable<Entry> getEntries(String documentId) {
          return apiService.getEntries(documentId)
-                 .map(keyRemover::removeFrom);
+                 .map(contentHeaderRemover::removeFrom);
     }
 
 }

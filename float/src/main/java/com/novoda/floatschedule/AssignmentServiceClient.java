@@ -1,16 +1,16 @@
 package com.novoda.floatschedule;
 
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
-import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
-import com.novoda.floatschedule.convert.GithubUserConverter;
+import com.novoda.floatschedule.convert.SheetsFloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
 import com.novoda.floatschedule.task.Task;
 import com.novoda.floatschedule.task.TaskServiceClient;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
@@ -22,19 +22,19 @@ public class AssignmentServiceClient {
     private static final Integer NO_PERSON_ID = null;
 
     private final TaskServiceClient taskServiceClient;
-    private final GithubUserConverter floatGithubUserConverter;
-    private final FloatGithubProjectConverter floatGithubProjectConverter;
+    private final SheetsFloatGithubUserConverter floatGithubUserConverter;
+    private final SheetsFloatGithubProjectConverter floatGithubProjectConverter;
 
     public static AssignmentServiceClient newInstance() {
         TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
-        GithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
-        FloatGithubProjectConverter floatGithubProjectConverter = FloatGithubProjectConverter.newInstance();
+        SheetsFloatGithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
+        SheetsFloatGithubProjectConverter floatGithubProjectConverter = SheetsFloatGithubProjectConverter.newInstance();
         return new AssignmentServiceClient(taskServiceClient, floatGithubUserConverter, floatGithubProjectConverter);
     }
 
     private AssignmentServiceClient(TaskServiceClient taskServiceClient,
-                                    GithubUserConverter floatGithubUserConverter,
-                                    FloatGithubProjectConverter floatGithubProjectConverter) {
+                                    SheetsFloatGithubUserConverter floatGithubUserConverter,
+                                    SheetsFloatGithubProjectConverter floatGithubProjectConverter) {
 
         this.taskServiceClient = taskServiceClient;
         this.floatGithubUserConverter = floatGithubUserConverter;
@@ -60,7 +60,7 @@ public class AssignmentServiceClient {
     private List<String> getFloatProjectNames(String repositoryName) {
         try {
             return floatGithubProjectConverter.getFloatProjects(repositoryName);
-        } catch (IOException e) {
+        } catch (FailedToLoadMappingsException e) {
             e.printStackTrace();
             return Collections.emptyList();
         }
@@ -75,12 +75,18 @@ public class AssignmentServiceClient {
                 .filter(byProjectNameIn(floatProjectNames))
                 .map(Task::getPersonName)
                 .map(toGithubUsernameOrNull())
-                .filter(notNull())
+                .filter(Objects::nonNull)
                 .distinct();
     }
 
     private Func1<Task, Boolean> byProjectNameIn(List<String> floatProjectNames) {
-        return task -> floatProjectNames.contains(task.getProjectName());
+        return task -> floatProjectNames.stream()
+                .filter(projectName -> byProjectNameStartingWith(projectName, task))
+                .count() > 0;
+    }
+
+    private boolean byProjectNameStartingWith(String projectName, Task task) {
+        return task.getProjectName().toLowerCase(Locale.UK).startsWith(projectName);
     }
 
     private Func1<String, String> toGithubUsernameOrNull() {
@@ -94,7 +100,4 @@ public class AssignmentServiceClient {
         };
     }
 
-    private Func1<String, Boolean> notNull() {
-        return string -> string != null;
-    }
 }

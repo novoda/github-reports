@@ -1,6 +1,6 @@
 package com.novoda.floatschedule.convert;
 
-import com.novoda.github.reports.sheets.network.SheetsServiceClient;
+import com.novoda.github.reports.sheets.network.UserSheetsServiceClient;
 import com.novoda.github.reports.sheets.sheet.Entry;
 
 import java.util.Arrays;
@@ -20,15 +20,15 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class SheetsFloatGithubUserConverterTest {
 
     @Mock
-    SheetsServiceClient mockSheetsServiceClient;
+    UserSheetsServiceClient mockUserSheetsServiceClient;
 
     private SheetsFloatGithubUserConverter sheetsFloatGithubUserConverter;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        given(mockSheetsServiceClient.getEntries()).willReturn(Observable.from(givenEntries()));
-        sheetsFloatGithubUserConverter = new SheetsFloatGithubUserConverter(mockSheetsServiceClient);
+        given(mockUserSheetsServiceClient.getUserEntries()).willReturn(Observable.from(givenEntries()));
+        sheetsFloatGithubUserConverter = new SheetsFloatGithubUserConverter(mockUserSheetsServiceClient);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class SheetsFloatGithubUserConverterTest {
 
     @Test
     public void givenThereAreNoUsers_whenGettingGithubUsers_thenReturnAllUsers() throws Exception {
-        given(mockSheetsServiceClient.getEntries()).willReturn(Observable.from(Collections.emptyList()));
+        given(mockUserSheetsServiceClient.getUserEntries()).willReturn(Observable.from(Collections.emptyList()));
 
         List<String> actualGithubUsers = sheetsFloatGithubUserConverter.getGithubUsers();
 
