@@ -2,8 +2,7 @@ package com.novoda.github.reports.stats;
 
 import com.beust.jcommander.JCommander;
 import com.novoda.floatschedule.FloatServiceClient;
-import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
-import com.novoda.floatschedule.convert.GithubUserConverter;
+import com.novoda.floatschedule.convert.SheetsFloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
 import com.novoda.github.reports.data.db.ConnectionManager;
 import com.novoda.github.reports.data.db.DbConnectionManager;
@@ -71,12 +70,12 @@ public class Main {
             stats = handler.handle(repoOptions);
         } else if (command.equals(COMMAND_PROJECT)) {
             DbRepoDataLayer repoDataLayer = DbRepoDataLayer.newInstance(connectionManager);
-            FloatGithubProjectConverter floatGithubProjectConverter = FloatGithubProjectConverter.newInstance();
+            SheetsFloatGithubProjectConverter floatGithubProjectConverter = SheetsFloatGithubProjectConverter.newInstance();
             ProjectCommandHandler handler = new ProjectCommandHandler(repoDataLayer, floatGithubProjectConverter);
             stats = handler.handle(projectOptions);
         } else if (command.equals(COMMAND_PULL_REQUEST)) {
             DbEventDataLayer eventDataLayer = DbEventDataLayer.newInstance(connectionManager);
-            GithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
+            SheetsFloatGithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
             PullRequestCommandHandler handler = new PullRequestCommandHandler(eventDataLayer, floatGithubUserConverter);
             stats = handler.handle(prOptions);
         } else if (command.equals(COMMAND_OVERALL)) {

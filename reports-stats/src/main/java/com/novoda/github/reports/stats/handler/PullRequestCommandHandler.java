@@ -1,6 +1,6 @@
 package com.novoda.github.reports.stats.handler;
 
-import com.novoda.floatschedule.convert.GithubUserConverter;
+import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.EventDataLayer;
 import com.novoda.github.reports.data.model.PullRequestStats;
@@ -13,9 +13,9 @@ import java.util.List;
 public class PullRequestCommandHandler implements CommandHandler<PullRequestStats, PullRequestOptions> {
 
     private final EventDataLayer eventDataLayer;
-    private final GithubUserConverter floatGithubUserConverter;
+    private final SheetsFloatGithubUserConverter floatGithubUserConverter;
 
-    public PullRequestCommandHandler(EventDataLayer eventDataLayer, GithubUserConverter floatGithubUserConverter) {
+    public PullRequestCommandHandler(EventDataLayer eventDataLayer, SheetsFloatGithubUserConverter floatGithubUserConverter) {
         this.eventDataLayer = eventDataLayer;
         this.floatGithubUserConverter = floatGithubUserConverter;
     }

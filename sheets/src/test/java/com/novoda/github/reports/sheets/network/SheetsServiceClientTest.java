@@ -1,7 +1,6 @@
 package com.novoda.github.reports.sheets.network;
 
-import com.novoda.github.reports.sheets.convert.ValueRemover;
-import com.novoda.github.reports.sheets.properties.DocumentIdReader;
+import com.novoda.github.reports.sheets.convert.ContentHeaderRemover;
 import com.novoda.github.reports.sheets.sheet.Entry;
 
 import java.util.Collections;
@@ -31,10 +30,7 @@ public class SheetsServiceClientTest {
     SheetsApiService mockSheetsApiService;
 
     @Mock
-    ValueRemover<Entry> mockValueRemover;
-
-    @Mock
-    DocumentIdReader mockDocumentIdReader;
+    ContentHeaderRemover mockContentHeaderRemover;
 
     private TestSubscriber<Entry> testSubscriber;
 
@@ -48,23 +44,21 @@ public class SheetsServiceClientTest {
     public void setUp() {
         initMocks(this);
 
-        when(mockValueRemover.removeFrom(any(Entry.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        when(mockDocumentIdReader.getDocumentId()).thenReturn(ANY_DOCUMENT_ID);
+        when(mockContentHeaderRemover.removeFrom(any(Entry.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         testSubscriber = new TestSubscriber<>();
 
         entries = givenEntries();
         apiObservable = Observable.from(entries);
 
-        sheetsServiceClient = new SheetsServiceClient(mockSheetsApiService, mockValueRemover, mockDocumentIdReader);
+        sheetsServiceClient = new SheetsServiceClient(mockSheetsApiService, mockContentHeaderRemover);
     }
 
     @Test
     public void givenServiceReturnsEntries_whenQueryingForEntries_thenEachDocumentEntryIsEmitted() {
         given(mockSheetsApiService.getEntries(anyString())).willReturn(apiObservable);
 
-        sheetsServiceClient.getEntries()
+        sheetsServiceClient.getEntries(ANY_DOCUMENT_ID)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
@@ -75,29 +69,18 @@ public class SheetsServiceClientTest {
     public void givenServiceReturnsEntries_whenQueryingForEntries_thenValueRemoverIsAppliedToEachKey() {
         given(mockSheetsApiService.getEntries(anyString())).willReturn(apiObservable);
 
-        sheetsServiceClient.getEntries()
+        sheetsServiceClient.getEntries(ANY_DOCUMENT_ID)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 
-        verify(mockValueRemover, times(entries.size())).removeFrom(any(Entry.class));
-    }
-
-    @Test
-    public void givenServiceReturnsEntries_whenQueryingForEntries_thenDocumentIdReaderIsUsedToGetTheId() {
-        given(mockSheetsApiService.getEntries(anyString())).willReturn(apiObservable);
-
-        sheetsServiceClient.getEntries()
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(testSubscriber);
-
-        verify(mockDocumentIdReader).getDocumentId();
+        verify(mockContentHeaderRemover, times(entries.size())).removeFrom(any(Entry.class));
     }
 
     @Test
     public void givenServiceReturnsEntries_whenQueryingForEntries_thenTheRightIdIsUsed() {
         given(mockSheetsApiService.getEntries(anyString())).willReturn(apiObservable);
 
-        sheetsServiceClient.getEntries()
+        sheetsServiceClient.getEntries(ANY_DOCUMENT_ID)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe(testSubscriber);
 

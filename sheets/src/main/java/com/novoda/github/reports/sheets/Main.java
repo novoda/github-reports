@@ -1,6 +1,6 @@
 package com.novoda.github.reports.sheets;
 
-import com.novoda.github.reports.sheets.network.SheetsServiceClient;
+import com.novoda.github.reports.sheets.network.ProjectSheetsServiceClient;
 
 import rx.schedulers.Schedulers;
 
@@ -8,8 +8,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        SheetsServiceClient sheetsServiceClient = SheetsServiceClient.newInstance();
-        sheetsServiceClient.getEntries()
+        ProjectSheetsServiceClient sheetsServiceClient = ProjectSheetsServiceClient.newInstance();
+        sheetsServiceClient.getProjectEntries()
                 .doOnNext(System.out::println)
                 .subscribeOn(Schedulers.immediate())
                 .subscribe();

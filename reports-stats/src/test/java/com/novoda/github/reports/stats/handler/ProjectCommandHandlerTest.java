@@ -1,7 +1,7 @@
 package com.novoda.github.reports.stats.handler;
 
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
-import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
+import com.novoda.floatschedule.convert.SheetsFloatGithubProjectConverter;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.model.EventStats;
@@ -56,7 +56,7 @@ public class ProjectCommandHandlerTest {
     RepoDataLayer mockDataLayer;
 
     @Mock
-    FloatGithubProjectConverter mockConverter;
+    SheetsFloatGithubProjectConverter mockConverter;
 
     @InjectMocks
     private ProjectCommandHandler handler;
