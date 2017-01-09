@@ -44,13 +44,13 @@ public abstract class GithubWebhookEvent {
 
     @Override
     public String toString() {
-        String username = sender() == null ? "[NO SENDER]" : sender().getUsername();
-        String issueNumber = issue() == null ? "[NO ISSUE]" : String.valueOf(issue().getNumber());
-        String prId = pullRequest() == null ? "[NO PR]" : String.valueOf(pullRequest().getId());
-        String repoName = repository() == null ? "[NO REPO]" : repository().getName();
-        String comment = comment() == null ? "[NO COMMENT]" : String.valueOf(comment().getId());
+        String username = sender() == null ? "[NO SENDER]" : sender().toString();
+        String issueNumber = issue() == null ? "[NO ISSUE]" : issue().toString();
+        String prId = pullRequest() == null ? "[NO PR]" : pullRequest().toString();
+        String repoName = repository() == null ? "[NO REPO]" : repository().toString();
+        String comment = comment() == null ? "[NO COMMENT]" : comment().toString();
         return String.format(
-                "(%s){action=%s, user=%s, issue=%s, pr=%s, repo=%s, comment=%s}",
+                "(%s){\naction=%s,\nuser=%s,\nissue=%s,\npr=%s,\nrepo=%s,\ncomment=%s\n}",
                 getClass().getSimpleName(),
                 action(),
                 username,
