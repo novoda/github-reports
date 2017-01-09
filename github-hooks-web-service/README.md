@@ -234,7 +234,7 @@ And you should finally see:
 }
 ```
 
-When an unsupported event/action is received be the lambda, an exception is thrown, making the lambda fail. If we don't want the delivery for
+When an unsupported event/action is received by the lambda, an exception is thrown, making the lambda fail. If we don't want the delivery for
 these events to be marked as failures by GitHub, instead of the integration response from above, we can have another two, as follows:
 
  - for error messages that contain `UnhandledEventException`s, we can make our response be 202; obviously, we have to add that status code first
@@ -256,7 +256,7 @@ these events to be marked as failures by GitHub, instead of the integration resp
         --selection-pattern '.*UnhandledEventException.*'
     ```
     
- - for all the other error messages containing "Exception", but not "UnhandledEventException":
+ - for all the other error messages containing `Exception`, but not `UnhandledEventException`:
  
     ```shell
     aws apigateway put-integration-response \
