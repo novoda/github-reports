@@ -2,11 +2,10 @@ package com.novoda.floatschedule;
 
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
 import com.novoda.floatschedule.convert.FloatDateConverter;
-import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.GithubToFloatUserMatchNotFoundException;
-import com.novoda.floatschedule.convert.GithubUserConverter;
 import com.novoda.floatschedule.convert.NoMatchFoundException;
 import com.novoda.floatschedule.convert.NumberOfWeeksCalculator;
+import com.novoda.floatschedule.convert.SheetsFloatGithubProjectConverter;
 import com.novoda.floatschedule.convert.SheetsFloatGithubUserConverter;
 import com.novoda.floatschedule.people.PeopleServiceClient;
 import com.novoda.floatschedule.people.Person;
@@ -15,7 +14,6 @@ import com.novoda.floatschedule.task.TaskServiceClient;
 import com.novoda.github.reports.data.model.UserAssignments;
 
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -29,24 +27,22 @@ import java.util.stream.Collectors;
 
 import rx.Observable;
 import rx.functions.Action2;
-import rx.functions.Func0;
 import rx.functions.Func1;
-import rx.internal.util.UtilityFunctions;
 
 public class FloatServiceClient {
 
     private static final String HOLIDAY_TASK_DESCRIPTOR = "HOLIDAY";
 
-    private final GithubUserConverter floatGithubUserConverter;
-    private final FloatGithubProjectConverter floatGithubProjectConverter;
+    private final SheetsFloatGithubUserConverter floatGithubUserConverter;
+    private final SheetsFloatGithubProjectConverter floatGithubProjectConverter;
     private final PeopleServiceClient peopleServiceClient;
     private final TaskServiceClient taskServiceClient;
     private final NumberOfWeeksCalculator numberOfWeeksCalculator;
     private final FloatDateConverter floatDateConverter;
 
     public static FloatServiceClient newInstance() {
-        GithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
-        FloatGithubProjectConverter floatGithubProjectConverter = FloatGithubProjectConverter.newInstance();
+        SheetsFloatGithubUserConverter floatGithubUserConverter = SheetsFloatGithubUserConverter.newInstance();
+        SheetsFloatGithubProjectConverter floatGithubProjectConverter = SheetsFloatGithubProjectConverter.newInstance();
         PeopleServiceClient peopleServiceClient = PeopleServiceClient.newInstance();
         TaskServiceClient taskServiceClient = TaskServiceClient.newInstance();
         NumberOfWeeksCalculator numberOfWeeksCalculator = new NumberOfWeeksCalculator();
@@ -61,8 +57,8 @@ public class FloatServiceClient {
                 floatDateConverter);
     }
 
-    private FloatServiceClient(GithubUserConverter floatGithubUserConverter,
-                               FloatGithubProjectConverter floatGithubProjectConverter,
+    private FloatServiceClient(SheetsFloatGithubUserConverter floatGithubUserConverter,
+                               SheetsFloatGithubProjectConverter floatGithubProjectConverter,
                                PeopleServiceClient peopleServiceClient,
                                TaskServiceClient taskServiceClient,
                                NumberOfWeeksCalculator numberOfWeeksCalculator,
@@ -74,49 +70,6 @@ public class FloatServiceClient {
         this.taskServiceClient = taskServiceClient;
         this.numberOfWeeksCalculator = numberOfWeeksCalculator;
         this.floatDateConverter = floatDateConverter;
-    }
-
-    Observable<String> getRepositoryNamesForGithubUser(String githubUsername, Date startDate, int numberOfWeeks, TimeZone timezone)
-            throws FailedToLoadMappingsException, NoMatchFoundException {
-
-        return getRepositoryNamesForFloatUser(getFloatUsername(githubUsername), startDate, numberOfWeeks, timezone);
-    }
-
-    Observable<String> getRepositoryNamesForFloatUser(String floatUsername, Date startDate, int numberOfWeeks, TimeZone timezone) {
-        return getTasksForFloatUser(floatUsername, startDate, numberOfWeeks, timezone)
-                .map(this::getRepositoriesFor)
-                .collect((Func0<List<String>>) ArrayList::new, List::addAll)
-                .flatMapIterable(UtilityFunctions.identity())
-                .distinct();
-    }
-
-    Observable<Task> getTasksForGithubUser(String githubUsername, Date startDate, Integer numberOfWeeks, TimeZone timezone) {
-        String floatUsername;
-        try {
-            floatUsername = getFloatUsername(githubUsername);
-        } catch (FailedToLoadMappingsException e) {
-            return Observable.error(e);
-        }
-        return getTasksForFloatUser(floatUsername, startDate, numberOfWeeks, timezone);
-    }
-
-    private String getFloatUsername(String githubUsername) throws FailedToLoadMappingsException, NoMatchFoundException {
-        return floatGithubUserConverter.getFloatUser(githubUsername);
-    }
-
-    Observable<Task> getTasksForFloatUser(String floatUsername, Date startDate, Integer numberOfWeeks, TimeZone timezone) {
-        return peopleServiceClient.getPersons()
-                .filter(byFloatUsername(floatUsername))
-                .flatMap(toTasks(startDate, numberOfWeeks, timezone))
-                .filter(excludingHolidays());
-    }
-
-    private Func1<Person, Boolean> byFloatUsername(String floatUsername) {
-        return person -> personHasFloatUsername(person, floatUsername);
-    }
-
-    private Func1<Person, Observable<Task>> toTasks(Date startDate, Integer numberOfWeeks, TimeZone timezone) {
-        return person -> taskServiceClient.getTasks(startDate, numberOfWeeks, timezone, person.getId());
     }
 
     public HashMap<String, List<UserAssignments>> getGithubUsersAssignmentsInDateRange(List<String> githubUsers,

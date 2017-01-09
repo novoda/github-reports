@@ -1,7 +1,7 @@
 package com.novoda.github.reports.stats.handler;
 
 import com.novoda.floatschedule.convert.FailedToLoadMappingsException;
-import com.novoda.floatschedule.convert.FloatGithubProjectConverter;
+import com.novoda.floatschedule.convert.SheetsFloatGithubProjectConverter;
 import com.novoda.github.reports.data.DataLayerException;
 import com.novoda.github.reports.data.RepoDataLayer;
 import com.novoda.github.reports.data.model.ProjectRepoStats;
@@ -11,9 +11,9 @@ import java.util.List;
 
 public class ProjectCommandHandler implements CommandHandler<ProjectRepoStats, ProjectOptions> {
     private final RepoDataLayer dataLayer;
-    private final FloatGithubProjectConverter floatGithubProjectConverter;
+    private final SheetsFloatGithubProjectConverter floatGithubProjectConverter;
 
-    public ProjectCommandHandler(RepoDataLayer dataLayer, FloatGithubProjectConverter floatGithubProjectConverter) {
+    public ProjectCommandHandler(RepoDataLayer dataLayer, SheetsFloatGithubProjectConverter floatGithubProjectConverter) {
         this.dataLayer = dataLayer;
         this.floatGithubProjectConverter = floatGithubProjectConverter;
     }
