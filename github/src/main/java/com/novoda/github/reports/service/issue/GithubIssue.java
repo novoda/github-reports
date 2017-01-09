@@ -111,7 +111,7 @@ public class GithubIssue {
 
     @Override
     public String toString() {
-        return String.format("%s (%d) [%s] - %s , %s", title, id, state, user.getUsername(), updatedAt);
+        return String.format("%s (%d, %d) [%s] - %s , %s", title, number, id, state, user.getUsername(), updatedAt);
     }
 
     public enum State {
