@@ -6,13 +6,14 @@ import com.novoda.github.reports.service.issue.GithubIssue;
 import com.novoda.github.reports.service.issue.GithubReaction;
 import com.novoda.github.reports.service.repository.GithubRepository;
 import com.novoda.github.reports.service.timeline.TimelineEvent;
+
+import java.util.List;
+
 import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
-
-import java.util.List;
 
 public interface GithubApiService {
 
@@ -71,6 +72,7 @@ public interface GithubApiService {
             @Query("per_page") int perPageCount
     );
 
+    @Deprecated
     @GET("/repos/{org}/{repo}/issues/{issue_number}/timeline")
     Observable<Response<List<TimelineEvent>>> getTimelineFor(
             @Path("org") String organisation,
