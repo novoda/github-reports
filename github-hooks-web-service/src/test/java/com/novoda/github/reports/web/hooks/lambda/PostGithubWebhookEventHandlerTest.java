@@ -29,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -91,6 +92,15 @@ public class PostGithubWebhookEventHandlerTest {
     @Test(expected = RuntimeException.class)
     public void givenAnInvalidAction_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
         String json = readFile("invalid_action.json");
+
+        handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
+
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void givenAValidReopenedRequest_whenHandlingIt_thenTheEventIsNotForwarded() throws Exception {
+        String json = readFile("reopened_action.json");
+        willThrow(UnhandledEventException.class).given(mockEventForwarder).forward(any(GithubWebhookEvent.class));
 
         handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
 
