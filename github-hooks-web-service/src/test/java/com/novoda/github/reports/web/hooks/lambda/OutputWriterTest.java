@@ -2,8 +2,6 @@ package com.novoda.github.reports.web.hooks.lambda;
 
 import com.google.gson.Gson;
 
-import java.io.OutputStream;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,7 +17,7 @@ public class OutputWriterTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
-    private OutputStream mockOutputStream;
+    private BufferedProxyOutputStream mockOutputStream;
 
     private OutputWriter outputWriter;
 
