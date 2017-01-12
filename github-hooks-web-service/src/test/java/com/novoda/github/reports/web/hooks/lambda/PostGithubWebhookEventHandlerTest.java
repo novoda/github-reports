@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,17 +48,19 @@ public class PostGithubWebhookEventHandlerTest {
     @Mock
     private Logger mockLogger;
 
-    @InjectMocks
-    private PostGithubWebhookEventHandler handler;
-
     private Gson gson;
+
+    private PostGithubWebhookEventHandler handler;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
+
         gson = new GsonBuilder()
                 .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
                 .create();
+
+        handler = new PostGithubWebhookEventHandler(mockPayloadVerifier, mockEventForwarder, mockOutputWriter, mockLogger, gson);
     }
 
     @Test
