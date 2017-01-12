@@ -54,7 +54,7 @@ public class RateLimitCountInterceptorTest {
 
     @Test
     public void givenEmptyRateLimitRemaining_whenTheRequestIsIntercepted_thenCounterIsSetToZero() throws Exception {
-        givenChainResponseWithRateLimitRemaining(EMPTY_COUNT);
+        givenChainResponseWithRateLimitRemainingOf(EMPTY_COUNT);
 
         interceptor.intercept(mockChain);
 
@@ -63,7 +63,7 @@ public class RateLimitCountInterceptorTest {
 
     @Test
     public void givenARateLimitRemaining_whenTheRequestIsIntercepted_thenWeGetTheRemainingRateLimit() throws Exception {
-        givenChainResponseWithRateLimitRemaining(ANY_COUNT);
+        givenChainResponseWithRateLimitRemainingOf(ANY_COUNT);
 
         Response response = interceptor.intercept(mockChain);
 
@@ -72,14 +72,14 @@ public class RateLimitCountInterceptorTest {
 
     @Test
     public void givenARateLimitRemaining_whenTheRequestIsIntercepted_thenTheCounterIsSet() throws Exception {
-        givenChainResponseWithRateLimitRemaining(ANY_COUNT);
+        givenChainResponseWithRateLimitRemainingOf(ANY_COUNT);
 
         interceptor.intercept(mockChain);
 
         verify(mockCounter).set(Integer.parseInt(ANY_COUNT));
     }
 
-    private void givenChainResponseWithRateLimitRemaining(String count) throws IOException {
+    private void givenChainResponseWithRateLimitRemainingOf(String count) throws IOException {
         when(mockChain.proceed(any(Request.class))).thenAnswer(
                 invocation -> new Response.Builder()
                         .protocol(ANY_PROTOCOL)
