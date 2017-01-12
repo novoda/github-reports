@@ -81,16 +81,23 @@ public class PostGithubWebhookEventHandlerTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void givenAnInvalidRequest_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
+    public void givenARequestWithInvalidSignature_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
+        String json = readFile("invalid_signature_request.json");
+        givenPayloadVerificationFails();
+
+        handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
+
+    }
+
+    private void givenPayloadVerificationFails() throws InvalidSecretException {
+        doThrow(RuntimeException.class).when(mockOutputWriter).outputException(any(Exception.class));
         doThrow(InvalidSecretException.class).when(mockPayloadVerifier).checkIfPayloadIsValid(any(WebhookRequest.class));
-
-        handler.handleRequest(new StringInputStream(givenAnInvalidJsonRequest()), mock(OutputStream.class), ANY_CONTEXT);
-
     }
 
     @Test(expected = RuntimeException.class)
     public void givenAnInvalidAction_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
         String json = readFile("invalid_action.json");
+        doThrow(RuntimeException.class).when(mockOutputWriter).outputException(any(Exception.class));
 
         handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
 
@@ -99,9 +106,38 @@ public class PostGithubWebhookEventHandlerTest {
     @Test(expected = RuntimeException.class)
     public void givenARequestWithoutBody_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
         String json = readFile("no_body.json");
+        doThrow(RuntimeException.class).when(mockOutputWriter).outputException(any(Exception.class));
 
         handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
 
+    }
+
+    @Test
+    public void givenAnInvalidRequest_whenHandlingIt_thenAnExceptionIsOutput() throws Exception {
+        String json = readFile("invalid_request.json");
+        ArgumentCaptor<Exception> exceptionArgumentCaptor = givenThrownExceptionIsCaptured();
+
+        try {
+            handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
+        } catch (Exception e) {
+            // ignored
+        }
+
+        verify(mockOutputWriter).outputException(exceptionArgumentCaptor.getValue());
+    }
+
+    @Test
+    public void givenAnInvalidAction_whenHandlingIt_thenAnExceptionIsOutput() throws Exception {
+        String json = readFile("invalid_action.json");
+        ArgumentCaptor<Exception> exceptionArgumentCaptor = givenThrownExceptionIsCaptured();
+
+        try {
+            handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
+        } catch (Exception e) {
+            // ignored
+        }
+
+        verify(mockOutputWriter).outputException(exceptionArgumentCaptor.getValue());
     }
 
     private String givenAValidJsonRequest() throws IOException, URISyntaxException {
@@ -118,8 +154,14 @@ public class PostGithubWebhookEventHandlerTest {
         return gson.fromJson(request.body(), GithubWebhookEvent.class);
     }
 
-    private String givenAnInvalidJsonRequest() throws IOException, URISyntaxException {
-        return readFile("invalid_request.json");
+    private ArgumentCaptor<Exception> givenThrownExceptionIsCaptured() {
+
+        ArgumentCaptor<Exception> exceptionArgumentCaptor = ArgumentCaptor.forClass(Exception.class);
+
+        doAnswer(invocation -> {throw new RuntimeException((Exception)invocation.getArgument(0));})
+                .when(mockOutputWriter).outputException(exceptionArgumentCaptor.capture());
+
+        return exceptionArgumentCaptor;
     }
 
     private static String readFile(String fileName) throws URISyntaxException, IOException {
