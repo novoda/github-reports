@@ -25,7 +25,6 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
     private static final Gson gson = new GsonBuilder()
             .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
             .create();
-
     private PayloadVerifier payloadVerifier;
     private EventForwarder eventForwarder;
     private OutputWriter outputWriter;
@@ -34,18 +33,31 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
     public PostGithubWebhookEventHandler() {
         eventForwarder = EventForwarder.newInstance();
         payloadVerifier = PayloadVerifier.newInstance();
+        outputWriter = OutputWriter.newInstance(gson);
+    }
+
+    PostGithubWebhookEventHandler(PayloadVerifier payloadVerifier, EventForwarder eventForwarder, OutputWriter outputWriter, Logger logger) {
+        this.payloadVerifier = payloadVerifier;
+        this.eventForwarder = eventForwarder;
+        this.outputWriter = outputWriter;
+        this.logger = logger;
     }
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) {
-        outputWriter = OutputWriter.newInstance(output, gson);
+        //outputWriter = OutputWriter.newInstance(output, gson); // we need this here
+        try {
+            outputWriter.attach(output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         logger = Logger.newInstance(context);
         disableJooqLogAd();
 
         logger.log("λ STARTING...");
 
         WebhookRequest request = getRequestFrom(input);
-
         breakIfPayloadNotValid(request);
 
         GithubWebhookEvent event = getEventFrom(request);
@@ -70,12 +82,15 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
     @Nullable
     private WebhookRequest getRequestFrom(InputStream input) {
         Reader reader = new InputStreamReader(input);
+        WebhookRequest request = null;
+
         try {
-            return gson.fromJson(reader, WebhookRequest.class);
+            request = gson.fromJson(reader, WebhookRequest.class);
         } catch (Exception e) {
             outputWriter.outputException(e);
         }
-        return null;
+
+        return request;
     }
 
     private void breakIfPayloadNotValid(WebhookRequest request) {
@@ -90,9 +105,17 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
     @Nullable
     private GithubWebhookEvent getEventFrom(WebhookRequest request) {
         if (request.body() == null) {
-            outputWriter.outputException(new NullPointerException("event is null"));
+            outputWriter.outputException(new NullPointerException("No event data found. Check Github's webhook delivery report."));
         }
-        return gson.fromJson(request.body(), GithubWebhookEvent.class);
+
+        GithubWebhookEvent event = null;
+        try {
+            event = gson.fromJson(request.body(), GithubWebhookEvent.class);
+        } catch (Exception e) {
+            outputWriter.outputException(e);
+        }
+
+        return event;
     }
 
     private void closeOutputWriter() {
