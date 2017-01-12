@@ -22,38 +22,42 @@ import org.jooq.tools.JooqLogger;
 
 public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
-    private static final Gson gson = new GsonBuilder()
-            .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
-            .create();
-    private PayloadVerifier payloadVerifier;
-    private EventForwarder eventForwarder;
-    private OutputWriter outputWriter;
+    private final PayloadVerifier payloadVerifier;
+    private final EventForwarder eventForwarder;
+    private final OutputWriter outputWriter;
     private Logger logger;
+    private final Gson gson;
 
     public PostGithubWebhookEventHandler() {
-        eventForwarder = EventForwarder.newInstance();
-        payloadVerifier = PayloadVerifier.newInstance();
-        outputWriter = OutputWriter.newInstance(gson);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
+                .create();
+        this.eventForwarder = EventForwarder.newInstance();
+        this.payloadVerifier = PayloadVerifier.newInstance();
+        this.outputWriter = OutputWriter.newInstance(gson);
+        this.gson = gson;
     }
 
-    PostGithubWebhookEventHandler(PayloadVerifier payloadVerifier, EventForwarder eventForwarder, OutputWriter outputWriter, Logger logger) {
+    PostGithubWebhookEventHandler(
+            PayloadVerifier payloadVerifier,
+            EventForwarder eventForwarder,
+            OutputWriter outputWriter,
+            Logger logger,
+            Gson gson) {
+
         this.payloadVerifier = payloadVerifier;
         this.eventForwarder = eventForwarder;
         this.outputWriter = outputWriter;
         this.logger = logger;
+        this.gson = gson;
     }
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) {
-        //outputWriter = OutputWriter.newInstance(output, gson); // we need this here
-        try {
-            outputWriter.attach(output);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         logger = Logger.newInstance(context);
         disableJooqLogAd();
+
+        attachOutputStream(output);
 
         logger.log("λ STARTING...");
 
@@ -77,6 +81,14 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
     private void disableJooqLogAd() {
         JooqLogger.globalThreshold(JooqLogger.Level.WARN);
+    }
+
+    private void attachOutputStream(OutputStream output) {
+        try {
+            outputWriter.attach(output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Nullable
