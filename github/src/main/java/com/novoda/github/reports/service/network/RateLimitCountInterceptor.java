@@ -2,6 +2,7 @@ package com.novoda.github.reports.service.network;
 
 import java.io.IOException;
 
+import com.novoda.github.reports.util.StringHelper;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -27,7 +28,7 @@ class RateLimitCountInterceptor implements Interceptor {
         Response response = chain.proceed(request);
 
         String countAsString = response.headers().get(REMAINING_RATE_LIMIT_HEADER);
-        int remainingCount = Integer.valueOf(countAsString);
+        int remainingCount = StringHelper.isNullOrEmpty(countAsString) ? 0 : Integer.valueOf(countAsString);
         rateLimitRemainingCounter.set(remainingCount);
 
         return response;
