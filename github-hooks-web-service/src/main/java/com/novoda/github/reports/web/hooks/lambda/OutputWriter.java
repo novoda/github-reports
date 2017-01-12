@@ -23,8 +23,16 @@ class OutputWriter implements Closeable {
     }
 
     void outputException(Exception exception) {
-        // this is aws lambda-specific as it's the only way we can mark the output as erroneous
-        throw new RuntimeException(exception);
+        safeClose();
+        throw new RuntimeException(exception); // this is aws lambda-specific as it's the only way we can mark the output as erroneous
+    }
+
+    private void safeClose() {
+        try {
+            close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     void outputEvent(GithubWebhookEvent event) {
