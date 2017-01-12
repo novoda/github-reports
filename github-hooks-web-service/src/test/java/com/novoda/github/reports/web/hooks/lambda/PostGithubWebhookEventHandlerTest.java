@@ -8,8 +8,8 @@ import com.novoda.github.reports.web.hooks.handler.EventForwarder;
 import com.novoda.github.reports.web.hooks.handler.UnhandledEventException;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.WebhookRequest;
-import com.novoda.github.reports.web.hooks.secret.PayloadVerifier;
 import com.novoda.github.reports.web.hooks.secret.InvalidSecretException;
+import com.novoda.github.reports.web.hooks.secret.PayloadVerifier;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.FileNotFoundException;
@@ -88,13 +88,19 @@ public class PostGithubWebhookEventHandlerTest {
 
     }
 
-    @Test
-    public void debug() throws Exception {
-        String json = readFile("buggy.json");
-        WebhookRequest request = gson.fromJson(json, WebhookRequest.class);
+    @Test(expected = RuntimeException.class)
+    public void givenAnInvalidAction_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
+        String json = readFile("invalid_action.json");
 
         handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
 
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void givenARequestWithoutBody_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
+        String json = readFile("no_body.json");
+
+        handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
 
     }
 
