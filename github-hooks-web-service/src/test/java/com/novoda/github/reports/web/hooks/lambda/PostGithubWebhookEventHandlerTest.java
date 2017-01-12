@@ -80,6 +80,24 @@ public class PostGithubWebhookEventHandlerTest {
         assertThatTheEventIsForwarded(request);
     }
 
+    @Test(expected = RuntimeException.class)
+    public void givenAnInvalidRequest_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
+        doThrow(InvalidSecretException.class).when(mockPayloadVerifier).checkIfPayloadIsValid(any(WebhookRequest.class));
+
+        handler.handleRequest(new StringInputStream(givenAnInvalidJsonRequest()), mock(OutputStream.class), ANY_CONTEXT);
+
+    }
+
+    @Test
+    public void debug() throws Exception {
+        String json = readFile("buggy.json");
+        WebhookRequest request = gson.fromJson(json, WebhookRequest.class);
+
+        handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
+
+
+    }
+
     private String givenAValidJsonRequest() throws IOException, URISyntaxException {
         return readFile("valid_request.json");
     }
@@ -92,14 +110,6 @@ public class PostGithubWebhookEventHandlerTest {
 
     private GithubWebhookEvent getEventFrom(WebhookRequest request) {
         return gson.fromJson(request.body(), GithubWebhookEvent.class);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void givenAnInvalidRequest_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
-        doThrow(InvalidSecretException.class).when(mockPayloadVerifier).checkIfPayloadIsValid(any(WebhookRequest.class));
-
-        handler.handleRequest(new StringInputStream(givenAnInvalidJsonRequest()), mock(OutputStream.class), ANY_CONTEXT);
-
     }
 
     private String givenAnInvalidJsonRequest() throws IOException, URISyntaxException {
