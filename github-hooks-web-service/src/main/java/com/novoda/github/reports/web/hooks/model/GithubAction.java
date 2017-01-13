@@ -37,7 +37,7 @@ public enum GithubAction {
     @SerializedName("deleted")
     DELETED("deleted"),
 
-    @SerializedName("repopened")
+    @SerializedName("reopened")
     REOPENED("reopened"),
 
     @SerializedName("synchronize")
