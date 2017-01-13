@@ -10,14 +10,14 @@ import java.io.OutputStreamWriter;
 
 class OutputWriter implements Closeable {
 
-    private final BufferedProxyOutputStream outputStream;
+    private OutputStream outputStream;
     private final Gson gson;
 
     public static OutputWriter newInstance(Gson gson) {
-        return new OutputWriter(new BufferedProxyOutputStream(), gson);
+        return new OutputWriter(new NoOpOutputStream(), gson);
     }
 
-    OutputWriter(BufferedProxyOutputStream outputStream, Gson gson) {
+    OutputWriter(OutputStream outputStream, Gson gson) {
         this.outputStream = outputStream;
         this.gson = gson;
     }
@@ -60,12 +60,21 @@ class OutputWriter implements Closeable {
         }
     }
 
-    void attach(OutputStream outputStream) throws IOException {
-        this.outputStream.attach(outputStream);
+    void setOutputStream(OutputStream outputStream) {
+        this.outputStream = outputStream;
     }
 
     @Override
     public void close() throws IOException {
         outputStream.close();
+    }
+
+    public static class NoOpOutputStream extends OutputStream {
+
+        @Override
+        public void write(int b) throws IOException {
+            throw new RuntimeException("No OutputStream was set!");
+        }
+
     }
 }
