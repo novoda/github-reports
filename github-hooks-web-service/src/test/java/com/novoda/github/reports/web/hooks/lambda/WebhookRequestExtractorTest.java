@@ -20,6 +20,8 @@ import org.mockito.Mock;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class WebhookRequestExtractorTest {
@@ -55,13 +57,13 @@ public class WebhookRequestExtractorTest {
         assertThat(request).isEqualToComparingFieldByFieldRecursively(givenWebhookRequestFrom("valid_request.json"));
     }
 
-    @Test
+    @Test(expected = RuntimeException.class)
     public void givenInputWithAnInvalidRequest_whenExtractingTheRequest_thenAnExceptionIsOutput() throws Exception {
-        given(inputStreamReaderFactory.createFor(inputStream)).willReturn(readFile("invalid_action.json"));
+        given(inputStreamReaderFactory.createFor(inputStream)).willReturn(readFile("invalid_request.json"));
+        doThrow(RuntimeException.class).when(outputWriter).outputException(any(Exception.class));
 
         webhookRequestExtractor.extractFrom(inputStream);
 
-        //verify(outputWriter).outputException(any);
     }
 
     private static InputStreamReader readFile(String fileName) throws URISyntaxException, IOException {
