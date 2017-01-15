@@ -1,7 +1,6 @@
 package com.novoda.github.reports.web.hooks.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.util.StringInputStream;
 import com.google.gson.JsonObject;
 import com.novoda.github.reports.service.GithubUser;
 import com.novoda.github.reports.service.issue.GithubComment;
@@ -14,25 +13,15 @@ import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookPullRequest;
 import com.novoda.github.reports.web.hooks.model.WebhookRequest;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -59,6 +48,12 @@ public class PostGithubWebhookEventHandlerTest {
     @Mock
     private Logger mockLogger;
 
+    @Mock
+    private OutputStream outputStream;
+
+    @Mock
+    private InputStream inputStream;
+
     private PostGithubWebhookEventHandler handler;
 
     @Before
@@ -71,15 +66,13 @@ public class PostGithubWebhookEventHandlerTest {
                 mockEventForwarder,
                 mockOutputWriter,
                 mockLogger);
+        doThrow(RuntimeException.class).when(mockOutputWriter).outputException(any(Exception.class));
     }
 
     @Test
     public void givenARequest_whenHandlingIt_thenTheProvidedOutputStreamIsSet() throws Exception {
-        OutputStream outputStream = mock(OutputStream.class);
-        InputStream inputStream = mock(InputStream.class);
-        WebhookRequest webhookRequest = aWebhookRequest();
-        given(mockWebhookRequestExtractor.extractFrom(inputStream)).willReturn(webhookRequest);
-        given(mockEventExtractor.extractFrom(webhookRequest)).willReturn(aWebhookEvent());
+        WebhookRequest request = givenAWebhookRequest();
+        givenAWebhookEventFrom(request);
 
         handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
 
@@ -88,35 +81,34 @@ public class PostGithubWebhookEventHandlerTest {
 
     @Test
     public void givenARequest_whenHandlingIt_thenWeCheckIfItsPayloadIsValid() throws Exception {
-        OutputStream outputStream = mock(OutputStream.class);
-        InputStream inputStream = mock(InputStream.class);
-        WebhookRequest webhookRequest = aWebhookRequest();
-        given(mockWebhookRequestExtractor.extractFrom(inputStream)).willReturn(webhookRequest);
-        given(mockEventExtractor.extractFrom(webhookRequest)).willReturn(aWebhookEvent());
+        WebhookRequest request = givenAWebhookRequest();
+        givenAWebhookEventFrom(request);
 
         handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
 
-        verify(mockPayloadVerificationRunner).verify(webhookRequest);
+        verify(mockPayloadVerificationRunner).verify(request);
     }
 
     @Test
     public void givenAValidRequest_whenHandlingIt_thenTheEventIsForwarded() throws Exception {
-        OutputStream outputStream = mock(OutputStream.class);
-        InputStream inputStream = mock(InputStream.class);
-        WebhookRequest webhookRequest = aWebhookRequest();
-        GithubWebhookEvent webhookEvent = aWebhookEvent();
-        given(mockWebhookRequestExtractor.extractFrom(inputStream)).willReturn(webhookRequest);
-        given(mockEventExtractor.extractFrom(webhookRequest)).willReturn(webhookEvent);
+        WebhookRequest request = givenAWebhookRequest();
+        GithubWebhookEvent event = givenAWebhookEventFrom(request);
 
         handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
 
-        verify(mockEventForwarder).forward(webhookEvent);
+        verify(mockEventForwarder).forward(event);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void givenRequestExtractionFails_whenHandlingTheRequest_thenAnExceptionIsOutput() throws Exception {
+        doThrow(RuntimeException.class).when(mockWebhookRequestExtractor).extractFrom(inputStream);
+
+        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
+
     }
 
     @Test
-    public void givenARequestWithInvalidSignature_whenHandlingIt_thenTheEventIsNotForwarded() throws Exception {
-        OutputStream outputStream = mock(OutputStream.class);
-        InputStream inputStream = mock(InputStream.class);
+    public void givenPayloadVerificationFails_whenHandlingTheRequest_thenTheEventIsNotForwarded() throws Exception {
         doThrow(RuntimeException.class).when(mockPayloadVerificationRunner).verify(any(WebhookRequest.class));
 
         try {
@@ -128,59 +120,47 @@ public class PostGithubWebhookEventHandlerTest {
         }
     }
 
-    @Test
-    public void givenAValidReopenedRequest_whenHandlingIt_thenTheEventIsNotForwarded() throws Exception {
-        String json = readFile("reopened_action.json");
-        willThrow(UnhandledEventException.class).given(mockEventForwarder).forward(any(GithubWebhookEvent.class));
+    @Test(expected = RuntimeException.class)
+    public void givenPayloadVerificationFails_whenHandlingTheRequest_thenAnExceptionIsOutput() throws Exception {
+        doThrow(RuntimeException.class).when(mockPayloadVerificationRunner).verify(any(WebhookRequest.class));
 
-        handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
+        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
 
-        verify(mockOutputWriter).outputException(any(UnhandledEventException.class));
     }
 
     @Test(expected = RuntimeException.class)
-    public void givenARequestWithoutBody_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
-        String json = readFile("no_body.json");
-        doThrow(RuntimeException.class).when(mockOutputWriter).outputException(any(Exception.class));
+    public void givenEventExtractionFails_whenHandlingTheRequest_thenAnExceptionIsOutput() throws Exception {
+        doThrow(RuntimeException.class).when(mockEventExtractor).extractFrom(any(WebhookRequest.class));
 
-        handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
+        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
 
     }
 
-    @Test
-    public void givenAnInvalidRequest_whenHandlingIt_thenAnExceptionIsOutput() throws Exception {
-        String json = readFile("invalid_request.json");
-        ArgumentCaptor<Exception> exceptionArgumentCaptor = givenThrownExceptionIsCaptured();
+    @Test(expected = RuntimeException.class)
+    public void givenEventForwardingFails_whenHandlingTheRequest_thenAnExceptionIsOutput() throws Exception {
+        doThrow(UnhandledEventException.class).when(mockEventForwarder).forward(any(GithubWebhookEvent.class));
 
-        try {
-            handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
-        } catch (Exception e) {
-            // ignored
-        }
+        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
 
-        verify(mockOutputWriter).outputException(exceptionArgumentCaptor.getValue());
     }
 
-    @Test
-    public void givenAnInvalidAction_whenHandlingIt_thenAnExceptionIsOutput() throws Exception {
-        String json = readFile("invalid_action.json");
-        ArgumentCaptor<Exception> exceptionArgumentCaptor = givenThrownExceptionIsCaptured();
-
-        try {
-            handler.handleRequest(new StringInputStream(json), mock(OutputStream.class), ANY_CONTEXT);
-        } catch (Exception e) {
-            // ignored
-        }
-
-        verify(mockOutputWriter).outputException(exceptionArgumentCaptor.getValue());
+    private WebhookRequest givenAWebhookRequest() {
+        WebhookRequest webhookRequest = aWebhookRequest();
+        given(mockWebhookRequestExtractor.extractFrom(inputStream)).willReturn(webhookRequest);
+        return webhookRequest;
     }
-
 
     private WebhookRequest aWebhookRequest() {
         return WebhookRequest.builder()
                 .body(new JsonObject())
                 .headers(new HashMap<>())
                 .build();
+    }
+
+    private GithubWebhookEvent givenAWebhookEventFrom(WebhookRequest webhookRequest) {
+        GithubWebhookEvent webhookEvent = aWebhookEvent();
+        given(mockEventExtractor.extractFrom(webhookRequest)).willReturn(webhookEvent);
+        return webhookEvent;
     }
 
     private GithubWebhookEvent aWebhookEvent() {
@@ -193,26 +173,6 @@ public class PostGithubWebhookEventHandlerTest {
                 .repository(mock(GithubRepository.class))
                 .comment(mock(GithubComment.class))
                 .build();
-    }
-
-
-    private ArgumentCaptor<Exception> givenThrownExceptionIsCaptured() {
-
-        ArgumentCaptor<Exception> exceptionArgumentCaptor = ArgumentCaptor.forClass(Exception.class);
-
-        doAnswer(invocation -> {throw new RuntimeException((Exception)invocation.getArgument(0));})
-                .when(mockOutputWriter).outputException(exceptionArgumentCaptor.capture());
-
-        return exceptionArgumentCaptor;
-    }
-
-    private static String readFile(String fileName) throws URISyntaxException, IOException {
-        URL url = PostGithubWebhookEventHandlerTest.class.getClassLoader().getResource(fileName);
-        if (url == null) {
-            throw new FileNotFoundException(fileName + " was not found in the resources directory.");
-        }
-        Path path = Paths.get(url.toURI());
-        return Files.lines(path).collect(Collectors.joining("\n"));
     }
 
 }
