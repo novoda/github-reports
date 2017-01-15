@@ -49,10 +49,10 @@ public class PostGithubWebhookEventHandlerTest {
     private Logger mockLogger;
 
     @Mock
-    private OutputStream outputStream;
+    private OutputStream mockOutputStream;
 
     @Mock
-    private InputStream inputStream;
+    private InputStream mockInputStream;
 
     private PostGithubWebhookEventHandler handler;
 
@@ -74,9 +74,9 @@ public class PostGithubWebhookEventHandlerTest {
         WebhookRequest request = givenAWebhookRequest();
         givenAWebhookEventFrom(request);
 
-        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
+        handler.handleRequest(mockInputStream, mockOutputStream, ANY_CONTEXT);
 
-        verify(mockOutputWriter).setOutputStream(outputStream);
+        verify(mockOutputWriter).setOutputStream(mockOutputStream);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class PostGithubWebhookEventHandlerTest {
         WebhookRequest request = givenAWebhookRequest();
         givenAWebhookEventFrom(request);
 
-        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
+        handler.handleRequest(mockInputStream, mockOutputStream, ANY_CONTEXT);
 
         verify(mockPayloadVerificationRunner).verify(request);
     }
@@ -94,16 +94,16 @@ public class PostGithubWebhookEventHandlerTest {
         WebhookRequest request = givenAWebhookRequest();
         GithubWebhookEvent event = givenAWebhookEventFrom(request);
 
-        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
+        handler.handleRequest(mockInputStream, mockOutputStream, ANY_CONTEXT);
 
         verify(mockEventForwarder).forward(event);
     }
 
     @Test(expected = RuntimeException.class)
     public void givenRequestExtractionFails_whenHandlingTheRequest_thenAnExceptionIsOutput() throws Exception {
-        doThrow(RuntimeException.class).when(mockWebhookRequestExtractor).extractFrom(inputStream);
+        doThrow(RuntimeException.class).when(mockWebhookRequestExtractor).extractFrom(mockInputStream);
 
-        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
+        handler.handleRequest(mockInputStream, mockOutputStream, ANY_CONTEXT);
 
     }
 
@@ -112,7 +112,7 @@ public class PostGithubWebhookEventHandlerTest {
         doThrow(RuntimeException.class).when(mockPayloadVerificationRunner).verify(any(WebhookRequest.class));
 
         try {
-            handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
+            handler.handleRequest(mockInputStream, mockOutputStream, ANY_CONTEXT);
         } catch (RuntimeException e) {
             // we're throwing this ourselves
         } finally {
@@ -124,7 +124,7 @@ public class PostGithubWebhookEventHandlerTest {
     public void givenPayloadVerificationFails_whenHandlingTheRequest_thenAnExceptionIsOutput() throws Exception {
         doThrow(RuntimeException.class).when(mockPayloadVerificationRunner).verify(any(WebhookRequest.class));
 
-        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
+        handler.handleRequest(mockInputStream, mockOutputStream, ANY_CONTEXT);
 
     }
 
@@ -132,7 +132,7 @@ public class PostGithubWebhookEventHandlerTest {
     public void givenEventExtractionFails_whenHandlingTheRequest_thenAnExceptionIsOutput() throws Exception {
         doThrow(RuntimeException.class).when(mockEventExtractor).extractFrom(any(WebhookRequest.class));
 
-        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
+        handler.handleRequest(mockInputStream, mockOutputStream, ANY_CONTEXT);
 
     }
 
@@ -140,13 +140,13 @@ public class PostGithubWebhookEventHandlerTest {
     public void givenEventForwardingFails_whenHandlingTheRequest_thenAnExceptionIsOutput() throws Exception {
         doThrow(UnhandledEventException.class).when(mockEventForwarder).forward(any(GithubWebhookEvent.class));
 
-        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
+        handler.handleRequest(mockInputStream, mockOutputStream, ANY_CONTEXT);
 
     }
 
     private WebhookRequest givenAWebhookRequest() {
         WebhookRequest webhookRequest = aWebhookRequest();
-        given(mockWebhookRequestExtractor.extractFrom(inputStream)).willReturn(webhookRequest);
+        given(mockWebhookRequestExtractor.extractFrom(mockInputStream)).willReturn(webhookRequest);
         return webhookRequest;
     }
 
