@@ -74,6 +74,7 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
             handle(request);
         } finally {
             closeOutputWriter();
+            logger.log("λ ENDED...");
         }
     }
 
