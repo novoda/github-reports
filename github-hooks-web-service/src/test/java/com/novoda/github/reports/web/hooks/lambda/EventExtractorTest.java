@@ -21,7 +21,7 @@ import org.mockito.Mock;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class EventExtractorTest {
@@ -51,22 +51,22 @@ public class EventExtractorTest {
         assertThat(event).isEqualToComparingFieldByFieldRecursively(givenWebhookEventFrom("valid_request.json"));
     }
 
-    @Test
+    @Test(expected = RuntimeException.class)
     public void givenARequestMissingItsBody_whenExtractingTheEvent_thenAnExceptionIsOutput() throws Exception {
         WebhookRequest request = givenWebhookRequestFrom("no_body.json");
+        doThrow(RuntimeException.class).when(mockOutputWriter).outputException(any(Exception.class));
 
         eventExtractor.extractFrom(request);
 
-        verify(mockOutputWriter).outputException(any(NullPointerException.class));
     }
 
-    @Test
+    @Test(expected = RuntimeException.class)
     public void givenAnInvalidRequest_whenExtractingTheEvent_thenAnExceptionIsOutput() throws Exception {
         WebhookRequest request = givenWebhookRequestFrom("invalid_action.json");
+        doThrow(RuntimeException.class).when(mockOutputWriter).outputException(any(Exception.class));
 
         eventExtractor.extractFrom(request);
 
-        verify(mockOutputWriter).outputException(any(ArrayStoreException.class));
     }
 
     private WebhookRequest givenWebhookRequestFrom(String filename) {
