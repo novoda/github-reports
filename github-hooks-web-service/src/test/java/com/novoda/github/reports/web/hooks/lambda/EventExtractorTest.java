@@ -61,7 +61,7 @@ public class EventExtractorTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void givenAnInvalidRequest_whenExtractingTheEvent_thenAnExceptionIsOutput() throws Exception {
+    public void givenARequestWithAnInvalidAction_whenExtractingTheEvent_thenAnExceptionIsOutput() throws Exception {
         WebhookRequest request = givenWebhookRequestFrom("invalid_action.json");
         doThrow(RuntimeException.class).when(mockOutputWriter).outputException(any(Exception.class));
 
