@@ -114,14 +114,6 @@ public class PostGithubWebhookEventHandlerIntegrationTest {
 
     }
 
-    @Test(expected = RuntimeException.class)
-    public void givenARequestWithAReopenedAction_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
-        InputStream inputStream = inputStreamFrom("reopened_action.json");
-
-        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
-
-    }
-
     private GithubWebhookEvent eventFrom(String contents) {
         WebhookRequest request = gson.fromJson(contents, WebhookRequest.class);
         return gson.fromJson(request.body(), GithubWebhookEvent.class);
