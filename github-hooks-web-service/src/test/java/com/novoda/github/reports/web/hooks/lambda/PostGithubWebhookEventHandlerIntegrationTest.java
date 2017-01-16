@@ -76,8 +76,10 @@ public class PostGithubWebhookEventHandlerIntegrationTest {
 
         WebhookEventClassifier eventClassifier = new WebhookEventClassifier();
         Map<EventType, EventHandler> handlers = new HashMap<>();
+
         Arrays.stream(EventType.values())
                 .forEach(eventType -> handlers.put(eventType, mockEventHandler));
+
         EventForwarder eventForwarder = new EventForwarder(eventClassifier, handlers);
 
         handler = new PostGithubWebhookEventHandler(
@@ -112,27 +114,37 @@ public class PostGithubWebhookEventHandlerIntegrationTest {
 
     }
 
+    @Test(expected = RuntimeException.class)
+    public void givenARequestWithAReopenedAction_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
+        InputStream inputStream = inputStreamFrom("reopened_action.json");
+
+        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
+
+    }
+
     private GithubWebhookEvent eventFrom(String contents) {
         WebhookRequest request = gson.fromJson(contents, WebhookRequest.class);
         return gson.fromJson(request.body(), GithubWebhookEvent.class);
     }
 
-    private String readFile(String fileName) throws IOException, URISyntaxException {
-        URL url = PostGithubWebhookEventHandlerTest.class.getClassLoader().getResource(fileName);
-        if (url == null) {
-            throw new FileNotFoundException(fileName + " was not found in the resources directory.");
-        }
+    private static String readFile(String fileName) throws URISyntaxException, IOException {
+        URL url = urlFor(fileName);
         Path path = Paths.get(url.toURI());
         return Files.lines(path).collect(Collectors.joining("\n"));
     }
 
     private static InputStream inputStreamFrom(String fileName) throws URISyntaxException, IOException {
+        URL url = urlFor(fileName);
+        File file = new File(url.toURI());
+        return new FileInputStream(file);
+    }
+
+    private static URL urlFor(String fileName) throws FileNotFoundException {
         URL url = PostGithubWebhookEventHandlerTest.class.getClassLoader().getResource(fileName);
         if (url == null) {
             throw new FileNotFoundException(fileName + " was not found in the resources directory.");
         }
-        File file = new File(url.toURI());
-        return new FileInputStream(file);
+        return url;
     }
 
 }
