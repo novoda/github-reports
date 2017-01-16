@@ -10,11 +10,11 @@ import java.io.OutputStreamWriter;
 
 class OutputWriter implements Closeable {
 
-    private final OutputStream outputStream;
+    private OutputStream outputStream;
     private final Gson gson;
 
-    public static OutputWriter newInstance(OutputStream outputStream, Gson gson) {
-        return new OutputWriter(outputStream, gson);
+    public static OutputWriter newInstance(Gson gson) {
+        return new OutputWriter(new NoOpOutputStream(), gson);
     }
 
     OutputWriter(OutputStream outputStream, Gson gson) {
@@ -23,8 +23,16 @@ class OutputWriter implements Closeable {
     }
 
     void outputException(Exception exception) {
-        // this is aws lambda-specific as it's the only way we can mark the output as erroneous
-        throw new RuntimeException(exception);
+        safeClose();
+        throw new RuntimeException(exception); // this is aws lambda-specific as it's the only way we can mark the output as erroneous
+    }
+
+    private void safeClose() {
+        try {
+            close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     void outputEvent(GithubWebhookEvent event) {
@@ -52,8 +60,21 @@ class OutputWriter implements Closeable {
         }
     }
 
+    void setOutputStream(OutputStream outputStream) {
+        this.outputStream = outputStream;
+    }
+
     @Override
     public void close() throws IOException {
         outputStream.close();
+    }
+
+    public static class NoOpOutputStream extends OutputStream {
+
+        @Override
+        public void write(int b) throws IOException {
+            throw new RuntimeException("No OutputStream was set!");
+        }
+
     }
 }

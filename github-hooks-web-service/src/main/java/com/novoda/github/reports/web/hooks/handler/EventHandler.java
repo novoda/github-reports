@@ -5,7 +5,7 @@ import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 
 import org.jetbrains.annotations.NotNull;
 
-interface EventHandler {
+public interface EventHandler {
 
     void handle(GithubWebhookEvent event) throws UnhandledEventException;
 

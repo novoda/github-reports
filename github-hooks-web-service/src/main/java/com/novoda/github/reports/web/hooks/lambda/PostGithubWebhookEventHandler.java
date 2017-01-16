@@ -8,47 +8,81 @@ import com.novoda.github.reports.web.hooks.handler.EventForwarder;
 import com.novoda.github.reports.web.hooks.model.GithubWebhookEvent;
 import com.novoda.github.reports.web.hooks.model.WebhookRequest;
 import com.novoda.github.reports.web.hooks.secret.PayloadVerifier;
-import com.novoda.github.reports.web.hooks.secret.InvalidSecretException;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 
-import org.jetbrains.annotations.Nullable;
 import org.jooq.tools.JooqLogger;
 
 public class PostGithubWebhookEventHandler implements RequestStreamHandler {
 
-    private static final Gson gson = new GsonBuilder()
-            .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
-            .create();
+    private final EventForwarder eventForwarder;
+    private final OutputWriter outputWriter;
+    private final Logger logger;
 
-    private PayloadVerifier payloadVerifier;
-    private EventForwarder eventForwarder;
-    private OutputWriter outputWriter;
-    private Logger logger;
+    private final PayloadVerificationRunner payloadVerificationRunner;
+    private final WebhookRequestExtractor webhookRequestExtractor;
+    private final EventExtractor eventExtractor;
 
     public PostGithubWebhookEventHandler() {
-        eventForwarder = EventForwarder.newInstance();
-        payloadVerifier = PayloadVerifier.newInstance();
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
+                .create();
+
+        PayloadVerifier payloadVerifier = PayloadVerifier.newInstance();
+        InputStreamReaderFactory inputStreamReaderFactory = new InputStreamReaderFactory();
+        OutputWriter outputWriter = OutputWriter.newInstance(gson);
+
+        this.payloadVerificationRunner = new PayloadVerificationRunner(payloadVerifier, outputWriter);
+        this.webhookRequestExtractor = new WebhookRequestExtractor(inputStreamReaderFactory, outputWriter, gson);
+        this.eventExtractor = new EventExtractor(outputWriter, gson);
+
+        this.eventForwarder = EventForwarder.newInstance();
+        this.outputWriter = OutputWriter.newInstance(gson);
+        this.logger = Logger.newInstance();
+    }
+
+    PostGithubWebhookEventHandler(
+            PayloadVerificationRunner payloadVerificationRunner,
+            WebhookRequestExtractor webhookRequestExtractor,
+            EventExtractor eventExtractor,
+            EventForwarder eventForwarder,
+            OutputWriter outputWriter,
+            Logger logger) {
+
+        this.payloadVerificationRunner = payloadVerificationRunner;
+        this.webhookRequestExtractor = webhookRequestExtractor;
+        this.eventExtractor = eventExtractor;
+        this.eventForwarder = eventForwarder;
+        this.outputWriter = outputWriter;
+        this.logger = logger;
     }
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) {
-        outputWriter = OutputWriter.newInstance(output, gson);
-        logger = Logger.newInstance(context);
         disableJooqLogAd();
+        logger.setLoggerFrom(context);
+        outputWriter.setOutputStream(output);
 
         logger.log("λ STARTING...");
 
-        WebhookRequest request = getRequestFrom(input);
+        try {
+            WebhookRequest request = webhookRequestExtractor.extractFrom(input);
+            handle(request);
+        } finally {
+            closeOutputWriter();
+            logger.log("λ ENDED...");
+        }
+    }
 
-        breakIfPayloadNotValid(request);
+    private void handle(WebhookRequest request) {
 
-        GithubWebhookEvent event = getEventFrom(request);
+        payloadVerificationRunner.verify(request);
+
+        GithubWebhookEvent event = eventExtractor.extractFrom(request);
 
         try {
             logger.log("FORWARDING EVENT...");
@@ -58,41 +92,11 @@ public class PostGithubWebhookEventHandler implements RequestStreamHandler {
         } catch (Exception e) {
             logger.log("ERROR: Failed to forward an event (" + event.toString() + "). " + e.getMessage());
             outputWriter.outputException(e);
-        } finally {
-            closeOutputWriter();
         }
     }
 
     private void disableJooqLogAd() {
         JooqLogger.globalThreshold(JooqLogger.Level.WARN);
-    }
-
-    @Nullable
-    private WebhookRequest getRequestFrom(InputStream input) {
-        Reader reader = new InputStreamReader(input);
-        try {
-            return gson.fromJson(reader, WebhookRequest.class);
-        } catch (Exception e) {
-            outputWriter.outputException(e);
-        }
-        return null;
-    }
-
-    private void breakIfPayloadNotValid(WebhookRequest request) {
-        try {
-            payloadVerifier.checkIfPayloadIsValid(request);
-        } catch (InvalidSecretException e) {
-            e.printStackTrace();
-            outputWriter.outputException(e);
-        }
-    }
-
-    @Nullable
-    private GithubWebhookEvent getEventFrom(WebhookRequest request) {
-        if (request.body() == null) {
-            outputWriter.outputException(new NullPointerException("event is null"));
-        }
-        return gson.fromJson(request.body(), GithubWebhookEvent.class);
     }
 
     private void closeOutputWriter() {
