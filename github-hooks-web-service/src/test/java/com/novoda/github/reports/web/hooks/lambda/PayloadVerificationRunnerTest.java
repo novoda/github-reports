@@ -42,7 +42,7 @@ public class PayloadVerificationRunnerTest {
     }
 
     @Test
-    public void givenValidRequest_whenRunningValidation_thenNothingHappens() throws Exception {
+    public void givenValidRequest_whenRunningValidation_thenNoOutputIsEmitted() throws Exception {
         WebhookRequest request = aWebhookRequest();
 
         mockPayloadVerificationRunner.verify(request);
