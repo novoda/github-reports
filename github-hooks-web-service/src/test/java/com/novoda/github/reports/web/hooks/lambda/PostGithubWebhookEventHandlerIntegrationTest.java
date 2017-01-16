@@ -101,9 +101,9 @@ public class PostGithubWebhookEventHandlerIntegrationTest {
         ArgumentCaptor<GithubWebhookEvent> eventCaptor = ArgumentCaptor.forClass(GithubWebhookEvent.class);
         verify(mockEventHandler).handle(eventCaptor.capture());
 
-        GithubWebhookEvent event = eventFrom(readFile("reopened_action.json"));
+        GithubWebhookEvent expectedEvent = eventFrom(readFile("reopened_action.json"));
 
-        assertThat(eventCaptor.getValue()).isEqualToComparingFieldByFieldRecursively(event);
+        assertThat(eventCaptor.getValue()).isEqualToComparingFieldByFieldRecursively(expectedEvent);
     }
 
     @Test(expected = RuntimeException.class)
