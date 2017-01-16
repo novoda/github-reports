@@ -67,7 +67,6 @@ public class PostGithubWebhookEventHandlerIntegrationTest {
 
         OutputWriter outputWriter = OutputWriter.newInstance(gson);
 
-        PayloadVerifier payloadVerifier = PayloadVerifier.newInstance();
         PayloadVerificationRunner payloadVerificationRunner = new PayloadVerificationRunner(mockPayloadVerifier, outputWriter);
 
         InputStreamReaderFactory inputStreamReaderFactory = new InputStreamReaderFactory();
@@ -93,16 +92,24 @@ public class PostGithubWebhookEventHandlerIntegrationTest {
 
     @Test
     public void givenAValidRequest_whenHandlingIt_thenEventIsHandled() throws Exception {
-        InputStream inputStream = inputStreamFrom("valid_request.json");
+        InputStream inputStream = inputStreamFrom("reopened_action.json");
 
         handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
 
         ArgumentCaptor<GithubWebhookEvent> eventCaptor = ArgumentCaptor.forClass(GithubWebhookEvent.class);
         verify(mockEventHandler).handle(eventCaptor.capture());
 
-        GithubWebhookEvent event = eventFrom(readFile("valid_request.json"));
+        GithubWebhookEvent event = eventFrom(readFile("reopened_action.json"));
 
         assertThat(eventCaptor.getValue()).isEqualToComparingFieldByFieldRecursively(event);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void givenARequestWithAnInvalidAction_whenHandlingIt_thenAnExceptionIsThrown() throws Exception {
+        InputStream inputStream = inputStreamFrom("invalid_action.json");
+
+        handler.handleRequest(inputStream, outputStream, ANY_CONTEXT);
+
     }
 
     private GithubWebhookEvent eventFrom(String contents) {
