@@ -1,12 +1,6 @@
 {
   "method": "POST",
-  "nobody": {
-    "sender": {
-      "login": "takecare",
-      "id": 212528,
-      "type": "User"
-    }
-  },
+  "body": {},
   "headers": {
     "content-type": "application/json",
     "Host": "wufbtotsae.execute-api.us-east-1.amazonaws.com",

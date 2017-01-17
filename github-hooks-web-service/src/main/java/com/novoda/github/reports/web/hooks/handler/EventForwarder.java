@@ -30,7 +30,7 @@ public class EventForwarder {
         return new EventForwarder(eventClassifier, Collections.unmodifiableMap(HANDLERS));
     }
 
-    EventForwarder(WebhookEventClassifier eventClassifier, Map<EventType, EventHandler> handlers) {
+    public EventForwarder(WebhookEventClassifier eventClassifier, Map<EventType, EventHandler> handlers) {
         this.eventClassifier = eventClassifier;
         this.handlers = handlers;
     }
