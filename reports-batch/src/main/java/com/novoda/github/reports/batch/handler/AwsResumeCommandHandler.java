@@ -55,7 +55,7 @@ public class AwsResumeCommandHandler implements CommandHandler<AwsBatchOptions> 
         AmazonConfiguration initialConfiguration = getInitialConfiguration(options, jobName);
 
         workerService.startWorker(initialConfiguration);
-        logger.info("Process restarted on lamda for queue %s.", jobName);
+        logger.info("Process restarted on lambda for queue %s.", jobName);
     }
 
     private AmazonConfiguration getInitialConfiguration(AwsBatchOptions options, String jobName) {
