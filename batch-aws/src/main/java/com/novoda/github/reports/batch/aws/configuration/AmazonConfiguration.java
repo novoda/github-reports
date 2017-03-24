@@ -14,6 +14,7 @@ public abstract class AmazonConfiguration implements Configuration<EmailNotifier
 
     public static AmazonConfiguration create(String jobName,
                                              @Nullable String alarmName,
+                                             int count,
                                              DatabaseConfiguration databaseConfiguration,
                                              GithubConfiguration githubConfiguration,
                                              EmailNotifierConfiguration notifierConfiguration) {
@@ -21,6 +22,7 @@ public abstract class AmazonConfiguration implements Configuration<EmailNotifier
         return builder()
                 .jobName(jobName)
                 .alarmName(alarmName)
+                .retryCount(count)
                 .databaseConfiguration(databaseConfiguration)
                 .githubConfiguration(githubConfiguration)
                 .notifierConfiguration(notifierConfiguration)
@@ -43,7 +45,12 @@ public abstract class AmazonConfiguration implements Configuration<EmailNotifier
         return toBuilder().alarmName(NO_ALARM_NAME).build();
     }
 
-    abstract Builder toBuilder();
+    @Override
+    public AmazonConfiguration withDecreasedCounter() {
+        return toBuilder().retryCount(retryCount() - 1).build();
+    }
+
+    public abstract Builder toBuilder();
 
     @AutoValue.Builder
     abstract static class Builder {
@@ -57,6 +64,8 @@ public abstract class AmazonConfiguration implements Configuration<EmailNotifier
         abstract Builder githubConfiguration(GithubConfiguration githubConfiguration);
 
         abstract Builder notifierConfiguration(EmailNotifierConfiguration notifierConfiguration);
+
+        abstract Builder retryCount(int count);
 
         abstract AmazonConfiguration build();
 

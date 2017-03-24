@@ -66,7 +66,8 @@ public class AwsNewCommandHandler implements CommandHandler<AwsBatchOptions> {
     public void handle(AwsBatchOptions options) throws Exception {
         String jobName = options.getJob();
         AmazonQueueMessage initialMessage = getInitialMessage(options);
-        AmazonConfiguration initialConfiguration = getInitialConfiguration(options, jobName);
+        int retryCount = options.getRetryCount();
+        AmazonConfiguration initialConfiguration = getInitialConfiguration(options, jobName, retryCount);
 
         AmazonQueue queue = queueService.createQueue(jobName);
         queue.addItem(initialMessage);
@@ -87,7 +88,7 @@ public class AwsNewCommandHandler implements CommandHandler<AwsBatchOptions> {
         );
     }
 
-    private AmazonConfiguration getInitialConfiguration(AwsBatchOptions options, String jobName) {
+    private AmazonConfiguration getInitialConfiguration(AwsBatchOptions options, String jobName, int retryCount) {
         DatabaseConfiguration databaseConfiguration = DatabaseConfiguration.create(databaseCredentialsReader);
         GithubConfiguration githubConfiguration = GithubConfiguration.create(githubCredentialsReader);
         EmailNotifierConfiguration emailNotifierConfiguration = EmailNotifierConfiguration.create(emailCredentialsReader, options.getEmails());
@@ -95,6 +96,7 @@ public class AwsNewCommandHandler implements CommandHandler<AwsBatchOptions> {
         return AmazonConfiguration.create(
                 jobName,
                 NO_ALARM_NAME,
+                retryCount,
                 databaseConfiguration,
                 githubConfiguration,
                 emailNotifierConfiguration

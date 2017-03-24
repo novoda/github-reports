@@ -34,6 +34,7 @@ public class AmazonConfigurationConverter {
         return AmazonConfiguration.create(
                 amazonRawConfiguration.jobName(),
                 amazonRawConfiguration.alarmName(),
+                amazonRawConfiguration.retryCount(),
                 databaseConfiguration,
                 githubConfiguration,
                 emailNotifierConfiguration
@@ -79,6 +80,7 @@ public class AmazonConfigurationConverter {
     public String toJson(AmazonConfiguration configuration) throws ConfigurationConverterException {
         String jobName = configuration.jobName();
         String alarmName = configuration.alarmName();
+        int retryCount = configuration.retryCount();
 
         AmazonRawDatabaseConfiguration rawDatabaseConfiguration = toRawDatabaseConfiguration(configuration);
         AmazonRawGithubConfiguration githubRawConfiguration = toRawGithubConfiguration(configuration);
@@ -87,6 +89,7 @@ public class AmazonConfigurationConverter {
         AmazonRawConfiguration amazonRawConfiguration = AmazonRawConfiguration.builder()
                 .jobName(jobName)
                 .alarmName(alarmName)
+                .retryCount(retryCount)
                 .database(rawDatabaseConfiguration)
                 .github(githubRawConfiguration)
                 .email(rawEmailNotifierConfiguration)

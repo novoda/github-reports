@@ -19,6 +19,7 @@ public class AmazonConfigurationConverterTest {
 
     private static final String ANY_JOB_NAME = "some-job";
     private static final String ANY_ALARM_NAME = "some-alarm";
+    private static final int ANY_RETRY_COUNT = 42;
     private static final String ANY_CONN_STRING = "jdbc:mysql://something-something-danger-zone";
     private static final String ANY_USERNAME = "sterling";
     private static final String ANY_PASSWORD = "mawp";
@@ -46,6 +47,7 @@ public class AmazonConfigurationConverterTest {
     private static AmazonConfiguration EXPECTED_CONFIGURATION = AmazonConfiguration.create(
             ANY_JOB_NAME,
             ANY_ALARM_NAME,
+            ANY_RETRY_COUNT,
             DATABASE_CONFIGURATION,
             GITHUB_CONFIGURATION,
             EMAIL_NOTIFIER_CONFIGURATION

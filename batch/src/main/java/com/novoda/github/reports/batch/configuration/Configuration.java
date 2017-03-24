@@ -10,6 +10,8 @@ public interface Configuration<N extends NotifierConfiguration> {
 
     @Nullable String alarmName();
 
+    int retryCount();
+
     DatabaseConfiguration databaseConfiguration();
 
     GithubConfiguration githubConfiguration();
@@ -20,8 +22,9 @@ public interface Configuration<N extends NotifierConfiguration> {
 
     <C extends Configuration<N>> C withNoAlarmName();
 
+    <C extends Configuration<N>> C withDecreasedCounter();
+
     default boolean hasAlarm() {
         return !StringHelper.isNullOrEmpty(alarmName());
     }
-
 }

@@ -22,6 +22,8 @@ public abstract class AmazonRawConfiguration {
     @Nullable
     abstract String alarmName();
 
+    abstract int retryCount();
+
     abstract AmazonRawDatabaseConfiguration database();
 
     abstract AmazonRawGithubConfiguration github();
@@ -34,6 +36,8 @@ public abstract class AmazonRawConfiguration {
         abstract Builder jobName(String jobName);
 
         abstract Builder alarmName(@Nullable String alarmName);
+
+        abstract Builder retryCount(int count);
 
         abstract Builder database(AmazonRawDatabaseConfiguration database);
 

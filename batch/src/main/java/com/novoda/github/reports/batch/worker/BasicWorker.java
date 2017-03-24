@@ -111,17 +111,23 @@ public class BasicWorker<
             List<M> newMessages = handleQueueMessage(configuration, queueMessage);
             updateQueue(queue, queueMessage, newMessages);
             rescheduleImmediately(configuration);
-        } catch (EmptyQueueException emptyQueue) {
+        }
+        catch (EmptyQueueException emptyQueue) {
             handleEmptyQueueException(configuration, queue);
-        } catch (MessageConverterException messageConversionError) {
+        }
+        catch (MessageConverterException messageConversionError) {
             handleMessageConverterException(configuration, messageConversionError);
-        } catch (RateLimitEncounteredException rateLimitError) {
+        }
+        catch (RateLimitEncounteredException rateLimitError) {
             handleRateLimitEncounteredException(configuration, rateLimitError);
-        } catch (QueueOperationFailedException queueOperationFail) {
+        }
+        catch (QueueOperationFailedException queueOperationFail) {
             handleQueueOperationFailedException(configuration, queueOperationFail);
-        } catch (RetriableNetworkException networkOperationFail) {
+        }
+        catch (RetriableNetworkException networkOperationFail) {
             handleNetworkOperationFailedException(configuration, networkOperationFail);
-        } catch (Throwable anyOtherError) {
+        }
+        catch (Throwable anyOtherError) {
             handleAnyOtherException(configuration, anyOtherError);
         }
     }
@@ -170,9 +176,10 @@ public class BasicWorker<
         queueService.removeQueue(queue);
     }
 
-    private void handleMessageConverterException(C configuration, MessageConverterException e) throws NotifierOperationFailedException {
+    private void handleMessageConverterException(C configuration, MessageConverterException e) throws NotifierOperationFailedException, WorkerStartException {
         logger.error("Error while converting the message from the queue:\n%s", e);
-        notifyError(configuration, e);
+        notifyError(configuration, e); // TODO @RUI decrease counter and reschedule immediately
+        rescheduleImmediately(configuration); // @RUI decreasing counter here ^
     }
 
     private void handleRateLimitEncounteredException(C configuration, RateLimitEncounteredException e)
@@ -207,8 +214,8 @@ public class BasicWorker<
 
         logger.error("A queue operation failed:\n%s", e);
 
-        notifyError(configuration, e);
-        rescheduleImmediately(configuration);
+        notifyError(configuration, e); // TODO @RUI decrease counter and reschedule immediately
+        rescheduleImmediately(configuration); // @RUI decreasing counter here ^
     }
 
     private void handleNetworkOperationFailedException(C configuration, RetriableNetworkException e)
@@ -225,8 +232,24 @@ public class BasicWorker<
             throw new WorkerStartException("The worker was already restarted, this shouldn't be possible!");
         }
 
+        int currentCount = configuration.retryCount();
+        if (currentCount == 0) {
+            RuntimeException boom = new RuntimeException("Oops!");
+            try {
+                notifyError(configuration, boom);
+            } catch (NotifierOperationFailedException e) {
+                e.printStackTrace();
+            }
+            throw boom;
+        }
+
         hasRescheduled = true;
         configuration = configuration.withNoAlarmName();
+
+        // @RUI we need withNoAlarmName() and we need to decrease the counter
+        configuration = configuration.withDecreasedCounter();
+        // ---
+
         workerService.startWorker(configuration);
 
         logger.info("New worker instance started.");
@@ -236,7 +259,8 @@ public class BasicWorker<
         logger.error("There was an unhandled error which terminated the job:\n%s", throwable);
 
         try {
-            notifyError(configuration, throwable);
+            notifyError(configuration, throwable); // TODO @RUI decrease counter and reschedule immediately
+            rescheduleImmediately(configuration); // @RUI decreasing counter here ^
         } catch (Throwable notificationError) {
             notificationError.printStackTrace();
         }

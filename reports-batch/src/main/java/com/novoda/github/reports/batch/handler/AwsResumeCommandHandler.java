@@ -51,21 +51,21 @@ public class AwsResumeCommandHandler implements CommandHandler<AwsBatchOptions> 
 
     @Override
     public void handle(AwsBatchOptions options) throws Exception {
-        String jobName = options.getJob();
-        AmazonConfiguration initialConfiguration = getInitialConfiguration(options, jobName);
+        AmazonConfiguration initialConfiguration = getInitialConfiguration(options);
 
         workerService.startWorker(initialConfiguration);
-        logger.info("Process restarted on lambda for queue %s.", jobName);
+        logger.info("Process restarted on lambda for queue %s.", options.getJob());
     }
 
-    private AmazonConfiguration getInitialConfiguration(AwsBatchOptions options, String jobName) {
+    private AmazonConfiguration getInitialConfiguration(AwsBatchOptions options) {
         DatabaseConfiguration databaseConfiguration = DatabaseConfiguration.create(databaseCredentialsReader);
         GithubConfiguration githubConfiguration = GithubConfiguration.create(githubCredentialsReader);
         EmailNotifierConfiguration emailNotifierConfiguration = EmailNotifierConfiguration.create(emailCredentialsReader, options.getEmails());
 
         return AmazonConfiguration.create(
-                jobName,
+                options.getJob(),
                 NO_ALARM_NAME,
+                options.getRetryCount(),
                 databaseConfiguration,
                 githubConfiguration,
                 emailNotifierConfiguration

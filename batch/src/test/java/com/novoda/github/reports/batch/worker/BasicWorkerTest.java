@@ -9,18 +9,24 @@ import com.novoda.github.reports.batch.logger.Logger;
 import com.novoda.github.reports.batch.notifier.Notifier;
 import com.novoda.github.reports.batch.notifier.NotifierOperationFailedException;
 import com.novoda.github.reports.batch.notifier.NotifierService;
-import com.novoda.github.reports.batch.queue.*;
+import com.novoda.github.reports.batch.queue.EmptyQueueException;
+import com.novoda.github.reports.batch.queue.MessageConverterException;
+import com.novoda.github.reports.batch.queue.Queue;
+import com.novoda.github.reports.batch.queue.QueueMessage;
+import com.novoda.github.reports.batch.queue.QueueOperationFailedException;
+import com.novoda.github.reports.batch.queue.QueueService;
 import com.novoda.github.reports.service.network.RateLimitEncounteredException;
 import com.novoda.github.reports.util.SystemClock;
+
+import java.net.SocketTimeoutException;
+import java.time.Instant;
+import java.util.Date;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.net.SocketTimeoutException;
-import java.time.Instant;
-import java.util.Date;
 
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Matchers.any;
@@ -403,7 +409,7 @@ public class BasicWorkerTest {
     }
 
     private void verifyNoErrorNotified() throws NotifierOperationFailedException {
-        verify(notifier, never()).notifyError(any(DefaultConfiguration.class), any(Exception.class));
+        verify(notifier, never()).notifyError(any(Configuration.class), any(Exception.class));
     }
 
     private void verifyNoRescheduleImmediately() throws WorkerStartException {
@@ -411,7 +417,7 @@ public class BasicWorkerTest {
     }
 
     private <T extends Exception> void verifyErrorNotified(Class<T> exception) throws NotifierOperationFailedException {
-        verify(notifier).notifyError(any(DefaultConfiguration.class), isA(exception));
+        verify(notifier).notifyError(any(Configuration.class), isA(exception));
     }
 
     private void verifyRescheduleImmediately() throws WorkerStartException {
