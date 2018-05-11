@@ -11,4 +11,4 @@ This module provides the components to query the Float API.
 
 Any project referencing `float` must configure the Float credentials: create a `float.credentials` file in the resources folder (where
 `float.credentials.sample` is located and add your Float OAuth token there. You can use the `float.credentials.sample` as a starting point:
-`cp float.credentials.sample float.credentials`.
+`cp float.credentials.sample float.credentials`).
